@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "flyer-layout-generator"
+version = "0.1.0"
+description = ""
+authors = ["rfbatista <rfbatista@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.0"
+django = ">=4.0.0,<4.1.0"
+djangorestframework = ">=3.13.0,<3.14.0"
+peewee = "^3.17.1"
+python-multipart = "^0.0.9"
+uvicorn = "^0.29.0"
+python-dotenv = "^1.0.1"
+psd-tools = "^1.9.31"
+pillow = "^10.3.0"
+sqlalchemy = "^2.0.29"
+alembic = "^1.13.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
