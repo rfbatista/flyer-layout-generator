@@ -1,6 +1,10 @@
 import random
+from typing import List
 
+from PIL import ImageDraw, Image
 from app.entities.componente import Componente
+from app.entities.guia import Guia
+from app.entities.template import Template
 
 
 class Prancheta:
@@ -8,7 +12,7 @@ class Prancheta:
         self.width = width
         self.height = height
         self.lines = []
-        self.componentes = []
+        self.componentes: List[Componente] = []
         self.points = []
 
     def size(self):
@@ -49,12 +53,11 @@ class Prancheta:
     def _hide_outer_points(self):
         max_x = max(self.points, key=lambda x: x[0])
         max_y = max(self.points, key=lambda x: x[1])
-        print(max_x, max_y)
         self.points = [tup for tup in self.points if tup[0] != max_x[0]]
         self.points = [tup for tup in self.points if tup[1] != max_y[1]]
 
     def calculate(self, hide_outer_points=True):
-        guia = Guias()
+        guia = Guia()
         guia.set_prancheta(self.width, self.height)
         guia.set_pivot(self.pivot_x.width(), self.pivot_y.height())
         guia.calculate()
@@ -69,25 +72,12 @@ class Prancheta:
     def add_componente(self, comp: Componente):
         self.componentes.append(comp)
 
-    def set_guia(self, guia: Guias):
+    def set_guia(self, guia: Guia):
         self.guia = guia
 
     def set_background(self, comp, crop=None):
         self.background = comp
         self.background_crop = crop
-
-    def draw_intersections(self):
-        img = Image.new("RGB", self.size())
-        draw = ImageDraw.Draw(img)
-        for point in self.points:
-            draw.ellipse(
-                [(point[0] - 10, point[1] - 10), (point[0] + 10, point[1] + 10)],
-                fill=(324, 324, 564),
-                width=10,
-            )
-        plt.imshow(img)
-        plt.axis("off")  # Hide axis
-        plt.show()
 
     def image(self):
         img = None
@@ -108,8 +98,34 @@ class Prancheta:
         comp.draw_in(img, point)
         return img
 
-    def draw(self):
-        img = self.image()
-        plt.imshow(img)
-        plt.axis("off")  # Hide axis
-        plt.show()
+    def image_from_template(self, template: Template) -> Image.Image:
+        img = None
+        if self.background:
+            img = self.background.image()
+            if img.width > img.height:
+                img.thumbnail((int((img.height*template.height)/template.width), template.height))
+            else:
+                img.thumbnail((template.width, int((img.width*template.width)/template.height)))
+            left = (img.width - template.width) // 2
+            upper = (img.height - template.height) // 2
+            right = left + template.width
+            lower = upper + template.height
+            
+            # Crop the image based on the calculated coordinates
+            pos = (left, upper, right, lower)
+            print(pos)
+            img = img.crop(pos)
+            # if self.background_crop:
+            #     img = img.crop(self.background_crop)
+            # img = img.crop((0, 0, self.width, self.height))
+        else:
+            img = Image.new("RGB", self.size())
+        img.resize((template.width, template.height))
+        components = self.componentes
+        for pos in template.positions:
+            if len(components) == 0:
+                return img
+            comp = random.choice(components)
+            components.remove(comp)
+            comp.draw_in_template_position(img, pos)
+        return img

@@ -1,4 +1,4 @@
-class Guias:
+class Guia:
     def __init__(self) -> None:
         self.lines = []
         self.vertical_lines = []

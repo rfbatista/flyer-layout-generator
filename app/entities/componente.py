@@ -1,30 +1,38 @@
 from collections.abc import Iterable
+from typing import List
+from PIL import Image
 
-from app.entities.elemento import Elemento
+from app.entities.photoshop import Elemento
+from app.entities.template import Position
 
 
 class Componente:
-    def __init__(self, items) -> None:
+    def __init__(self, items=[]) -> None:
         self.items = items
-        self._items = []
+        self._items: List[Elemento] = []
+
+    def add_element(self, item):
+        self.items.append(item)
 
     def print(self, layer, pre=""):
         if not isinstance(layer, Iterable):
             return
-        for idx, layer in enumerate(layer):
-            print("%s %s %s" % (pre, layer.name, layer.layer_id))
+        for _, layer in enumerate(layer):
+            # print("%s %s %s" % (pre, layer.name, layer.layer_id))
             self.print(layer, pre + "\t")
 
     def index_elements(self, layer, pre=""):
         if not isinstance(layer, Iterable):
             return
-        for idx, layer in enumerate(layer):
+        # print(self.items)
+        for _, layer in enumerate(layer):
+            # print(layer.layer_id)
             if layer.layer_id in self.items:
                 self._items.append(Elemento(layer))
             self.index_elements(layer, pre + "\t")
 
     def getImages(self):
-        return [x.composite() for x in self._items]
+        return [x.image() for x in self._items]
 
     # (left, top, right, bottom)
     def coord(self):
@@ -49,6 +57,7 @@ class Componente:
 
     def size(self):
         coord = self.coord()
+        # print(coord)
         return (coord[2] - coord[0], coord[3] - coord[1])
 
     def width(self):
@@ -65,18 +74,26 @@ class Componente:
             img.paste(im, item.position_from((coord[0], coord[1])), im)
         return img
 
-    def draw(self, crop=False):
-        img = self.image()
-        if crop:
-            img = img.crop(crop)
-        plt.imshow(img)
-        plt.axis("off")  # Hide axis
-        plt.show()
-
     def draw_in(self, img, point):
         up_left = self.coord()
         move = (up_left[0] - point[0], up_left[1] - point[1])
         for item in self._items:
             im = item.image()
+            img.paste(im, item.position_from(move), im)
+        return img
+
+    def draw_in_template_position(self, img, template: Position):
+        up_left = self.coord()
+        move = (up_left[0] - template.xi, up_left[1] - template.yi)
+        scale = 1
+        if self.width() > self.height():
+            if template.width is not None:
+                scale = template.width / self.width()
+        else:
+            if template.height is not None:
+                scale = template.height / self.height()
+        for item in self._items:
+            im = item.image()
+            im.thumbnail((int(im.width * scale), int(im.height * scale)))
             img.paste(im, item.position_from(move), im)
         return img

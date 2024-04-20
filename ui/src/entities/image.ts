@@ -5,7 +5,7 @@ export class PhotoshopImage {
   }
 
   get src(){
-    return "http://localhost:8080" + this.props.image
+    return "http://localhost:8000" + this.props.image
   }
 
   static from_api_list(res: any): PhotoshopImage[] {
