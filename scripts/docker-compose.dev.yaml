@@ -1,0 +1,48 @@
+version: "3"
+services:
+  app-dev:
+    build:
+      dockerfile: ./scripts/server/Dockerfile.dev
+      context: ..
+    volumes:
+      - ..:/app
+    ports:
+      - 8000:8000
+    environment:
+      PG_DATABASE_USER: "admin"
+      PG_DATABASE_NAME: "algvisual"
+      PG_DATABASE_PASSWORD: "123"
+      PG_DATABASE_HOST: "postgres-dev"
+      PG_DATABASE_PORT: "5432"
+      PHOTOSHOP_FILES_PATH: "/app/dist/photoshop"
+      PORT: 8000
+      DIST_FOLDER_PATH: "/app/dist"
+      AI_SERVICE_BASE_URL: "http://ai-dev:8080"
+    links:
+      - postgres-dev
+      - ai-dev
+
+  ai-dev:
+    build:
+      dockerfile: ./scripts/ai/Dockerfile.dev
+      context: ..
+    volumes:
+      - ..:/app
+    environment:
+      DIST_PATH: "/app/dist"
+    ports:
+      - 8080:8080
+    links:
+      - postgres-dev
+
+
+  postgres-dev:
+    image: postgres:15.3-alpine
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: algvisual
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data

@@ -1,0 +1,14 @@
+{
+  "connections": [
+    {
+      "name": "postgres-project",
+      "adapter": "postgres",
+      "host": "localhost",
+      "port": 5432,
+      "user": "admin",
+      "password": "123",
+      "database": "algvisual",
+      "projectPaths": ["/home/renan/projetos/flyer-layout-generator"]
+    },
+  ]
+}

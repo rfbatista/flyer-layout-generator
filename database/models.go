@@ -5,11 +5,104 @@
 package database
 
 import (
-	"database/sql"
+	"database/sql/driver"
+	"fmt"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ComponentType string
+
+const (
+	ComponentTypeBackground      ComponentType = "background"
+	ComponentTypeLogotipoMarca   ComponentType = "logotipo_marca"
+	ComponentTypeLogotipoProduto ComponentType = "logotipo_produto"
+	ComponentTypeTextoCta        ComponentType = "texto_cta"
+)
+
+func (e *ComponentType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ComponentType(s)
+	case string:
+		*e = ComponentType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ComponentType: %T", src)
+	}
+	return nil
+}
+
+type NullComponentType struct {
+	ComponentType ComponentType
+	Valid         bool // Valid is true if ComponentType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullComponentType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ComponentType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ComponentType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullComponentType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ComponentType), nil
+}
+
+type Image struct {
+	ID          int64
+	Url         string
+	PhotoshopID pgtype.Int4
+	TemplateID  pgtype.Int4
+	CreatedAt   pgtype.Timestamp
+}
+
 type Photoshop struct {
-	ID   int64
-	Name string
-	Bio  sql.NullString
+	ID        int32
+	Name      string
+	ImageUrl  pgtype.Text
+	FileUrl   pgtype.Text
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+type PhotoshopElement struct {
+	ID            int32
+	PhotoshopID   int32
+	Name          pgtype.Text
+	LayerID       pgtype.Text
+	Text          pgtype.Text
+	Xi            pgtype.Int4
+	Xii           pgtype.Int4
+	Yi            pgtype.Int4
+	Yii           pgtype.Int4
+	Width         pgtype.Int4
+	Height        pgtype.Int4
+	IsGroup       pgtype.Bool
+	GroupID       pgtype.Int4
+	Level         pgtype.Int4
+	Kind          pgtype.Text
+	ComponentID   pgtype.Text
+	ComponentType NullComponentType
+	ImageUrl      pgtype.Text
+	CreatedAt     pgtype.Timestamp
+	UpdatedAt     pgtype.Timestamp
+}
+
+type Template struct {
+	ID        int32
+	Name      string
+	Width     pgtype.Int4
+	Height    pgtype.Int4
+	SlotsX    pgtype.Int4
+	SlotsY    pgtype.Int4
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+	DeletedAt pgtype.Timestamp
 }
