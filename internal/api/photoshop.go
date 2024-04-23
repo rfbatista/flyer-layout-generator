@@ -3,7 +3,6 @@ package api
 import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
-	"algvisual/internal/ports"
 	"algvisual/internal/shared"
 	"algvisual/internal/usecases"
 	"net/http"
@@ -16,7 +15,7 @@ import (
 func NewUploadPhotoshopAPI(
 	db *database.Queries,
 	proc *infra.PhotoshopProcessor,
-	storage ports.Storage,
+	storage infra.FileStorage,
 	log *zap.Logger,
 ) apitools.Handler {
 	h := apitools.NewHandler()
