@@ -8,7 +8,9 @@
       "user": "admin",
       "password": "123",
       "database": "algvisual",
-      "projectPaths": ["/home/renan/projetos/flyer-layout-generator"]
-    },
+      "projectPaths": [
+        "/home/renan/projetos/flyer-layout-generator"
+      ]
+    }
   ]
 }

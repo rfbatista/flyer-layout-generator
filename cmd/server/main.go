@@ -1,10 +1,10 @@
 package main
 
 import (
-	"go.uber.org/fx"
+	"algvisual/internal/api"
+	"algvisual/internal/infra"
 
-	"algvisual/api"
-	"algvisual/infra"
+	"go.uber.org/fx"
 )
 
 func main() {
