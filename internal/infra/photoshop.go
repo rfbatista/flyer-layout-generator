@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"algvisual/internal/ports"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -11,6 +10,8 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+
+	"algvisual/internal/ports"
 )
 
 func NewPhotoshpProcessor(l *zap.Logger, c *AppConfig) (*PhotoshopProcessor, error) {
@@ -54,13 +55,16 @@ func (p PhotoshopProcessor) ProcessFile(
 		return nil, err
 	}
 	defer res.Body.Close()
-	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
-	if !statusOK {
+	if res.StatusCode != http.StatusOK {
 		buf := new(strings.Builder)
 		io.Copy(buf, res.Body)
+		p.log.Error(
+			"error processing photoshop file",
+			zap.Int("StatusCode", res.StatusCode),
+			zap.Error(err),
+		)
 		err = fmt.Errorf("falha ao requisitar processamento do arquivo photoshop %s", buf.String())
 		p.log.Error(err.Error())
-		// You may read / inspect response body
 		return nil, err
 	}
 	var result ports.ProcessFileResult
@@ -69,5 +73,6 @@ func (p PhotoshopProcessor) ProcessFile(
 		p.log.Warn("error ao desempacotar resultados do arquivo processado", zap.Error(err))
 		return nil, err
 	}
+	p.log.Info(fmt.Sprintf("%+v\n", result))
 	return &result, nil
 }

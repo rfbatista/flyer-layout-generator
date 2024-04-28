@@ -2,7 +2,11 @@ CREATE TABLE photoshop (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   image_url text,
+  image_extension text,
   file_url text,
+  file_extension text,
+  width int,
+  height int,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -30,11 +34,24 @@ CREATE TABLE photoshop_element (
   group_id INT,
   level INT,
   kind TEXT,
-  component_id TEXT,
-  component_type COMPONENT_TYPE,
+  component_id INT,
   image_url TEXT,
+  image_extension text,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
 
-  FOREIGN KEY (photoshop_id) REFERENCES photoshop (id)
+  CONSTRAINT fk_photoshop_element_photoshop_id FOREIGN KEY (photoshop_id) REFERENCES photoshop (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_photoshop_element_component_id FOREIGN KEY (component_id) REFERENCES photoshop (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE photoshop_components (
+  id SERIAL PRIMARY KEY,
+  photoshop_id INT NOT NULL,
+  width INT,
+  height INT,
+  color TEXT,
+  type COMPONENT_TYPE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

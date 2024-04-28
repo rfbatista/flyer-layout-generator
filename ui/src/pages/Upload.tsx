@@ -1,5 +1,5 @@
 import { CircleX, Image, Puzzle } from "lucide-react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Canvas } from "../components/Canvas";
 import { FileBar } from "../components/FileBar";
@@ -7,10 +7,39 @@ import { TreeView } from "../components/TreeView";
 import { usePhotoshopFiles } from "../store/files";
 
 export function UploadFilePage() {
-  const data = usePhotoshopFiles();
+  const mainRef = React.useRef();
+  const data = usePhotoshopFiles((d) => ({
+    init: d.init,
+    elementsSelected: d.elementsSelected,
+    activeTree: d.activeTree,
+    createComponent: d.createComponent,
+    setMainBoardSize: d.setMainBoardSize,
+    setBackground: d.setBackground,
+  }));
+
   useEffect(() => {
-    data.execute();
+    data.init();
   }, []);
+
+  useEffect(() => {
+    mainRef.current &&
+      data.setMainBoardSize({
+        width: mainRef.current.offsetWidth,
+        height: mainRef.current.clientHeight,
+      });
+    const observer = new ResizeObserver((entries) => {
+      console.log({
+        width: entries[0].contentRect.width,
+        height: entries[0].contentRect.height,
+      });
+      data.setMainBoardSize({
+        width: entries[0].contentRect.width,
+        height: entries[0].contentRect.height,
+      });
+    });
+    observer.observe(mainRef.current);
+    return () => mainRef.current && observer.unobserve(mainRef.current);
+  }, [mainRef.current, mainRef.current?.offsetWidth]);
 
   const onCreateComponent = () => {
     if (data.elementsSelected.length === 0) return;
@@ -54,7 +83,7 @@ export function UploadFilePage() {
         <div className="w-1/4 max-w-[300px]">
           <FileBar />
         </div>
-        <main role="main" className="flex-1">
+        <main role="main" className="flex-1" ref={mainRef}>
           <Canvas />
         </main>
         <div className="w-1/4 max-w-[450px] border-gray-200 border px-3 h-full pb-5 pt-3">

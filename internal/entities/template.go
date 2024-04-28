@@ -1,1 +1,40 @@
 package entities
+
+type TemplateType string
+
+const (
+	TemplateSlotsType      TemplateType = "slots"
+	TemplateDistortionType TemplateType = "distortion"
+)
+
+func (s TemplateType) String() string {
+	return string(s)
+}
+
+type TemplateSlotsPositions struct {
+	Xi     int32
+	Yi     int32
+	Width  int32
+	Height int32
+}
+
+type TemplateDistortion struct {
+	X int32
+	Y int32
+}
+
+type Template struct {
+	ID             int32                    `json:"id,omitempty"`
+	Type           TemplateType             `json:"type,omitempty"`
+	Distortion     TemplateDistortion       `json:"distortion,omitempty"`
+	SlotsPositions []TemplateSlotsPositions `json:"slots_positions,omitempty"`
+}
+
+func NewTemplateType(t string) TemplateType {
+	switch t {
+	case "slots":
+		return TemplateSlotsType
+	default:
+		return TemplateDistortionType
+	}
+}

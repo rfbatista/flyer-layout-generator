@@ -9,14 +9,18 @@ import { create } from "zustand";
 import { getRandomColor } from "../shared/color";
 import { getRandomId } from "../shared/uuid";
 import { Design } from "../entities/designs";
+import { getPhotoshopList } from "../api/photoshop/listPhotoshopFile";
 
 type PhotoshopStore = {
-  execute: Function;
+  init: Function;
+  isInitiated: boolean;
   files: PhotoshopFile[];
   activeFile?: PhotoshopFile;
   activeTree?: ElementTree;
   images: PhotoshopImage[];
   activeElements: PhotoshopElement[];
+  mainBoardSize: { width: number; height: number };
+  setMainBoardSize: (d: { width: number; height: number }) => void;
   elementsSelected: number[];
   isLoading: boolean;
   designs: Design[];
@@ -33,31 +37,31 @@ type PhotoshopStore = {
 
 export const usePhotoshopFiles = create<PhotoshopStore>((set, get) => ({
   files: [],
+  isInitiated: false,
   images: [],
   designs: [],
   activeFile: undefined,
   activeTree: undefined,
   isLoading: false,
+  mainBoardSize: { height: 0, width: 0 },
   activeElements: [],
   elementsSelected: [],
-  clearDesigns: () => { set({ designs: [] }) },
-  execute: async () => {
+  clearDesigns: () => {
+    set({ designs: [] });
+  },
+  init: async () => {
+    if (get().isInitiated) return;
+    set({ isInitiated: true });
     set({ isLoading: true });
-    api.get("/api/v1/photoshop").then((res) => {
-      set({ isLoading: false });
-      const data = PhotoshopFile.from_api_list(res);
-      set({ files: data });
+    getPhotoshopList().then((data) => {
+      set({ files: data, isLoading: false });
     });
+  },
+  setMainBoardSize: (d: { height: number; width: number }) => {
+    set({ mainBoardSize: d });
   },
   selectPhotoshop: async (psd: PhotoshopFile) => {
     set({ activeFile: psd });
-    set({ isLoading: true });
-    api.get(`/api/v1/photoshop/${psd.id}/images`).then((res) => {
-      set({ isLoading: false });
-      const data = PhotoshopImage.from_api_list(res);
-      set({ images: data });
-    });
-    get().getElements(psd.id);
   },
   getDesigns: (psdId: number) => {
     set({ isLoading: true });

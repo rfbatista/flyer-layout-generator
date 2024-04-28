@@ -5,14 +5,13 @@ services:
       dockerfile: Dockerfile
       context: .
     volumes:
-      - .:/app
-    ports:
-      - 8000:8000
+      - ../data:/app
+    network_mode: "host"
     environment:
       PG_DATABASE_USER: "admin"
       PG_DATABASE_NAME: "algvisual"
       PG_DATABASE_PASSWORD: "123"
-      PG_DATABASE_HOST: "postgres"
+      PG_DATABASE_HOST: "localhost"
       PG_DATABASE_PORT: "5432"
       PHOTOSHOP_FILES_PATH: "/app/dist/photoshop"
       PORT: 8000
@@ -22,10 +21,10 @@ services:
 
   postgres:
     image: postgres
+    network_mode: "host"
     environment:
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "123"
       POSTGRES_DB: algvisual
-    ports:
-      - "5432:5432"
-
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data

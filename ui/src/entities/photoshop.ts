@@ -1,6 +1,21 @@
+import { PhotoshopListAPIResult } from "../api/photoshop";
+import { appConfig } from "../config";
+
+export type PhotoshopFileProps = {
+  id: number;
+  name: string;
+  image_url: any;
+  image_extension?: string
+  file_url: string;
+  width: any;
+  height: any;
+  created_at: string;
+  updated_at: any;
+};
+
 export class PhotoshopFile {
-  props: any;
-  constructor(props: any) {
+  props: PhotoshopFileProps;
+  constructor(props: PhotoshopFileProps) {
     this.props = props;
   }
 
@@ -9,11 +24,15 @@ export class PhotoshopFile {
   }
 
   get filename() {
-    return this.props.filename;
+    return this.props.name;
+  }
+
+  get imageUrl() {
+    return `${appConfig.api.baeURL}/dist/${this.props.image_url}.png`
   }
 
   get filepath() {
-    return this.props.filepath;
+    return this.props.file_url;
   }
 
   get width() {
@@ -25,10 +44,18 @@ export class PhotoshopFile {
     maxHeight: number,
   ): { width: number; height: number } {
     if (this.width > this.height) {
-      const scale = (100 * maxWidth) / this.width / 100;
+      const scale = maxWidth / this.width;
+      console.log(maxWidth, maxHeight, {
+        width: maxWidth,
+        height: this.height * scale,
+      });
       return { width: maxWidth, height: this.height * scale };
     } else {
-      const scale = (100 * maxHeight) / this.height;
+      const scale = maxHeight / this.height;
+      console.log(maxWidth, maxHeight, {
+        width: scale * this.width,
+        height: maxHeight,
+      });
       return { width: scale * this.width, height: maxHeight };
     }
   }
@@ -37,7 +64,7 @@ export class PhotoshopFile {
     return this.props.height;
   }
 
-  static from_api_list(res: any) {
+  static from_api_list(res: PhotoshopListAPIResult) {
     return res.data.map((data: any) => new PhotoshopFile(data));
   }
 }
@@ -69,8 +96,8 @@ export class PhotoshopElement {
     return this.props.kind === "group";
   }
 
-  get isBackground(){
-    return this.props.is_background
+  get isBackground() {
+    return this.props.is_background;
   }
 
   get layerId() {
@@ -111,8 +138,8 @@ export class ElementTree {
     return this.element?.isComponent;
   }
 
-  get isBackground(){
-    return this.element?.isBackground
+  get isBackground() {
+    return this.element?.isBackground;
   }
 
   get color() {

@@ -11,6 +11,9 @@ import (
 )
 
 func TestSavePhotoshopFileUseCase(t *testing.T) {
+	tx, _ := conn.Begin(context.Background())
+	qtx := queries.WithTx(tx)
+	defer tx.Rollback(context.Background())
 	type args struct {
 		ctx       context.Context
 		db        *database.Queries
@@ -30,7 +33,7 @@ func TestSavePhotoshopFileUseCase(t *testing.T) {
 			name: "it should return correct uploaded file",
 			args: args{
 				ctx: context.TODO(),
-				db:  queries,
+				db:  qtx,
 				log: logger,
 				storage: func(file io.Reader, name string) (string, error) {
 					return "upload_url", nil

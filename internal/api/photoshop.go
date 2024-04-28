@@ -1,15 +1,17 @@
 package api
 
 import (
+	"net/http"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/labstack/echo/v4"
+	"github.com/rfbatista/apitools"
+	"go.uber.org/zap"
+
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/internal/usecases"
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-	"github.com/rfbatista/apitools"
-	"go.uber.org/zap"
 )
 
 func NewUploadPhotoshopAPI(
@@ -54,7 +56,7 @@ func NewUploadPhotoshopAPI(
 func NewListPhotoshopElementsAPI(db *database.Queries) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath(shared.EndpointListPhotoshop.String())
+	h.SetPath(shared.EndpointListPhotoshopElements.String())
 	h.SetHandle(func(c echo.Context) error {
 		var req usecases.ListPhotoshopElementsUseCaseRequest
 		err := c.Bind(&req)
@@ -62,6 +64,109 @@ func NewListPhotoshopElementsAPI(db *database.Queries) apitools.Handler {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
 		result, err := usecases.ListPhotoshopElementsUseCase(c.Request().Context(), req, db)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewSetPhotoshopBackgroundAPI(
+	db *database.Queries,
+	conn *pgx.Conn,
+	log *zap.Logger,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.EndpointSetPhotoshopBackground.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.SetBackgroundUseCaseRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "bad request")
+		}
+		result, err := usecases.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewRemoveComponentAPI(db *database.Queries, conn *pgx.Conn, log *zap.Logger) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.EndpointRemoveComponent.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.SetBackgroundUseCaseRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "bad request")
+		}
+		result, err := usecases.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewListPhotoshopFilesAPI(db *database.Queries, log *zap.Logger) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.GET)
+	h.SetPath(shared.EndpointListPhotoshop.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.ListPhotoshopFilesRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "bad request")
+		}
+		result, err := usecases.ListPhotoshopFilesUseCase(c.Request().Context(), req, db, log)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewCreateComponentAPI(db *database.Queries, log *zap.Logger, conn *pgx.Conn) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.EndpointCreateComponent.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.CreateComponentRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "bad request")
+		}
+		result, err := usecases.CreateComponentUseCase(c.Request().Context(), req, db, conn, log)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewGetPhotoshopByIDAPI(
+	db *database.Queries,
+	log *zap.Logger,
+	conn *pgx.Conn,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.GET)
+	h.SetPath(shared.EndpointCreateComponent.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.GetPhotoshopByIdRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "bad request")
+		}
+		result, err := usecases.GetPhotoshopByIdUseCase(c.Request().Context(), req, db, log)
 		if err != nil {
 			return err
 		}

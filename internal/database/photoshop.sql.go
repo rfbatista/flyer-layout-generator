@@ -11,6 +11,45 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createComponent = `-- name: CreateComponent :one
+INSERT INTO photoshop_components (
+  photoshop_id,
+  width,
+  height,
+  type
+) VALUES (
+  $1, $2, $3, $4
+)
+RETURNING id, photoshop_id, width, height, color, type, created_at
+`
+
+type CreateComponentParams struct {
+	PhotoshopID int32             `json:"photoshop_id"`
+	Width       pgtype.Int4       `json:"width"`
+	Height      pgtype.Int4       `json:"height"`
+	Type        NullComponentType `json:"type"`
+}
+
+func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (PhotoshopComponent, error) {
+	row := q.db.QueryRow(ctx, createComponent,
+		arg.PhotoshopID,
+		arg.Width,
+		arg.Height,
+		arg.Type,
+	)
+	var i PhotoshopComponent
+	err := row.Scan(
+		&i.ID,
+		&i.PhotoshopID,
+		&i.Width,
+		&i.Height,
+		&i.Color,
+		&i.Type,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createElement = `-- name: CreateElement :one
 INSERT INTO photoshop_element (
   layer_id,
@@ -28,8 +67,8 @@ INSERT INTO photoshop_element (
   level,
   kind,
   component_id,
-  component_type,
-  image_url
+  image_url,
+  image_extension
 ) VALUES (
   $1,
   $2,
@@ -49,27 +88,27 @@ INSERT INTO photoshop_element (
   $16,
   $17
 )
-RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, component_type, image_url, created_at, updated_at
+RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type CreateElementParams struct {
-	LayerID       pgtype.Text
-	PhotoshopID   int32
-	Name          pgtype.Text
-	Text          pgtype.Text
-	Xi            pgtype.Int4
-	Xii           pgtype.Int4
-	Yi            pgtype.Int4
-	Yii           pgtype.Int4
-	Width         pgtype.Int4
-	Height        pgtype.Int4
-	IsGroup       pgtype.Bool
-	GroupID       pgtype.Int4
-	Level         pgtype.Int4
-	Kind          pgtype.Text
-	ComponentID   pgtype.Text
-	ComponentType NullComponentType
-	ImageUrl      pgtype.Text
+	LayerID        pgtype.Text `json:"layer_id"`
+	PhotoshopID    int32       `json:"photoshop_id"`
+	Name           pgtype.Text `json:"name"`
+	Text           pgtype.Text `json:"text"`
+	Xi             pgtype.Int4 `json:"xi"`
+	Xii            pgtype.Int4 `json:"xii"`
+	Yi             pgtype.Int4 `json:"yi"`
+	Yii            pgtype.Int4 `json:"yii"`
+	Width          pgtype.Int4 `json:"width"`
+	Height         pgtype.Int4 `json:"height"`
+	IsGroup        pgtype.Bool `json:"is_group"`
+	GroupID        pgtype.Int4 `json:"group_id"`
+	Level          pgtype.Int4 `json:"level"`
+	Kind           pgtype.Text `json:"kind"`
+	ComponentID    pgtype.Int4 `json:"component_id"`
+	ImageUrl       pgtype.Text `json:"image_url"`
+	ImageExtension pgtype.Text `json:"image_extension"`
 }
 
 func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (PhotoshopElement, error) {
@@ -89,8 +128,8 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (P
 		arg.Level,
 		arg.Kind,
 		arg.ComponentID,
-		arg.ComponentType,
 		arg.ImageUrl,
+		arg.ImageExtension,
 	)
 	var i PhotoshopElement
 	err := row.Scan(
@@ -110,8 +149,8 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (P
 		&i.Level,
 		&i.Kind,
 		&i.ComponentID,
-		&i.ComponentType,
 		&i.ImageUrl,
+		&i.ImageExtension,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -122,29 +161,49 @@ const createPhotoshop = `-- name: CreatePhotoshop :one
 INSERT INTO photoshop (
   name,
   image_url,
-  file_url
+  file_url,
+  width,
+  height,
+  image_extension
 ) VALUES (
   $1,
   $2,
-  $3
+  $3,
+  $4,
+  $5,
+  $6
 )
-RETURNING id, name, image_url, file_url, created_at, updated_at
+RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at
 `
 
 type CreatePhotoshopParams struct {
-	Name     string
-	ImageUrl pgtype.Text
-	FileUrl  pgtype.Text
+	Name           string      `json:"name"`
+	ImageUrl       pgtype.Text `json:"image_url"`
+	FileUrl        pgtype.Text `json:"file_url"`
+	Width          pgtype.Int4 `json:"width"`
+	Height         pgtype.Int4 `json:"height"`
+	ImageExtension pgtype.Text `json:"image_extension"`
 }
 
 func (q *Queries) CreatePhotoshop(ctx context.Context, arg CreatePhotoshopParams) (Photoshop, error) {
-	row := q.db.QueryRow(ctx, createPhotoshop, arg.Name, arg.ImageUrl, arg.FileUrl)
+	row := q.db.QueryRow(ctx, createPhotoshop,
+		arg.Name,
+		arg.ImageUrl,
+		arg.FileUrl,
+		arg.Width,
+		arg.Height,
+		arg.ImageExtension,
+	)
 	var i Photoshop
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.ImageExtension,
 		&i.FileUrl,
+		&i.FileExtension,
+		&i.Width,
+		&i.Height,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -152,7 +211,7 @@ func (q *Queries) CreatePhotoshop(ctx context.Context, arg CreatePhotoshopParams
 }
 
 const getPhotoshop = `-- name: GetPhotoshop :one
-SELECT id, name, image_url, file_url, created_at, updated_at FROM photoshop
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM photoshop
 WHERE id = $1 LIMIT 1
 `
 
@@ -163,23 +222,134 @@ func (q *Queries) GetPhotoshop(ctx context.Context, id int32) (Photoshop, error)
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.ImageExtension,
 		&i.FileUrl,
+		&i.FileExtension,
+		&i.Width,
+		&i.Height,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
+const getPhotoshopBackgroundComponent = `-- name: GetPhotoshopBackgroundComponent :one
+SELECT id, photoshop_id, width, height, color, type, created_at FROM photoshop_components
+WHERE photoshop_id = $1 AND type = 'background' LIMIT 1
+`
+
+func (q *Queries) GetPhotoshopBackgroundComponent(ctx context.Context, photoshopID int32) (PhotoshopComponent, error) {
+	row := q.db.QueryRow(ctx, getPhotoshopBackgroundComponent, photoshopID)
+	var i PhotoshopComponent
+	err := row.Scan(
+		&i.ID,
+		&i.PhotoshopID,
+		&i.Width,
+		&i.Height,
+		&i.Color,
+		&i.Type,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getPhotoshopElements = `-- name: GetPhotoshopElements :many
+SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
+WHERE photoshop_id = $1
+`
+
+func (q *Queries) GetPhotoshopElements(ctx context.Context, photoshopID int32) ([]PhotoshopElement, error) {
+	rows, err := q.db.Query(ctx, getPhotoshopElements, photoshopID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PhotoshopElement
+	for rows.Next() {
+		var i PhotoshopElement
+		if err := rows.Scan(
+			&i.ID,
+			&i.PhotoshopID,
+			&i.Name,
+			&i.LayerID,
+			&i.Text,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.Width,
+			&i.Height,
+			&i.IsGroup,
+			&i.GroupID,
+			&i.Level,
+			&i.Kind,
+			&i.ComponentID,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPhotoshop = `-- name: ListPhotoshop :many
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM photoshop
+OFFSET $1 LIMIT $2
+`
+
+type ListPhotoshopParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) ListPhotoshop(ctx context.Context, arg ListPhotoshopParams) ([]Photoshop, error) {
+	rows, err := q.db.Query(ctx, listPhotoshop, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Photoshop
+	for rows.Next() {
+		var i Photoshop
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.FileUrl,
+			&i.FileExtension,
+			&i.Width,
+			&i.Height,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPhotoshopElements = `-- name: ListPhotoshopElements :many
-SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, component_type, image_url, created_at, updated_at FROM photoshop_element 
+SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
 WHERE photoshop_id = $1
 LIMIT $2 OFFSET $3
 `
 
 type ListPhotoshopElementsParams struct {
-	PhotoshopID int32
-	Limit       int32
-	Offset      int32
+	PhotoshopID int32 `json:"photoshop_id"`
+	Limit       int32 `json:"limit"`
+	Offset      int32 `json:"offset"`
 }
 
 func (q *Queries) ListPhotoshopElements(ctx context.Context, arg ListPhotoshopElementsParams) ([]PhotoshopElement, error) {
@@ -208,8 +378,8 @@ func (q *Queries) ListPhotoshopElements(ctx context.Context, arg ListPhotoshopEl
 			&i.Level,
 			&i.Kind,
 			&i.ComponentID,
-			&i.ComponentType,
 			&i.ImageUrl,
+			&i.ImageExtension,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -223,19 +393,73 @@ func (q *Queries) ListPhotoshopElements(ctx context.Context, arg ListPhotoshopEl
 	return items, nil
 }
 
-const setComponent = `-- name: SetComponent :exec
-UPDATE photoshop_element 
-SET component_id = $2, component_type = $3
-WHERE id = $1
+const updateManyPhotoshopElement = `-- name: UpdateManyPhotoshopElement :many
+UPDATE photoshop_element
+SET 
+    component_id = CASE WHEN $1::boolean
+        THEN $2::int ELSE component_id END,
+
+    name = CASE WHEN $3::boolean
+        THEN $4::text ELSE name END
+WHERE
+    id IN ($5) and photoshop_id = $6
+RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
-type SetComponentParams struct {
-	ID            int32
-	ComponentID   pgtype.Text
-	ComponentType NullComponentType
+type UpdateManyPhotoshopElementParams struct {
+	ComponentIDDoUpdate bool    `json:"component_id_do_update"`
+	ComponentID         int32   `json:"component_id"`
+	NameDoUpdate        bool    `json:"name_do_update"`
+	Name                string  `json:"name"`
+	Ids                 []int32 `json:"ids"`
+	PhotoshopID         int32   `json:"photoshop_id"`
 }
 
-func (q *Queries) SetComponent(ctx context.Context, arg SetComponentParams) error {
-	_, err := q.db.Exec(ctx, setComponent, arg.ID, arg.ComponentID, arg.ComponentType)
-	return err
+// You can use sqlc.arg() and @ to identify named parameters
+func (q *Queries) UpdateManyPhotoshopElement(ctx context.Context, arg UpdateManyPhotoshopElementParams) ([]PhotoshopElement, error) {
+	rows, err := q.db.Query(ctx, updateManyPhotoshopElement,
+		arg.ComponentIDDoUpdate,
+		arg.ComponentID,
+		arg.NameDoUpdate,
+		arg.Name,
+		arg.Ids,
+		arg.PhotoshopID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PhotoshopElement
+	for rows.Next() {
+		var i PhotoshopElement
+		if err := rows.Scan(
+			&i.ID,
+			&i.PhotoshopID,
+			&i.Name,
+			&i.LayerID,
+			&i.Text,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.Width,
+			&i.Height,
+			&i.IsGroup,
+			&i.GroupID,
+			&i.Level,
+			&i.Kind,
+			&i.ComponentID,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -39,7 +39,7 @@ export function DocUpload() {
       .post("/api/v1/photoshop", formData, config)
       .then(() => {
         toast.success("Arquivo carregado");
-        data.execute();
+        data.init();
       })
       .catch(() => toast.error("Falha ao carregar arquivo"));
     setLoading(false);

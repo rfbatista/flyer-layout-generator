@@ -18,6 +18,7 @@ type AppConfig struct {
 	PhotoshopFilesPath string
 	DistFolderPath     string
 	AiServiceBaseURL   string
+	GeneratorClientURL string
 }
 
 type HTTPServerConfig struct {

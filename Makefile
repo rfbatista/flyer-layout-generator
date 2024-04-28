@@ -17,10 +17,15 @@ migrate:
 		--to "file://internal/database/schema"
 server:
 	go run ./cmd/server/main.go
-
 dev-build:
 	docker compose -f ./scripts/docker-compose.dev.yaml up --build
 dev:
 	docker compose -f ./scripts/docker-compose.dev.yaml up 
+devlog:
+	docker compose -f ./scripts/docker-compose.logs.yaml up 
 test:
 	go test ./internal/...
+usecase:
+	hygen usecase new 
+down:
+	docker compose -f ./scripts/docker-compose.dev.yaml down

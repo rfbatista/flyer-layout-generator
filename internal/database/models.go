@@ -33,8 +33,8 @@ func (e *ComponentType) Scan(src interface{}) error {
 }
 
 type NullComponentType struct {
-	ComponentType ComponentType
-	Valid         bool // Valid is true if ComponentType is not NULL
+	ComponentType ComponentType `json:"component_type"`
+	Valid         bool          `json:"valid"` // Valid is true if ComponentType is not NULL
 }
 
 // Scan implements the Scanner interface.
@@ -55,54 +55,133 @@ func (ns NullComponentType) Value() (driver.Value, error) {
 	return string(ns.ComponentType), nil
 }
 
+type TemplateType string
+
+const (
+	TemplateTypeSlots      TemplateType = "slots"
+	TemplateTypeDistortion TemplateType = "distortion"
+)
+
+func (e *TemplateType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TemplateType(s)
+	case string:
+		*e = TemplateType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TemplateType: %T", src)
+	}
+	return nil
+}
+
+type NullTemplateType struct {
+	TemplateType TemplateType `json:"template_type"`
+	Valid        bool         `json:"valid"` // Valid is true if TemplateType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTemplateType) Scan(value interface{}) error {
+	if value == nil {
+		ns.TemplateType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TemplateType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTemplateType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TemplateType), nil
+}
+
 type Image struct {
-	ID          int64
-	Url         string
-	PhotoshopID pgtype.Int4
-	TemplateID  pgtype.Int4
-	CreatedAt   pgtype.Timestamp
+	ID          int64            `json:"id"`
+	Url         string           `json:"url"`
+	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
+	TemplateID  pgtype.Int4      `json:"template_id"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
 type Photoshop struct {
-	ID        int32
-	Name      string
-	ImageUrl  pgtype.Text
-	FileUrl   pgtype.Text
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+	ID             int32            `json:"id"`
+	Name           string           `json:"name"`
+	ImageUrl       pgtype.Text      `json:"image_url"`
+	ImageExtension pgtype.Text      `json:"image_extension"`
+	FileUrl        pgtype.Text      `json:"file_url"`
+	FileExtension  pgtype.Text      `json:"file_extension"`
+	Width          pgtype.Int4      `json:"width"`
+	Height         pgtype.Int4      `json:"height"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+}
+
+type PhotoshopComponent struct {
+	ID          int32             `json:"id"`
+	PhotoshopID int32             `json:"photoshop_id"`
+	Width       pgtype.Int4       `json:"width"`
+	Height      pgtype.Int4       `json:"height"`
+	Color       pgtype.Text       `json:"color"`
+	Type        NullComponentType `json:"type"`
+	CreatedAt   pgtype.Timestamp  `json:"created_at"`
 }
 
 type PhotoshopElement struct {
-	ID            int32
-	PhotoshopID   int32
-	Name          pgtype.Text
-	LayerID       pgtype.Text
-	Text          pgtype.Text
-	Xi            pgtype.Int4
-	Xii           pgtype.Int4
-	Yi            pgtype.Int4
-	Yii           pgtype.Int4
-	Width         pgtype.Int4
-	Height        pgtype.Int4
-	IsGroup       pgtype.Bool
-	GroupID       pgtype.Int4
-	Level         pgtype.Int4
-	Kind          pgtype.Text
-	ComponentID   pgtype.Text
-	ComponentType NullComponentType
-	ImageUrl      pgtype.Text
-	CreatedAt     pgtype.Timestamp
-	UpdatedAt     pgtype.Timestamp
+	ID             int32            `json:"id"`
+	PhotoshopID    int32            `json:"photoshop_id"`
+	Name           pgtype.Text      `json:"name"`
+	LayerID        pgtype.Text      `json:"layer_id"`
+	Text           pgtype.Text      `json:"text"`
+	Xi             pgtype.Int4      `json:"xi"`
+	Xii            pgtype.Int4      `json:"xii"`
+	Yi             pgtype.Int4      `json:"yi"`
+	Yii            pgtype.Int4      `json:"yii"`
+	Width          pgtype.Int4      `json:"width"`
+	Height         pgtype.Int4      `json:"height"`
+	IsGroup        pgtype.Bool      `json:"is_group"`
+	GroupID        pgtype.Int4      `json:"group_id"`
+	Level          pgtype.Int4      `json:"level"`
+	Kind           pgtype.Text      `json:"kind"`
+	ComponentID    pgtype.Int4      `json:"component_id"`
+	ImageUrl       pgtype.Text      `json:"image_url"`
+	ImageExtension pgtype.Text      `json:"image_extension"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
 type Template struct {
-	ID        int32
-	Name      string
-	Width     pgtype.Int4
-	Height    pgtype.Int4
-	SlotsX    pgtype.Int4
-	SlotsY    pgtype.Int4
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-	DeletedAt pgtype.Timestamp
+	ID        int32            `json:"id"`
+	Name      string           `json:"name"`
+	Type      NullTemplateType `json:"type"`
+	Width     pgtype.Int4      `json:"width"`
+	Height    pgtype.Int4      `json:"height"`
+	SlotsX    pgtype.Int4      `json:"slots_x"`
+	SlotsY    pgtype.Int4      `json:"slots_y"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
+type TemplatesDistortion struct {
+	ID         int32            `json:"id"`
+	X          pgtype.Int4      `json:"x"`
+	Y          pgtype.Int4      `json:"y"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+	TemplateID int32            `json:"template_id"`
+}
+
+type TemplatesSlot struct {
+	ID         int32            `json:"id"`
+	Xi         pgtype.Int4      `json:"xi"`
+	Yi         pgtype.Int4      `json:"yi"`
+	Width      pgtype.Int4      `json:"width"`
+	Height     pgtype.Int4      `json:"height"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+	TemplateID int32            `json:"template_id"`
 }

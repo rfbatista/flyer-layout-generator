@@ -19,6 +19,7 @@ var Module = fx.Options(
 		NewDatabaseQueries,
 		NewFileStorage,
 		NewPhotoshpProcessor,
+		NewImageGenerator,
 	),
 	fx.Invoke(RegisterHooks),
 )
@@ -33,11 +34,15 @@ type RegisterHooksParams struct {
 
 func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 	lc.Append(fx.Hook{
-		OnStart: func(_ context.Context) error {
+		OnStart: func(ctx context.Context) error {
 			params.Logger.Info(
 				"starting http server",
 				zap.String("port", params.Config.HTTPServer.Port),
 			)
+			err := params.Conn.Ping(ctx)
+			if err != nil {
+				return err
+			}
 			go func() {
 				err := params.Server.Start(fmt.Sprintf(":%s", params.Config.HTTPServer.Port))
 				if err != nil {

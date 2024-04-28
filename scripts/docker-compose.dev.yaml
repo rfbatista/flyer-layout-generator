@@ -7,7 +7,7 @@ services:
     volumes:
       - ..:/app
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       PG_DATABASE_USER: "admin"
       PG_DATABASE_NAME: "algvisual"
@@ -18,9 +18,6 @@ services:
       PORT: 8000
       DIST_FOLDER_PATH: "/app/dist"
       AI_SERVICE_BASE_URL: "http://ai-dev:8080"
-    links:
-      - postgres-dev
-      - ai-dev
 
   ai-dev:
     build:
@@ -28,12 +25,10 @@ services:
       context: ..
     volumes:
       - ..:/app
+    ports:
+      - "8080:8080"
     environment:
       DIST_PATH: "/app/dist"
-    ports:
-      - 8080:8080
-    links:
-      - postgres-dev
 
 
   postgres-dev:
@@ -45,4 +40,4 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ../../data/postgres:/var/lib/postgresql/data

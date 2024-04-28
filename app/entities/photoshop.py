@@ -1,13 +1,7 @@
-import datetime
-from typing import Iterable, Optional
+from typing import Optional
 
 from pydantic import BaseModel
 from PIL.Image import Image
-from psd_tools import PSDImage
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Boolean, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.db import Base
 
 
 class Elemento:
@@ -27,32 +21,37 @@ class Elemento:
 
 
 class PhotoshopElement(BaseModel):
+    id: Optional[str] = None
     xi: int
-    kind: str
-    text: str
-    name: str
-    yi: int
     xii: int
+    yi: int
     yii: int
+    layer_id: str
     width: int
     height: int
-    level: int
-    group_id: int
-    layer_id: str
-    component_color: str | None = None
+    kind: str
+    name: str
     is_group: bool
-    is_background: bool = False
-    image: str
+    group_id: int
+    level: int
+    photoshop_id: Optional[int] = None
+    text: str
+    component_id: Optional[int] = None
+    image: Optional[str] = None
+    image_extension: Optional[str] = None
 
     def __repr__(self):
-        return "PhotoshopElement(" + self.image + ")"
+        return 'PhotoshopElement("%s")' % (self.image)
 
     def is_component(self) -> bool:
         return False
 
 
 class PhotoshopFile(BaseModel):
-    filename: str
-    filepath: str
+    filename: str = ''
+    filepath: str = ''
+    file_extension: Optional[str] = None
+    image_path: str = ''
+    image_extension: Optional[str] = None
     width: int
     height: int

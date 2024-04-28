@@ -1,14 +1,17 @@
 package infra
 
 import (
-	"algvisual/internal/ports"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
+
+	"algvisual/internal/ports"
+	"algvisual/internal/shared"
 )
 
 type HTTPServerParams struct {
@@ -18,23 +21,47 @@ type HTTPServerParams struct {
 	Controllers []ports.Controller `group:"controller"`
 }
 
+type HTTPError struct {
+	Code       string    `json:"code,omitempty"`
+	Message    string    `json:"message,omitempty"`
+	Details    string    `json:"details,omitempty"`
+	Timestamp  time.Time `json:"timestamp,omitempty"`
+	Path       string    `json:"path,omitempty"`
+	Suggestion string    `json:"suggestion,omitempty"`
+}
+
+type HTTPErrorResult struct {
+	Status      string    `json:"status,omitempty"`
+	StatusCode  int       `json:"status_code,omitempty"`
+	RequestID   string    `json:"request_id,omitempty"`
+	DocumentURL string    `json:"document_url,omitempty"`
+	Error       HTTPError `json:"error,omitempty"`
+}
+
 func customHTTPErrorHandler(err error, c echo.Context) {
 	c.Logger().Error(err)
-	he, _ := err.(*echo.HTTPError)
-	he = &echo.HTTPError{
-		Code:    http.StatusBadRequest,
-		Message: err.Error(),
+	var result HTTPErrorResult
+	var errorDetails HTTPError
+	he, ok := err.(*shared.AppError)
+	result.Status = "error"
+	if ok {
+		result.StatusCode = he.StatusCode
+		errorDetails.Message = he.Message
+		errorDetails.Timestamp = he.Timestamp
+		errorDetails.Details = he.Detail
+		result.Error = errorDetails
+	} else {
+		result.StatusCode = 500
+		errorDetails.Message = err.Error()
+		errorDetails.Timestamp = time.Now()
 	}
-	code := he.Code
-	message := he.Message
-	if _, ok := he.Message.(string); ok {
-		message = map[string]interface{}{"message": err.Error()}
-	}
+	result.Error = errorDetails
+
 	if !c.Response().Committed {
 		if c.Request().Method == http.MethodHead {
-			err = c.NoContent(he.Code)
+			err = c.NoContent(result.StatusCode)
 		} else {
-			err = c.JSON(code, message)
+			err = c.JSON(result.StatusCode, result)
 		}
 		if err != nil {
 			c.Echo().Logger.Error(err)
@@ -45,6 +72,8 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e := echo.New()
 	e.HTTPErrorHandler = customHTTPErrorHandler
+	// e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+	e.Use(middleware.RequestID())
 	e.Use(
 		middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 			LogURI:      true,
