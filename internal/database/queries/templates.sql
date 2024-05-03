@@ -1,10 +1,7 @@
 -- name: ListTemplates :many
-SELECT sqlc.embed(templates), sqlc.embed(templates_slots), sqlc.embed(templates_distortions)
+SELECT *
 FROM templates
-JOIN templates_slots ON templates_slots.template_id = templates.id
-JOIN templates_distortions ON templates_distortions.template_id = templates.id
 LIMIT $1 OFFSET $2;
-
 
 -- name: GetTemplate :one
 SELECT sqlc.embed(templates)

@@ -125,6 +125,10 @@ type PhotoshopComponent struct {
 	Height      pgtype.Int4       `json:"height"`
 	Color       pgtype.Text       `json:"color"`
 	Type        NullComponentType `json:"type"`
+	Xi          pgtype.Int4       `json:"xi"`
+	Xii         pgtype.Int4       `json:"xii"`
+	Yi          pgtype.Int4       `json:"yi"`
+	Yii         pgtype.Int4       `json:"yii"`
 	CreatedAt   pgtype.Timestamp  `json:"created_at"`
 }
 

@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.generate_designs import GenerateDesignRequest, generate_design
 from app.process_photoshop_file import process_photoshop_file
 from .logger import logger
 
@@ -40,4 +41,13 @@ def save_file(req: ProcessFileRequest):
         return process_photoshop_file(req.filepath)
     except Exception as e:
         logger.exception("failed to set background")
+        raise HTTPException(status_code=500, detail="internal server error \n %s" % (e))
+
+
+@app.post("/api/v1/generate/distortion")
+def generate_design_api(req: GenerateDesignRequest):
+    try:
+        return generate_design(req)
+    except Exception as e:
+        logger.exception("failed to generate design")
         raise HTTPException(status_code=500, detail="internal server error \n %s" % (e))

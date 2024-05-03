@@ -1,27 +1,28 @@
 package infra
 
 import (
-	"algvisual/internal/database"
 	"context"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"algvisual/internal/database"
 )
 
-func NewDatabaseQueries(conn *pgx.Conn) (*database.Queries, error) {
+func NewDatabaseQueries(conn *pgxpool.Pool) (*database.Queries, error) {
 	queries := database.New(conn)
 	return queries, nil
 }
 
-func NewDatabaseConnection(c *AppConfig) (*pgx.Conn, error) {
+func NewDatabaseConnection(c *AppConfig) (*pgxpool.Pool, error) {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, c.Database.URI())
+	conn, err := pgxpool.New(ctx, c.Database.URI())
 	if err != nil {
 		return nil, err
 	}
 	return conn, nil
 }
 
-func NewTestDatabase() (*pgx.Conn, *database.Queries) {
+func NewTestDatabase() (*pgxpool.Pool, *database.Queries) {
 	c, err := NewTestConfig()
 	if err != nil {
 		panic(err)

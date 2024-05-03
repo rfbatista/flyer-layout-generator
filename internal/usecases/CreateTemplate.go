@@ -3,8 +3,8 @@ package usecases
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
@@ -19,6 +19,8 @@ type CreateTemplateUseCaseRequest struct {
 	Type           entities.TemplateType             `form:"type"            json:"type,omitempty"`
 	SlotsPositions []entities.TemplateSlotsPositions `form:"slots_positions" json:"slots_positions,omitempty"`
 	Distortion     entities.TemplateDistortion       `form:"distortion"      json:"distortion,omitempty"`
+	X              int                               `                       json:"x,omitempty"`
+	Y              int                               `                       json:"y,omitempty"`
 }
 
 type CreateTemplateUseCaseResult struct {
@@ -29,7 +31,7 @@ type CreateTemplateUseCaseResult struct {
 
 func CreateTemplateUseCase(
 	ctx context.Context,
-	db *pgx.Conn,
+	db *pgxpool.Pool,
 	queries *database.Queries,
 	req CreateTemplateUseCaseRequest,
 	log *zap.Logger,
@@ -61,8 +63,8 @@ func CreateTemplateUseCase(
 		return nil, err
 	}
 	dist, err := qtx.CreateTemplateDistortions(ctx, database.CreateTemplateDistortionsParams{
-		X:          pgtype.Int4{Int32: int32(req.Distortion.X), Valid: true},
-		Y:          pgtype.Int4{Int32: int32(req.Distortion.Y), Valid: true},
+		X:          pgtype.Int4{Int32: int32(req.X), Valid: true},
+		Y:          pgtype.Int4{Int32: int32(req.Y), Valid: true},
 		TemplateID: temp.ID,
 	})
 	if err != nil {
@@ -70,26 +72,14 @@ func CreateTemplateUseCase(
 		log.Error(err.Error())
 		return nil, err
 	}
-	var slots []database.TemplatesSlot
-	for _, p := range req.SlotsPositions {
-		slot, err := qtx.CreateTemplateSlot(ctx, database.CreateTemplateSlotParams{
-			Xi:         pgtype.Int4{Int32: int32(p.Xi), Valid: true},
-			Yi:         pgtype.Int4{Int32: int32(p.Yi), Valid: true},
-			Width:      pgtype.Int4{Int32: int32(p.Width), Valid: true},
-			Height:     pgtype.Int4{Int32: int32(p.Height), Valid: true},
-			TemplateID: temp.ID,
-		})
-		if err != nil {
-			err = shared.WrapWithAppError(err, "failed to create template slot position", "")
-			log.Error(err.Error())
-			return nil, err
-		}
-		slots = append(slots, slot)
+	err = tx.Commit(ctx)
+	if err != nil {
+		err = shared.WrapWithAppError(err, "failed to create template distortion", "")
+		log.Error(err.Error())
+		return nil, err
 	}
-	tx.Commit(ctx)
 	return &CreateTemplateUseCaseResult{
-		Template:       temp,
-		Distortion:     dist,
-		SlotsPositions: slots,
+		Template:   temp,
+		Distortion: dist,
 	}, nil
 }

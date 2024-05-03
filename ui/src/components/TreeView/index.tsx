@@ -1,6 +1,4 @@
 import { ElementTree } from "../../entities/photoshop";
-import { usePhotoshopFiles } from "../../store/files";
-import { FileIcon } from "../Icons/File";
 import { Directory } from "./Directory";
 import { Item } from "./Item";
 
@@ -16,7 +14,7 @@ export const TreeView: React.FC<Props> = ({ tree }) => {
       >
         {tree &&
           tree.children &&
-          tree.children.map((item, index) => {
+          tree.children.map((item) => {
             if (item.isDir)
               return <Directory key={item.element?.id} item={item} />;
             return <Item key={item.element?.id} item={item} />;

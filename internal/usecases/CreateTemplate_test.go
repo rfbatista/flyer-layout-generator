@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
@@ -15,7 +15,7 @@ import (
 func TestCreateTemplateUseCase(t *testing.T) {
 	type args struct {
 		ctx     context.Context
-		db      *pgx.Conn
+		db      *pgxpool.Pool
 		queries *database.Queries
 		req     CreateTemplateUseCaseRequest
 		log     *zap.Logger

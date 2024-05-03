@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from app.config import app_config
 from app.entities.photoshop import PhotoshopElement, PhotoshopFile
 from app.logger import logger
+from app.upload_image import upload_image
 
 
 class ProcessPhotoshopFileRequest(BaseModel):
@@ -46,11 +47,12 @@ def process_photoshop_file(filepath: str):
             if not isinstance(element, Iterable):
                 return
             for layer in element:
-                filename = "%s.png" % (uuid.uuid4())
-                filepath = "%s/%s" % (app_config.dist_path, filename)
+                # filename = "%s.png" % (uuid.uuid4())
+                # filepath = "%s/%s" % (app_config.dist_path, filename)
                 img = layer.composite()
-                if img:
-                    img.save(filepath)
+                image_url = upload_image(img, layer.name)
+                # if img:
+                #     img.save(filepath)
                 text = ""
                 if layer.kind == "type":
                     text = layer.text
@@ -73,16 +75,15 @@ def process_photoshop_file(filepath: str):
                         group_id=group_id,
                         layer_id=str(layer.layer_id),
                         level=level,
-                        image=filepath,
+                        image=image_url,
                     )
                 )
                 index_elements(layer, level=level + 1, group_id=layer.layer_id)
 
         index_elements(psd)
-        return {
-            "photoshop": photoshopfile,
-            "elements": items,
-        }
+        return ProcessPhotoshopFileResult(
+            elements=items, photoshop=photoshopfile, imagepath="", filepath=""
+        )
     except Exception as e:
         logger.exception("failed to save photoshop file")
         return {"error": "internal server error \n %s" % (e)}

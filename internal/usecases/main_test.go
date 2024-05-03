@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	conn    *pgx.Conn
+	conn    *pgxpool.Pool
 	queries *database.Queries
 	logger  *zap.Logger
 )
@@ -28,5 +29,5 @@ func TestMain(m *testing.M) {
 	logger = infra.NewTestLogger()
 	m.Run()
 
-	defer conn.Close(context.TODO())
+	defer conn.Close()
 }

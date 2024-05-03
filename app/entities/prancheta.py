@@ -2,10 +2,16 @@ import random
 from typing import List
 
 from PIL import ImageDraw, Image
+from pydantic import BaseModel
 from app.entities.componente import Componente
 from app.entities.guia import Guia
-from app.entities.template import Template
+from app.entities.template import DesignTemplate, Template
 
+class DesignPrancheta(BaseModel):
+    template: DesignTemplate
+    components: List[Componente]
+    width: int
+    height: int
 
 class Prancheta:
     def __init__(self, width, height) -> None:

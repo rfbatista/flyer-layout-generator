@@ -5,6 +5,7 @@ import { Canvas } from "../components/Canvas";
 import { FileBar } from "../components/FileBar";
 import { TreeView } from "../components/TreeView";
 import { usePhotoshopFiles } from "../store/files";
+import { usePhotoshopStore } from "../store/photoshop";
 
 export function UploadFilePage() {
   const mainRef = React.useRef();
@@ -16,6 +17,8 @@ export function UploadFilePage() {
     setMainBoardSize: d.setMainBoardSize,
     setBackground: d.setBackground,
   }));
+  const { tree, onCreateComponent, onSetBackground, onRemoveComponent } =
+    usePhotoshopStore();
 
   useEffect(() => {
     data.init();
@@ -28,10 +31,6 @@ export function UploadFilePage() {
         height: mainRef.current.clientHeight,
       });
     const observer = new ResizeObserver((entries) => {
-      console.log({
-        width: entries[0].contentRect.width,
-        height: entries[0].contentRect.height,
-      });
       data.setMainBoardSize({
         width: entries[0].contentRect.width,
         height: entries[0].contentRect.height,
@@ -40,42 +39,6 @@ export function UploadFilePage() {
     observer.observe(mainRef.current);
     return () => mainRef.current && observer.unobserve(mainRef.current);
   }, [mainRef.current, mainRef.current?.offsetWidth]);
-
-  const onCreateComponent = () => {
-    if (data.elementsSelected.length === 0) return;
-    data
-      .createComponent()
-      .then(() => {
-        toast.success("Componente criado");
-      })
-      .catch(() => {
-        toast.error("Falha ao criar componente");
-      });
-  };
-
-  const onRemoveComponent = () => {
-    if (data.elementsSelected.length === 0) return;
-    data
-      .removeComponent()
-      .then(() => {
-        toast.success("Componente atualizado");
-      })
-      .catch(() => {
-        toast.error("Falha ao atualizar componente");
-      });
-  };
-
-  const onSetBackground = () => {
-    if (data.elementsSelected.length === 0) return;
-    data
-      .setBackground()
-      .then(() => {
-        toast.success("Componente atualizado");
-      })
-      .catch(() => {
-        toast.error("Falha ao atualizar componente");
-      });
-  };
 
   return (
     <>
@@ -112,7 +75,7 @@ export function UploadFilePage() {
               </button>
             </div>
           </div>
-          <TreeView tree={data.activeTree} />
+          <TreeView tree={tree} />
         </div>
       </div>
     </>

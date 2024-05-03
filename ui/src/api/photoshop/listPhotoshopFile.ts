@@ -15,7 +15,7 @@ export type PhotoshopListAPIResult = {
   }[];
 };
 
-export function getPhotoshopList(): Promise<PhotoshopFile[]> {
+export function getPhotoshopListAPI(): Promise<PhotoshopFile[]> {
   return api.get<PhotoshopListAPIResult>("/api/v1/photoshop").then((res) => {
     const data = PhotoshopFile.from_api_list(res.data);
     return data;

@@ -11,6 +11,9 @@ class Elemento:
     def box(self):
         return self.layer.bbox
 
+    def layer_id(self):
+        return self.layer.layer_id
+
     def image(self) -> Image:
         im = self.layer.composite()
         return im
@@ -21,7 +24,7 @@ class Elemento:
 
 
 class PhotoshopElement(BaseModel):
-    id: Optional[str] = None
+    id: Optional[int] = None
     xi: int
     xii: int
     yi: int
@@ -30,12 +33,12 @@ class PhotoshopElement(BaseModel):
     width: int
     height: int
     kind: str
-    name: str
+    name: Optional[str] = None
     is_group: bool
     group_id: int
     level: int
     photoshop_id: Optional[int] = None
-    text: str
+    text: Optional[str] = None
     component_id: Optional[int] = None
     image: Optional[str] = None
     image_extension: Optional[str] = None
@@ -46,12 +49,16 @@ class PhotoshopElement(BaseModel):
     def is_component(self) -> bool:
         return False
 
+    def size(self):
+        return (self.width, self.height)
+
 
 class PhotoshopFile(BaseModel):
-    filename: str = ''
-    filepath: str = ''
+    filename: str = ""
+    filepath: str = ""
     file_extension: Optional[str] = None
-    image_path: str = ''
+    image_path: str = ""
     image_extension: Optional[str] = None
     width: int
     height: int
+    id: Optional[int] = None

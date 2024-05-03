@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -29,7 +29,7 @@ type RegisterHooksParams struct {
 	Server *echo.Echo
 	Logger *zap.Logger
 	Config *AppConfig
-	Conn   *pgx.Conn
+	Conn   *pgxpool.Pool
 }
 
 func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
@@ -55,10 +55,7 @@ func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			err := params.Conn.Close(ctx)
-			if err != nil {
-				params.Logger.Error("failed to close database connection", zap.Error(err))
-			}
+			params.Conn.Close()
 			return params.Server.Shutdown(ctx)
 		},
 	})

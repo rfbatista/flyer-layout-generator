@@ -14,14 +14,11 @@ export const TemplateLayout: React.FC<Props> = (props) => {
     if (!ctx) return;
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(props.template.widthRatio(250));
     for (const pos of props.template.positions) {
-      console.log(pos);
       pos.resize(
         props.template.widthRatio(250),
         props.template.heightRatio(250),
       );
-      console.log(pos);
       ctx.strokeRect(pos.xi, pos.yi, pos.width, pos.height);
     }
   }, []);

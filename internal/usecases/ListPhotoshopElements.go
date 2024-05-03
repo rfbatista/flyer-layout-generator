@@ -1,19 +1,21 @@
 package usecases
 
 import (
-	"algvisual/internal/database"
 	"context"
 	"errors"
+
+	"algvisual/internal/database"
 )
 
 type ListPhotoshopElementsUseCaseRequest struct {
-	Limit       int
-	Skip        int
-	PhotoshopID int
+	Limit       int `query:"limit" json:"limit,omitempty"`
+	Skip        int `query:"skip"  json:"skip,omitempty"`
+	PhotoshopID int `              json:"photoshop_id,omitempty" param:"photoshop_id"`
 }
 
 type ListPhotoshopElementsUseCaseResult struct {
-	Data []database.PhotoshopElement
+	Status string                      `json:"status,omitempty"`
+	Data   []database.PhotoshopElement `json:"data,omitempty"`
 }
 
 func ListPhotoshopElementsUseCase(
@@ -30,6 +32,7 @@ func ListPhotoshopElementsUseCase(
 		return nil, errors.Join(err, errors.New("falha ai listar elementos do photoshop"))
 	}
 	return &ListPhotoshopElementsUseCaseResult{
-		Data: res,
+		Status: "success",
+		Data:   res,
 	}, nil
 }

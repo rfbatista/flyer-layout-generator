@@ -4,15 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
+
+	"go.uber.org/zap"
 
 	"algvisual/internal/entities"
 )
 
-func NewImageGenerator(c *AppConfig) (*ImageGeneratorClient, error) {
-	return &ImageGeneratorClient{c: c}, nil
+func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, error) {
+	return &ImageGeneratorClient{c: c, log: log}, nil
 }
 
 type GeneratorRequest struct {
@@ -23,15 +27,16 @@ type GeneratorRequest struct {
 }
 
 type GeneratorResult struct {
-	PhotoshopID int
-	ImageURL    string
-	StartedAt   time.Time
-	FinishedAt  time.Time
-	Logs        string
+	PhotoshopID int       `json:"photoshop_id,omitempty"`
+	ImageURL    string    `json:"image_url,omitempty"`
+	StartedAt   time.Time `json:"started_at,omitempty"`
+	FinishedAt  time.Time `json:"finished_at,omitempty"`
+	Logs        string    `json:"logs,omitempty"`
 }
 
 type ImageGeneratorClient struct {
-	c *AppConfig
+	c   *AppConfig
+	log *zap.Logger
 }
 
 func (c ImageGeneratorClient) GenerateImageWithSlotStrategy(
@@ -71,7 +76,7 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 	bodyReader := bytes.NewReader(jsonBody)
 	req, err := http.NewRequest(
 		http.MethodPost,
-		c.c.GeneratorClientURL+"/api/v1/generate/distortion",
+		c.c.AiServiceBaseURL+"/api/v1/generate/distortion",
 		bodyReader,
 	)
 	if err != nil {
@@ -87,6 +92,18 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 		os.Exit(1)
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		buf := new(strings.Builder)
+		io.Copy(buf, res.Body)
+		c.log.Error(
+			"error processing photoshop file",
+			zap.Int("StatusCode", res.StatusCode),
+			zap.Error(err),
+		)
+		err = fmt.Errorf("falha ao requisitar processamento do arquivo photoshop %s", buf.String())
+		c.log.Error(err.Error())
+		return nil, err
+	}
 	var result GeneratorResult
 	json.NewDecoder(res.Body).Decode(&result)
 	return &result, nil

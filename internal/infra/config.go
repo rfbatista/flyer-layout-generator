@@ -12,13 +12,15 @@ import (
 )
 
 type AppConfig struct {
-	HTTPServer         HTTPServerConfig
-	Database           DatabaseConfig
-	CoreDatabasePath   string
-	PhotoshopFilesPath string
-	DistFolderPath     string
-	AiServiceBaseURL   string
-	GeneratorClientURL string
+	HTTPServer            HTTPServerConfig
+	Database              DatabaseConfig
+	CoreDatabasePath      string
+	PhotoshopFilesPath    string
+	DistFolderPath        string
+	ImagesFolderPath      string
+	DesignFilesFolderPath string
+	AiServiceBaseURL      string
+	GeneratorClientURL    string
 }
 
 type HTTPServerConfig struct {
@@ -52,10 +54,12 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
 		},
-		DistFolderPath:     os.Getenv("DIST_FOLDER_PATH"),
-		PhotoshopFilesPath: os.Getenv("PHOTOSHOP_FILES_PATH"),
-		CoreDatabasePath:   os.Getenv("CORE_DATABASE_PATH"),
-		AiServiceBaseURL:   os.Getenv("AI_SERVICE_BASE_URL"),
+		DistFolderPath:        os.Getenv("DIST_FOLDER_PATH"),
+		PhotoshopFilesPath:    os.Getenv("PHOTOSHOP_FILES_PATH"),
+		CoreDatabasePath:      os.Getenv("CORE_DATABASE_PATH"),
+		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
+		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
+		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),
 			DBName:   os.Getenv("PG_DATABASE_NAME"),
@@ -85,10 +89,13 @@ func NewTestConfig() (*AppConfig, error) {
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
 		},
-		DistFolderPath:     os.Getenv("DIST_FOLDER_PATH"),
-		PhotoshopFilesPath: os.Getenv("PHOTOSHOP_FILES_PATH"),
-		CoreDatabasePath:   os.Getenv("CORE_DATABASE_PATH"),
-		AiServiceBaseURL:   os.Getenv("AI_SERVICE_BASE_URL"),
+		DistFolderPath:        os.Getenv("DIST_FOLDER_PATH"),
+		PhotoshopFilesPath:    os.Getenv("PHOTOSHOP_FILES_PATH"),
+		CoreDatabasePath:      os.Getenv("CORE_DATABASE_PATH"),
+		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
+		GeneratorClientURL:    os.Getenv("AI_SERVICE_BASE_URL"),
+		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
+		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),
 			DBName:   os.Getenv("PG_DATABASE_NAME"),

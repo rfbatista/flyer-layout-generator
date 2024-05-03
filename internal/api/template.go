@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/rfbatista/apitools"
 	"go.uber.org/zap"
@@ -13,7 +13,7 @@ import (
 	"algvisual/internal/usecases"
 )
 
-func NewCreateTemplateAPI(db *database.Queries, conn *pgx.Conn, log *zap.Logger) apitools.Handler {
+func NewCreateTemplateAPI(db *database.Queries, conn *pgxpool.Pool, log *zap.Logger) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointCreateTemplate.String())
@@ -21,7 +21,7 @@ func NewCreateTemplateAPI(db *database.Queries, conn *pgx.Conn, log *zap.Logger)
 		var req usecases.CreateTemplateUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
-			return c.String(http.StatusBadRequest, "bad request")
+			return c.String(http.StatusBadRequest, err.Error())
 		}
 		result, err := usecases.CreateTemplateUseCase(c.Request().Context(), conn, db, req, log)
 		if err != nil {
@@ -34,7 +34,7 @@ func NewCreateTemplateAPI(db *database.Queries, conn *pgx.Conn, log *zap.Logger)
 
 func NewListTemplatesAPI(
 	queries *database.Queries,
-	conn *pgx.Conn,
+	conn *pgxpool.Pool,
 	log *zap.Logger,
 ) apitools.Handler {
 	h := apitools.NewHandler()

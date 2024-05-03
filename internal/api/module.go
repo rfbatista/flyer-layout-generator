@@ -45,4 +45,9 @@ var Module = fx.Options(fx.Provide(
 	protected(NewListGeneratedImagesAPI),
 	protected(NewCreateComponentAPI),
 	protected(NewGetPhotoshopByIDAPI),
+	protected(NewGenerateDesignAPI),
+	protected(NewRemoveComponentAPI),
+	protected(NewListComponentsByFileIDAPI),
+	protected(NewUploadImage),
+	protected(NewDownloadImage),
 ))

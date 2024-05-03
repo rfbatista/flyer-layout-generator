@@ -1,18 +1,47 @@
 from collections.abc import Iterable
 from typing import List
 from PIL import Image
+from pydantic import BaseModel
 
-from app.entities.photoshop import Elemento
-from app.entities.template import Position
+from app.entities.photoshop import Elemento, PhotoshopElement
 
 
-class Componente:
-    def __init__(self, items=[]) -> None:
-        self.items = items
-        self._items: List[Elemento] = []
+class Componente(BaseModel):
+    id: int
+    elements: List[PhotoshopElement]
+    type: str
+    width: int
+    height: int
+    xi: int
+    yi: int
+    xii: int
+    yii: int
+    _items: List[Elemento]
+
+    def set_size(self, new_size):
+        self.width = new_size[0]
+        self.height = new_size[1]
+        self.xii = self.xi + new_size[0]
+        self.yii = self.yi + new_size[1]
+
+    def is_in_pixel(self, pixel) -> bool:
+        in_x = pixel[0] >= self.xi and pixel[0] <= self.xii
+        in_y = pixel[1] >= self.yi and pixel[1] <= self.yii
+        if in_x and in_y:
+            return True
+        else:
+            return False
+
+    def draw_in_image(self, to_image):
+        for item in self._items:
+            el = [e for e in self.elements if e.layer_id == item.layer_id]
+            im = item.image()
+            im.thumbnail(el[0].size())
+            to_image.paste(im, (self.xi, self.yi), im)
+        return to_image
 
     def add_element(self, item):
-        self.items.append(item)
+        self.elements.append(item)
 
     def print(self, layer, pre=""):
         if not isinstance(layer, Iterable):
@@ -24,10 +53,11 @@ class Componente:
     def index_elements(self, layer, pre=""):
         if not isinstance(layer, Iterable):
             return
-        # print(self.items)
+        # print(self.elements)
+        elements_ids = [e.layer_id for e in self.elements]
         for _, layer in enumerate(layer):
             # print(layer.layer_id)
-            if layer.layer_id in self.items:
+            if layer.layer_id in elements_ids:
                 self._items.append(Elemento(layer))
             self.index_elements(layer, pre + "\t")
 
@@ -56,15 +86,7 @@ class Componente:
         return (top_x, top_y, bot_x, bot_y)
 
     def size(self):
-        coord = self.coord()
-        # print(coord)
-        return (coord[2] - coord[0], coord[3] - coord[1])
-
-    def width(self):
-        return self.size()[0]
-
-    def height(self):
-        return self.size()[1]
+        return (self.width, self.height)
 
     def image(self):
         img = Image.new("RGB", self.size(), color="black")
@@ -82,7 +104,7 @@ class Componente:
             img.paste(im, item.position_from(move), im)
         return img
 
-    def draw_in_template_position(self, img, template: Position):
+    def draw_in_template_position(self, img, template):
         up_left = self.coord()
         move = (up_left[0] - template.xi, up_left[1] - template.yi)
         scale = 1

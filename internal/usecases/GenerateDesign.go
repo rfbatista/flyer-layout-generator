@@ -9,55 +9,50 @@ import (
 	"algvisual/internal/shared"
 )
 
-type GenerateImageRequest struct {
-	PhotoshopID int `json:"photoshop_id,omitempty"`
-	TemplateID  int `json:"template_id,omitempty"`
+type GenerateDesignRequest struct {
+	PhotoshopID int32 `form:"photoshop_id" json:"photoshop_id,omitempty"`
+	TemplateID  int32 `form:"template_id"  json:"template_id,omitempty"`
 }
 
-type GenerateImageResult struct {
+type GenerateDesignResult struct {
 	Data *infra.GeneratorResult `json:"data,omitempty"`
 }
 
-func GenerateImageUseCase(
+func GenerateDesignUseCase(
 	ctx context.Context,
-	req GenerateImageRequest,
+	req GenerateDesignRequest,
 	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
-) (*GenerateImageResult, error) {
-	photoshop, err := queries.GetPhotoshop(ctx, int32(req.PhotoshopID))
+) (*GenerateDesignResult, error) {
+	photoshop, err := queries.GetPhotoshop(ctx, req.PhotoshopID)
 	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o arquivo Photoshop", "")
+		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
 		return nil, err
 	}
-	template, err := queries.GetTemplate(ctx, int32(req.PhotoshopID))
+	template, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o arquivo Photoshop", "")
+		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o template", "")
 		return nil, err
 	}
-	slots, err := queries.GetTemplateSlots(ctx, template.Template.ID)
+	distortionConfig, err := queries.GetTemplateDistortion(ctx, req.TemplateID)
 	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o arquivo Photoshop", "")
-		return nil, err
-	}
-	distortionConfig, err := queries.GetTemplateDistortion(ctx, template.Template.ID)
-	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o arquivo Photoshop", "")
+		err = shared.WrapWithAppError(
+			err,
+			"Não foi possivel encontrar a cofiguração do template",
+			"",
+		)
 		return nil, err
 	}
 	etemplate := database.ToTemplateEntitie(template.Template)
 	etemplate.Distortion = database.ToTemplateDistortionEntitie(
 		distortionConfig.TemplatesDistortion,
 	)
-	var eslots []entities.TemplateSlotsPositions
-	for _, s := range slots {
-		eslots = append(eslots, database.ToTemplateSlotEntitie(s.TemplatesSlot))
-	}
-	elements, err := queries.GetPhotoshopElements(ctx, int32(req.PhotoshopID))
+	elements, err := queries.GetElements(ctx, photoshop.ID)
 	if err != nil {
 		err = shared.WrapWithAppError(
 			err,
 			"Não foi possivel encontrar os elementos do arquivo Photoshop",
-			"",
+			err.Error(),
 		)
 		return nil, err
 	}
@@ -73,12 +68,19 @@ func GenerateImageUseCase(
 	}
 	var components []entities.PhotoshopComponent
 	for k := range compHash {
-		components = append(components, entities.PhotoshopComponent{
-			ID:       k,
-			Elements: compHash[k],
-		})
+		data, compErr := queries.GetComponentByID(ctx, k)
+		if compErr != nil {
+			compErr = shared.WrapWithAppError(
+				compErr,
+				"Não foi possivel encontrar os componentes do arquivo Photoshop",
+				"",
+			)
+			return nil, compErr
+		}
+		comp := database.ToPhotoshopComponentEntitie(data)
+		comp.Elements = compHash[k]
+		components = append(components, comp)
 	}
-	etemplate.SlotsPositions = eslots
 	result, err := client.GenerateImageWithDistortionStrategy(
 		infra.GeneratorRequest{
 			Photoshop:  database.ToPhotoshopEntitie(photoshop),
@@ -91,7 +93,7 @@ func GenerateImageUseCase(
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err
 	}
-	return &GenerateImageResult{
+	return &GenerateDesignResult{
 		Data: result,
 	}, nil
 }

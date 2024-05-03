@@ -37,7 +37,6 @@ type TemplateProps = {
   name: string;
   width: number;
   height: number;
-  positions: TemplatePosition[];
 };
 
 export class Template {
@@ -45,18 +44,23 @@ export class Template {
   constructor(props: TemplateProps) {
     this.props = props;
   }
+
   get id() {
     return this.props.id;
   }
+
   get name() {
     return this.props.name;
   }
+
   get width() {
     return this.props.width;
   }
+
   get height() {
     return this.props.height;
   }
+
   get positions() {
     return this.props.positions;
   }
@@ -86,18 +90,13 @@ export class Template {
 
   static fromApiList(res: any) {
     const templates = [];
-    for (const item of res.data) {
-      const positions = [];
-      for (const pos of item.positions) {
-        positions.push(new TemplatePosition(pos));
-      }
+    for (const item of res.data.data) {
       templates.push(
         new Template({
           id: item.id,
           name: item.name,
           width: item.width,
           height: item.height,
-          positions,
         }),
       );
     }

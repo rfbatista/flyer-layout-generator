@@ -6,6 +6,7 @@ import { usePhotoshopFiles } from "../../store/files";
 import { Button } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { appConfig } from "../../config";
+import { usePhotoshopStore } from "../../store/photoshop";
 
 export function DocUpload() {
   const [file, setFile] = useState<File>();
@@ -63,10 +64,10 @@ export function DocUpload() {
 }
 
 export function DocList() {
-  const { files, selectPhotoshop } = usePhotoshopFiles((data) => ({
+  const { files } = usePhotoshopFiles((data) => ({
     files: data.files,
-    selectPhotoshop: data.selectPhotoshop,
   }));
+  const { selectPhotoshop } = usePhotoshopStore();
   return (
     <div>
       {files.map((d) => {

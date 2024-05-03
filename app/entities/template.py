@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from pydantic import BaseModel
 
 from app.db import Base
+from app.entities.componente import Componente
 
 
 class PositionDto(BaseModel):
@@ -41,12 +42,38 @@ class Position(Base):
         return int(round(self.height / 2)) + self.yi
 
 
-class TemplateDto(BaseModel):
-    id: int
-    name: str
-    width: Optional[int]
-    height: Optional[int]
-    positions: List[PositionDto]
+class DesginTemplateDistortion(BaseModel):
+    x: int
+    y: int
+
+
+class DesignTemplateRegion(BaseModel):
+    xi: int
+    xii: int
+    yi: int
+    yii: int
+    component: Optional[Componente] = None
+
+    def set_component(self, c: Componente):
+        self.component = c
+
+    def bbox(self):
+        return ((self.xi, self.yi), (self.xii, self.yii))
+
+
+class DesignTemplate(BaseModel):
+    id: int = 0
+    name: str = ""
+    width: int
+    height: int
+    distortion: DesginTemplateDistortion
+    background: Optional[Componente] = None
+
+    def regions(self) -> List[DesignTemplateRegion]:
+        return []
+
+    def set_background(self, c: Componente):
+        self.background = c
 
 
 class Template(Base):
@@ -66,7 +93,7 @@ class Template(Base):
             return self.height
 
     @staticmethod
-    def from_db(data, positions_) -> TemplateDto:
+    def from_db(data, positions_) -> DesignTemplate:
         positions = []
         for item in positions_:
             positions.append(
@@ -78,7 +105,7 @@ class Template(Base):
                     height=item.height,
                 )
             )
-        return TemplateDto(
+        return DesignTemplate(
             id=data.id,
             name=data.name,
             positions=positions,

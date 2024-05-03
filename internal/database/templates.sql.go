@@ -232,10 +232,8 @@ func (q *Queries) GetTemplateSlots(ctx context.Context, templateID int32) ([]Get
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT templates.id, templates.name, templates.type, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.created_at, templates.updated_at, templates.deleted_at, templates_slots.id, templates_slots.xi, templates_slots.yi, templates_slots.width, templates_slots.height, templates_slots.created_at, templates_slots.updated_at, templates_slots.deleted_at, templates_slots.template_id, templates_distortions.id, templates_distortions.x, templates_distortions.y, templates_distortions.created_at, templates_distortions.updated_at, templates_distortions.deleted_at, templates_distortions.template_id
+SELECT id, name, type, width, height, slots_x, slots_y, created_at, updated_at, deleted_at
 FROM templates
-JOIN templates_slots ON templates_slots.template_id = templates.id
-JOIN templates_distortions ON templates_distortions.template_id = templates.id
 LIMIT $1 OFFSET $2
 `
 
@@ -244,48 +242,26 @@ type ListTemplatesParams struct {
 	Offset int32 `json:"offset"`
 }
 
-type ListTemplatesRow struct {
-	Template            Template            `json:"template"`
-	TemplatesSlot       TemplatesSlot       `json:"templates_slot"`
-	TemplatesDistortion TemplatesDistortion `json:"templates_distortion"`
-}
-
-func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([]ListTemplatesRow, error) {
+func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([]Template, error) {
 	rows, err := q.db.Query(ctx, listTemplates, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListTemplatesRow
+	var items []Template
 	for rows.Next() {
-		var i ListTemplatesRow
+		var i Template
 		if err := rows.Scan(
-			&i.Template.ID,
-			&i.Template.Name,
-			&i.Template.Type,
-			&i.Template.Width,
-			&i.Template.Height,
-			&i.Template.SlotsX,
-			&i.Template.SlotsY,
-			&i.Template.CreatedAt,
-			&i.Template.UpdatedAt,
-			&i.Template.DeletedAt,
-			&i.TemplatesSlot.ID,
-			&i.TemplatesSlot.Xi,
-			&i.TemplatesSlot.Yi,
-			&i.TemplatesSlot.Width,
-			&i.TemplatesSlot.Height,
-			&i.TemplatesSlot.CreatedAt,
-			&i.TemplatesSlot.UpdatedAt,
-			&i.TemplatesSlot.DeletedAt,
-			&i.TemplatesSlot.TemplateID,
-			&i.TemplatesDistortion.ID,
-			&i.TemplatesDistortion.X,
-			&i.TemplatesDistortion.Y,
-			&i.TemplatesDistortion.CreatedAt,
-			&i.TemplatesDistortion.UpdatedAt,
-			&i.TemplatesDistortion.DeletedAt,
-			&i.TemplatesDistortion.TemplateID,
+			&i.ID,
+			&i.Name,
+			&i.Type,
+			&i.Width,
+			&i.Height,
+			&i.SlotsX,
+			&i.SlotsY,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}

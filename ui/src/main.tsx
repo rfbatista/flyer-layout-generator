@@ -9,7 +9,7 @@ import { NavBar } from "./components/Navbar/index.tsx";
 import { appConfig } from "./config.ts";
 import { ListTemplatePage } from "./pages/ListTemplates.tsx";
 import { CreateTemplatePage } from "./pages/CreateTemplate.tsx";
-import { GeneratePartPage } from "./pages/GeneratePart.tsx";
+import { GeneratePartPage } from "./pages/generate/GeneratePart.tsx";
 import { GeneratedImagesPage } from "./pages/GeneratedImages.tsx";
 
 const router = createBrowserRouter([

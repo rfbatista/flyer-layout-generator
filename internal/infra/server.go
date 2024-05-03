@@ -39,7 +39,6 @@ type HTTPErrorResult struct {
 }
 
 func customHTTPErrorHandler(err error, c echo.Context) {
-	c.Logger().Error(err)
 	var result HTTPErrorResult
 	var errorDetails HTTPError
 	he, ok := err.(*shared.AppError)
@@ -93,7 +92,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173"},
+		AllowOrigins: []string{"*"},
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 	e.Static("/dist", p.Config.DistFolderPath)
@@ -104,7 +103,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		}
 	}
 	for _, r := range e.Routes() {
-		p.Logger.Info(fmt.Sprintf("%s\t\t%s", r.Method, r.Path))
+		p.Logger.Info(fmt.Sprintf("%s\t%s", r.Method, r.Path))
 	}
 	return e
 }

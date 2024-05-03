@@ -9,7 +9,7 @@ import { create } from "zustand";
 import { getRandomColor } from "../shared/color";
 import { getRandomId } from "../shared/uuid";
 import { Design } from "../entities/designs";
-import { getPhotoshopList } from "../api/photoshop/listPhotoshopFile";
+import { getPhotoshopListAPI } from "../api/photoshop/listPhotoshopFile";
 
 type PhotoshopStore = {
   init: Function;
@@ -53,7 +53,7 @@ export const usePhotoshopFiles = create<PhotoshopStore>((set, get) => ({
     if (get().isInitiated) return;
     set({ isInitiated: true });
     set({ isLoading: true });
-    getPhotoshopList().then((data) => {
+    getPhotoshopListAPI().then((data) => {
       set({ files: data, isLoading: false });
     });
   },

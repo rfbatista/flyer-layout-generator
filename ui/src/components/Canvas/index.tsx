@@ -14,7 +14,6 @@ export function Canvas() {
     const image = new Image();
     const context = canvas.getContext("2d");
     image.src = photoshopfile?.imageUrl || "";
-    console.log(photoshopfile?.imageUrl);
     image.onload = () => {
       context.drawImage(
         image,

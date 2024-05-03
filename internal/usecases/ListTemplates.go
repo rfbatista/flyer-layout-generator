@@ -15,7 +15,7 @@ type ListTemplatesUseCaseRequest struct {
 }
 
 type ListTemplatesUseCaseResult struct {
-	Data []database.ListTemplatesRow `json:"data,omitempty"`
+	Data []database.Template `json:"data,omitempty"`
 }
 
 func ListTemplatesUseCase(
@@ -24,8 +24,12 @@ func ListTemplatesUseCase(
 	queries *database.Queries,
 	log *zap.Logger,
 ) (*ListTemplatesUseCaseResult, error) {
+	limit := req.Limit
+	if limit == 0 {
+		limit = 10
+	}
 	result, err := queries.ListTemplates(ctx, database.ListTemplatesParams{
-		Limit:  int32(req.Limit),
+		Limit:  int32(limit),
 		Offset: int32(req.Skip),
 	})
 	if err != nil {

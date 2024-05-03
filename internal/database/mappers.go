@@ -15,11 +15,25 @@ func ToPhotoshopEntitie(raw Photoshop) entities.Photoshop {
 	}
 }
 
+func ToPhotoshopComponentEntitie(raw PhotoshopComponent) entities.PhotoshopComponent {
+	return entities.PhotoshopComponent{
+		ID:     raw.ID,
+		Width:  raw.Width.Int32,
+		Height: raw.Height.Int32,
+		Xi:     raw.Xi.Int32,
+		Xii:    raw.Xii.Int32,
+		Yi:     raw.Yi.Int32,
+		Yii:    raw.Yii.Int32,
+		Color:  raw.Color.String,
+		Type:   string(raw.Type.ComponentType),
+	}
+}
+
 func ToPhotoshopElementEntitie(raw PhotoshopElement) entities.PhotoshopElement {
 	return entities.PhotoshopElement{
 		ID:          raw.ID,
 		Xi:          raw.Xi.Int32,
-		Xii:         raw.Xi.Int32,
+		Xii:         raw.Xii.Int32,
 		Yi:          raw.Yi.Int32,
 		Yii:         raw.Yii.Int32,
 		LayerID:     raw.LayerID.String,
@@ -39,8 +53,10 @@ func ToPhotoshopElementEntitie(raw PhotoshopElement) entities.PhotoshopElement {
 
 func ToTemplateEntitie(raw Template) entities.Template {
 	return entities.Template{
-		ID:   raw.ID,
-		Type: entities.NewTemplateType(string(raw.Type.TemplateType)),
+		ID:     raw.ID,
+		Width:  raw.Width.Int32,
+		Height: raw.Height.Int32,
+		Type:   entities.NewTemplateType(string(raw.Type.TemplateType)),
 	}
 }
 

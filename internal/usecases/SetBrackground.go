@@ -3,8 +3,8 @@ package usecases
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
@@ -23,7 +23,7 @@ type SetBackgroundUseCaseResult struct {
 func SetBackgroundUseCase(
 	ctx context.Context,
 	queries *database.Queries,
-	db *pgx.Conn,
+	db *pgxpool.Pool,
 	req SetBackgroundUseCaseRequest,
 	log *zap.Logger,
 ) (*SetBackgroundUseCaseResult, error) {

@@ -5,7 +5,7 @@ export type PhotoshopFileProps = {
   id: number;
   name: string;
   image_url: any;
-  image_extension?: string
+  image_extension?: string;
   file_url: string;
   width: any;
   height: any;
@@ -28,7 +28,7 @@ export class PhotoshopFile {
   }
 
   get imageUrl() {
-    return `${appConfig.api.baeURL}/dist/${this.props.image_url}.png`
+    return `${appConfig.api.baeURL}/dist/${this.props.image_url}.png`;
   }
 
   get filepath() {
@@ -45,17 +45,9 @@ export class PhotoshopFile {
   ): { width: number; height: number } {
     if (this.width > this.height) {
       const scale = maxWidth / this.width;
-      console.log(maxWidth, maxHeight, {
-        width: maxWidth,
-        height: this.height * scale,
-      });
       return { width: maxWidth, height: this.height * scale };
     } else {
       const scale = maxHeight / this.height;
-      console.log(maxWidth, maxHeight, {
-        width: scale * this.width,
-        height: maxHeight,
-      });
       return { width: scale * this.width, height: maxHeight };
     }
   }
@@ -69,8 +61,31 @@ export class PhotoshopFile {
   }
 }
 
+type PhotoshopElementProps = {
+  id: number;
+  photoshop_id: number;
+  name: string;
+  layer_id: string;
+  text: string;
+  xi: number;
+  xii: number;
+  yi: number;
+  yii: number;
+  width: number;
+  height: number;
+  is_group: boolean;
+  group_id: number;
+  level: number;
+  kind: string;
+  component_id: any;
+  image_url: string;
+  image_extension: string;
+  created_at: string;
+  updated_at: any;
+};
+
 export class PhotoshopElement {
-  props: any;
+  props: PhotoshopElementProps;
 
   constructor(props: any) {
     this.props = props;
@@ -97,7 +112,7 @@ export class PhotoshopElement {
   }
 
   get isBackground() {
-    return this.props.is_background;
+    return false;
   }
 
   get layerId() {
@@ -105,7 +120,7 @@ export class PhotoshopElement {
   }
 
   get componentColor() {
-    return `#${this.props.component_color}`;
+    return `#${333}`;
   }
 
   get componentId() {
@@ -117,7 +132,7 @@ export class PhotoshopElement {
   }
 
   static from_api_list(res: any) {
-    return res.data.map((data: any) => new PhotoshopElement(data));
+    return res.data.data.map((data: any) => new PhotoshopElement(data));
   }
 }
 
@@ -165,7 +180,7 @@ export class ElementTree {
   }
 
   static _layout(
-    groupId: number,
+    groupId: string,
     tree: ElementTree,
     elements: PhotoshopElement[],
   ) {
@@ -174,7 +189,7 @@ export class ElementTree {
     const childrens = inLevel.map((e) => new ElementTree(e));
     childrens.forEach((e) => {
       tree.addChildren(e);
-      ElementTree._layout(e.element?.layerId, e, elements);
+      ElementTree._layout(e.element.layerId, e, elements);
     });
   }
 }

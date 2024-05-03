@@ -11,45 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createComponent = `-- name: CreateComponent :one
-INSERT INTO photoshop_components (
-  photoshop_id,
-  width,
-  height,
-  type
-) VALUES (
-  $1, $2, $3, $4
-)
-RETURNING id, photoshop_id, width, height, color, type, created_at
-`
-
-type CreateComponentParams struct {
-	PhotoshopID int32             `json:"photoshop_id"`
-	Width       pgtype.Int4       `json:"width"`
-	Height      pgtype.Int4       `json:"height"`
-	Type        NullComponentType `json:"type"`
-}
-
-func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (PhotoshopComponent, error) {
-	row := q.db.QueryRow(ctx, createComponent,
-		arg.PhotoshopID,
-		arg.Width,
-		arg.Height,
-		arg.Type,
-	)
-	var i PhotoshopComponent
-	err := row.Scan(
-		&i.ID,
-		&i.PhotoshopID,
-		&i.Width,
-		&i.Height,
-		&i.Color,
-		&i.Type,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const createElement = `-- name: CreateElement :one
 INSERT INTO photoshop_element (
   layer_id,
@@ -234,7 +195,7 @@ func (q *Queries) GetPhotoshop(ctx context.Context, id int32) (Photoshop, error)
 }
 
 const getPhotoshopBackgroundComponent = `-- name: GetPhotoshopBackgroundComponent :one
-SELECT id, photoshop_id, width, height, color, type, created_at FROM photoshop_components
+SELECT id, photoshop_id, width, height, color, type, xi, xii, yi, yii, created_at FROM photoshop_components
 WHERE photoshop_id = $1 AND type = 'background' LIMIT 1
 `
 
@@ -248,55 +209,37 @@ func (q *Queries) GetPhotoshopBackgroundComponent(ctx context.Context, photoshop
 		&i.Height,
 		&i.Color,
 		&i.Type,
+		&i.Xi,
+		&i.Xii,
+		&i.Yi,
+		&i.Yii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
-const getPhotoshopElements = `-- name: GetPhotoshopElements :many
-SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
-WHERE photoshop_id = $1
+const getPhotoshopComponentByID = `-- name: GetPhotoshopComponentByID :one
+SELECT id, photoshop_id, width, height, color, type, xi, xii, yi, yii, created_at FROM photoshop_components
+WHERE photoshop_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPhotoshopElements(ctx context.Context, photoshopID int32) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, getPhotoshopElements, photoshopID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []PhotoshopElement
-	for rows.Next() {
-		var i PhotoshopElement
-		if err := rows.Scan(
-			&i.ID,
-			&i.PhotoshopID,
-			&i.Name,
-			&i.LayerID,
-			&i.Text,
-			&i.Xi,
-			&i.Xii,
-			&i.Yi,
-			&i.Yii,
-			&i.Width,
-			&i.Height,
-			&i.IsGroup,
-			&i.GroupID,
-			&i.Level,
-			&i.Kind,
-			&i.ComponentID,
-			&i.ImageUrl,
-			&i.ImageExtension,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetPhotoshopComponentByID(ctx context.Context, photoshopID int32) (PhotoshopComponent, error) {
+	row := q.db.QueryRow(ctx, getPhotoshopComponentByID, photoshopID)
+	var i PhotoshopComponent
+	err := row.Scan(
+		&i.ID,
+		&i.PhotoshopID,
+		&i.Width,
+		&i.Height,
+		&i.Color,
+		&i.Type,
+		&i.Xi,
+		&i.Xii,
+		&i.Yi,
+		&i.Yii,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const listPhotoshop = `-- name: ListPhotoshop :many
@@ -354,77 +297,6 @@ type ListPhotoshopElementsParams struct {
 
 func (q *Queries) ListPhotoshopElements(ctx context.Context, arg ListPhotoshopElementsParams) ([]PhotoshopElement, error) {
 	rows, err := q.db.Query(ctx, listPhotoshopElements, arg.PhotoshopID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []PhotoshopElement
-	for rows.Next() {
-		var i PhotoshopElement
-		if err := rows.Scan(
-			&i.ID,
-			&i.PhotoshopID,
-			&i.Name,
-			&i.LayerID,
-			&i.Text,
-			&i.Xi,
-			&i.Xii,
-			&i.Yi,
-			&i.Yii,
-			&i.Width,
-			&i.Height,
-			&i.IsGroup,
-			&i.GroupID,
-			&i.Level,
-			&i.Kind,
-			&i.ComponentID,
-			&i.ImageUrl,
-			&i.ImageExtension,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const updateManyPhotoshopElement = `-- name: UpdateManyPhotoshopElement :many
-UPDATE photoshop_element
-SET 
-    component_id = CASE WHEN $1::boolean
-        THEN $2::int ELSE component_id END,
-
-    name = CASE WHEN $3::boolean
-        THEN $4::text ELSE name END
-WHERE
-    id IN ($5) and photoshop_id = $6
-RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
-`
-
-type UpdateManyPhotoshopElementParams struct {
-	ComponentIDDoUpdate bool    `json:"component_id_do_update"`
-	ComponentID         int32   `json:"component_id"`
-	NameDoUpdate        bool    `json:"name_do_update"`
-	Name                string  `json:"name"`
-	Ids                 []int32 `json:"ids"`
-	PhotoshopID         int32   `json:"photoshop_id"`
-}
-
-// You can use sqlc.arg() and @ to identify named parameters
-func (q *Queries) UpdateManyPhotoshopElement(ctx context.Context, arg UpdateManyPhotoshopElementParams) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, updateManyPhotoshopElement,
-		arg.ComponentIDDoUpdate,
-		arg.ComponentID,
-		arg.NameDoUpdate,
-		arg.Name,
-		arg.Ids,
-		arg.PhotoshopID,
-	)
 	if err != nil {
 		return nil, err
 	}

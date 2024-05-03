@@ -8,12 +8,13 @@ import (
 )
 
 type RemoveComponentUseCaseRequest struct {
-	PhotoshopID int   `params:"PhotoshopID" json:"photoshop_id,omitempty"`
-	Elements    []int `                     json:"elements,omitempty"     body:"elements"`
+	PhotoshopID int32   `param:"photoshop_id" json:"photoshop_id,omitempty"`
+	Elements    []int32 `                      json:"elements,omitempty"     body:"elements"`
 }
 
 type RemoveComponentUseCaseResult struct {
-	Data []database.PhotoshopElement
+	Status string                      `json:"status,omitempty"`
+	Data   []database.PhotoshopElement `json:"data,omitempty"`
 }
 
 func RemoveComponentUseCase(
@@ -21,18 +22,18 @@ func RemoveComponentUseCase(
 	queries *database.Queries,
 	req RemoveComponentUseCaseRequest,
 ) (*RemoveComponentUseCaseResult, error) {
-	elUpdated, err := queries.UpdateManyPhotoshopElement(
+	elUpdated, err := queries.RemoveComponentFromElements(
 		ctx,
-		database.UpdateManyPhotoshopElementParams{
-			PhotoshopID:         int32(req.PhotoshopID),
-			ComponentIDDoUpdate: true,
-			ComponentID:         0,
+		database.RemoveComponentFromElementsParams{
+			PhotoshopID: req.PhotoshopID,
+			Ids:         req.Elements,
 		},
 	)
 	if err != nil {
 		return nil, shared.WrapWithAppError(err, "Falha ao atualizar elemento do photoshop", "")
 	}
 	return &RemoveComponentUseCaseResult{
-		Data: elUpdated,
+		Status: "success",
+		Data:   elUpdated,
 	}, nil
 }
