@@ -1,7 +1,7 @@
 #!/bin/bash
 cp ./server.service /etc/systemd/system/server.service
-sudo systemctl enable url-shortener
-sudo systemctl start url-shortener
-sudo systemctl status url-shortener
-sudo systemctl restart url-shortener
+sudo systemctl enable server
+sudo systemctl start server
+sudo systemctl status server
+sudo systemctl restart server
 sudo systemctl daemon-reload
