@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime, timezone
 
 
@@ -17,21 +18,54 @@ def generate_design(req: GenerateDesignRequest):
         width=req.photoshop.width,
         height=req.photoshop.height,
     )
+    to_distort_prancheta = deepcopy(prancheta)
     distorted_prancheta = distort_image_to(
-        prancheta, Dimension(width=req.template.width, height=req.template.height)
+        to_distort_prancheta, Dimension(width=req.template.width, height=req.template.height)
     )
     regions = req.template.regions()
     regions_with_components = define_components_per_region(
         regions, distorted_prancheta.components
     )
+    for r in regions_with_components:
+        ncomp = None
+        for c in req.components:
+            if c is not None and r.component is not None:
+                if c.id == r.component.id:
+                    ncomp = c
+        if ncomp is not None:
+            r.set_component(ncomp)
+
+    regions_with_components = [r for r in regions_with_components if r.component is not None]
+    print("\nregions with component")
+
+    for c in regions_with_components:
+        print(c.component)
+        for e in c.component.elements:
+            print(e)
+
+
     regions_with_components_positioned = position_components_in_regions(
         regions_with_components
     )
+
+    print("\nregions with component positioned")
+
+    for c in regions_with_components_positioned:
+        print(c.component)
+        for e in c.component.elements:
+            print(e)
+
     componentes = [
         c.component
         for c in regions_with_components_positioned
         if c.component is not None
     ]
+    print("\nselected components")
+    for c in componentes:
+        print(c)
+        for e in c.elements:
+            print(e)
+
     image = renderer.render_png(componentes, req)
     finished_at = datetime.now(timezone.utc)
     return GenerateDesignResult(

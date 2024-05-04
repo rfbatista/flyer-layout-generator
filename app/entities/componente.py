@@ -1,14 +1,15 @@
 from collections.abc import Iterable
+from copy import deepcopy
 from typing import List
 from PIL import Image
 from pydantic import BaseModel
 
-from app.entities.photoshop import Elemento, PhotoshopElement
+from app.entities.photoshop import Elemento, DesignElement
 
 
 class Componente(BaseModel):
     id: int
-    elements: List[PhotoshopElement]
+    elements: List[DesignElement]
     type: str
     width: int
     height: int
@@ -16,7 +17,56 @@ class Componente(BaseModel):
     yi: int
     xii: int
     yii: int
-    _items: List[Elemento]
+    _items: List[Elemento] = []
+
+    def resize_component_element(
+        self, element: DesignElement, width: int, height: int
+    ) -> DesignElement:
+        nelement = deepcopy(element)
+        nelement.xi = int(round(element.xi * (width / element.width)))
+        nelement.yi = int(round(element.yi * (height / element.height)))
+        nelement.width = width
+        nelement.height = height
+        nelement.xii = nelement.xi + nelement.width
+        nelement.yii = nelement.yi + nelement.height
+        return nelement
+
+    def move_to(self, xi, yi):
+        x_move = xi - self.xi
+        y_move = yi - self.yi
+        self.xi = xi
+        self.xii = self.width
+        self.yi = yi
+        self.yii = yi + self.height
+        for e in self.elements:
+            e.movement(x_move, y_move)
+
+    def resize_component(self, new_width, new_height):
+        width_prorp = new_width / self.width
+        height_prop = new_height / self.height
+        # width_prorp = (self.width * width_proportion) / self.width
+        # height_prop = (self.height * height_proportion) / self.height
+        self.xi = int(self.xi * width_prorp)
+        self.yi = int(self.yi * height_prop)
+        self.xii = int(self.xii * width_prorp)
+        self.yii = int(self.yii * height_prop)
+        self.width = new_width
+        self.height = new_height
+        nelements = []
+        for elem in self.elements:
+            nelement = self.resize_component_element(
+                elem,
+                int(round(elem.width * width_prorp, 0)),
+                int(round(elem.height * height_prop, 0)),
+            )
+            nelements.append(nelement)
+        self.elements = nelements
+
+    def bbox(self):
+        return ((self.xi, self.yi), (self.xii, self.yii))
+
+    def pos(self):
+        return (self.xi, self.yi)
 
     def set_size(self, new_size):
         self.width = new_size[0]
@@ -34,10 +84,18 @@ class Componente(BaseModel):
 
     def draw_in_image(self, to_image):
         for item in self._items:
-            el = [e for e in self.elements if e.layer_id == item.layer_id]
+            el = [e for e in self.elements if str(e.layer_id) == str(item.layer_id())]
+            if len(el) == 0:
+                continue
+            element = el[0]
             im = item.image()
-            im.thumbnail(el[0].size())
-            to_image.paste(im, (self.xi, self.yi), im)
+            print(element)
+            im.thumbnail(element.size())
+            # print(
+            #     "positioning element in: %s %s with size %s"
+            #     % (el[0].layer_id, el[0].pos(), el[0].size())
+            # )
+            to_image.paste(im, el[0].pos(), im)
         return to_image
 
     def add_element(self, item):
@@ -53,69 +111,15 @@ class Componente(BaseModel):
     def index_elements(self, layer, pre=""):
         if not isinstance(layer, Iterable):
             return
-        # print(self.elements)
         elements_ids = [e.layer_id for e in self.elements]
         for _, layer in enumerate(layer):
-            # print(layer.layer_id)
-            if layer.layer_id in elements_ids:
+            if str(layer.layer_id) in elements_ids:
                 self._items.append(Elemento(layer))
             self.index_elements(layer, pre + "\t")
-
-    def getImages(self):
-        return [x.image() for x in self._items]
-
-    # (left, top, right, bottom)
-    def coord(self):
-        if len(self._items) == 0:
-            return (0, 0)
-        bbox = self._items[0].box()
-        top_x = bbox[0]
-        top_y = bbox[1]
-        bot_x = bbox[2]
-        bot_y = bbox[3]
-        for l in self._items:
-            coord = l.box()
-            if top_x > coord[0]:
-                top_x = coord[0]
-            if top_y > coord[1]:
-                top_y = coord[1]
-            if bot_x < coord[2]:
-                bot_x = coord[2]
-            if bot_y < coord[3]:
-                bot_y = coord[3]
-        return (top_x, top_y, bot_x, bot_y)
 
     def size(self):
         return (self.width, self.height)
 
-    def image(self):
-        img = Image.new("RGB", self.size(), color="black")
-        coord = self.coord()
-        for item in self._items:
-            im = item.image()
-            img.paste(im, item.position_from((coord[0], coord[1])), im)
-        return img
-
-    def draw_in(self, img, point):
-        up_left = self.coord()
-        move = (up_left[0] - point[0], up_left[1] - point[1])
-        for item in self._items:
-            im = item.image()
-            img.paste(im, item.position_from(move), im)
-        return img
-
-    def draw_in_template_position(self, img, template):
-        up_left = self.coord()
-        move = (up_left[0] - template.xi, up_left[1] - template.yi)
-        scale = 1
-        if self.width() > self.height():
-            if template.width is not None:
-                scale = template.width / self.width()
-        else:
-            if template.height is not None:
-                scale = template.height / self.height()
-        for item in self._items:
-            im = item.image()
-            im.thumbnail((int(im.width * scale), int(im.height * scale)))
-            img.paste(im, item.position_from(move), im)
-        return img
+    def __str__(self):
+        return "component_id %s size: %s position %s" % (self.id, self.size(), self.pos())
+    

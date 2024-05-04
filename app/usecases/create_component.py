@@ -2,7 +2,7 @@ from typing import List
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.entities.photoshop import PhotoshopElement
+from app.entities.photoshop import DesignElement
 
 
 class CreateComponentUseCaseRequest(BaseModel):
@@ -12,7 +12,7 @@ class CreateComponentUseCaseRequest(BaseModel):
 
 
 def create_component_usecase(req: CreateComponentUseCaseRequest, db: Session):
-    db.query(PhotoshopElement).filter(PhotoshopElement.id.in_(req.elements_id)).update(
+    db.query(DesignElement).filter(DesignElement.id.in_(req.elements_id)).update(
         {
             "component_color": req.color,
             "component_id": req.component_id,

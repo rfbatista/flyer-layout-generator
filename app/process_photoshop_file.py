@@ -8,7 +8,7 @@ from psd_tools import PSDImage
 from pydantic import BaseModel
 
 from app.config import app_config
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 from app.logger import logger
 from app.upload_image import upload_image
 
@@ -21,7 +21,7 @@ class ProcessPhotoshopFileResult(BaseModel):
     imagepath: str
     filepath: str
     photoshop: PhotoshopFile
-    elements: List[PhotoshopElement]
+    elements: List[DesignElement]
 
 
 def process_photoshop_file(filepath: str):
@@ -58,7 +58,7 @@ def process_photoshop_file(filepath: str):
                     text = layer.text
 
                 items.append(
-                    PhotoshopElement(
+                    DesignElement(
                         id=None,
                         photoshop_id=None,
                         xi=layer.left,

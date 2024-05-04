@@ -7,7 +7,7 @@ from sqlalchemy.orm.session import Session
 
 from app.logger import logger
 from app.config import app_config
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 
 
 def save_photoshop_file(file: UploadFile, db: Session):
@@ -37,7 +37,7 @@ def save_photoshop_file(file: UploadFile, db: Session):
                 if img:
                     img.save(filepath)
                 items.append(
-                    PhotoshopElement(
+                    DesignElement(
                         xi=layer.left,
                         yi=layer.top,
                         xii=layer.right,

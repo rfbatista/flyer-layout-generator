@@ -1,12 +1,10 @@
 from datetime import datetime, timezone
 from typing import List
-import uuid
 
 from PIL import Image
 from psd_tools import PSDImage
 from pydantic import BaseModel
 from app.entities.componente import Componente
-from app.config import app_config
 from app.requests import GenerateDesignRequest
 from app.upload_image import upload_image
 

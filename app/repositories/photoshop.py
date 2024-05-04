@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 
 
 class PhotoshopFileRepository:
@@ -24,15 +24,15 @@ class PhotoshopFileRepository:
 
 class PhotoshopElementRepository:
     @staticmethod
-    def find_all(db: Session) -> list[PhotoshopElement]:
-        return db.query(PhotoshopElement).all()
+    def find_all(db: Session) -> list[DesignElement]:
+        return db.query(DesignElement).all()
 
     @staticmethod
-    def find_by_id(db: Session, id: int) -> PhotoshopElement | None:
-        return db.query(PhotoshopElement).get(id)
+    def find_by_id(db: Session, id: int) -> DesignElement | None:
+        return db.query(DesignElement).get(id)
 
     @staticmethod
-    def save(db: Session, photoshop_element: PhotoshopElement) -> PhotoshopElement:
+    def save(db: Session, photoshop_element: DesignElement) -> DesignElement:
         if photoshop_element.id is not None:
             db.merge(photoshop_element)
         else:

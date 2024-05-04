@@ -1,10 +1,13 @@
 from typing import List, Optional
+from uuid import uuid1, uuid4
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from pydantic import BaseModel
 
 from app.db import Base
 from app.entities.componente import Componente
+from app.entities.design_region import DesignTemplateRegion
+from app.value_objects.id import create_id
 
 
 class PositionDto(BaseModel):
@@ -47,20 +50,6 @@ class DesginTemplateDistortion(BaseModel):
     y: int
 
 
-class DesignTemplateRegion(BaseModel):
-    xi: int
-    xii: int
-    yi: int
-    yii: int
-    component: Optional[Componente] = None
-
-    def set_component(self, c: Componente):
-        self.component = c
-
-    def bbox(self):
-        return ((self.xi, self.yi), (self.xii, self.yii))
-
-
 class DesignTemplate(BaseModel):
     id: int = 0
     name: str = ""
@@ -70,7 +59,25 @@ class DesignTemplate(BaseModel):
     background: Optional[Componente] = None
 
     def regions(self) -> List[DesignTemplateRegion]:
-        return []
+        width = int(self.width / self.distortion.x)
+        height = int(self.height / self.distortion.y)
+        regions = []
+        xi = 0
+        yi = 0
+        for _ in range(self.distortion.y):
+            for _ in range(self.distortion.x):
+                r = DesignTemplateRegion(
+                    id=create_id(),
+                    xi=xi,
+                    xii=xi + width,
+                    yi=yi,
+                    yii=yi + height,
+                )
+                regions.append(r)
+                xi = xi + width
+            yi = yi + height
+        # print('regioes geradas: ', ["%s %s" % (c.id, c.bbox()) for c in regions])
+        return regions
 
     def set_background(self, c: Componente):
         self.background = c

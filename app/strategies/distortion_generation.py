@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.entities.photoshop import PhotoshopElement
+from app.entities.photoshop import DesignElement
 
 
 class TemplateDistortion(BaseModel):
@@ -36,14 +36,14 @@ class Photoshop(BaseModel):
 
 class PhotoshopComponent(BaseModel):
     id: str
-    elements: List[PhotoshopElement]
+    elements: List[DesignElement]
 
 
 class GenerationRequest(BaseModel):
     template: Template
     photoshop: Photoshop
     components: List[PhotoshopComponent]
-    elements: List[PhotoshopElement]
+    elements: List[DesignElement]
 
 
 class GenerationResult(BaseModel):

@@ -3,14 +3,14 @@ from typing import List
 
 from pydantic import BaseModel
 from app.entities.componente import Componente
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 from app.entities.template import DesignTemplate
 
 
 class GenerateDesignRequest(BaseModel):
     photoshop: PhotoshopFile
     template: DesignTemplate
-    elements: List[PhotoshopElement]
+    elements: List[DesignElement]
     components: List[Componente]
 
 

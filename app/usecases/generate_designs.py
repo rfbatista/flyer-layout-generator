@@ -9,7 +9,7 @@ import uuid
 from app.entities.componente import Componente
 from app.config import app_config
 from app.entities.gen_request import GenerationRequest, GenerationRequestImage
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 from app.entities.prancheta import Prancheta
 from app.entities.template import Template
 from app.logger import logger
@@ -67,8 +67,8 @@ def create_design(
         logger.error("failed to find template %s" % (template_details.id))
         return
     logger.info("fetching photoshop elements")
-    stmt = select(PhotoshopElement).filter(
-        PhotoshopElement.photoshop_id == photoshop_id
+    stmt = select(DesignElement).filter(
+        DesignElement.photoshop_id == photoshop_id
     )
     elements = db.scalars(stmt).all()
     elements_group = {}

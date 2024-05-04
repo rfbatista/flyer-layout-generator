@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import join
 from sqlalchemy.orm.session import Session
 
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 
 
 def list_photoshop_files(db: Session, limit=10, skip=0):

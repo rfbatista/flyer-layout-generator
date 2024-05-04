@@ -22,8 +22,21 @@ class Elemento:
         box = self.box()
         return (box[0] - origin[0], box[1] - origin[1])
 
+    def size(self):
+        return (self.layer.width, self.layer.height)
 
-class PhotoshopElement(BaseModel):
+    def pos(self):
+        return (self.box()[0][0], self.box()[0][1])
+
+    def __str__(self):
+        return "element_id %s size: %s position %s" % (
+            self.layer_id(),
+            self.size(),
+            self.pos(),
+        )
+
+
+class DesignElement(BaseModel):
     id: Optional[int] = None
     xi: int
     xii: int
@@ -51,6 +64,22 @@ class PhotoshopElement(BaseModel):
 
     def size(self):
         return (self.width, self.height)
+
+    def pos(self):
+        return (self.xi, self.yi)
+
+    def movement(self, xi_mov, yi_mov):
+        self.xi = self.xi + xi_mov
+        self.yi = self.yi + yi_mov
+        self.xii = self.xi + self.width
+        self.yii = self.yi + self.height
+
+    def __str__(self):
+        return "design_element_id %s size: %s position %s" % (
+            self.id,
+            self.size(),
+            self.pos(),
+        )
 
 
 class PhotoshopFile(BaseModel):

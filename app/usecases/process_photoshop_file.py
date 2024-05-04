@@ -7,7 +7,7 @@ import uuid
 from psd_tools import PSDImage
 
 from app.config import app_config
-from app.entities.photoshop import PhotoshopElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile
 from app.logger import logger
 
 
@@ -36,7 +36,7 @@ def process_photoshop_file(filepath: str):
                     text = layer.text
 
                 items.append(
-                    PhotoshopElement(
+                    DesignElement(
                         xi=layer.left,
                         yi=layer.top,
                         xii=layer.right,

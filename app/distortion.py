@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from pydantic import BaseModel
 from app.entities.componente import Componente
-from app.entities.photoshop import PhotoshopElement
+from app.entities.photoshop import DesignElement
 from app.entities.prancheta import DesignPrancheta
 
 
@@ -14,8 +14,8 @@ class Dimension(BaseModel):
 
 
 def resize_component_element(
-    element: PhotoshopElement, width: int, height: int
-) -> PhotoshopElement:
+    element: DesignElement, width: int, height: int
+) -> DesignElement:
     nelement = deepcopy(element)
     nelement.width = width
     nelement.height = height
