@@ -6,3 +6,6 @@ dist/*
 
 tmp
 main
+ssh-key.pem
+server
+.env
