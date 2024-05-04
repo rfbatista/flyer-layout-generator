@@ -35,5 +35,5 @@ ssh:
 	ssh -i ./ssh-key.pem ec2-user@54.221.241.11
 run_in_server:
 	/usr/local/go/bin/go run ./cmd/server/main.go
-build:
-	go build -o ./server ./cmd/server/main.go
+build_in_server:
+	/usr/local/go/bin/go build -o ./server ./cmd/server/main.go
