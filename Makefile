@@ -29,3 +29,7 @@ usecase:
 	hygen usecase new 
 down:
 	docker compose -f ./scripts/docker-compose.dev.yaml down
+ssh:
+	ssh -i ./ssh-key.pem ec2-user@54.221.241.11
+run_in_server:
+	/usr/local/go/bin/go run ./cmd/server/main.go
