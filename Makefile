@@ -39,3 +39,5 @@ build_in_server:
 	/usr/local/go/bin/go build -o ./server ./cmd/server/main.go
 restart:
 	sudo systemctl restart server
+status:
+	sudo systemctl status server
