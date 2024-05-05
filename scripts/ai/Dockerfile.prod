@@ -5,7 +5,7 @@ WORKDIR /home/ec2-user/alg_visual
 RUN pip install poetry
 
 # Copy Application
-COPY . /app
+COPY . /home/ec2-user/alg_visual
 
 RUN poetry install --no-interaction --no-cache
 
