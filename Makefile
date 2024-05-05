@@ -9,7 +9,7 @@ db:
 apply:
 	atlas schema apply --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" --dev-url "docker://postgres" --to "file://internal/database/schema"
 apply_in_server:
-	atlas schema apply --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" --to "file://internal/database/schema"
+	atlas schema apply --url "postgres://admin:123@localhost:5432/postgres?sslmode=disable" --to "file://internal/database/schema"
 clean:
 	atlas schema clean --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" 
 migrate:
