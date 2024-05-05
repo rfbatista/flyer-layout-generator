@@ -9,6 +9,7 @@ Restart=always
 RestartSec=5
 WorkingDirectory=/home/ec2-user/alg_visual
 ExecStart=/home/ec2-user/alg_visual/server
+EnvironmentFile=/home/ec2-user/alg_visual/.env
 
 [Install]
 WantedBy=multi-user.target

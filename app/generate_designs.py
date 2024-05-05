@@ -14,7 +14,7 @@ def generate_design(req: GenerateDesignRequest):
     started_at = datetime.now(timezone.utc)
     prancheta = DesignPrancheta(
         template=req.template,
-        components=req.components,
+        components=list(filter(lambda c: c.width != 0, req.components)),
         width=req.photoshop.width,
         height=req.photoshop.height,
     )
@@ -23,6 +23,12 @@ def generate_design(req: GenerateDesignRequest):
         to_distort_prancheta, Dimension(width=req.template.width, height=req.template.height)
     )
     regions = req.template.regions()
+    
+    print("\nregioes definidas")
+    for r in regions:
+        print(r)
+
+
     regions_with_components = define_components_per_region(
         regions, distorted_prancheta.components
     )
@@ -40,8 +46,9 @@ def generate_design(req: GenerateDesignRequest):
 
     for c in regions_with_components:
         print(c.component)
-        for e in c.component.elements:
-            print(e)
+        if c.component is not None:
+            for e in c.component.elements:
+                print(e)
 
 
     regions_with_components_positioned = position_components_in_regions(
@@ -52,8 +59,9 @@ def generate_design(req: GenerateDesignRequest):
 
     for c in regions_with_components_positioned:
         print(c.component)
-        for e in c.component.elements:
-            print(e)
+        if c.component is not None:
+            for e in c.component.elements:
+                print(e)
 
     componentes = [
         c.component

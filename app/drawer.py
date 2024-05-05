@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import List
 
-from PIL import Image
+from PIL import Image, ImageDraw
 from psd_tools import PSDImage
 from pydantic import BaseModel
 from app.entities.componente import Componente
@@ -22,6 +22,10 @@ class Renderer:
         for c in components:
             c.index_elements(psd)
         img = Image.new("RGB", (req.template.width, req.template.height), "black")
+        draw = ImageDraw.Draw(img)
+        # draw lines for testing
+        # for i in range(4):
+        #     draw.line([(150*i,0), (150*i, 200)], fill=None, width=3)
         for c in components:
             c.draw_in_image(img)
         created_at = datetime.now(timezone.utc)

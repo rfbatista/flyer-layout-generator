@@ -1,11 +1,9 @@
 from collections.abc import Iterable
 from copy import deepcopy
 from typing import List
-from PIL import Image
 from pydantic import BaseModel
 
 from app.entities.photoshop import Elemento, DesignElement
-
 
 class Componente(BaseModel):
     id: int
@@ -90,7 +88,9 @@ class Componente(BaseModel):
             element = el[0]
             im = item.image()
             print(element)
-            im.thumbnail(element.size())
+            size = element.size()
+            im = im.resize((size[0],size[1]))
+            print(im.size)
             # print(
             #     "positioning element in: %s %s with size %s"
             #     % (el[0].layer_id, el[0].pos(), el[0].size())

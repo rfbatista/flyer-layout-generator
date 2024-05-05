@@ -21,3 +21,4 @@ class DesignTemplateRegion(BaseModel):
 
     def size(self):
         return (self.xii - self.xi, self.yii - self.yi)
+

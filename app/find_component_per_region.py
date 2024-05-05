@@ -4,6 +4,7 @@ from app.entities.componente import Componente
 from app.entities.template import DesignTemplateRegion
 
 def find_component_for_region(c: List[Componente], r: DesignTemplateRegion):
+    return
 
 def define_components_per_region(
     regions: List[DesignTemplateRegion], components: List[Componente]

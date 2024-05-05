@@ -41,3 +41,10 @@ restart:
 	sudo systemctl restart server
 status:
 	sudo systemctl status server
+buildai:
+	docker build -t ai -f ./scripts/ai/Dockerfile.prod .
+runai:
+	docker run -p 8080:8080 \ 
+	-v /home/ec2-user/alg_visual:/home/ec2-user/alg_visual \
+	-v /home/ec2-user:/home/ec2-user \
+	ai

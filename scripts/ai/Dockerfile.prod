@@ -1,6 +1,6 @@
 FROM python:3.10 
 
-WORKDIR /app
+WORKDIR /home/ec2-user/alg_visual
 
 RUN pip install poetry
 

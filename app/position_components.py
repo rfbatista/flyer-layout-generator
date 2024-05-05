@@ -4,14 +4,13 @@ from app.entities.template import DesignTemplateRegion
 
 PAD_SIZE = 10
 
-
 def fit_in_region(region: DesignTemplateRegion, comp: Componente):
     # Calculate the scaling factor
     scale_factor = 1
     if comp.width > comp.height:
-        scale_factor = region.size()[0] / comp.width
+        scale_factor = (region.size()[0] - PAD_SIZE) / comp.width
     else:
-        scale_factor = region.size()[1] / comp.height
+        scale_factor = (region.size()[1] - PAD_SIZE) / comp.height
 
     # Calculate the new size of the square
     new_size = tuple(int(dim * scale_factor) for dim in comp.size())
@@ -21,13 +20,16 @@ def fit_in_region(region: DesignTemplateRegion, comp: Componente):
 
 def find_position_to_center(regiao: DesignTemplateRegion, comp: Componente):
     element_size = (comp.width, comp.height)
+    print("element size ", element_size)
     bbox = regiao.bbox()
-    regiao_center_x = bbox[0][0] + ((bbox[1][0] - element_size[0]) // 2)
-    regiao_center_y = bbox[0][1] + ((bbox[1][1] - element_size[1]) // 2)
+    print("bbox ", bbox)
+    regiao_center_x = bbox[0][0] + (((bbox[1][0] - bbox[0][0]) - element_size[0]) // 2)
+    regiao_center_y = bbox[0][1] + (((bbox[1][1] - bbox[0][1]) - element_size[1]) // 2)
     center_position = (
         regiao_center_x,
         regiao_center_y,
     )
+    print("center position ", center_position)
     return (int(center_position[0]), int(center_position[1]))
 
 

@@ -15,7 +15,7 @@ class Elemento:
         return self.layer.layer_id
 
     def image(self) -> Image:
-        im = self.layer.composite()
+        im = self.layer.composite(force=True)
         return im
 
     def position_from(self, origin):
@@ -75,8 +75,9 @@ class DesignElement(BaseModel):
         self.yii = self.yi + self.height
 
     def __str__(self):
-        return "design_element_id %s size: %s position %s" % (
+        return "design_element_id %s name %s size: %s position %s" % (
             self.id,
+            self.name,
             self.size(),
             self.pos(),
         )

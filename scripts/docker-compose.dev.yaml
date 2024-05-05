@@ -20,6 +20,7 @@ services:
       AI_SERVICE_BASE_URL: "http://ai-dev:8080"
       IMAGE_FOLDER_PATH: "/app/dist/images"
       DESIGN_FILE_PATH: "/app/dist/files"
+      ASSETS_FOLDER_PATH: "/app/assets"
     depends_on:
       - postgres-dev
   ai-dev:
