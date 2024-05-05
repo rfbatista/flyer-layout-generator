@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
@@ -19,6 +20,7 @@ type HTTPServerParams struct {
 	Logger      *zap.Logger
 	Config      *AppConfig
 	Controllers []ports.Controller `group:"controller"`
+	Pool        *pgxpool.Pool
 }
 
 type HTTPError struct {
@@ -103,6 +105,14 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		IgnoreBase: false,
 		Filesystem: nil,
 	}))
+	e.GET("/api/health", func(c echo.Context) error {
+		err := p.Pool.Ping(c.Request().Context())
+		if err != nil {
+			return c.String(http.StatusOK, err.Error())
+		} else {
+			return c.String(http.StatusOK, "Ok")
+		}
+	})
 	for _, controller := range p.Controllers {
 		err := controller.Load(e)
 		if err != nil {
