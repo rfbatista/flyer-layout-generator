@@ -44,6 +44,6 @@ status:
 buildai:
 	docker build -t ai -f ./scripts/ai/Dockerfile.prod .
 runaid:
-	docker run -p 8080:8080 -v /home/ec2-user/alg_visual:/home/ec2-user/alg_visual -v /home/ec2-user:/home/ec2-user ai
+	docker run -d -p 8080:8080 -v /home/ec2-user/alg_visual:/home/ec2-user/alg_visual -v /home/ec2-user:/home/ec2-user ai
 runai:
 	uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
