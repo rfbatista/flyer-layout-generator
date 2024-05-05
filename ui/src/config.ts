@@ -1,6 +1,6 @@
 export const appConfig = {
   api: {
-    baeURL: "http://localhost:8000",
+    baeURL: "http://54.221.241.11/",
   },
   paths: {
     gerador: "/",
