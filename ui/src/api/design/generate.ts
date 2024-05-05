@@ -10,7 +10,7 @@ export type GenerateDesignAPIResult = {
 };
 
 export async function generateDesignAPI(input: FormData): Promise<any> {
-  await api.post<GenerateDesignAPIResult>(`/api/v1/design`, input, {
+  return api.post<GenerateDesignAPIResult>(`/api/v1/design`, input, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }

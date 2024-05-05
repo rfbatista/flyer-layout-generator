@@ -1,4 +1,4 @@
-import { PhotoshopImage } from "../entities/image";
+import { DesignImage } from "../entities/image";
 import {
   ElementTree,
   PhotoshopElement,
@@ -17,7 +17,7 @@ type PhotoshopStore = {
   files: PhotoshopFile[];
   activeFile?: PhotoshopFile;
   activeTree?: ElementTree;
-  images: PhotoshopImage[];
+  images: DesignImage[];
   activeElements: PhotoshopElement[];
   mainBoardSize: { width: number; height: number };
   setMainBoardSize: (d: { width: number; height: number }) => void;

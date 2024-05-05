@@ -5,9 +5,10 @@ import { useGeneratePage } from "./state";
 import { usePhotoshopStore } from "../../store/photoshop";
 
 export function GeneratePartPage() {
-  const { onTemplateSelected, isLoading, onSubmit } = useGeneratePage();
+  const { onTemplateSelected, isLoading, onSubmit, imageGerated } =
+    useGeneratePage();
   const { photoshopList: files, initPhotoshopStore } = usePhotoshopStore();
-  const { templates, initTemplatesStore, image } = useTemplates((data) => ({
+  const { templates, initTemplatesStore, } = useTemplates((data) => ({
     templates: data.templates,
     get: data.getTemplates,
     generate: data.generateDesign,
@@ -24,7 +25,7 @@ export function GeneratePartPage() {
     <div className="w-screen">
       <div className="max-w-6xl w-full mx-auto">
         <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-          <div>
+          <div> 
             <div className="mb-2 block">
               <Label htmlFor="name" value="Arquivo" />
             </div>
@@ -58,7 +59,9 @@ export function GeneratePartPage() {
           </Button>
         </form>
       </div>
-      <img src={image} />
+      <div className="w-full flex items-center justify-center mt-5">
+        <img src={imageGerated && imageGerated.src} />
+      </div>
     </div>
   );
 }
