@@ -95,7 +95,14 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
-	e.Static("/dist", p.Config.DistFolderPath)
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:       p.Config.AssetsFolderPath,
+		Index:      "index.html",
+		Browse:     false,
+		HTML5:      true,
+		IgnoreBase: false,
+		Filesystem: nil,
+	}))
 	for _, controller := range p.Controllers {
 		err := controller.Load(e)
 		if err != nil {

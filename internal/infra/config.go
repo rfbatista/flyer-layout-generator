@@ -17,6 +17,7 @@ type AppConfig struct {
 	CoreDatabasePath      string
 	PhotoshopFilesPath    string
 	DistFolderPath        string
+	AssetsFolderPath      string
 	ImagesFolderPath      string
 	DesignFilesFolderPath string
 	AiServiceBaseURL      string
@@ -60,6 +61,7 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
 		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
 		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
+		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),
 			DBName:   os.Getenv("PG_DATABASE_NAME"),
@@ -96,6 +98,7 @@ func NewTestConfig() (*AppConfig, error) {
 		GeneratorClientURL:    os.Getenv("AI_SERVICE_BASE_URL"),
 		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
 		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
+		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),
 			DBName:   os.Getenv("PG_DATABASE_NAME"),

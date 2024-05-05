@@ -20,10 +20,10 @@ func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, er
 }
 
 type GeneratorRequest struct {
-	Template   entities.Template             `json:"template,omitempty"`
-	Photoshop  entities.Photoshop            `json:"photoshop,omitempty"`
-	Components []entities.PhotoshopComponent `json:"components,omitempty"`
-	Elements   []entities.PhotoshopElement   `json:"elements,omitempty"`
+	Template   entities.Template             `json:"template"`
+	Photoshop  entities.Photoshop            `json:"photoshop"`
+	Components []entities.PhotoshopComponent `json:"components"`
+	Elements   []entities.PhotoshopElement   `json:"elements"`
 }
 
 type GeneratorResult struct {

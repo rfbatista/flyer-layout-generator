@@ -29,7 +29,9 @@ CREATE TABLE photoshop_components (
   xii INT,
   yi INT,
   yii INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (photoshop_id) REFERENCES photoshop (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE photoshop_element (
