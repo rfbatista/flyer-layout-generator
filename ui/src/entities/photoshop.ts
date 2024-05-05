@@ -1,4 +1,4 @@
-import { PhotoshopListAPIResult } from "../api/photoshop";
+import { PhotoshopListAPIResult } from "../api/photoshop/listPhotoshopFile";
 import { appConfig } from "../config";
 
 export type PhotoshopFileProps = {
@@ -104,7 +104,7 @@ export class PhotoshopElement {
   }
 
   get groupId() {
-    return this.props.group_id || 0;
+    return this.props.group_id || "0";
   }
 
   get isGroup() {
@@ -175,7 +175,7 @@ export class ElementTree {
 
   static layout(elements: PhotoshopElement[]): ElementTree {
     const root = new ElementTree();
-    ElementTree._layout(0, root, elements);
+    ElementTree._layout("0", root, elements);
     return root;
   }
 

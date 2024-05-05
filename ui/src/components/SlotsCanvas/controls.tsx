@@ -15,8 +15,6 @@ export const SlotsCanvasInputControls = () => {
             type="number"
             placeholder=""
             required
-            onChange={handleWidthInputChange}
-            value={canvasState.width}
           />
         </div>
         <div>
@@ -29,8 +27,6 @@ export const SlotsCanvasInputControls = () => {
             type="number"
             placeholder=""
             required
-            onChange={handleHeightInputChange}
-            value={canvasState.height}
           />
         </div>
       </div>
@@ -43,26 +39,11 @@ export const SlotsCanvasActionsControls = () => {
     <div className="flex justify-center items-center mt-5">
       <div className="my-2 flex justify-center items-center">
         <div className="flex">
-          <button
-            type="button"
-            className={`nav-left`}
-            onClick={() => addRectangle()}
-          >
-            <Scan size={"20px"} className="mr-2" />
-          </button>
-          <button type="button" className="nav-mid">
-            <MousePointer2 size={"20px"} className="mr-2" />
-          </button>
-          <button
-            type="button"
-            className="nav-right"
-            onClick={() => removeSelected()}
-          >
-            <Trash2 size={"20px"} className="mr-2" />
-          </button>
+          <button type="button" className={`nav-left`}></button>
+          <button type="button" className="nav-mid"></button>
+          <button type="button" className="nav-right"></button>
         </div>
       </div>
     </div>
   );
 };
-

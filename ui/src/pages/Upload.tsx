@@ -1,6 +1,5 @@
 import { CircleX, Image, Puzzle } from "lucide-react";
 import React, { useEffect } from "react";
-import { toast } from "react-toastify";
 import { Canvas } from "../components/Canvas";
 import { FileBar } from "../components/FileBar";
 import { TreeView } from "../components/TreeView";
@@ -8,7 +7,7 @@ import { usePhotoshopFiles } from "../store/files";
 import { usePhotoshopStore } from "../store/photoshop";
 
 export function UploadFilePage() {
-  const mainRef = React.useRef();
+  const mainRef = React.useRef<any>();
   const data = usePhotoshopFiles((d) => ({
     init: d.init,
     elementsSelected: d.elementsSelected,

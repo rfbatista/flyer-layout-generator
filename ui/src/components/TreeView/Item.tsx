@@ -4,7 +4,7 @@ import { Spinner } from "flowbite-react";
 import { usePhotoshopStore } from "../../store/photoshop";
 
 export const Item: React.FC<{ item: ElementTree }> = ({ item }) => {
-  const { isSelected, selectItem, isLoading, component , components} = usePhotoshopStore(
+  const { isSelected, selectItem, isLoading, component } = usePhotoshopStore(
     (d) => ({
       selectItem: d.selectElement,
       isSelected:

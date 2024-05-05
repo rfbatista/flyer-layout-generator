@@ -8,8 +8,8 @@ export type GetPhotoshopByIDAPIResult = {
     name: string;
     image_url: any;
     file_url: string;
-    width?: number;
-    height?: number;
+    width: number;
+    height: number;
     created_at: string;
     updated_at: any;
   };

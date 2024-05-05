@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { TemplateLayout } from "../components/Template";
 import { usePhotoshopFiles } from "../store/files";
 
 export const GeneratedImagesPage = () => {

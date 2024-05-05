@@ -17,7 +17,7 @@ export type CreateTemplateAPIResult = {
 export function createTemplateAPI(data: any): Promise<any> {
   return api
     .post<CreateTemplateAPIResult>(`/api/v1/template`, data)
-    .then((res) => {
+    .then(() => {
       return;
     });
 }

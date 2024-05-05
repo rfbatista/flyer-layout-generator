@@ -12,7 +12,7 @@ import { Design } from "../entities/designs";
 import { getPhotoshopListAPI } from "../api/photoshop/listPhotoshopFile";
 
 type PhotoshopStore = {
-  init: Function;
+  init: () => void;
   isInitiated: boolean;
   files: PhotoshopFile[];
   activeFile?: PhotoshopFile;

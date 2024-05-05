@@ -2,37 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
 import { Canvas } from "fabric/fabric-impl";
 
-type Rectangle = {
-  xi: number;
-  yi: number;
-  width: number;
-  height: number;
-};
-
 const SlotsCanvas = () => {
-  const [canvasState, setCanvasState] = useState({
+  const [canvasState] = useState({
     xi: 0,
     yi: 0,
     width: 400,
-    height: 400,
-    isDragOn: false,
+    height: 400, isDragOn: false,
     rectangles: [],
   });
   const fabricRef = useRef<Canvas | null>(null);
-
-  const handleWidthInputChange = (e: any) => {
-    if (!fabricRef.current) return;
-    const value = e.target.value;
-    fabricRef.current?.setWidth(value);
-    setCanvasState((s) => ({ ...s, width: e.target.value }));
-  };
-
-  const handleHeightInputChange = (e: any) => {
-    if (!fabricRef.current) return;
-    const value = e.target.value;
-    fabricRef.current?.setHeight(value);
-    setCanvasState((s) => ({ ...s, height: e.target.value }));
-  };
 
   const addRectangle = () => {
     if (!fabricRef.current) return;
@@ -44,13 +22,6 @@ const SlotsCanvas = () => {
       fill: "red",
     });
     fabricRef.current.add(rect);
-  };
-
-  const removeSelected = () => {
-    if (!fabricRef.current) return;
-    const activeObj = fabricRef.current.getActiveObject();
-    if (!activeObj) return;
-    fabricRef.current?.remove(activeObj);
   };
 
   useEffect(() => {
@@ -75,21 +46,6 @@ const SlotsCanvas = () => {
     };
   }, []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    const objects = fabricRef.current?.getObjects();
-    if (!objects) return;
-    const positions = [];
-    for (const object of objects) {
-      positions.push({
-        xi: Math.floor(object.left),
-        yi: Math.floor(object.top),
-        width: Math.floor(object.width),
-        height: Math.floor(object.height),
-      });
-    }
-  };
 
   return (
     <>

@@ -22,7 +22,7 @@ export class TemplatePosition {
     return this.props.height;
   }
 
-  resize(widthRatio, heighRatio) {
+  resize(widthRatio: any, heighRatio: any) {
     this.props.xi = this.props.xi * widthRatio;
     this.props.yi = this.props.yi * heighRatio;
     this.props.xii = this.props.xii * widthRatio;
@@ -62,7 +62,7 @@ export class Template {
   }
 
   get positions() {
-    return this.props.positions;
+    return []
   }
 
   widthRatio(newWidth: number) {

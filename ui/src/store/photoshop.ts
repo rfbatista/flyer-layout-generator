@@ -69,7 +69,7 @@ export const usePhotoshopStore = create<Props>((set, get) => ({
     set({ tree: t, isLoading: false });
     return t;
   },
-  listPhotoshop: (_limit, _skip) => {
+  listPhotoshop: () => {
     set({ isLoading: true });
     getPhotoshopListAPI().then((data) => {
       set({ photoshopList: data, isLoading: false });

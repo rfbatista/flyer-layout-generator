@@ -1,5 +1,4 @@
 import { Button, Label, Select, TextInput } from "flowbite-react";
-import { Scan, MousePointer2, Trash2 } from "lucide-react";
 import { useTemplates } from "../store/templates";
 import { toast } from "react-toastify";
 
@@ -15,11 +14,13 @@ export function CreateTemplatePage() {
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
     formJson.type = "distortion";
-    formJson.width = Number(formJson.width);
-    formJson.height = Number(formJson.height);
-    formJson.x = Number(formJson.x);
-    formJson.y = Number(formJson.y);
-    create(formJson)
+    var object = {};
+    formData.forEach((value, key) => (object[key] = value));
+    object["width"] = Number(formJson.width);
+    object["height"] = Number(formJson.height);
+    object["x"] = Number(formJson.x);
+    object["y"] = Number(formJson.y);
+    create(object)
       .then(() => toast.success("Template criado"))
       .catch(() => toast.error("Falha ao criar template"));
   };
@@ -112,8 +113,7 @@ export function CreateTemplatePage() {
         </form>
         <hr className="my-5" />
 
-        <div className="flex justify-center items-center mt-5">
-        </div>
+        <div className="flex justify-center items-center mt-5"></div>
       </div>
     </div>
   );
