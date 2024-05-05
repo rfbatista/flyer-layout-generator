@@ -37,3 +37,5 @@ run_in_server:
 	/usr/local/go/bin/go run ./cmd/server/main.go
 build_in_server:
 	/usr/local/go/bin/go build -o ./server ./cmd/server/main.go
+restart:
+	sudo systemctl restart server
