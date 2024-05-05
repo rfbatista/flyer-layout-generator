@@ -1,8 +1,6 @@
 package infra
 
 import (
-	"path/filepath"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -11,11 +9,11 @@ func NewFileLogger() {}
 
 func NewLogger() *zap.Logger {
 	config := zap.NewDevelopmentConfig()
-	fullpath := filepath.Join(FindProjectRoot(), "proxy.log")
-	// config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	config.OutputPaths = []string{
-		fullpath,
-	}
+	// fullpath := filepath.Join(FindProjectRoot(), "proxy.log")
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	// config.OutputPaths = []string{
+	// 	fullpath,
+	// }
 	logger, _ := config.Build()
 	return logger
 }
