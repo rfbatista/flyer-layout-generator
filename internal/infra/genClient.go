@@ -2,6 +2,7 @@ package infra
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -74,12 +75,16 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 		return nil, err
 	}
 	bodyReader := bytes.NewReader(jsonBody)
-	req, err := http.NewRequest(
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*90)
+	defer cancel()
+	req, err := http.NewRequestWithContext(
+		ctx,
 		http.MethodPost,
 		c.c.AiServiceBaseURL+"/api/v1/generate/distortion",
 		bodyReader,
 	)
 	if err != nil {
+		c.log.Error("client: error making http request: %s\n", zap.Error(err))
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -88,7 +93,7 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("client: error making http request: %s\n", err)
+		c.log.Error("client: error doing http request: %s\n", zap.Error(err))
 		os.Exit(1)
 	}
 	defer res.Body.Close()
