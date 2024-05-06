@@ -43,7 +43,7 @@ func (p PhotoshopProcessor) ProcessFile(
 	}
 	req.Header.Set("Content-Type", "application/json")
 	client := http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 90 * time.Second,
 	}
 	res, err := client.Do(req)
 	p.log.Info("file processing finished")
