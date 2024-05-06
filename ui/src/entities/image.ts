@@ -1,3 +1,5 @@
+import { appConfig } from "../config";
+
 export class DesignImage {
   props: any;
   constructor(props: any) {
@@ -5,7 +7,7 @@ export class DesignImage {
   }
 
   get src() {
-    return "http://localhost:8000" + this.props.image_url;
+    return appConfig.api.baeURL + this.props.image_url;
   }
 
   static create(res: any): DesignImage {

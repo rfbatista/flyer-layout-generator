@@ -20,6 +20,7 @@ export function CreateTemplatePage() {
     object["height"] = Number(formJson.height);
     object["x"] = Number(formJson.x);
     object["y"] = Number(formJson.y);
+    object["type"] = "distortion"
     create(object)
       .then(() => toast.success("Template criado"))
       .catch(() => toast.error("Falha ao criar template"));
