@@ -76,6 +76,7 @@ class DesignTemplate(BaseModel):
                 regions.append(r)
                 xi = xi + width
             yi = yi + height
+            xi = 0
         # print('regioes geradas: ', ["%s %s" % (c.id, c.bbox()) for c in regions])
         return regions
 

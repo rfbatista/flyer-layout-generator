@@ -7,10 +7,15 @@ PAD_SIZE = 10
 def fit_in_region(region: DesignTemplateRegion, comp: Componente):
     # Calculate the scaling factor
     scale_factor = 1
-    if comp.width > comp.height:
-        scale_factor = (region.size()[0] - PAD_SIZE) / comp.width
+    region_scale_factor = 1
+    if region.width() > region.height():
+        region_scale_factor = region.height()
     else:
-        scale_factor = (region.size()[1] - PAD_SIZE) / comp.height
+        region_scale_factor = region.width()
+    if comp.width > comp.height:
+        scale_factor = (region_scale_factor - PAD_SIZE) / comp.width
+    else:
+        scale_factor = (region_scale_factor - PAD_SIZE) / comp.height
 
     # Calculate the new size of the square
     new_size = tuple(int(dim * scale_factor) for dim in comp.size())
