@@ -33,3 +33,10 @@ docker plugin install grafana/loki-docker-driver:2.9.1 --alias loki --grant-all-
 ```
 3. sudo systemctl restart docker
 
+
+# Connecting to Lightsail
+
+```
+chmod 400 ./ssh-key.pem
+make ssh
+```
