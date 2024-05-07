@@ -3,8 +3,8 @@ package ports
 import "algvisual/internal/entities"
 
 type ProcessFileResult struct {
-	Photoshop entities.Photoshop          `json:"photoshop,omitempty"`
-	Elements  []entities.PhotoshopElement `json:"elements,omitempty"`
+	Photoshop entities.DesignFile          `json:"photoshop,omitempty"`
+	Elements  []entities.DesignElement `json:"elements,omitempty"`
 	Error     string                      `json:"error,omitempty"`
 	Detail    string
 }

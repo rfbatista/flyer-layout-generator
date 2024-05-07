@@ -1,23 +1,23 @@
--- name: GetPhotoshop :one
-SELECT * FROM photoshop
+-- name: Getdesign :one
+SELECT * FROM design
 WHERE id = $1 LIMIT 1;
 
--- name: GetPhotoshopComponentByID :one
-SELECT * FROM photoshop_components
-WHERE photoshop_id = $1 LIMIT 1;
+-- name: GetdesignComponentByID :one
+SELECT * FROM design_components
+WHERE design_id = $1 LIMIT 1;
 
--- name: GetPhotoshopBackgroundComponent :one
-SELECT * FROM photoshop_components
-WHERE photoshop_id = $1 AND type = 'background' LIMIT 1;
+-- name: GetdesignBackgroundComponent :one
+SELECT * FROM design_components
+WHERE design_id = $1 AND type = 'background' LIMIT 1;
 
--- name: ListPhotoshop :many
-SELECT * FROM photoshop
+-- name: Listdesign :many
+SELECT * FROM design
 OFFSET $1 LIMIT $2;
 
 -- name: CreateElement :one
-INSERT INTO photoshop_element (
+INSERT INTO design_element (
   layer_id,
-  photoshop_id,
+  design_id,
   name,
   text,
   xi,
@@ -54,8 +54,8 @@ INSERT INTO photoshop_element (
 )
 RETURNING *;
 
--- name: CreatePhotoshop :one
-INSERT INTO photoshop (
+-- name: Createdesign :one
+INSERT INTO design (
   name,
   image_url,
   file_url,
@@ -72,7 +72,7 @@ INSERT INTO photoshop (
 )
 RETURNING *;
 
--- name: ListPhotoshopElements :many
-SELECT * FROM photoshop_element 
-WHERE photoshop_id = $1
+-- name: ListdesignElements :many
+SELECT * FROM design_element 
+WHERE design_id = $1
 LIMIT $2 OFFSET $3;

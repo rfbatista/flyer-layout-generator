@@ -12,8 +12,8 @@ type ListComponentsByFileIdRequest struct {
 }
 
 type ListComponentsByFileIdResult struct {
-	Status string                        `json:"status,omitempty"`
-	Data   []database.PhotoshopComponent `json:"data,omitempty"`
+	Status string                     `json:"status,omitempty"`
+	Data   []database.DesignComponent `json:"data,omitempty"`
 }
 
 func ListComponentsByFileIdUseCase(

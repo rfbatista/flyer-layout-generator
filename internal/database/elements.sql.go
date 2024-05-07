@@ -10,22 +10,22 @@ import (
 )
 
 const getElements = `-- name: GetElements :many
-SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
-WHERE photoshop_id = $1
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+WHERE design_id = $1
 `
 
-func (q *Queries) GetElements(ctx context.Context, photoshopID int32) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, getElements, photoshopID)
+func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, getElements, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -55,23 +55,23 @@ func (q *Queries) GetElements(ctx context.Context, photoshopID int32) ([]Photosh
 	return items, nil
 }
 
-const getPhotoshopElements = `-- name: GetPhotoshopElements :many
-SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
-WHERE photoshop_id = $1
+const getdesignElements = `-- name: GetdesignElements :many
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+WHERE design_id = $1
 `
 
-func (q *Queries) GetPhotoshopElements(ctx context.Context, photoshopID int32) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, getPhotoshopElements, photoshopID)
+func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, getdesignElements, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -101,23 +101,23 @@ func (q *Queries) GetPhotoshopElements(ctx context.Context, photoshopID int32) (
 	return items, nil
 }
 
-const getphotoshopElementsByIDlist = `-- name: GetphotoshopElementsByIDlist :many
-select id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from photoshop_element 
+const getdesignElementsByIDlist = `-- name: GetdesignElementsByIDlist :many
+select id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
 where id = any ($1)
 `
 
-func (q *Queries) GetphotoshopElementsByIDlist(ctx context.Context, ids []int32) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, getphotoshopElementsByIDlist, ids)
+func (q *Queries) GetdesignElementsByIDlist(ctx context.Context, ids []int32) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, getdesignElementsByIDlist, ids)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,

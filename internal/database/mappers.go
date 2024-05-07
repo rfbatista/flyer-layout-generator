@@ -2,8 +2,8 @@ package database
 
 import "algvisual/internal/entities"
 
-func ToPhotoshopEntitie(raw Photoshop) entities.Photoshop {
-	return entities.Photoshop{
+func TodesignEntitie(raw Design) entities.DesignFile {
+	return entities.DesignFile{
 		ID:             raw.ID,
 		Width:          raw.Width.Int32,
 		Height:         raw.Height.Int32,
@@ -15,8 +15,8 @@ func ToPhotoshopEntitie(raw Photoshop) entities.Photoshop {
 	}
 }
 
-func ToPhotoshopComponentEntitie(raw PhotoshopComponent) entities.PhotoshopComponent {
-	return entities.PhotoshopComponent{
+func TodesignComponentEntitie(raw DesignComponent) entities.DesignComponent {
+	return entities.DesignComponent{
 		ID:     raw.ID,
 		Width:  raw.Width.Int32,
 		Height: raw.Height.Int32,
@@ -29,8 +29,8 @@ func ToPhotoshopComponentEntitie(raw PhotoshopComponent) entities.PhotoshopCompo
 	}
 }
 
-func ToPhotoshopElementEntitie(raw PhotoshopElement) entities.PhotoshopElement {
-	return entities.PhotoshopElement{
+func TodesignElementEntitie(raw DesignElement) entities.DesignElement {
+	return entities.DesignElement{
 		ID:          raw.ID,
 		Xi:          raw.Xi.Int32,
 		Xii:         raw.Xii.Int32,
@@ -44,7 +44,7 @@ func ToPhotoshopElementEntitie(raw PhotoshopElement) entities.PhotoshopElement {
 		IsGroup:     raw.IsGroup.Bool,
 		GroupId:     raw.GroupID.Int32,
 		Level:       raw.Level.Int32,
-		PhotoshopId: raw.PhotoshopID,
+		DesignID:    raw.DesignID,
 		Image:       raw.ImageUrl.String,
 		Text:        raw.Text.String,
 		ComponentID: raw.ComponentID.Int32,

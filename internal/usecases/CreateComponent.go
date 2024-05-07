@@ -21,7 +21,7 @@ type CreateComponentRequest struct {
 }
 
 type CreateComponentResult struct {
-	Data []database.PhotoshopElement `json:"data,omitempty"`
+	Data []database.DesignElement `json:"data,omitempty"`
 }
 
 func CreateComponentUseCase(
@@ -39,7 +39,7 @@ func CreateComponentUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
-	elements, err := qtx.GetphotoshopElementsByIDlist(ctx, req.ElementsID)
+	elements, err := qtx.GetdesignElementsByIDlist(ctx, req.ElementsID)
 	if err != nil && err != sql.ErrNoRows {
 		err = shared.WrapWithAppError(err, "Falha ao buscar elementos do photoshop", err.Error())
 		log.Error(err.Error())
@@ -50,14 +50,14 @@ func CreateComponentUseCase(
 	}
 	xi, yi, xii, yii, width, heigh := calculateBoundaringBoxForComponent(elements)
 	comp, err := qtx.CreateComponent(ctx, database.CreateComponentParams{
-		PhotoshopID: int32(req.PhotoshopID),
-		Width:       pgtype.Int4{Int32: width, Valid: true},
-		Height:      pgtype.Int4{Int32: heigh, Valid: true},
-		Xi:          pgtype.Int4{Int32: xi, Valid: true},
-		Xii:         pgtype.Int4{Int32: xii, Valid: true},
-		Yi:          pgtype.Int4{Int32: yi, Valid: true},
-		Yii:         pgtype.Int4{Int32: yii, Valid: true},
-		Color:       pgtype.Text{String: req.Color, Valid: req.Color != ""},
+		DesignID: int32(req.PhotoshopID),
+		Width:    pgtype.Int4{Int32: width, Valid: true},
+		Height:   pgtype.Int4{Int32: heigh, Valid: true},
+		Xi:       pgtype.Int4{Int32: xi, Valid: true},
+		Xii:      pgtype.Int4{Int32: xii, Valid: true},
+		Yi:       pgtype.Int4{Int32: yi, Valid: true},
+		Yii:      pgtype.Int4{Int32: yii, Valid: true},
+		Color:    pgtype.Text{String: req.Color, Valid: req.Color != ""},
 		Type: database.NullComponentType{
 			ComponentType: database.ComponentType(req.Type),
 			Valid:         true,
@@ -68,10 +68,10 @@ func CreateComponentUseCase(
 		log.Error(err.Error())
 		return nil, err
 	}
-	elUpdated, err := qtx.UpdateManyPhotoshopElement(
+	elUpdated, err := qtx.UpdateManydesignElement(
 		ctx,
-		database.UpdateManyPhotoshopElementParams{
-			PhotoshopID:         int32(req.PhotoshopID),
+		database.UpdateManydesignElementParams{
+			DesignID:            int32(req.PhotoshopID),
 			ComponentIDDoUpdate: true,
 			ComponentID:         comp.ID,
 			Ids:                 req.ElementsID,
@@ -87,7 +87,7 @@ func CreateComponentUseCase(
 }
 
 func calculateBoundaringBoxForComponent(
-	elements []database.PhotoshopElement,
+	elements []database.DesignElement,
 ) (int32, int32, int32, int32, int32, int32) {
 	xi := elements[0].Xi.Int32
 	xii := elements[0].Xii.Int32

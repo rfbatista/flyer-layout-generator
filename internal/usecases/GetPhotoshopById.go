@@ -16,7 +16,7 @@ type GetPhotoshopByIdRequest struct {
 
 type GetPhotoshopByIdResult struct {
 	Status string
-	Data   entities.Photoshop
+	Data   entities.DesignFile
 }
 
 func GetPhotoshopByIdUseCase(
@@ -33,6 +33,6 @@ func GetPhotoshopByIdUseCase(
 	}
 	return &GetPhotoshopByIdResult{
 		Status: "success",
-		Data:   database.ToPhotoshopEntitie(photoshop),
+		Data:   database.TodesignEntitie(photoshop),
 	}, nil
 }

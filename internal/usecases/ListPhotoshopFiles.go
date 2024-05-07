@@ -15,8 +15,8 @@ type ListPhotoshopFilesRequest struct {
 }
 
 type ListPhotoshopFilesResult struct {
-	Status string               `json:"status,omitempty"`
-	Data   []database.Photoshop `json:"data,omitempty"`
+	Status string            `json:"status,omitempty"`
+	Data   []database.Design `json:"data,omitempty"`
 }
 
 func ListPhotoshopFilesUseCase(

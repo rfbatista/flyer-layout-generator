@@ -10,6 +10,8 @@ RestartSec=5
 WorkingDirectory=/home/ec2-user/alg_visual
 ExecStart=/home/ec2-user/alg_visual/server
 EnvironmentFile=/home/ec2-user/alg_visual/.env
+StandardOutput=append:/home/ec2-user/info.log
+StandardError=append:/home/ec2-user/error.log
 
 [Install]
 WantedBy=multi-user.target

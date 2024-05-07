@@ -9,12 +9,12 @@ import (
 
 type RemoveComponentUseCaseRequest struct {
 	PhotoshopID int32   `param:"photoshop_id" json:"photoshop_id,omitempty"`
-	Elements    []int32 `                      json:"elements,omitempty"     body:"elements"`
+	Elements    []int32 `                     json:"elements,omitempty"     body:"elements"`
 }
 
 type RemoveComponentUseCaseResult struct {
-	Status string                      `json:"status,omitempty"`
-	Data   []database.PhotoshopElement `json:"data,omitempty"`
+	Status string                   `json:"status,omitempty"`
+	Data   []database.DesignElement `json:"data,omitempty"`
 }
 
 func RemoveComponentUseCase(
@@ -25,8 +25,8 @@ func RemoveComponentUseCase(
 	elUpdated, err := queries.RemoveComponentFromElements(
 		ctx,
 		database.RemoveComponentFromElementsParams{
-			PhotoshopID: req.PhotoshopID,
-			Ids:         req.Elements,
+			DesignID: req.PhotoshopID,
+			Ids:      req.Elements,
 		},
 	)
 	if err != nil {

@@ -12,8 +12,8 @@ import (
 )
 
 const createComponent = `-- name: CreateComponent :one
-INSERT INTO photoshop_components (
-  photoshop_id,
+INSERT INTO design_components (
+  design_id,
   width,
   height,
   xi,
@@ -25,24 +25,24 @@ INSERT INTO photoshop_components (
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9
 )
-RETURNING id, photoshop_id, width, height, color, type, xi, xii, yi, yii, created_at
+RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, created_at
 `
 
 type CreateComponentParams struct {
-	PhotoshopID int32             `json:"photoshop_id"`
-	Width       pgtype.Int4       `json:"width"`
-	Height      pgtype.Int4       `json:"height"`
-	Xi          pgtype.Int4       `json:"xi"`
-	Xii         pgtype.Int4       `json:"xii"`
-	Yi          pgtype.Int4       `json:"yi"`
-	Yii         pgtype.Int4       `json:"yii"`
-	Type        NullComponentType `json:"type"`
-	Color       pgtype.Text       `json:"color"`
+	DesignID int32             `json:"design_id"`
+	Width    pgtype.Int4       `json:"width"`
+	Height   pgtype.Int4       `json:"height"`
+	Xi       pgtype.Int4       `json:"xi"`
+	Xii      pgtype.Int4       `json:"xii"`
+	Yi       pgtype.Int4       `json:"yi"`
+	Yii      pgtype.Int4       `json:"yii"`
+	Type     NullComponentType `json:"type"`
+	Color    pgtype.Text       `json:"color"`
 }
 
-func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (PhotoshopComponent, error) {
+func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (DesignComponent, error) {
 	row := q.db.QueryRow(ctx, createComponent,
-		arg.PhotoshopID,
+		arg.DesignID,
 		arg.Width,
 		arg.Height,
 		arg.Xi,
@@ -52,10 +52,10 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		arg.Type,
 		arg.Color,
 	)
-	var i PhotoshopComponent
+	var i DesignComponent
 	err := row.Scan(
 		&i.ID,
-		&i.PhotoshopID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
 		&i.Color,
@@ -70,16 +70,16 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 }
 
 const getComponentByID = `-- name: GetComponentByID :one
-select pc.id, pc.photoshop_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from photoshop_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
 where pc.id = $1 LIMIT 1
 `
 
-func (q *Queries) GetComponentByID(ctx context.Context, id int32) (PhotoshopComponent, error) {
+func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignComponent, error) {
 	row := q.db.QueryRow(ctx, getComponentByID, id)
-	var i PhotoshopComponent
+	var i DesignComponent
 	err := row.Scan(
 		&i.ID,
-		&i.PhotoshopID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
 		&i.Color,
@@ -94,23 +94,23 @@ func (q *Queries) GetComponentByID(ctx context.Context, id int32) (PhotoshopComp
 }
 
 const haveElementsIn = `-- name: HaveElementsIn :many
-select pc.id, pc.photoshop_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from photoshop_components pc
-inner join photoshop_element as pe on pe.component_id = pc.id 
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
+inner join design_element as pe on pe.component_id = pc.id 
 where pc.id = $1
 `
 
-func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]PhotoshopComponent, error) {
+func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignComponent, error) {
 	rows, err := q.db.Query(ctx, haveElementsIn, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopComponent
+	var items []DesignComponent
 	for rows.Next() {
-		var i PhotoshopComponent
+		var i DesignComponent
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Width,
 			&i.Height,
 			&i.Color,
@@ -132,22 +132,22 @@ func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]PhotoshopComp
 }
 
 const listComponentByFileId = `-- name: ListComponentByFileId :many
-select pc.id, pc.photoshop_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from photoshop_components pc
-where pc.photoshop_id = $1
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
+where pc.design_id = $1
 `
 
-func (q *Queries) ListComponentByFileId(ctx context.Context, photoshopID int32) ([]PhotoshopComponent, error) {
-	rows, err := q.db.Query(ctx, listComponentByFileId, photoshopID)
+func (q *Queries) ListComponentByFileId(ctx context.Context, designID int32) ([]DesignComponent, error) {
+	rows, err := q.db.Query(ctx, listComponentByFileId, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopComponent
+	var items []DesignComponent
 	for rows.Next() {
-		var i PhotoshopComponent
+		var i DesignComponent
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Width,
 			&i.Height,
 			&i.Color,
@@ -169,31 +169,31 @@ func (q *Queries) ListComponentByFileId(ctx context.Context, photoshopID int32) 
 }
 
 const removeComponentFromElements = `-- name: RemoveComponentFromElements :many
-UPDATE photoshop_element
+UPDATE design_element
 SET 
     component_id = NULL
 WHERE
-    id = ANY ($1) and photoshop_id = $2
-RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+    id = ANY ($1) and design_id = $2
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type RemoveComponentFromElementsParams struct {
-	Ids         []int32 `json:"ids"`
-	PhotoshopID int32   `json:"photoshop_id"`
+	Ids      []int32 `json:"ids"`
+	DesignID int32   `json:"design_id"`
 }
 
-func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveComponentFromElementsParams) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, removeComponentFromElements, arg.Ids, arg.PhotoshopID)
+func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveComponentFromElementsParams) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, removeComponentFromElements, arg.Ids, arg.DesignID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -223,8 +223,8 @@ func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveCom
 	return items, nil
 }
 
-const updateManyPhotoshopElement = `-- name: UpdateManyPhotoshopElement :many
-UPDATE photoshop_element
+const updateManydesignElement = `-- name: UpdateManydesignElement :many
+UPDATE design_element
 SET 
     component_id = CASE WHEN $1::boolean
         THEN $2::int ELSE component_id END,
@@ -232,39 +232,39 @@ SET
     name = CASE WHEN $3::boolean
         THEN $4 ELSE name END
 WHERE
-    id = ANY ($5) and photoshop_id = $6
-RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+    id = ANY ($5) and design_id = $6
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
-type UpdateManyPhotoshopElementParams struct {
+type UpdateManydesignElementParams struct {
 	ComponentIDDoUpdate bool        `json:"component_id_do_update"`
 	ComponentID         int32       `json:"component_id"`
 	NameDoUpdate        bool        `json:"name_do_update"`
 	Name                pgtype.Text `json:"name"`
 	Ids                 []int32     `json:"ids"`
-	PhotoshopID         int32       `json:"photoshop_id"`
+	DesignID            int32       `json:"design_id"`
 }
 
 // You can use sqlc.arg() and @ to identify named parameters
-func (q *Queries) UpdateManyPhotoshopElement(ctx context.Context, arg UpdateManyPhotoshopElementParams) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, updateManyPhotoshopElement,
+func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydesignElementParams) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, updateManydesignElement,
 		arg.ComponentIDDoUpdate,
 		arg.ComponentID,
 		arg.NameDoUpdate,
 		arg.Name,
 		arg.Ids,
-		arg.PhotoshopID,
+		arg.DesignID,
 	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,

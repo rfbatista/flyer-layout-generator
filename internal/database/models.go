@@ -97,15 +97,7 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 	return string(ns.TemplateType), nil
 }
 
-type Image struct {
-	ID          int64            `json:"id"`
-	Url         string           `json:"url"`
-	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
-	TemplateID  pgtype.Int4      `json:"template_id"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-}
-
-type Photoshop struct {
+type Design struct {
 	ID             int32            `json:"id"`
 	Name           string           `json:"name"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
@@ -118,23 +110,23 @@ type Photoshop struct {
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
-type PhotoshopComponent struct {
-	ID          int32             `json:"id"`
-	PhotoshopID int32             `json:"photoshop_id"`
-	Width       pgtype.Int4       `json:"width"`
-	Height      pgtype.Int4       `json:"height"`
-	Color       pgtype.Text       `json:"color"`
-	Type        NullComponentType `json:"type"`
-	Xi          pgtype.Int4       `json:"xi"`
-	Xii         pgtype.Int4       `json:"xii"`
-	Yi          pgtype.Int4       `json:"yi"`
-	Yii         pgtype.Int4       `json:"yii"`
-	CreatedAt   pgtype.Timestamp  `json:"created_at"`
+type DesignComponent struct {
+	ID        int32             `json:"id"`
+	DesignID  int32             `json:"design_id"`
+	Width     pgtype.Int4       `json:"width"`
+	Height    pgtype.Int4       `json:"height"`
+	Color     pgtype.Text       `json:"color"`
+	Type      NullComponentType `json:"type"`
+	Xi        pgtype.Int4       `json:"xi"`
+	Xii       pgtype.Int4       `json:"xii"`
+	Yi        pgtype.Int4       `json:"yi"`
+	Yii       pgtype.Int4       `json:"yii"`
+	CreatedAt pgtype.Timestamp  `json:"created_at"`
 }
 
-type PhotoshopElement struct {
+type DesignElement struct {
 	ID             int32            `json:"id"`
-	PhotoshopID    int32            `json:"photoshop_id"`
+	DesignID       int32            `json:"design_id"`
 	Name           pgtype.Text      `json:"name"`
 	LayerID        pgtype.Text      `json:"layer_id"`
 	Text           pgtype.Text      `json:"text"`
@@ -153,6 +145,14 @@ type PhotoshopElement struct {
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+}
+
+type Image struct {
+	ID          int64            `json:"id"`
+	Url         string           `json:"url"`
+	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
+	TemplateID  pgtype.Int4      `json:"template_id"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
 type Template struct {

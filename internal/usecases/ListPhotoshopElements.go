@@ -14,8 +14,8 @@ type ListPhotoshopElementsUseCaseRequest struct {
 }
 
 type ListPhotoshopElementsUseCaseResult struct {
-	Status string                      `json:"status,omitempty"`
-	Data   []database.PhotoshopElement `json:"data,omitempty"`
+	Status string                   `json:"status,omitempty"`
+	Data   []database.DesignElement `json:"data,omitempty"`
 }
 
 func ListPhotoshopElementsUseCase(

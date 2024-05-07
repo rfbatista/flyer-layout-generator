@@ -56,17 +56,17 @@ func GenerateDesignUseCase(
 		)
 		return nil, err
 	}
-	var eelements []entities.PhotoshopElement
+	var eelements []entities.DesignElement
 	for _, el := range elements {
-		eelements = append(eelements, database.ToPhotoshopElementEntitie(el))
+		eelements = append(eelements, database.TodesignElementEntitie(el))
 	}
-	compHash := make(map[int32][]entities.PhotoshopElement)
+	compHash := make(map[int32][]entities.DesignElement)
 	for _, c := range eelements {
 		if c.ComponentID != 0 {
 			compHash[c.ComponentID] = append(compHash[c.ComponentID], c)
 		}
 	}
-	var components []entities.PhotoshopComponent
+	var components []entities.DesignComponent
 	for k := range compHash {
 		data, compErr := queries.GetComponentByID(ctx, k)
 		if compErr != nil {
@@ -77,13 +77,13 @@ func GenerateDesignUseCase(
 			)
 			return nil, compErr
 		}
-		comp := database.ToPhotoshopComponentEntitie(data)
+		comp := database.TodesignComponentEntitie(data)
 		comp.Elements = compHash[k]
 		components = append(components, comp)
 	}
 	result, err := client.GenerateImageWithDistortionStrategy(
 		infra.GeneratorRequest{
-			Photoshop:  database.ToPhotoshopEntitie(photoshop),
+			Photoshop:  database.TodesignEntitie(photoshop),
 			Template:   etemplate,
 			Elements:   eelements,
 			Components: components,

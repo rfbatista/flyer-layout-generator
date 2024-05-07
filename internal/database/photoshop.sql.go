@@ -12,9 +12,9 @@ import (
 )
 
 const createElement = `-- name: CreateElement :one
-INSERT INTO photoshop_element (
+INSERT INTO design_element (
   layer_id,
-  photoshop_id,
+  design_id,
   name,
   text,
   xi,
@@ -49,12 +49,12 @@ INSERT INTO photoshop_element (
   $16,
   $17
 )
-RETURNING id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type CreateElementParams struct {
 	LayerID        pgtype.Text `json:"layer_id"`
-	PhotoshopID    int32       `json:"photoshop_id"`
+	DesignID       int32       `json:"design_id"`
 	Name           pgtype.Text `json:"name"`
 	Text           pgtype.Text `json:"text"`
 	Xi             pgtype.Int4 `json:"xi"`
@@ -72,10 +72,10 @@ type CreateElementParams struct {
 	ImageExtension pgtype.Text `json:"image_extension"`
 }
 
-func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (PhotoshopElement, error) {
+func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (DesignElement, error) {
 	row := q.db.QueryRow(ctx, createElement,
 		arg.LayerID,
-		arg.PhotoshopID,
+		arg.DesignID,
 		arg.Name,
 		arg.Text,
 		arg.Xi,
@@ -92,10 +92,10 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (P
 		arg.ImageUrl,
 		arg.ImageExtension,
 	)
-	var i PhotoshopElement
+	var i DesignElement
 	err := row.Scan(
 		&i.ID,
-		&i.PhotoshopID,
+		&i.DesignID,
 		&i.Name,
 		&i.LayerID,
 		&i.Text,
@@ -118,8 +118,8 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (P
 	return i, err
 }
 
-const createPhotoshop = `-- name: CreatePhotoshop :one
-INSERT INTO photoshop (
+const createdesign = `-- name: Createdesign :one
+INSERT INTO design (
   name,
   image_url,
   file_url,
@@ -137,7 +137,7 @@ INSERT INTO photoshop (
 RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at
 `
 
-type CreatePhotoshopParams struct {
+type CreatedesignParams struct {
 	Name           string      `json:"name"`
 	ImageUrl       pgtype.Text `json:"image_url"`
 	FileUrl        pgtype.Text `json:"file_url"`
@@ -146,8 +146,8 @@ type CreatePhotoshopParams struct {
 	ImageExtension pgtype.Text `json:"image_extension"`
 }
 
-func (q *Queries) CreatePhotoshop(ctx context.Context, arg CreatePhotoshopParams) (Photoshop, error) {
-	row := q.db.QueryRow(ctx, createPhotoshop,
+func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Design, error) {
+	row := q.db.QueryRow(ctx, createdesign,
 		arg.Name,
 		arg.ImageUrl,
 		arg.FileUrl,
@@ -155,7 +155,7 @@ func (q *Queries) CreatePhotoshop(ctx context.Context, arg CreatePhotoshopParams
 		arg.Height,
 		arg.ImageExtension,
 	)
-	var i Photoshop
+	var i Design
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -171,14 +171,14 @@ func (q *Queries) CreatePhotoshop(ctx context.Context, arg CreatePhotoshopParams
 	return i, err
 }
 
-const getPhotoshop = `-- name: GetPhotoshop :one
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM photoshop
+const getdesign = `-- name: Getdesign :one
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM design
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPhotoshop(ctx context.Context, id int32) (Photoshop, error) {
-	row := q.db.QueryRow(ctx, getPhotoshop, id)
-	var i Photoshop
+func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
+	row := q.db.QueryRow(ctx, getdesign, id)
+	var i Design
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -194,17 +194,17 @@ func (q *Queries) GetPhotoshop(ctx context.Context, id int32) (Photoshop, error)
 	return i, err
 }
 
-const getPhotoshopBackgroundComponent = `-- name: GetPhotoshopBackgroundComponent :one
-SELECT id, photoshop_id, width, height, color, type, xi, xii, yi, yii, created_at FROM photoshop_components
-WHERE photoshop_id = $1 AND type = 'background' LIMIT 1
+const getdesignBackgroundComponent = `-- name: GetdesignBackgroundComponent :one
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, created_at FROM design_components
+WHERE design_id = $1 AND type = 'background' LIMIT 1
 `
 
-func (q *Queries) GetPhotoshopBackgroundComponent(ctx context.Context, photoshopID int32) (PhotoshopComponent, error) {
-	row := q.db.QueryRow(ctx, getPhotoshopBackgroundComponent, photoshopID)
-	var i PhotoshopComponent
+func (q *Queries) GetdesignBackgroundComponent(ctx context.Context, designID int32) (DesignComponent, error) {
+	row := q.db.QueryRow(ctx, getdesignBackgroundComponent, designID)
+	var i DesignComponent
 	err := row.Scan(
 		&i.ID,
-		&i.PhotoshopID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
 		&i.Color,
@@ -218,17 +218,17 @@ func (q *Queries) GetPhotoshopBackgroundComponent(ctx context.Context, photoshop
 	return i, err
 }
 
-const getPhotoshopComponentByID = `-- name: GetPhotoshopComponentByID :one
-SELECT id, photoshop_id, width, height, color, type, xi, xii, yi, yii, created_at FROM photoshop_components
-WHERE photoshop_id = $1 LIMIT 1
+const getdesignComponentByID = `-- name: GetdesignComponentByID :one
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, created_at FROM design_components
+WHERE design_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPhotoshopComponentByID(ctx context.Context, photoshopID int32) (PhotoshopComponent, error) {
-	row := q.db.QueryRow(ctx, getPhotoshopComponentByID, photoshopID)
-	var i PhotoshopComponent
+func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (DesignComponent, error) {
+	row := q.db.QueryRow(ctx, getdesignComponentByID, designID)
+	var i DesignComponent
 	err := row.Scan(
 		&i.ID,
-		&i.PhotoshopID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
 		&i.Color,
@@ -242,25 +242,25 @@ func (q *Queries) GetPhotoshopComponentByID(ctx context.Context, photoshopID int
 	return i, err
 }
 
-const listPhotoshop = `-- name: ListPhotoshop :many
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM photoshop
+const listdesign = `-- name: Listdesign :many
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM design
 OFFSET $1 LIMIT $2
 `
 
-type ListPhotoshopParams struct {
+type ListdesignParams struct {
 	Offset int32 `json:"offset"`
 	Limit  int32 `json:"limit"`
 }
 
-func (q *Queries) ListPhotoshop(ctx context.Context, arg ListPhotoshopParams) ([]Photoshop, error) {
-	rows, err := q.db.Query(ctx, listPhotoshop, arg.Offset, arg.Limit)
+func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Design, error) {
+	rows, err := q.db.Query(ctx, listdesign, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Photoshop
+	var items []Design
 	for rows.Next() {
-		var i Photoshop
+		var i Design
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -283,30 +283,30 @@ func (q *Queries) ListPhotoshop(ctx context.Context, arg ListPhotoshopParams) ([
 	return items, nil
 }
 
-const listPhotoshopElements = `-- name: ListPhotoshopElements :many
-SELECT id, photoshop_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM photoshop_element 
-WHERE photoshop_id = $1
+const listdesignElements = `-- name: ListdesignElements :many
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+WHERE design_id = $1
 LIMIT $2 OFFSET $3
 `
 
-type ListPhotoshopElementsParams struct {
-	PhotoshopID int32 `json:"photoshop_id"`
-	Limit       int32 `json:"limit"`
-	Offset      int32 `json:"offset"`
+type ListdesignElementsParams struct {
+	DesignID int32 `json:"design_id"`
+	Limit    int32 `json:"limit"`
+	Offset   int32 `json:"offset"`
 }
 
-func (q *Queries) ListPhotoshopElements(ctx context.Context, arg ListPhotoshopElementsParams) ([]PhotoshopElement, error) {
-	rows, err := q.db.Query(ctx, listPhotoshopElements, arg.PhotoshopID, arg.Limit, arg.Offset)
+func (q *Queries) ListdesignElements(ctx context.Context, arg ListdesignElementsParams) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, listdesignElements, arg.DesignID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PhotoshopElement
+	var items []DesignElement
 	for rows.Next() {
-		var i PhotoshopElement
+		var i DesignElement
 		if err := rows.Scan(
 			&i.ID,
-			&i.PhotoshopID,
+			&i.DesignID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,

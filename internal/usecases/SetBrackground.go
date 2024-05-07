@@ -17,7 +17,7 @@ type SetBackgroundUseCaseRequest struct {
 }
 
 type SetBackgroundUseCaseResult struct {
-	Data []database.PhotoshopElement
+	Data []database.DesignElement
 }
 
 func SetBackgroundUseCase(
@@ -43,9 +43,9 @@ func SetBackgroundUseCase(
 	}
 	if comp.ID == 0 {
 		comp, err = qtx.CreateComponent(ctx, database.CreateComponentParams{
-			PhotoshopID: req.PhotoshopID,
-			Width:       pgtype.Int4{Int32: 0, Valid: true},
-			Height:      pgtype.Int4{Int32: 0, Valid: true},
+			DesignID: req.PhotoshopID,
+			Width:    pgtype.Int4{Int32: 0, Valid: true},
+			Height:   pgtype.Int4{Int32: 0, Valid: true},
 			Type: database.NullComponentType{
 				ComponentType: database.ComponentTypeBackground,
 				Valid:         true,

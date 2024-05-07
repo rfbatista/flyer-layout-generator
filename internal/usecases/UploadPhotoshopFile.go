@@ -19,8 +19,8 @@ type UploadPhotoshopFileUseCaseRequest struct {
 }
 
 type UploadPhotoshopFileUseCaseResult struct {
-	Photoshop database.Photoshop          `json:"photoshop,omitempty"`
-	Elements  []database.PhotoshopElement `json:"elements,omitempty"`
+	Photoshop database.Design          `json:"photoshop,omitempty"`
+	Elements  []database.DesignElement `json:"elements,omitempty"`
 }
 
 func UploadPhotoshopFileUseCase(
@@ -50,18 +50,21 @@ func UploadPhotoshopFileUseCase(
 		return nil, shared.NewAppError(500, "Falha ao processar o arquivo photoshop", res.Error)
 	}
 	photoshop, err := db.CreatePhotoshop(ctx, database.CreatePhotoshopParams{
-		Width:          pgtype.Int4{Int32: res.Photoshop.Width, Valid: res.Photoshop.Width != 0},
-		Height:         pgtype.Int4{Int32: res.Photoshop.Height, Valid: res.Photoshop.Height != 0},
-		FileUrl:        pgtype.Text{String: url, Valid: true},
-		ImageUrl:       pgtype.Text{String: res.Photoshop.ImagePath, Valid: true},
-		ImageExtension: pgtype.Text{String: res.Photoshop.ImageExtension, Valid: res.Photoshop.ImageExtension != ""},
-		Name:           name,
+		Width:    pgtype.Int4{Int32: res.Photoshop.Width, Valid: res.Photoshop.Width != 0},
+		Height:   pgtype.Int4{Int32: res.Photoshop.Height, Valid: res.Photoshop.Height != 0},
+		FileUrl:  pgtype.Text{String: url, Valid: true},
+		ImageUrl: pgtype.Text{String: res.Photoshop.ImagePath, Valid: true},
+		ImageExtension: pgtype.Text{
+			String: res.Photoshop.ImageExtension,
+			Valid:  res.Photoshop.ImageExtension != "",
+		},
+		Name: name,
 	})
 	if err != nil {
 		log.Error("falhar ao salvar metadados do arquivo photoshop", zap.Error(err))
 		return nil, err
 	}
-	var elements []database.PhotoshopElement
+	var elements []database.DesignElement
 	for _, i := range res.Elements {
 		c, err := db.CreateElement(ctx, database.CreateElementParams{
 			PhotoshopID:    photoshop.ID,
