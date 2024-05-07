@@ -9,3 +9,4 @@ main
 ssh-key.pem
 server
 .env
+proxy.log
