@@ -105,6 +105,14 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		IgnoreBase: false,
 		Filesystem: nil,
 	}))
+	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
+	webgroup := e.Group("/web")
+	webgroup.Use(
+		middleware.StaticWithConfig(middleware.StaticConfig{
+			Root:   webStaticPath,
+			Browse: true,
+		}),
+	)
 	e.GET("/api/health", func(c echo.Context) error {
 		err := p.Pool.Ping(c.Request().Context())
 		if err != nil {
