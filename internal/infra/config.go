@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
+	"runtime"
 
 	"github.com/joho/godotenv"
 	"go.uber.org/fx"
@@ -72,12 +72,9 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 	}, nil
 }
 
-const projectDirName = "flyer-layout-generator"
-
 func FindProjectRoot() string {
-	projectName := regexp.MustCompile(`^(.*` + projectDirName + `)`)
-	currentWorkDirectory, _ := os.Getwd()
-	rootPath := projectName.Find([]byte(currentWorkDirectory))
+	_, b, _, _ := runtime.Caller(0)
+	rootPath := filepath.Join(filepath.Dir(b), "../..")
 	return string(rootPath)
 }
 
