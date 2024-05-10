@@ -10,7 +10,7 @@ import (
 	"algvisual/internal/shared"
 )
 
-type GetPhotoshopByIdRequest struct {
+type GetDesignByIdRequest struct {
 	ID int32 `params:"photoshop_id" json:"id,omitempty"`
 }
 
@@ -21,11 +21,11 @@ type GetPhotoshopByIdResult struct {
 
 func GetPhotoshopByIdUseCase(
 	ctx context.Context,
-	req GetPhotoshopByIdRequest,
+	req GetDesignByIdRequest,
 	queries *database.Queries,
 	log *zap.Logger,
 ) (*GetPhotoshopByIdResult, error) {
-	photoshop, err := queries.GetPhotoshop(ctx, req.ID)
+	photoshop, err := queries.Getdesign(ctx, req.ID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "failed to create template distortion", "")
 		log.Error(err.Error())

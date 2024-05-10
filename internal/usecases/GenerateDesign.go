@@ -24,7 +24,7 @@ func GenerateDesignUseCase(
 	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
 ) (*GenerateDesignResult, error) {
-	photoshop, err := queries.GetPhotoshop(ctx, req.PhotoshopID)
+	photoshop, err := queries.Getdesign(ctx, req.PhotoshopID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
 		return nil, err

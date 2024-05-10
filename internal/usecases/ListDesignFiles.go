@@ -29,7 +29,7 @@ func ListPhotoshopFilesUseCase(
 	if limit == 0 {
 		limit = 10
 	}
-	files, err := queries.ListPhotoshop(ctx, database.ListPhotoshopParams{
+	files, err := queries.Listdesign(ctx, database.ListdesignParams{
 		Offset: int32(req.Skip),
 		Limit:  int32(limit),
 	})

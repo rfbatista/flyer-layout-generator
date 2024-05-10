@@ -49,7 +49,7 @@ func UploadPhotoshopFileUseCase(
 		log.Error("falha ao processar arquivo photoshop", zap.String("error", res.Error))
 		return nil, shared.NewAppError(500, "Falha ao processar o arquivo photoshop", res.Error)
 	}
-	photoshop, err := db.CreatePhotoshop(ctx, database.CreatePhotoshopParams{
+	photoshop, err := db.Createdesign(ctx, database.CreatedesignParams{
 		Width:    pgtype.Int4{Int32: res.Photoshop.Width, Valid: res.Photoshop.Width != 0},
 		Height:   pgtype.Int4{Int32: res.Photoshop.Height, Valid: res.Photoshop.Height != 0},
 		FileUrl:  pgtype.Text{String: url, Valid: true},
@@ -67,7 +67,7 @@ func UploadPhotoshopFileUseCase(
 	var elements []database.DesignElement
 	for _, i := range res.Elements {
 		c, err := db.CreateElement(ctx, database.CreateElementParams{
-			PhotoshopID:    photoshop.ID,
+			DesignID:       photoshop.ID,
 			LayerID:        pgtype.Text{String: i.LayerID, Valid: true},
 			Name:           pgtype.Text{String: i.Name, Valid: true},
 			Text:           pgtype.Text{String: i.Text, Valid: true},

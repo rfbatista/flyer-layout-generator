@@ -7,31 +7,31 @@ import (
 	"algvisual/internal/database"
 )
 
-type ListPhotoshopElementsUseCaseRequest struct {
+type ListDesignElementsUseCaseRequest struct {
 	Limit       int `query:"limit" json:"limit,omitempty"`
 	Skip        int `query:"skip"  json:"skip,omitempty"`
 	PhotoshopID int `              json:"photoshop_id,omitempty" param:"photoshop_id"`
 }
 
-type ListPhotoshopElementsUseCaseResult struct {
+type ListDesignElementsUseCaseResult struct {
 	Status string                   `json:"status,omitempty"`
 	Data   []database.DesignElement `json:"data,omitempty"`
 }
 
-func ListPhotoshopElementsUseCase(
+func ListDesignElementsUseCase(
 	ctx context.Context,
-	req ListPhotoshopElementsUseCaseRequest,
+	req ListDesignElementsUseCaseRequest,
 	db *database.Queries,
-) (*ListPhotoshopElementsUseCaseResult, error) {
-	res, err := db.ListPhotoshopElements(ctx, database.ListPhotoshopElementsParams{
-		PhotoshopID: int32(req.PhotoshopID),
-		Limit:       int32(req.Limit),
-		Offset:      int32(req.Skip),
+) (*ListDesignElementsUseCaseResult, error) {
+	res, err := db.ListdesignElements(ctx, database.ListdesignElementsParams{
+		DesignID: int32(req.PhotoshopID),
+		Limit:    int32(req.Limit),
+		Offset:   int32(req.Skip),
 	})
 	if err != nil {
 		return nil, errors.Join(err, errors.New("falha ai listar elementos do photoshop"))
 	}
-	return &ListPhotoshopElementsUseCaseResult{
+	return &ListDesignElementsUseCaseResult{
 		Status: "success",
 		Data:   res,
 	}, nil

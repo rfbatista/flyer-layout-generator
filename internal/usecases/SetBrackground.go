@@ -35,7 +35,7 @@ func SetBackgroundUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
-	comp, err := qtx.GetPhotoshopBackgroundComponent(ctx, int32(req.PhotoshopID))
+	comp, err := qtx.GetdesignBackgroundComponent(ctx, int32(req.PhotoshopID))
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao procurar plano de fundo existente", "")
 		log.Error(err.Error())
@@ -57,17 +57,21 @@ func SetBackgroundUseCase(
 			return nil, err
 		}
 	}
-	elUpdated, err := qtx.UpdateManyPhotoshopElement(
+	elUpdated, err := qtx.UpdateManydesignElement(
 		ctx,
-		database.UpdateManyPhotoshopElementParams{
-			PhotoshopID:         req.PhotoshopID,
+		database.UpdateManydesignElementParams{
+			DesignID:            req.PhotoshopID,
 			ComponentIDDoUpdate: true,
 			ComponentID:         comp.ID,
 			Ids:                 req.Elements,
 		},
 	)
 	if err != nil {
-		return nil, shared.WrapWithAppError(err, "Falha ao criar atualizar elementos do plano de fundo", "")
+		return nil, shared.WrapWithAppError(
+			err,
+			"Falha ao criar atualizar elementos do plano de fundo",
+			"",
+		)
 	}
 	return &SetBackgroundUseCaseResult{
 		Data: elUpdated,
