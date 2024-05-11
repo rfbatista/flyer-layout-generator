@@ -17,7 +17,7 @@ func TestSavePhotoshopFileUseCase(t *testing.T) {
 	type args struct {
 		ctx       context.Context
 		db        *database.Queries
-		req       UploadPhotoshopFileUseCaseRequest
+		req       UploadDesignFileUseCaseRequest
 		storage   ports.StorageUpload
 		processor ports.PhotoshopProcessorServiceProcessFile
 		log       *zap.Logger
@@ -25,7 +25,7 @@ func TestSavePhotoshopFileUseCase(t *testing.T) {
 	tests := []struct {
 		name       string
 		args       args
-		testResult func(UploadPhotoshopFileUseCaseResult) bool
+		testResult func(UploadDesignFileUseCaseResult) bool
 		want       string
 		wantErr    bool
 	}{
@@ -42,8 +42,8 @@ func TestSavePhotoshopFileUseCase(t *testing.T) {
 					return &ports.ProcessFileResult{}, nil
 				},
 			},
-			testResult: func(upfucr UploadPhotoshopFileUseCaseResult) bool {
-				return upfucr.Photoshop.FileUrl.String == "upload_url"
+			testResult: func(upfucr UploadDesignFileUseCaseResult) bool {
+				return upfucr.Design.FileUrl.String == "upload_url"
 			},
 			want: "Photoshop.FileUrl == upload_url",
 		},
@@ -56,28 +56,27 @@ func TestSavePhotoshopFileUseCase(t *testing.T) {
 				storage: func(file io.Reader, name string) (string, error) {
 					return "upload url", nil
 				},
-				req: UploadPhotoshopFileUseCaseRequest{
+				req: UploadDesignFileUseCaseRequest{
 					Filename: "test filename",
 				},
 				processor: func(input ports.ProcessFileInput) (*ports.ProcessFileResult, error) {
 					return &ports.ProcessFileResult{}, nil
 				},
 			},
-			testResult: func(upfucr UploadPhotoshopFileUseCaseResult) bool {
-				return upfucr.Photoshop.Name == "test filename"
+			testResult: func(upfucr UploadDesignFileUseCaseResult) bool {
+				return upfucr.Design.Name == "test filename"
 			},
 			want: "Photoshop.Name == test filename",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := UploadPhotoshopFileUseCase(
+			got, err := UploadDesignFileUseCase(
 				tt.args.ctx,
 				tt.args.db,
 				tt.args.req,
 				tt.args.storage,
 				tt.args.processor,
-				tt.args.log,
 			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SavePhotoshopFileUseCase() error = %v, wantErr %v", err, tt.wantErr)

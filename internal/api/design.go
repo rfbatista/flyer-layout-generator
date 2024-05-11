@@ -13,6 +13,7 @@ import (
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/internal/usecases"
+	"algvisual/web/components/notification"
 )
 
 func NewGenerateDesignAPI(
@@ -39,6 +40,47 @@ func NewGenerateDesignAPI(
 	return h
 }
 
+func NewWebUploadDesignAPI(
+	db *database.Queries,
+	proc *infra.PhotoshopProcessor,
+	storage infra.FileStorage,
+	log *zap.Logger,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.WebEndpointUploadPhotoshop.String())
+	h.SetHandle(func(c echo.Context) error {
+		file, err := c.FormFile("file")
+		if err != nil {
+			return shared.RenderComponent(notification.FailureMessage(err.Error()), c)
+		}
+		src, err := file.Open()
+		if err != nil {
+			return shared.RenderComponent(notification.FailureMessage(err.Error()), c)
+		}
+		defer src.Close()
+		req := usecases.UploadDesignFileUseCaseRequest{
+			Filename: c.FormValue("filename"),
+			File:     src,
+		}
+		_, err = usecases.UploadDesignFileUseCase(
+			c.Request().Context(),
+			db,
+			req,
+			storage.Upload,
+			log,
+		)
+		if err != nil {
+			return shared.RenderComponent(notification.FailureMessage(err.Error()), c)
+		}
+		return shared.RenderComponent(
+			notification.SuccessMessage("Arquivo cadastrado com sucesso"),
+			c,
+		)
+	})
+	return h
+}
+
 func NewUploadDesignAPI(
 	db *database.Queries,
 	proc *infra.PhotoshopProcessor,
@@ -58,16 +100,15 @@ func NewUploadDesignAPI(
 			return err
 		}
 		defer src.Close()
-		req := usecases.UploadPhotoshopFileUseCaseRequest{
+		req := usecases.UploadDesignFileUseCaseRequest{
 			Filename: c.FormValue("filename"),
 			File:     src,
 		}
-		out, err := usecases.UploadPhotoshopFileUseCase(
+		out, err := usecases.UploadDesignFileUseCase(
 			c.Request().Context(),
 			db,
 			req,
 			storage.Upload,
-			proc.ProcessFile,
 			log,
 		)
 		if err != nil {
@@ -159,6 +200,41 @@ func NewGetDesignByIDAPI(
 			return err
 		}
 		return c.JSON(http.StatusOK, result)
+	})
+	return h
+}
+
+func NewWebProccessDesign(
+	db *database.Queries,
+	proc *infra.PhotoshopProcessor,
+	storage infra.FileStorage,
+	log *zap.Logger,
+	pool *pgxpool.Pool,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.WebEndpointProccessDesign.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req usecases.ProcessDesignFileRequest
+		err := c.Bind(&req)
+		if err != nil {
+			c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage(err.Error()))
+			return c.NoContent(http.StatusOK)
+		}
+		_, err = usecases.ProcessDesignFileUseCase(
+			c.Request().Context(),
+			req,
+			proc.ProcessFile,
+			log,
+			db,
+			pool,
+		)
+		if err != nil {
+			c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage(err.Error()))
+			return c.NoContent(http.StatusOK)
+		}
+		c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage("Processo realizado com sucesso"))
+		return c.NoContent(http.StatusOK)
 	})
 	return h
 }

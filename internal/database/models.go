@@ -100,12 +100,14 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 type Design struct {
 	ID             int32            `json:"id"`
 	Name           string           `json:"name"`
+	RequestID      pgtype.Int4      `json:"request_id"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	FileUrl        pgtype.Text      `json:"file_url"`
 	FileExtension  pgtype.Text      `json:"file_extension"`
 	Width          pgtype.Int4      `json:"width"`
 	Height         pgtype.Int4      `json:"height"`
+	IsProccessed   pgtype.Bool      `json:"is_proccessed"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
@@ -153,6 +155,28 @@ type Image struct {
 	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
 	TemplateID  pgtype.Int4      `json:"template_id"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
+}
+
+type Request struct {
+	ID         int32            `json:"id"`
+	Name       string           `json:"name"`
+	StartedAt  pgtype.Timestamp `json:"started_at"`
+	FinishedAt pgtype.Timestamp `json:"finished_at"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+}
+
+type RequestStep struct {
+	ID         int32            `json:"id"`
+	Name       string           `json:"name"`
+	RequestID  int32            `json:"request_id"`
+	StartedAt  pgtype.Timestamp `json:"started_at"`
+	FinishedAt pgtype.Timestamp `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp `json:"error_at"`
+	Log        pgtype.Text      `json:"log"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 }
 
 type Template struct {

@@ -1,6 +1,6 @@
 export const appConfig = {
   api: {
-    baeURL: "http://54.221.241.11/",
+    baeURL: import.meta.env.VITE_API_BASE_URL,
   },
   paths: {
     gerador: "/",

@@ -1,0 +1,12 @@
+package elementtree
+
+type NodeProps struct {
+	Text    string
+	Value   string
+	Section string
+	Index   string
+}
+
+templ TreeNode(props NodeProps) {
+	<option value={ props.Value } data-section={ props.Section } data-index={ props.Index }>{ props.Text }</option>
+}

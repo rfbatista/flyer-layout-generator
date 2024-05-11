@@ -54,24 +54,6 @@ INSERT INTO design_element (
 )
 RETURNING *;
 
--- name: Createdesign :one
-INSERT INTO design (
-  name,
-  image_url,
-  file_url,
-  width,
-  height,
-  image_extension
-) VALUES (
-  $1,
-  $2,
-  $3,
-  $4,
-  $5,
-  $6
-)
-RETURNING *;
-
 -- name: ListdesignElements :many
 SELECT * FROM design_element 
 WHERE design_id = $1

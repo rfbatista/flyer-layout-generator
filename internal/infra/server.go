@@ -97,14 +97,14 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:       p.Config.AssetsFolderPath,
-		Index:      "index.html",
-		Browse:     false,
-		HTML5:      true,
-		IgnoreBase: false,
-		Filesystem: nil,
-	}))
+	// e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+	// 	Root:       p.Config.AssetsFolderPath,
+	// 	Index:      "index.html",
+	// 	Browse:     false,
+	// 	HTML5:      true,
+	// 	IgnoreBase: false,
+	// 	Filesystem: nil,
+	// }))
 	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
 	webgroup := e.Group("/web")
 	webgroup.Use(

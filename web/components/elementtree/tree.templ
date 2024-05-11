@@ -1,0 +1,11 @@
+package elementtree
+
+type TreeProps struct {
+	ID string
+}
+
+templ Tree(props Props) {
+	<select id={ props.ID }>
+		{ children... }
+	</select>
+}

@@ -118,61 +118,8 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (D
 	return i, err
 }
 
-const createdesign = `-- name: Createdesign :one
-INSERT INTO design (
-  name,
-  image_url,
-  file_url,
-  width,
-  height,
-  image_extension
-) VALUES (
-  $1,
-  $2,
-  $3,
-  $4,
-  $5,
-  $6
-)
-RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at
-`
-
-type CreatedesignParams struct {
-	Name           string      `json:"name"`
-	ImageUrl       pgtype.Text `json:"image_url"`
-	FileUrl        pgtype.Text `json:"file_url"`
-	Width          pgtype.Int4 `json:"width"`
-	Height         pgtype.Int4 `json:"height"`
-	ImageExtension pgtype.Text `json:"image_extension"`
-}
-
-func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Design, error) {
-	row := q.db.QueryRow(ctx, createdesign,
-		arg.Name,
-		arg.ImageUrl,
-		arg.FileUrl,
-		arg.Width,
-		arg.Height,
-		arg.ImageExtension,
-	)
-	var i Design
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.ImageUrl,
-		&i.ImageExtension,
-		&i.FileUrl,
-		&i.FileExtension,
-		&i.Width,
-		&i.Height,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
 const getdesign = `-- name: Getdesign :one
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM design
+SELECT id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 WHERE id = $1 LIMIT 1
 `
 
@@ -182,12 +129,14 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
 		&i.Width,
 		&i.Height,
+		&i.IsProccessed,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -243,7 +192,7 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (D
 }
 
 const listdesign = `-- name: Listdesign :many
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, created_at, updated_at FROM design
+SELECT id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 OFFSET $1 LIMIT $2
 `
 
@@ -264,12 +213,14 @@ func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Desig
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.RequestID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.FileUrl,
 			&i.FileExtension,
 			&i.Width,
 			&i.Height,
+			&i.IsProccessed,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

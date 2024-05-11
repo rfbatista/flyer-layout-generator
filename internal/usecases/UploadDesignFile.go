@@ -13,24 +13,22 @@ import (
 	"algvisual/internal/shared"
 )
 
-type UploadPhotoshopFileUseCaseRequest struct {
-	Filename string    `json:"filename,omitempty"`
-	File     io.Reader `json:"file,omitempty"`
+type UploadDesignFileUseCaseRequest struct {
+	Filename string    `form:"filename" json:"filename,omitempty"`
+	File     io.Reader `form:"file"     json:"file,omitempty"`
 }
 
-type UploadPhotoshopFileUseCaseResult struct {
-	Photoshop database.Design          `json:"photoshop,omitempty"`
-	Elements  []database.DesignElement `json:"elements,omitempty"`
+type UploadDesignFileUseCaseResult struct {
+	Design database.Design `json:"photoshop,omitempty"`
 }
 
-func UploadPhotoshopFileUseCase(
+func UploadDesignFileUseCase(
 	ctx context.Context,
 	db *database.Queries,
-	req UploadPhotoshopFileUseCaseRequest,
+	req UploadDesignFileUseCaseRequest,
 	upload ports.StorageUpload,
-	processorFile ports.PhotoshopProcessorServiceProcessFile,
 	log *zap.Logger,
-) (*UploadPhotoshopFileUseCaseResult, error) {
+) (*UploadDesignFileUseCaseResult, error) {
 	name := req.Filename
 	if name == "" {
 		id := uuid.New()
@@ -38,59 +36,19 @@ func UploadPhotoshopFileUseCase(
 	}
 	url, err := upload(req.File, name)
 	if err != nil {
-		return nil, err
+		log.Error("falha ao fazer upload do arquivo photoshop", zap.Error(err))
+		return nil, shared.WrapWithAppError(err, "falha ao processar arquivo photoshop", "")
 	}
-	res, err := processorFile(ports.ProcessFileInput{Filepath: url})
+	design, err := db.Createdesign(ctx, database.CreatedesignParams{
+		Name:    name,
+		FileUrl: pgtype.Text{String: url, Valid: true},
+	})
+	log.Info(design.FileUrl.String, zap.String("url", url))
 	if err != nil {
 		log.Error("falha ao processar arquivo photoshop", zap.Error(err))
 		return nil, shared.WrapWithAppError(err, "falha ao processar arquivo photoshop", "")
 	}
-	if res.Error != "" {
-		log.Error("falha ao processar arquivo photoshop", zap.String("error", res.Error))
-		return nil, shared.NewAppError(500, "Falha ao processar o arquivo photoshop", res.Error)
-	}
-	photoshop, err := db.Createdesign(ctx, database.CreatedesignParams{
-		Width:    pgtype.Int4{Int32: res.Photoshop.Width, Valid: res.Photoshop.Width != 0},
-		Height:   pgtype.Int4{Int32: res.Photoshop.Height, Valid: res.Photoshop.Height != 0},
-		FileUrl:  pgtype.Text{String: url, Valid: true},
-		ImageUrl: pgtype.Text{String: res.Photoshop.ImagePath, Valid: true},
-		ImageExtension: pgtype.Text{
-			String: res.Photoshop.ImageExtension,
-			Valid:  res.Photoshop.ImageExtension != "",
-		},
-		Name: name,
-	})
-	if err != nil {
-		log.Error("falhar ao salvar metadados do arquivo photoshop", zap.Error(err))
-		return nil, err
-	}
-	var elements []database.DesignElement
-	for _, i := range res.Elements {
-		c, err := db.CreateElement(ctx, database.CreateElementParams{
-			DesignID:       photoshop.ID,
-			LayerID:        pgtype.Text{String: i.LayerID, Valid: true},
-			Name:           pgtype.Text{String: i.Name, Valid: true},
-			Text:           pgtype.Text{String: i.Text, Valid: true},
-			Xi:             pgtype.Int4{Int32: int32(i.Xi), Valid: true},
-			Yi:             pgtype.Int4{Int32: int32(i.Yi), Valid: true},
-			Xii:            pgtype.Int4{Int32: int32(i.Xii), Valid: true},
-			Yii:            pgtype.Int4{Int32: int32(i.Yii), Valid: true},
-			Kind:           pgtype.Text{String: i.Kind, Valid: true},
-			IsGroup:        pgtype.Bool{Bool: i.IsGroup, Valid: true},
-			GroupID:        pgtype.Int4{Int32: int32(i.GroupId), Valid: true},
-			Level:          pgtype.Int4{Int32: int32(i.Level), Valid: true},
-			ImageUrl:       pgtype.Text{String: i.Image, Valid: true},
-			Width:          pgtype.Int4{Int32: int32(i.Width), Valid: true},
-			Height:         pgtype.Int4{Int32: int32(i.Height), Valid: true},
-			ImageExtension: pgtype.Text{String: i.ImageExtension, Valid: true},
-		})
-		if err != nil {
-			return nil, err
-		}
-		elements = append(elements, c)
-	}
-	return &UploadPhotoshopFileUseCaseResult{
-		Elements:  elements,
-		Photoshop: photoshop,
+	return &UploadDesignFileUseCaseResult{
+		Design: design,
 	}, nil
 }

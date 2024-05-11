@@ -1,0 +1,22 @@
+package menu
+
+import "algvisual/internal/shared"
+
+func isActive(path, curr string) string {
+	if path == curr {
+		return "is-active"
+	}
+	return ""
+}
+
+templ Sidebar(curPath string) {
+	<aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
+		<ul class="menu-list">
+			<li><a href={ templ.SafeURL(shared.PageHome.String()) } class={ isActive(shared.PageHome.String(), curPath) }>Upload</a></li>
+			<li><a href={ templ.SafeURL(shared.PageProccessDesing.String()) } class={ isActive(shared.PageProccessDesing.String(), curPath) }>Processar arquivo</a></li>
+			<li><a href={ templ.SafeURL(shared.PageDefineElements.String()) } class={ isActive(shared.PageDefineElements.String(), curPath) }>Definir elementos</a></li>
+			<li><a href={ templ.SafeURL(shared.PageGenerateImage.String()) } class={ isActive(shared.PageGenerateImage.String(), curPath) }>Gerar imagem</a></li>
+			<li><a href={ templ.SafeURL(shared.PageCreateTemplate.String()) } class={ isActive(shared.PageCreateTemplate.String(), curPath) }>Criar template</a></li>
+		</ul>
+	</aside>
+}

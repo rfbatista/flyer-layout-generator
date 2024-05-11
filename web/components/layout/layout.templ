@@ -1,0 +1,15 @@
+package layout
+
+import "algvisual/internal/shared"
+import "algvisual/web/components/sidebar"
+
+templ Layout() {
+	<section class="main-content columns is-fullheight">
+		@menu.Sidebar(shared.PageHome.String())
+		<div class="container column is-10">
+			<div class="section">
+        { children... }
+			</div>
+		</div>
+	</section>
+}

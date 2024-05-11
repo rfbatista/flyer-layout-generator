@@ -1,0 +1,24 @@
+package proccessdesign
+
+import (
+	"algvisual/web/views"
+	"algvisual/web/components/layout"
+	"algvisual/internal/database"
+	"algvisual/web/components/designcard"
+)
+
+templ Page(designes []database.Design) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				for _, d := range designes {
+					@designcard.DesignCard(d)
+				}
+			}
+			<script src="/web/js/notifications.js"></script>
+		</body>
+	</html>
+}

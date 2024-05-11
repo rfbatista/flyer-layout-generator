@@ -73,6 +73,5 @@ func (p PhotoshopProcessor) ProcessFile(
 		p.log.Warn("error ao desempacotar resultados do arquivo processado", zap.Error(err))
 		return nil, err
 	}
-	p.log.Info(fmt.Sprintf("%+v\n", result))
 	return &result, nil
 }
