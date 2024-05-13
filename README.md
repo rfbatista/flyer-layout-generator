@@ -40,3 +40,8 @@ docker plugin install grafana/loki-docker-driver:2.9.1 --alias loki --grant-all-
 chmod 400 ./ssh-key.pem
 make ssh
 ```
+
+# Code Templates
+
+- nodejs 18.3.0
+- npm i hygen -g

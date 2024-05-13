@@ -1,6 +1,9 @@
 package api
 
 import (
+	"algvisual/web/views/request/requestuploadfile"
+	"context"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/rfbatista/apitools"
@@ -46,7 +49,7 @@ func NewPageHome(
 	h.SetHandle(func(c echo.Context) error {
 		component := home.HomePage()
 		w := c.Response().Writer
-		err := component.Render(c.Request().Context(), w)
+		err := component.Render(context.WithValue(c.Request().Context(), "page", shared.PageHome.String()), w)
 		if err != nil {
 			log.Error("failed to render home page", zap.Error(err))
 			return err
@@ -96,6 +99,20 @@ func NewPageProccessDesign(
 			return err
 		}
 		return nil
+	})
+	return h
+}
+
+func NewPageRequestUploadFile() apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.GET)
+	h.SetPath(shared.PageRequestUploadFile.String())
+	h.SetHandle(func(c echo.Context) error {
+		ctx := context.WithValue(c.Request().Context(), "page", shared.PageRequestUploadFile.String())
+		return shared.RenderComponent(
+			requestuploadfile.PageRequestUploadFile(),
+			ctx,
+		)
 	})
 	return h
 }

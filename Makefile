@@ -1,3 +1,6 @@
+.PHONY: clean
+include .env
+PGPASSWORD=123
 run:
 	PYTHONPATH=. uvicorn app.main:app --reload
 upgrade:
@@ -11,7 +14,8 @@ apply:
 apply_in_server:
 	atlas schema apply --url "postgres://admin:123@localhost:5432/postgres?sslmode=disable" --to "file://internal/database/schema"
 clean:
-	atlas schema clean --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" 
+	atlas schema clean --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable"
+	PGPASSWORD=$(PGPASSWORD) psql -U admin -h localhost -p 5432 -d algvisual -c 'CREATE SCHEMA public;'
 migrate:
 	atlas migrate diff $(msg) \
 		--dev-url "postgres://admin:123@localhost:5432/algvisual?search_path=public&sslmode=disable" \
@@ -22,13 +26,13 @@ server:
 dev-build:
 	docker compose -f ./scripts/docker-compose.dev.yaml up --build
 dev:
-	docker compose -f ./scripts/docker-compose.dev.yaml up 
+	docker compose -f ./scripts/docker-compose.dev.yaml up ai-dev postgres-dev
 devlog:
-	docker compose -f ./scripts/docker-compose.logs.yaml up 
+	docker compose -f ./scripts/docker-compose.logs.yaml up
 test:
 	go test ./internal/...
 usecase:
-	hygen usecase new 
+	hygen usecase new
 down:
 	docker compose -f ./scripts/docker-compose.dev.yaml down
 ssh:
@@ -47,3 +51,5 @@ runaid:
 	docker run -d -p 8080:8080 -v /home/ec2-user/alg_visual:/home/ec2-user/alg_visual -v /home/ec2-user:/home/ec2-user --network="host" --name ai ai
 runai:
 	uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+air:
+	air

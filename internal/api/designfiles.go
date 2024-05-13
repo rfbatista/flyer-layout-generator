@@ -17,7 +17,7 @@ func NewDownloadDesignFiles(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath(shared.DownloadImageEndpoint.String())
+	h.SetPath(shared.DownloadDesignFileEndpoint.String())
 	h.SetHandle(func(c echo.Context) error {
 		id := c.Param("id")
 		idInt, err := strconv.ParseInt(id, 10, 32)

@@ -1,15 +1,14 @@
 package layout
 
-import "algvisual/internal/shared"
-import "algvisual/web/components/sidebar"
+import (
+	menu "algvisual/web/components/sidebar"
+)
 
 templ Layout() {
-	<section class="main-content columns is-fullheight">
-		@menu.Sidebar(shared.PageHome.String())
-		<div class="container column is-10">
-			<div class="section">
-        { children... }
-			</div>
-		</div>
-	</section>
+	<header class="top-0">
+		@menu.Sidebar(ctx.Value("page").(string))
+	</header>
+	<main class="p-4">
+		{ children... }
+	</main>
 }

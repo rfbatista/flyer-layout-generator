@@ -57,4 +57,5 @@ var Module = fx.Options(fx.Provide(
 	protected(NewPageProccessDesign),
 	protected(NewWebProccessDesign),
 	protected(NewDownloadDesignFiles),
+	protected(NewPageRequestUploadFile),
 ))

@@ -4,12 +4,14 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  # pre_cmd = ["yarn build:ui", "yarn tailwind", "templ generate"]
-  pre_cmd = []
-  bin = "./main"
-  cmd = "go build -o . ./cmd/server/main.go"
+  pre_cmd = [
+  "templ generate",
+  "npx tailwindcss --input ./web/static/input.css --output ./web/static/css/output.css",
+  ]
+  bin = "./tmp/main"
+  cmd = "go build -o ./tmp/main ./cmd/server/main.go"
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules", "mobile", "dist", "ui"]
+  exclude_dir = ["assets", "vendor", "testdata", "node_modules", "mobile", "dist", "ui", "web/static/css"]
   exclude_file = []
   exclude_regex = ["_test.go", "_templ.go"]
   exclude_unchanged = false
