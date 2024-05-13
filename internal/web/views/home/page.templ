@@ -1,0 +1,21 @@
+package home
+
+import (
+	"algvisual/internal/web/views"
+	"algvisual/internal/web/components/layout"
+)
+
+templ HomePage() {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				<div class="w-full flex items-center">
+					<button type="button" class="btn m-auto">Iniciar</button>
+				</div>
+			}
+		</body>
+	</html>
+}

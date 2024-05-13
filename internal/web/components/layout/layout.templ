@@ -1,0 +1,14 @@
+package layout
+
+import (
+	menu "algvisual/internal/web/components/sidebar"
+)
+
+templ Layout() {
+	<header class="top-0">
+		@menu.Sidebar(ctx.Value("page").(string))
+	</header>
+	<main class="p-4">
+		{ children... }
+	</main>
+}

@@ -50,12 +50,6 @@ var Module = fx.Options(fx.Provide(
 	protected(NewListComponentsByFileIDAPI),
 	protected(NewUploadImage),
 	protected(NewDownloadImage),
-	protected(NewPageCreateTemplate),
-	protected(NewPageHome),
-	protected(NewWebUploadDesignAPI),
-	protected(NewPageDefineElements),
-	protected(NewPageProccessDesign),
 	protected(NewWebProccessDesign),
 	protected(NewDownloadDesignFiles),
-	protected(NewPageRequestUploadFile),
 ))
