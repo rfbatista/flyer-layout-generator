@@ -53,3 +53,13 @@ runai:
 	uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 air:
 	air
+algai:
+	docker build -t algvisual-ai:latest -f ./scripts/ai/Dockerfile.dev .
+run-algai:
+	docker run -v .:/app --net=host -p 8080:8080 -it algvisual-ai:latest
+ai:
+	python -m poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+dbb:
+	docker compose up --build
+db:
+	docker compose up
