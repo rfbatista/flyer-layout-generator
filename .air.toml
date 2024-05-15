@@ -6,12 +6,12 @@ tmp_dir = "tmp"
   args_bin = []
   pre_cmd = [
   "templ generate",
-  "npx tailwindcss --input ./web/static/input.css --output ./web/static/css/output.css",
+  "npx tailwindcss --input ./internal/web/static/input.css --output ./internal/web/static/css/output.css",
   ]
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server/main.go"
   delay = 1000
-  exclude_dir = ["assets", "vendor", "testdata", "node_modules", "mobile", "dist", "ui", "web/static/css"]
+  exclude_dir = ["assets", "vendor", "testdata", "node_modules", "mobile", "dist", "ui", "web/static/css", "data"]
   exclude_file = []
   exclude_regex = ["_test.go", "_templ.go"]
   exclude_unchanged = false

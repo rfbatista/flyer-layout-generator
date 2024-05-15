@@ -77,63 +77,62 @@ func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (De
 }
 
 const updateDesignByID = `-- name: UpdateDesignByID :one
-UPDATE design_element
+UPDATE design
 SET
     name = CASE WHEN $1::boolean
         THEN $2 ELSE name END,
 
-    width = CASE WHEN $3::boolean
-        THEN $4 ELSE width END,
+    image_url = CASE WHEN $3::boolean
+        THEN $4 ELSE name END,
 
-    height = CASE WHEN $5::boolean
-        THEN $6 ELSE height END
+    width = CASE WHEN $5::boolean
+        THEN $6 ELSE width END,
+
+    height = CASE WHEN $7::boolean
+        THEN $8 ELSE height END
 
 WHERE
-    id = $7
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+    id = $9
+RETURNING id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type UpdateDesignByIDParams struct {
-	NameDoUpdate   bool        `json:"name_do_update"`
-	Name           pgtype.Text `json:"name"`
-	WidthDoUpdate  bool        `json:"width_do_update"`
-	Width          pgtype.Int4 `json:"width"`
-	HeightDoUpdate bool        `json:"height_do_update"`
-	Height         pgtype.Int4 `json:"height"`
-	DesignID       int32       `json:"design_id"`
+	NameDoUpdate     bool        `json:"name_do_update"`
+	Name             pgtype.Text `json:"name"`
+	ImageUrlDoUpdate bool        `json:"image_url_do_update"`
+	ImageUrl         pgtype.Text `json:"image_url"`
+	WidthDoUpdate    bool        `json:"width_do_update"`
+	Width            pgtype.Int4 `json:"width"`
+	HeightDoUpdate   bool        `json:"height_do_update"`
+	Height           pgtype.Int4 `json:"height"`
+	DesignID         int32       `json:"design_id"`
 }
 
 // You can use sqlc.arg() and @ to identify named parameters
-func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDParams) (DesignElement, error) {
+func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDParams) (Design, error) {
 	row := q.db.QueryRow(ctx, updateDesignByID,
 		arg.NameDoUpdate,
 		arg.Name,
+		arg.ImageUrlDoUpdate,
+		arg.ImageUrl,
 		arg.WidthDoUpdate,
 		arg.Width,
 		arg.HeightDoUpdate,
 		arg.Height,
 		arg.DesignID,
 	)
-	var i DesignElement
+	var i Design
 	err := row.Scan(
 		&i.ID,
-		&i.DesignID,
 		&i.Name,
-		&i.LayerID,
-		&i.Text,
-		&i.Xi,
-		&i.Xii,
-		&i.Yi,
-		&i.Yii,
-		&i.Width,
-		&i.Height,
-		&i.IsGroup,
-		&i.GroupID,
-		&i.Level,
-		&i.Kind,
-		&i.ComponentID,
+		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
+		&i.FileUrl,
+		&i.FileExtension,
+		&i.Width,
+		&i.Height,
+		&i.IsProccessed,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

@@ -32,13 +32,14 @@ const (
 	PageCreateTemplate        RoutePath = "/template"
 	PageDefineElements        RoutePath = "/elements"
 	PageRequestUploadFile     RoutePath = "/request/file-upload"
+	PageRequestProcessDesign  RoutePath = "/request/file/:id/process"
 	PageRequestUploadSheet    RoutePath = "/request/sheet-upload"
-	PageRequestElements       RoutePath = "/request/elements"
+	PageRequestElements       RoutePath = "/request/design/:id/elements"
 	PageRequestGenerateImages RoutePath = "/request/generate"
 	PageRequestResult         RoutePath = "/request/results"
 	PageRequestAdjustImages   RoutePath = "/request/adjust-image"
 
-	WebEndpointUploadPhotoshop RoutePath = "/api/v1/web/photoshop"
+	WebEndpointUploadPhotoshop RoutePath = "/api/v1/web/design/file"
 	WebEndpointProccessDesign  RoutePath = "/api/v1/web/design/:id/proccess"
 )
 

@@ -1,9 +1,11 @@
 #!/usr/local/bin/python
+import io
 import json
 import sys
 from typing import Iterable, List
 import uuid
 
+import requests
 from psd_tools import PSDImage
 from pydantic import BaseModel
 
@@ -13,25 +15,29 @@ from app.logger import logger
 from app.upload_image import upload_image
 
 
-class ProcessPhotoshopFileRequest(BaseModel):
+class ProcessDesignFileRequest(BaseModel):
+    id: int
     filepath: str
 
 
 class ProcessPhotoshopFileResult(BaseModel):
-    imagepath: str
+    image_url: str
     filepath: str
     photoshop: PhotoshopFile
     elements: List[DesignElement]
 
 
-def process_photoshop_file(filepath: str):
+endpoint_url = "http://host.docker.internal:8000/api/v1/design/{}/file"
+
+def process_photoshop_file(req: ProcessDesignFileRequest):
     try:
-        psd = PSDImage.open(filepath)
+        filepath = req.filepath
+        res = requests.get(endpoint_url.format(req.id))
+        content = res.content
+        psd = PSDImage.open(io.BytesIO(content))
         filename = "%s" % (uuid.uuid4())
-        filepath_save = "%s/%s.png" % (app_config.dist_path, filename)
         img = psd.composite()
-        if img:
-            img.save(filepath_save)
+        design_image_url = upload_image(img, filename)
         photoshopfile = PhotoshopFile(
             filename="",
             image_path=filename,
@@ -82,6 +88,7 @@ def process_photoshop_file(filepath: str):
 
         index_elements(psd)
         return ProcessPhotoshopFileResult(
+            image_url=design_image_url,
             elements=items, photoshop=photoshopfile, imagepath="", filepath=""
         )
     except Exception as e:

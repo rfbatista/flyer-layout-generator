@@ -59,7 +59,5 @@ run-algai:
 	docker run -v .:/app --net=host -p 8080:8080 -it algvisual-ai:latest
 ai:
 	python -m poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
-dbb:
-	docker compose up --build
 db:
-	docker compose up
+	docker compose up --build

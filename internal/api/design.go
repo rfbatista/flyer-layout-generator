@@ -161,38 +161,3 @@ func NewGetDesignByIDAPI(
 	})
 	return h
 }
-
-func NewWebProccessDesign(
-	db *database.Queries,
-	proc *infra.PhotoshopProcessor,
-	storage infra.FileStorage,
-	log *zap.Logger,
-	pool *pgxpool.Pool,
-) apitools.Handler {
-	h := apitools.NewHandler()
-	h.SetMethod(apitools.POST)
-	h.SetPath(shared.WebEndpointProccessDesign.String())
-	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ProcessDesignFileRequest
-		err := c.Bind(&req)
-		if err != nil {
-			c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage(err.Error()))
-			return c.NoContent(http.StatusOK)
-		}
-		_, err = usecases.ProcessDesignFileUseCase(
-			c.Request().Context(),
-			req,
-			proc.ProcessFile,
-			log,
-			db,
-			pool,
-		)
-		if err != nil {
-			c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage(err.Error()))
-			return c.NoContent(http.StatusOK)
-		}
-		c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage("Processo realizado com sucesso"))
-		return c.NoContent(http.StatusOK)
-	})
-	return h
-}

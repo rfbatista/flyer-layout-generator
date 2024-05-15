@@ -1,0 +1,26 @@
+package requestdefinecomponents
+
+import "algvisual/internal/web/views"
+import "algvisual/internal/web/components/layout"
+import "algvisual/internal/database"
+import "algvisual/internal/web/components/elementtree"
+import "strconv"
+
+templ Page(elements []database.DesignElement) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+        <div class="mx-auto max-w-[900px]">
+				@elementtree.Tree("tree") {
+					for _, d := range elements {
+						@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name.String, ImageURL: d.ImageUrl.String, Value: strconv.FormatInt(int64(d.ID), 10)})
+					}
+				}
+        </div>
+			}
+		</body>
+	</html>
+}

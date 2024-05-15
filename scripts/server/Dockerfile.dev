@@ -7,5 +7,19 @@ COPY . /app
 RUN go mod download
 
 RUN go install github.com/cosmtrek/air@v1.49.0
+RUN go install github.com/a-h/templ/cmd/templ@latest
 
+
+FROM node:latest
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Install npx globally
+RUN npm install -g npx
+
+# Copy the built Go binary from the builder stage
+COPY --from=builder /app/myapp .
+
+# Set the command to run your application
 ENTRYPOINT [ "air" ]

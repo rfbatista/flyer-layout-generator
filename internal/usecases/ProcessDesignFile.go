@@ -37,7 +37,9 @@ func ProcessDesignFileUseCase(
 		log.Error("falha buscar arquivo design", zap.Error(err))
 		return nil, err
 	}
-	res, err := processorFile(ports.ProcessFileInput{Filepath: design.FileUrl.String})
+	res, err := processorFile(
+		ports.ProcessFileInput{Filepath: design.FileUrl.String, ID: design.ID},
+	)
 	if err != nil {
 		log.Error("falha ao processar arquivo photoshop", zap.Error(err))
 		return nil, shared.WrapWithAppError(err, "falha ao processar arquivo photoshop", "")
@@ -47,13 +49,20 @@ func ProcessDesignFileUseCase(
 		return nil, shared.NewAppError(500, "Falha ao processar o arquivo photoshop", res.Error)
 	}
 	photoshop, err := qtx.UpdateDesignByID(ctx, database.UpdateDesignByIDParams{
-		WidthDoUpdate:  true,
-		Width:          design.Width,
-		HeightDoUpdate: true,
-		Height:         design.Height,
+		DesignID:         req.ID,
+		ImageUrlDoUpdate: res.ImageUrl != "",
+		ImageUrl:         pgtype.Text{String: res.ImageUrl, Valid: res.ImageUrl != ""},
+		WidthDoUpdate:    true,
+		Width:            design.Width,
+		HeightDoUpdate:   true,
+		Height:           design.Height,
 	})
 	if err != nil {
-		log.Error("falhar ao salvar metadados do arquivo photoshop", zap.Error(err))
+		log.Error(
+			"falhar ao salvar metadados do arquivo photoshop",
+			zap.Int32("id", req.ID),
+			zap.Error(err),
+		)
 		return nil, err
 	}
 	var elements []database.DesignElement

@@ -1,14 +1,15 @@
 package main
 
 import (
+	"go.uber.org/fx"
+
 	"algvisual/internal/api"
 	"algvisual/internal/infra"
-
-	"go.uber.org/fx"
+	"algvisual/internal/web"
 )
 
 func main() {
 	fx.New(
-		api.Module, infra.Module,
+		api.Module, infra.Module, web.Module,
 	).Run()
 }

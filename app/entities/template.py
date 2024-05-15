@@ -1,10 +1,6 @@
 from typing import List, Optional
-from uuid import uuid1, uuid4
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from pydantic import BaseModel
 
-from app.db import Base
 from app.entities.componente import Componente
 from app.entities.design_region import DesignTemplateRegion
 from app.value_objects.id import create_id
@@ -18,17 +14,14 @@ class PositionDto(BaseModel):
     height: int
 
 
-class Position(Base):
-    __tablename__ = "templates_positions"
+class Position(BaseModel):
+    id: int = 0
+    xi: Optional[int] = 0
+    yi: Optional[int] = 0
+    width: Optional[int] = 0
+    height: Optional[int] = 0
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    xi: Mapped[Optional[int]]
-    yi: Mapped[Optional[int]]
-    width: Mapped[Optional[int]]
-    height: Mapped[Optional[int]]
-
-    template_id: Mapped[int] = mapped_column(ForeignKey("templates.id"))
-    template = relationship("Template", back_populates="positions")
+    template_id: int = 0
 
     def x_center(self) -> int:
         if self.width is None:
@@ -84,15 +77,12 @@ class DesignTemplate(BaseModel):
         self.background = c
 
 
-class Template(Base):
-    __tablename__ = "templates"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50))
-    width: Mapped[Optional[int]]
-    height: Mapped[Optional[int]]
-
-    positions = relationship("Position", back_populates="template")
+class Template:
+    id: int
+    name: str
+    width: int
+    height: int
+    positions = []
 
     def size_guide(self):
         if self.width > self.height:
@@ -100,23 +90,3 @@ class Template(Base):
         else:
             return self.height
 
-    @staticmethod
-    def from_db(data, positions_) -> DesignTemplate:
-        positions = []
-        for item in positions_:
-            positions.append(
-                PositionDto(
-                    id=item.id,
-                    xi=item.xi,
-                    width=item.width,
-                    yi=item.yi,
-                    height=item.height,
-                )
-            )
-        return DesignTemplate(
-            id=data.id,
-            name=data.name,
-            positions=positions,
-            width=data.width,
-            height=data.height,
-        )

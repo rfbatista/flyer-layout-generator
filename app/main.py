@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.generate_designs import GenerateDesignRequest, generate_design
-from app.process_photoshop_file import process_photoshop_file
+from app.process_photoshop_file import ProcessDesignFileRequest, process_photoshop_file
 from .logger import logger
 
 
@@ -32,13 +32,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class ProcessFileRequest(BaseModel):
-    filepath: str
-
 @app.post("/api/v1/photoshop")
-def save_file(req: ProcessFileRequest):
+def save_file(req: ProcessDesignFileRequest):
     try:
-        return process_photoshop_file(req.filepath)
+        return process_photoshop_file(req)
     except Exception as e:
         logger.exception("failed to set background")
         raise HTTPException(status_code=500, detail="internal server error \n %s" % (e))

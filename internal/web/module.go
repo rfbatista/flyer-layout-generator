@@ -8,6 +8,9 @@ import (
 
 	"algvisual/internal/ports"
 	"algvisual/internal/web/views/home"
+	"algvisual/internal/web/views/request/requestdefinecomponents"
+	"algvisual/internal/web/views/request/requestprocessdesign"
+	"algvisual/internal/web/views/request/requestuploadfile"
 )
 
 func protected(f any) any {
@@ -36,4 +39,9 @@ func AsController(f any) any {
 
 var Module = fx.Options(fx.Provide(
 	protected(home.NewPageHome),
+	protected(requestuploadfile.NewPageRequestUploadFile),
+	protected(requestuploadfile.NewUploadDesignAPI),
+	protected(requestprocessdesign.NewPageRequestProcessDesign),
+	protected(requestprocessdesign.NewWebProccessDesign),
+	protected(requestdefinecomponents.NewPage),
 ))

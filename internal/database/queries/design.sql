@@ -1,10 +1,13 @@
 
 -- name: UpdateDesignByID :one
-UPDATE design_element
+UPDATE design
 SET
 -- You can use sqlc.arg() and @ to identify named parameters
     name = CASE WHEN @name_do_update::boolean
         THEN sqlc.narg(name) ELSE name END,
+
+    image_url = CASE WHEN @image_url_do_update::boolean
+        THEN sqlc.narg(image_url) ELSE name END,
 
     width = CASE WHEN @width_do_update::boolean
         THEN sqlc.narg(width) ELSE width END,

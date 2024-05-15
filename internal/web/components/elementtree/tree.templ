@@ -4,8 +4,8 @@ type TreeProps struct {
 	ID string
 }
 
-templ Tree(props Props) {
-	<select id={ props.ID }>
+templ Tree(id string) {
+	<div id={id} class="columns-3">
 		{ children... }
-	</select>
+	</div>
 }
