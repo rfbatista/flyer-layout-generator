@@ -25,19 +25,26 @@ const (
 	DownloadImageEndpoint         RoutePath = "/api/v1/images/:image_name"
 	DownloadDesignFileEndpoint    RoutePath = "/api/v1/design/:id/file"
 
-	PageHome                  RoutePath = "/"
-	PageUploadDesign          RoutePath = "/upload"
-	PageProccessDesing        RoutePath = "/process"
-	PageGenerateImage         RoutePath = "/generate"
-	PageCreateTemplate        RoutePath = "/template"
-	PageDefineElements        RoutePath = "/elements"
-	PageRequestUploadFile     RoutePath = "/request/file-upload"
-	PageRequestProcessDesign  RoutePath = "/request/file/:id/process"
-	PageRequestUploadSheet    RoutePath = "/request/sheet-upload"
-	PageRequestElements       RoutePath = "/request/design/:id/elements"
-	PageRequestGenerateImages RoutePath = "/request/generate"
-	PageRequestResult         RoutePath = "/request/results"
-	PageRequestAdjustImages   RoutePath = "/request/adjust-image"
+	PageHome                 RoutePath = "/"
+	PageUploadDesign         RoutePath = "/upload"
+	PageProccessDesing       RoutePath = "/process"
+	PageGenerateImage        RoutePath = "/generate"
+	PageCreateTemplate       RoutePath = "/template"
+	PageDefineElements       RoutePath = "/elements"
+	PageRequestUploadFile    RoutePath = "/request/file-upload"
+	PageRequestProcessDesign RoutePath = "/request/file/:id/process"
+	PageRequestElements      RoutePath = "/request/design/:id/elements"
+
+	PageRequestElementsCreateComponent    RoutePath = "/request/design/:design_id/component"
+	PageRequestElementsDefineBackground   RoutePath = "/request/design/:design_id/background"
+	PageRequestElementsRemoveElement      RoutePath = "/request/design/:design_id/component/remove"
+	PageRequestUploadSheet                RoutePath = "/request/design/:design_id/sheet-upload"
+	PageRequestUploadSheetCreateTemplates RoutePath = "/request/design/:design_id/sheet-upload/create-templates"
+	PageRequestTemplatesCreated           RoutePath = "/request/design/:design_id/request/:request_id/templates"
+	PageRequestGenerateImages             RoutePath = "/request/design/:design_id/request/:request_id/generate"
+
+	PageRequestResult       RoutePath = "/request/results"
+	PageRequestAdjustImages RoutePath = "/request/adjust-image"
 
 	WebEndpointUploadPhotoshop RoutePath = "/api/v1/web/design/file"
 	WebEndpointProccessDesign  RoutePath = "/api/v1/web/design/:id/proccess"
@@ -48,7 +55,7 @@ func (m RoutePath) String() string {
 }
 
 func (m RoutePath) Replace(p []string) string {
-	regex := regexp.MustCompile(`:[a-zA-Z0-9]+`)
+	regex := regexp.MustCompile(`:[a-zA-Z0-9\_]+`)
 	matches := regex.FindAllString(m.String(), -1)
 	replacements := make([]string, len(matches))
 	for i := range matches {

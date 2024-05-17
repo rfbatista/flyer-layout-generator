@@ -45,6 +45,13 @@ CREATE TYPE COMPONENT_TYPE AS ENUM (
     'background',
     'logotipo_marca',
     'logotipo_produto',
+    'packshot',
+    'celebridade',
+    'modelo',
+    'ilustracao',
+    'oferta',
+    'texto_legal',
+    'grafismo',
     'texto_cta'
     );
 
@@ -56,11 +63,16 @@ CREATE TABLE design_components
     height     INT,
     color      TEXT,
     type       COMPONENT_TYPE,
-
     xi         INT,
     xii        INT,
     yi         INT,
     yii        INT,
+
+    bbox_xi         INT,
+    bbox_xii        INT,
+    bbox_yi         INT,
+    bbox_yii        INT,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE

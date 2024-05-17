@@ -61,3 +61,4 @@ ai:
 	python -m poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 db:
 	docker compose up --build
+

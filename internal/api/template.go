@@ -10,7 +10,7 @@ import (
 
 	"algvisual/internal/database"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
+	"algvisual/internal/usecases/templateusecase"
 )
 
 func NewCreateTemplateAPI(db *database.Queries, conn *pgxpool.Pool, log *zap.Logger) apitools.Handler {
@@ -18,12 +18,12 @@ func NewCreateTemplateAPI(db *database.Queries, conn *pgxpool.Pool, log *zap.Log
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointCreateTemplate.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.CreateTemplateUseCaseRequest
+		var req templateusecase.CreateTemplateUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
-		result, err := usecases.CreateTemplateUseCase(c.Request().Context(), conn, db, req, log)
+		result, err := templateusecase.CreateTemplateUseCase(c.Request().Context(), conn, db, req, log)
 		if err != nil {
 			return err
 		}
@@ -41,12 +41,12 @@ func NewListTemplatesAPI(
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.EndpointListTemplate.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ListTemplatesUseCaseRequest
+		var req templateusecase.ListTemplatesUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.ListTemplatesUseCase(c.Request().Context(), req, queries, log)
+		result, err := templateusecase.ListTemplatesUseCase(c.Request().Context(), req, queries, log)
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-package usecases
+package componentusecase
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 )
 
 type RemoveComponentUseCaseRequest struct {
-	PhotoshopID int32   `param:"photoshop_id" json:"photoshop_id,omitempty"`
-	Elements    []int32 `                     json:"elements,omitempty"     body:"elements"`
+	DesignID int32   `param:"design_id" json:"photoshop_id,omitempty"`
+	Elements []int32 `                  json:"elements,omitempty"     form:"elements" body:"elements"`
 }
 
 type RemoveComponentUseCaseResult struct {
@@ -25,12 +25,16 @@ func RemoveComponentUseCase(
 	elUpdated, err := queries.RemoveComponentFromElements(
 		ctx,
 		database.RemoveComponentFromElementsParams{
-			DesignID: req.PhotoshopID,
+			DesignID: req.DesignID,
 			Ids:      req.Elements,
 		},
 	)
 	if err != nil {
 		return nil, shared.WrapWithAppError(err, "Falha ao atualizar elemento do photoshop", "")
+	}
+	err = queries.ClearEmptyComponents(ctx)
+	if err != nil {
+		return nil, shared.WrapWithAppError(err, "Falha ao limpar componentes vazios", "")
 	}
 	return &RemoveComponentUseCaseResult{
 		Status: "success",

@@ -1,7 +1,8 @@
-package usecases
+package componentusecase
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,8 +13,8 @@ import (
 )
 
 type SetBackgroundUseCaseRequest struct {
-	PhotoshopID int32   `params:"PhotoshopID" json:"photoshop_id,omitempty"`
-	Elements    []int32 `                     json:"elements,omitempty"     body:"elements"`
+	DesignID int32   `param:"design_id" json:"photoshop_id,omitempty"`
+	Elements []int32 `                   json:"elements,omitempty"     forms:"elements" body:"elements"`
 }
 
 type SetBackgroundUseCaseResult struct {
@@ -35,15 +36,15 @@ func SetBackgroundUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
-	comp, err := qtx.GetdesignBackgroundComponent(ctx, int32(req.PhotoshopID))
-	if err != nil {
+	comp, err := qtx.GetdesignBackgroundComponent(ctx, int32(req.DesignID))
+	if err != nil && err == sql.ErrNoRows {
 		err = shared.WrapWithAppError(err, "Falha ao procurar plano de fundo existente", "")
 		log.Error(err.Error())
 		return nil, err
 	}
 	if comp.ID == 0 {
 		comp, err = qtx.CreateComponent(ctx, database.CreateComponentParams{
-			DesignID: req.PhotoshopID,
+			DesignID: req.DesignID,
 			Width:    pgtype.Int4{Int32: 0, Valid: true},
 			Height:   pgtype.Int4{Int32: 0, Valid: true},
 			Type: database.NullComponentType{
@@ -60,7 +61,7 @@ func SetBackgroundUseCase(
 	elUpdated, err := qtx.UpdateManydesignElement(
 		ctx,
 		database.UpdateManydesignElementParams{
-			DesignID:            req.PhotoshopID,
+			DesignID:            req.DesignID,
 			ComponentIDDoUpdate: true,
 			ComponentID:         comp.ID,
 			Ids:                 req.Elements,

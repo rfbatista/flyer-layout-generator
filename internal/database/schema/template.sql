@@ -8,6 +8,7 @@ CREATE TABLE templates (
   id   SERIAL PRIMARY KEY,
   name text      NOT NULL,
   type TEMPLATE_TYPE,
+  request_id TEXT,
   width INT,
   height INT,
   slots_x INT,

@@ -11,6 +11,7 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/shared"
 	"algvisual/internal/usecases"
+	"algvisual/internal/usecases/componentusecase"
 )
 
 func NewRemoveComponentAPI(
@@ -22,12 +23,12 @@ func NewRemoveComponentAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointRemoveComponentElements.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.RemoveComponentUseCaseRequest
+		var req componentusecase.RemoveComponentUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.RemoveComponentUseCase(c.Request().Context(), db, req)
+		result, err := componentusecase.RemoveComponentUseCase(c.Request().Context(), db, req)
 		if err != nil {
 			return err
 		}
@@ -45,12 +46,12 @@ func NewSetPhotoshopBackgroundAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointSetPhotoshopBackground.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.SetBackgroundUseCaseRequest
+		var req componentusecase.SetBackgroundUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
+		result, err := componentusecase.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
 		if err != nil {
 			return err
 		}

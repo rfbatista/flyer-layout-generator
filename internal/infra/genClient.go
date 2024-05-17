@@ -21,8 +21,8 @@ func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, er
 }
 
 type GeneratorRequest struct {
-	Template   entities.Template             `json:"template"`
-	Photoshop  entities.DesignFile            `json:"photoshop"`
+	Template   entities.Template          `json:"template"`
+	Photoshop  entities.DesignFile        `json:"photoshop"`
 	Components []entities.DesignComponent `json:"components"`
 	Elements   []entities.DesignElement   `json:"elements"`
 }
@@ -74,6 +74,7 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 	if err != nil {
 		return nil, err
 	}
+	c.log.Info("generating image", zap.String("body", string(jsonBody)))
 	bodyReader := bytes.NewReader(jsonBody)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*90)
 	defer cancel()

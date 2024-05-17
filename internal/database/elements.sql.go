@@ -7,7 +7,55 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const getDesignElementsByComponentID = `-- name: GetDesignElementsByComponentID :many
+select id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
+where component_id = $1
+`
+
+func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentID pgtype.Int4) ([]DesignElement, error) {
+	rows, err := q.db.Query(ctx, getDesignElementsByComponentID, componentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DesignElement
+	for rows.Next() {
+		var i DesignElement
+		if err := rows.Scan(
+			&i.ID,
+			&i.DesignID,
+			&i.Name,
+			&i.LayerID,
+			&i.Text,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.Width,
+			&i.Height,
+			&i.IsGroup,
+			&i.GroupID,
+			&i.Level,
+			&i.Kind,
+			&i.ComponentID,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
 
 const getElements = `-- name: GetElements :many
 SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 

@@ -53,9 +53,9 @@ func ProcessDesignFileUseCase(
 		ImageUrlDoUpdate: res.ImageUrl != "",
 		ImageUrl:         pgtype.Text{String: res.ImageUrl, Valid: res.ImageUrl != ""},
 		WidthDoUpdate:    true,
-		Width:            design.Width,
+		Width:            pgtype.Int4{Int32: res.Photoshop.Width, Valid: true},
 		HeightDoUpdate:   true,
-		Height:           design.Height,
+		Height:           pgtype.Int4{Int32: res.Photoshop.Height, Valid: true},
 	})
 	if err != nil {
 		log.Error(
@@ -80,7 +80,7 @@ func ProcessDesignFileUseCase(
 			IsGroup:        pgtype.Bool{Bool: i.IsGroup, Valid: true},
 			GroupID:        pgtype.Int4{Int32: int32(i.GroupId), Valid: true},
 			Level:          pgtype.Int4{Int32: int32(i.Level), Valid: true},
-			ImageUrl:       pgtype.Text{String: i.Image, Valid: true},
+			ImageUrl:       pgtype.Text{String: i.ImageURL, Valid: true},
 			Width:          pgtype.Int4{Int32: int32(i.Width), Valid: true},
 			Height:         pgtype.Int4{Int32: int32(i.Height), Valid: true},
 			ImageExtension: pgtype.Text{String: i.ImageExtension, Valid: true},

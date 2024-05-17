@@ -23,18 +23,23 @@ def fit_in_region(region: DesignTemplateRegion, comp: Componente):
     return new_size
 
 
-def find_position_to_center(regiao: DesignTemplateRegion, comp: Componente):
+def find_position_to_center(regiao: DesignTemplateRegion, comp: Componente, log = False):
     element_size = (comp.width, comp.height)
-    print("element size ", element_size)
+
+    if log == True:
+        print("element size ", element_size)
+
     bbox = regiao.bbox()
-    print("bbox ", bbox)
+    if log == True:
+        print("bbox ", bbox)
     regiao_center_x = bbox[0][0] + (((bbox[1][0] - bbox[0][0]) - element_size[0]) // 2)
     regiao_center_y = bbox[0][1] + (((bbox[1][1] - bbox[0][1]) - element_size[1]) // 2)
     center_position = (
         regiao_center_x,
         regiao_center_y,
     )
-    print("center position ", center_position)
+    if log == True:
+        print("center position ", center_position)
     return (int(center_position[0]), int(center_position[1]))
 
 
@@ -44,13 +49,14 @@ def add_padding(padding=0, size=(0, 0)):
 
 
 def position_components_in_regions(
-    regions: List[DesignTemplateRegion],
+    regions: List[DesignTemplateRegion], log = False
 ) -> List[DesignTemplateRegion]:
     for region in regions:
         if region.component is None:
             continue
         new_size = fit_in_region(region, region.component)
-        print(new_size)
+        if log == True:
+            print(new_size)
         region.component.resize_component(new_size[0], new_size[1])
         pos = find_position_to_center(region, region.component)
         # print("region: %s size %s" % (region.id, new_size))

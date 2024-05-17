@@ -11,6 +11,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const clearEmptyComponents = `-- name: ClearEmptyComponents :exec
+DELETE FROM design_components
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM design_element
+    WHERE design_element.component_id = design_components.id
+)
+`
+
+func (q *Queries) ClearEmptyComponents(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, clearEmptyComponents)
+	return err
+}
+
 const createComponent = `-- name: CreateComponent :one
 INSERT INTO design_components (
   design_id,
@@ -21,11 +35,15 @@ INSERT INTO design_components (
   yi,
   yii,
   type,
-  color
+  color,
+  bbox_xi,
+  bbox_yi,
+  bbox_xii,
+  bbox_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 )
-RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, created_at
+RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at
 `
 
 type CreateComponentParams struct {
@@ -38,6 +56,10 @@ type CreateComponentParams struct {
 	Yii      pgtype.Int4       `json:"yii"`
 	Type     NullComponentType `json:"type"`
 	Color    pgtype.Text       `json:"color"`
+	BboxXi   pgtype.Int4       `json:"bbox_xi"`
+	BboxYi   pgtype.Int4       `json:"bbox_yi"`
+	BboxXii  pgtype.Int4       `json:"bbox_xii"`
+	BboxYii  pgtype.Int4       `json:"bbox_yii"`
 }
 
 func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (DesignComponent, error) {
@@ -51,6 +73,10 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		arg.Yii,
 		arg.Type,
 		arg.Color,
+		arg.BboxXi,
+		arg.BboxYi,
+		arg.BboxXii,
+		arg.BboxYii,
 	)
 	var i DesignComponent
 	err := row.Scan(
@@ -64,13 +90,17 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		&i.Xii,
 		&i.Yi,
 		&i.Yii,
+		&i.BboxXi,
+		&i.BboxXii,
+		&i.BboxYi,
+		&i.BboxYii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getComponentByID = `-- name: GetComponentByID :one
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
 where pc.id = $1 LIMIT 1
 `
 
@@ -88,13 +118,58 @@ func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignCompone
 		&i.Xii,
 		&i.Yi,
 		&i.Yii,
+		&i.BboxXi,
+		&i.BboxXii,
+		&i.BboxYi,
+		&i.BboxYii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
+const getComponentsByDesignID = `-- name: GetComponentsByDesignID :many
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
+where pc.design_id = $1
+`
+
+func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) ([]DesignComponent, error) {
+	rows, err := q.db.Query(ctx, getComponentsByDesignID, designID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DesignComponent
+	for rows.Next() {
+		var i DesignComponent
+		if err := rows.Scan(
+			&i.ID,
+			&i.DesignID,
+			&i.Width,
+			&i.Height,
+			&i.Color,
+			&i.Type,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.BboxXi,
+			&i.BboxXii,
+			&i.BboxYi,
+			&i.BboxYii,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const haveElementsIn = `-- name: HaveElementsIn :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
 inner join design_element as pe on pe.component_id = pc.id 
 where pc.id = $1
 `
@@ -119,43 +194,10 @@ func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignCompone
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listComponentByFileId = `-- name: ListComponentByFileId :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.created_at from design_components pc
-where pc.design_id = $1
-`
-
-func (q *Queries) ListComponentByFileId(ctx context.Context, designID int32) ([]DesignComponent, error) {
-	rows, err := q.db.Query(ctx, listComponentByFileId, designID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []DesignComponent
-	for rows.Next() {
-		var i DesignComponent
-		if err := rows.Scan(
-			&i.ID,
-			&i.DesignID,
-			&i.Width,
-			&i.Height,
-			&i.Color,
-			&i.Type,
-			&i.Xi,
-			&i.Xii,
-			&i.Yi,
-			&i.Yii,
+			&i.BboxXi,
+			&i.BboxXii,
+			&i.BboxYi,
+			&i.BboxYii,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

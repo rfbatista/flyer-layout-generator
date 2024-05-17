@@ -8,8 +8,10 @@ import (
 
 	"algvisual/internal/ports"
 	"algvisual/internal/web/views/home"
+	"algvisual/internal/web/views/request/requestcreateimages"
 	"algvisual/internal/web/views/request/requestdefinecomponents"
 	"algvisual/internal/web/views/request/requestprocessdesign"
+	"algvisual/internal/web/views/request/requesttemplates"
 	"algvisual/internal/web/views/request/requestuploadfile"
 )
 
@@ -44,4 +46,10 @@ var Module = fx.Options(fx.Provide(
 	protected(requestprocessdesign.NewPageRequestProcessDesign),
 	protected(requestprocessdesign.NewWebProccessDesign),
 	protected(requestdefinecomponents.NewPage),
+	protected(requestdefinecomponents.CreateComponent),
+	protected(requestdefinecomponents.RemoveElementFromComponent),
+	protected(requesttemplates.NewPage),
+	protected(requesttemplates.NewPageTemplatesCreated),
+	protected(requesttemplates.NewUploadCSV),
+	protected(requestcreateimages.NewPage),
 ))

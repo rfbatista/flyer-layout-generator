@@ -17,19 +17,23 @@ func TodesignEntitie(raw Design) entities.DesignFile {
 
 func TodesignComponentEntitie(raw DesignComponent) entities.DesignComponent {
 	return entities.DesignComponent{
-		ID:     raw.ID,
-		Width:  raw.Width.Int32,
-		Height: raw.Height.Int32,
-		Xi:     raw.Xi.Int32,
-		Xii:    raw.Xii.Int32,
-		Yi:     raw.Yi.Int32,
-		Yii:    raw.Yii.Int32,
-		Color:  raw.Color.String,
-		Type:   string(raw.Type.ComponentType),
+		ID:      raw.ID,
+		Width:   raw.Width.Int32,
+		Height:  raw.Height.Int32,
+		Xi:      raw.Xi.Int32,
+		Xii:     raw.Xii.Int32,
+		Yi:      raw.Yi.Int32,
+		Yii:     raw.Yii.Int32,
+		Color:   raw.Color.String,
+		Type:    string(raw.Type.ComponentType),
+		BboxXi:  raw.BboxXi.Int32,
+		BboxXii: raw.BboxXii.Int32,
+		BboxYi:  raw.BboxYi.Int32,
+		BboxYii: raw.BboxYii.Int32,
 	}
 }
 
-func TodesignElementEntitie(raw DesignElement) entities.DesignElement {
+func ToDesignElementEntitie(raw DesignElement) entities.DesignElement {
 	return entities.DesignElement{
 		ID:          raw.ID,
 		Xi:          raw.Xi.Int32,
@@ -45,10 +49,18 @@ func TodesignElementEntitie(raw DesignElement) entities.DesignElement {
 		GroupId:     raw.GroupID.Int32,
 		Level:       raw.Level.Int32,
 		DesignID:    raw.DesignID,
-		Image:       raw.ImageUrl.String,
+		ImageURL:    raw.ImageUrl.String,
 		Text:        raw.Text.String,
 		ComponentID: raw.ComponentID.Int32,
 	}
+}
+
+func ToDesignElementEntitieList(raw []DesignElement) []entities.DesignElement {
+	var e []entities.DesignElement
+	for _, r := range raw {
+		e = append(e, ToDesignElementEntitie(r))
+	}
+	return e
 }
 
 func ToTemplateEntitie(raw Template) entities.Template {

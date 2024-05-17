@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from copy import deepcopy
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 from app.entities.photoshop import Elemento, DesignElement
@@ -15,7 +15,18 @@ class Componente(BaseModel):
     yi: int
     xii: int
     yii: int
+    bbox_xi: Optional[int] = 0
+    bbox_xii:Optional[int] = 0
+    bbox_yi: Optional[int] = 0
+    bbox_yii:Optional[int] = 0
     _items: List[Elemento] = []
+
+
+    def bbox_height(self):
+        return (self.bbox_yii or 0 ) - (self.bbox_yi or 0 )
+
+    def bbox_width(self):
+        return (self.bbox_xii or 0 ) -  (self.bbox_xi or 0 )
 
     def resize_component_element(
         self, element: DesignElement, width: int, height: int
@@ -80,17 +91,21 @@ class Componente(BaseModel):
         else:
             return False
 
-    def draw_in_image(self, to_image):
+    def draw_in_image(self, to_image, log = False):
         for item in self._items:
             el = [e for e in self.elements if str(e.layer_id) == str(item.layer_id())]
             if len(el) == 0:
                 continue
             element = el[0]
             im = item.image()
-            print(element)
+
+            if log == True:
+                print(element)
             size = element.size()
             im = im.resize((size[0],size[1]))
-            print(im.size)
+
+            if log == True:
+                print(im.size)
             # print(
             #     "positioning element in: %s %s with size %s"
             #     % (el[0].layer_id, el[0].pos(), el[0].size())

@@ -2,25 +2,98 @@ package requestdefinecomponents
 
 import "algvisual/internal/web/views"
 import "algvisual/internal/web/components/layout"
-import "algvisual/internal/database"
 import "algvisual/internal/web/components/elementtree"
 import "strconv"
+import "algvisual/internal/entities"
+import "algvisual/internal/shared"
 
-templ Page(elements []database.DesignElement) {
+type PageProps struct {
+	DesignID   int32
+	Elements   []entities.DesignElement
+	Components []entities.DesignComponent
+	Background entities.DesignComponent
+}
+
+templ Page(id int32, props *PageProps) {
 	<html>
 		<head>
 			@views.Header()
 		</head>
 		<body>
 			@layout.Layout() {
-        <div class="mx-auto max-w-[900px]">
-				@elementtree.Tree("tree") {
-					for _, d := range elements {
-						@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name.String, ImageURL: d.ImageUrl.String, Value: strconv.FormatInt(int64(d.ID), 10)})
+				<div class="mx-auto max-w-[900px]">
+					<div class="mx-auto max-w-[900px]">
+						<button type="button" class="btn" hx-post={ shared.PageRequestElementsCreateComponent.Replace([]string{strconv.FormatInt(int64(id), 10)}) } hx-vals='js:{"elements": activeItems,"type":type}'>Criar componente</button>
+						<select id="tipo_componente">
+							<option value="background">Planto de fundo</option>
+							<option value="logotipo_marca">Marca</option>
+							<option value="logotipo_produto">Produto</option>
+							<option value="packshot">Packshot</option>
+							<option value="celebridade">Celebridade</option>
+							<option value="modelo">Modelo</option>
+							<option value="ilustracao">Ilustração</option>
+							<option value="oferta">Oferta</option>
+							<option value="texto_legal">Texto Legal</option>
+							<option value="grafismo">Grafismo</option>
+							<option value="texto_cta">Call to action</option>
+						</select>
+						<button type="button" class="btn" hx-post={ shared.PageRequestElementsRemoveElement.Replace([]string{strconv.FormatInt(int64(id), 10)}) } hx-vals='js:{"elements": activeItems,"type":"logotipo_marca"}'>Remover</button>
+						<a class="btn" href={ templ.SafeURL(shared.PageRequestUploadSheet.Replace([]string{strconv.FormatInt(int64(id), 10)})) }>Prosseguir</a>
+					</div>
+					@elementtree.Tree("elements") {
+						for _, d := range props.Elements {
+							@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+						}
 					}
-				}
-        </div>
+					Plano de Fundo:
+					@elementtree.Tree("background") {
+						for _, d := range props.Background.Elements {
+							@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+						}
+					}
+					Componentes:
+					for idx, c := range props.Components {
+						<div>{ strconv.FormatInt(int64(idx), 10) }</div>
+						<hr/>
+						@elementtree.Tree("components") {
+							for _, d := range c.Elements {
+								@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+							}
+						}
+					}
+				</div>
 			}
+			<script>
+        let type = "background"
+        let activeItems = []
+        document.getElementById("tipo_componente").addEventListener("change", function(){
+          console.log('You selected: ', this.value);
+          type = this.value
+        })
+        document.querySelectorAll('.element').forEach((d) => d.addEventListener('click', function(event) {
+          var customAttribute = this.getAttribute('element-id');
+          if(activeItems.includes(customAttribute)) {
+              activeItems = activeItems.filter((i) => i !== customAttribute)
+              this.classList.remove('bg-gray-200');
+              return
+            };
+          activeItems.push(customAttribute)
+          this.classList.add('bg-gray-200');
+        }));
+
+        function createComponent(){
+          if (activeItems.length === 0) return
+            console.log(activeItems)
+          }
+        function defineBackground(){
+          if (activeItems.length === 0) return
+            console.log(activeItems)
+          }
+        function removeComponent(){
+          if (activeItems.length === 0) return
+            console.log(activeItems)
+          }
+      </script>
 		</body>
 	</html>
 }

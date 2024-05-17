@@ -1,8 +1,9 @@
-package usecases
+package templateusecase
 
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -13,17 +14,17 @@ import (
 )
 
 type CreateTemplateUseCaseRequest struct {
-	Name           string                            `form:"name"            json:"name,omitempty"`
-	Width          int                               `form:"width"           json:"width,omitempty"`
-	Height         int                               `form:"height"          json:"height,omitempty"`
-	Type           entities.TemplateType             `form:"type"            json:"type,omitempty"`
-	SlotsPositions []entities.TemplateSlotsPositions `form:"slots_positions" json:"slots_positions,omitempty"`
-	Distortion     entities.TemplateDistortion       `form:"distortion"      json:"distortion,omitempty"`
-	X              int                               `                       json:"x,omitempty"`
-	Y              int                               `                       json:"y,omitempty"`
+	Name      string                `form:"name"   json:"name,omitempty"`
+	Width     int                   `form:"width"  json:"width,omitempty"`
+	Height    int                   `form:"height" json:"height,omitempty"`
+	Type      entities.TemplateType `form:"type"   json:"type,omitempty"`
+	X         int                   `              json:"x,omitempty"`
+	Y         int                   `              json:"y,omitempty"`
+	RequestID string
 }
 
 type CreateTemplateUseCaseResult struct {
+	RequestID      string
 	Template       database.Template            `json:"template,omitempty"`
 	Distortion     database.TemplatesDistortion `json:"distortion,omitempty"`
 	SlotsPositions []database.TemplatesSlot     `json:"slots_positions,omitempty"`
@@ -51,11 +52,19 @@ func CreateTemplateUseCase(
 		log.Error(err.Error())
 		return nil, err
 	}
+	var id string
+	if req.RequestID == "" {
+		uniqid, _ := uuid.NewRandom()
+		id = uniqid.String()
+	} else {
+		id = req.RequestID
+	}
 	temp, err := qtx.CreateTemplate(ctx, database.CreateTemplateParams{
-		Name:   req.Name,
-		Type:   *tempType,
-		Width:  pgtype.Int4{Int32: int32(req.Width), Valid: true},
-		Height: pgtype.Int4{Int32: int32(req.Height), Valid: true},
+		Name:      req.Name,
+		Type:      *tempType,
+		Width:     pgtype.Int4{Int32: int32(req.Width), Valid: true},
+		Height:    pgtype.Int4{Int32: int32(req.Height), Valid: true},
+		RequestID: pgtype.Text{String: id, Valid: true},
 	})
 	if err != nil {
 		err = shared.WrapWithAppError(err, "failed to create template", "")
@@ -79,6 +88,7 @@ func CreateTemplateUseCase(
 		return nil, err
 	}
 	return &CreateTemplateUseCaseResult{
+		RequestID:  id,
 		Template:   temp,
 		Distortion: dist,
 	}, nil

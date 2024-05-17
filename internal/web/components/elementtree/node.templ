@@ -1,18 +1,26 @@
 package elementtree
 
+import "fmt"
+
 type NodeProps struct {
-	Text    string
-	Value   string
-	Section string
-	Index   string
-  ImageURL string
+	Text     string
+	Value    string
+	Section  string
+	Index    string
+	ImageURL string
 }
 
 templ TreeNode(props NodeProps) {
-  <div href="#" class="my-4 h-[80px] w-[250px] flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-      <img class="object-contain h-[80px] w-[80px] rounded-t-lg md:rounded-none md:rounded-s-lg" src={props.ImageURL} alt="" />
-      <div class="flex flex-col justify-between p-4 leading-normal">
-          <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{props.Text}</h5>
-      </div>
-  </div>
+	<div
+		href="#"
+		id={ fmt.Sprintf("tree-node-%s", props.Value) }
+		key={ fmt.Sprintf("tree-node-%s", props.Value) }
+		element-id={ templ.EscapeString(props.Value) }
+		class="element col-span-2 my-4 h-[80px] w-[250px] flex flex-col items-center border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+	>
+		<img class="object-contain h-[80px] w-[80px] rounded-t-lg md:rounded-none md:rounded-s-lg" src={ props.ImageURL } alt=""/>
+		<div class="flex flex-col justify-between p-4 leading-normal">
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{ props.Text }</h5>
+		</div>
+	</div>
 }

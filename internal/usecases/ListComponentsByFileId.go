@@ -8,7 +8,7 @@ import (
 )
 
 type ListComponentsByFileIdRequest struct {
-	PhotoshopID int32 `param:"photoshop_id"`
+	DesignID int32 `param:"photoshop_id"`
 }
 
 type ListComponentsByFileIdResult struct {
@@ -21,7 +21,7 @@ func ListComponentsByFileIdUseCase(
 	req ListComponentsByFileIdRequest,
 	queries *database.Queries,
 ) (*ListComponentsByFileIdResult, error) {
-	res, err := queries.ListComponentByFileId(ctx, req.PhotoshopID)
+	res, err := queries.GetComponentsByDesignID(ctx, req.DesignID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao listar componentes por arquivo", "")
 		return nil, err

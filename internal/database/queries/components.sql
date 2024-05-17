@@ -7,7 +7,7 @@ select pc.* from design_components pc
 inner join design_element as pe on pe.component_id = pc.id 
 where pc.id = $1;
 
--- name: ListComponentByFileId :many
+-- name: GetComponentsByDesignID :many
 select pc.* from design_components pc
 where pc.design_id = $1;
 
@@ -43,10 +43,20 @@ INSERT INTO design_components (
   yi,
   yii,
   type,
-  color
+  color,
+  bbox_xi,
+  bbox_yi,
+  bbox_xii,
+  bbox_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 )
 RETURNING *;
 
-
+-- name: ClearEmptyComponents :exec
+DELETE FROM design_components
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM design_element
+    WHERE design_element.component_id = design_components.id
+);

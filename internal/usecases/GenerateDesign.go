@@ -58,7 +58,7 @@ func GenerateDesignUseCase(
 	}
 	var eelements []entities.DesignElement
 	for _, el := range elements {
-		eelements = append(eelements, database.TodesignElementEntitie(el))
+		eelements = append(eelements, database.ToDesignElementEntitie(el))
 	}
 	compHash := make(map[int32][]entities.DesignElement)
 	for _, c := range eelements {

@@ -15,7 +15,7 @@ type DesignElement struct {
 	GroupId        int32  `json:"group_id"`
 	Level          int32  `json:"level"`
 	DesignID       int32  `json:"photoshop_id"`
-	Image          string `json:"image,omitempty"`
+	ImageURL       string `json:"image,omitempty"`
 	Text           string `json:"text,omitempty"`
 	ImageExtension string `json:"image_extension,omitempty"`
 	ComponentID    int32  `json:"component_id"`

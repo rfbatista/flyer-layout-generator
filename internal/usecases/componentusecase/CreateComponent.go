@@ -1,4 +1,4 @@
-package usecases
+package componentusecase
 
 import (
 	"context"
@@ -13,11 +13,10 @@ import (
 )
 
 type CreateComponentRequest struct {
-	Type        string  `json:"type,omitempty"`
-	ElementsID  []int32 `json:"elements_id,omitempty"`
-	Color       string  `json:"color,omitempty"`
-	ComponentID string  `json:"component_id,omitempty"`
-	PhotoshopID int     `json:"photoshop_id,omitempty" param:"photoshop_id"`
+	Type       string  `form:"type"     json:"type,omitempty"`
+	ElementsID []int32 `form:"elements" json:"elements_id,omitempty"`
+	Color      string  `                json:"color,omitempty"`
+	DesignID   int     `                json:"photoshop_id,omitempty" param:"design_id"`
 }
 
 type CreateComponentResult struct {
@@ -48,15 +47,25 @@ func CreateComponentUseCase(
 	if len(elements) == 0 {
 		return nil, shared.NewAppError(400, "Nenhum elemento encontrado", "")
 	}
+	des, err := qtx.Getdesign(ctx, int32(req.DesignID))
+	if err != nil && err != sql.ErrNoRows {
+		err = shared.WrapWithAppError(err, "Falha ao buscar arquivo do design", err.Error())
+		log.Error(err.Error())
+		return nil, err
+	}
 	xi, yi, xii, yii, width, heigh := calculateBoundaringBoxForComponent(elements)
 	comp, err := qtx.CreateComponent(ctx, database.CreateComponentParams{
-		DesignID: int32(req.PhotoshopID),
+		DesignID: int32(req.DesignID),
 		Width:    pgtype.Int4{Int32: width, Valid: true},
 		Height:   pgtype.Int4{Int32: heigh, Valid: true},
 		Xi:       pgtype.Int4{Int32: xi, Valid: true},
 		Xii:      pgtype.Int4{Int32: xii, Valid: true},
 		Yi:       pgtype.Int4{Int32: yi, Valid: true},
 		Yii:      pgtype.Int4{Int32: yii, Valid: true},
+		BboxXi:   pgtype.Int4{Int32: 0, Valid: true},
+		BboxYi:   pgtype.Int4{Int32: 0, Valid: true},
+		BboxXii:  pgtype.Int4{Int32: des.Width.Int32, Valid: true},
+		BboxYii:  pgtype.Int4{Int32: des.Height.Int32, Valid: true},
 		Color:    pgtype.Text{String: req.Color, Valid: req.Color != ""},
 		Type: database.NullComponentType{
 			ComponentType: database.ComponentType(req.Type),
@@ -71,7 +80,7 @@ func CreateComponentUseCase(
 	elUpdated, err := qtx.UpdateManydesignElement(
 		ctx,
 		database.UpdateManydesignElementParams{
-			DesignID:            int32(req.PhotoshopID),
+			DesignID:            int32(req.DesignID),
 			ComponentIDDoUpdate: true,
 			ComponentID:         comp.ID,
 			Ids:                 req.ElementsID,

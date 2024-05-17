@@ -17,6 +17,13 @@ const (
 	ComponentTypeBackground      ComponentType = "background"
 	ComponentTypeLogotipoMarca   ComponentType = "logotipo_marca"
 	ComponentTypeLogotipoProduto ComponentType = "logotipo_produto"
+	ComponentTypePackshot        ComponentType = "packshot"
+	ComponentTypeCelebridade     ComponentType = "celebridade"
+	ComponentTypeModelo          ComponentType = "modelo"
+	ComponentTypeIlustracao      ComponentType = "ilustracao"
+	ComponentTypeOferta          ComponentType = "oferta"
+	ComponentTypeTextoLegal      ComponentType = "texto_legal"
+	ComponentTypeGrafismo        ComponentType = "grafismo"
 	ComponentTypeTextoCta        ComponentType = "texto_cta"
 )
 
@@ -123,6 +130,10 @@ type DesignComponent struct {
 	Xii       pgtype.Int4       `json:"xii"`
 	Yi        pgtype.Int4       `json:"yi"`
 	Yii       pgtype.Int4       `json:"yii"`
+	BboxXi    pgtype.Int4       `json:"bbox_xi"`
+	BboxXii   pgtype.Int4       `json:"bbox_xii"`
+	BboxYi    pgtype.Int4       `json:"bbox_yi"`
+	BboxYii   pgtype.Int4       `json:"bbox_yii"`
 	CreatedAt pgtype.Timestamp  `json:"created_at"`
 }
 
@@ -183,6 +194,7 @@ type Template struct {
 	ID        int32            `json:"id"`
 	Name      string           `json:"name"`
 	Type      NullTemplateType `json:"type"`
+	RequestID pgtype.Text      `json:"request_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`

@@ -13,6 +13,7 @@ import (
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/internal/usecases"
+	"algvisual/internal/usecases/componentusecase"
 )
 
 func NewGenerateDesignAPI(
@@ -125,12 +126,18 @@ func NewCreateComponentAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointCreateComponent.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.CreateComponentRequest
+		var req componentusecase.CreateComponentRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.CreateComponentUseCase(c.Request().Context(), req, db, conn, log)
+		result, err := componentusecase.CreateComponentUseCase(
+			c.Request().Context(),
+			req,
+			db,
+			conn,
+			log,
+		)
 		if err != nil {
 			return err
 		}

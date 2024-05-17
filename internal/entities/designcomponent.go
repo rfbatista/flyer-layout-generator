@@ -11,4 +11,8 @@ type DesignComponent struct {
 	Xii      int32           `json:"xii"`
 	Yi       int32           `json:"yi"`
 	Yii      int32           `json:"yii"`
+	BboxXi   int32           `json:"bbox_xi"`
+	BboxXii  int32           `json:"bbox_xii"`
+	BboxYi   int32           `json:"bbox_yi"`
+	BboxYii  int32           `json:"bbox_yii"`
 }

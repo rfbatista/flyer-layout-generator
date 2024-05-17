@@ -9,6 +9,12 @@ FROM templates
 WHERE templates.id = $1 LIMIT 1;
 
 
+-- name: GetTemplatesByRequestID :many
+SELECT *
+FROM templates
+WHERE request_id = $1;
+
+
 -- name: GetTemplateSlots :many
 SELECT sqlc.embed(templates_slots)
 FROM templates_slots
@@ -25,12 +31,14 @@ INSERT INTO templates (
   name,
   type,
   width,
-  height
+  height,
+  request_id
 ) VALUES (
   $1,
   $2,
   $3,
-  $4
+  $4,
+  $5
 )
 RETURNING *;
 
