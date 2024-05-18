@@ -10,7 +10,7 @@ endpoint_url = "http://127.0.0.1:8000/api/v1/images"
 def upload_image(img: Image, name: str):
     image_data = None
     with io.BytesIO() as output:
-        img.save(output, format="PNG")
+        img.save(output, format="PNG", quality=95)
         image_data = output.getvalue()
     # Endpoint URL where you want to send the image
 

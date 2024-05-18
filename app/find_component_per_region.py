@@ -18,7 +18,8 @@ def define_components_per_region(
                     if comp.is_in_pixel((x, y)):
                         comp.increase_pixel()
         choosed_component = None
-        for comp in status_componentes:
+        sorted_items = sorted(status_componentes, key=lambda item: item.comp_indice())
+        for comp in sorted_items:
             if choosed_component is None:
                 choosed_component = comp
                 continue

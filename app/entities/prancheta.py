@@ -126,7 +126,7 @@ class Prancheta:
             # img = img.crop((0, 0, self.width, self.height))
         else:
             img = Image.new("RGB", self.size())
-        img.resize((template.width, template.height))
+        img.resize((template.width, template.height), Image.Resampling.LANCZOS)
         components = self.componentes
         for pos in template.positions:
             if len(components) == 0:

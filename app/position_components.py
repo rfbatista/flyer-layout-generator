@@ -2,9 +2,8 @@ from typing import List
 from app.entities.componente import Componente
 from app.entities.template import DesignTemplateRegion
 
-PAD_SIZE = 10
 
-def fit_in_region(region: DesignTemplateRegion, comp: Componente):
+def fit_in_region(region: DesignTemplateRegion, comp: Componente, PAD_SIZE = 10):
     # Calculate the scaling factor
     scale_factor = 1
     region_scale_factor = 1
@@ -54,7 +53,15 @@ def position_components_in_regions(
     for region in regions:
         if region.component is None:
             continue
-        new_size = fit_in_region(region, region.component)
+        pad_size = 10
+        print(region.component.type)
+        if region.component.type == "logotipo_marca" or region.component.type == "logotipo_produto":
+            pad_size = 10
+        if region.component.type == "modelo":
+            pad_size = 0
+        if region.component.type == "logotipo_produto":
+            pad_size = 0
+        new_size = fit_in_region(region, region.component, pad_size)
         if log == True:
             print(new_size)
         region.component.resize_component(new_size[0], new_size[1])

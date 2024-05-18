@@ -2,11 +2,11 @@ from app.entities.componente import Componente
 from app.entities.template import DesignTemplate
 
 def resize_rectangle_to_fit(input_width, input_height, target_width, target_height, comp: Componente):
-    print("bbox", input_width, input_height)
     width_ratio = target_width / input_width
     height_ratio = target_height / input_height
     proportion = max(width_ratio, height_ratio)
     new_size = (comp.width * proportion, comp.height * proportion)
+    print("bbox", input_width, input_height,"proportion choose", proportion, "prooportions", width_ratio, height_ratio,"target", target_width, target_height, "new_size", new_size)
     return new_size
 
 def resize_background(background: Componente, prancheta: DesignTemplate):

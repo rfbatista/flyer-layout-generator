@@ -1,5 +1,18 @@
 from app.entities.componente import Componente
 
+type_value = {
+    'background': 0,
+    'logotipo_marca': 10,
+    'logotipo_produto': 9,
+    'packshot': 2,
+    'celebridade': 3,
+    'modelo': 4,
+    'ilustracao': 5,
+    'oferta': 5,
+    'texto_legal': 1,
+    'grafismo': 1,
+    'texto_cta': 9,
+}
 
 class ComponenteStatus:
     def __init__(self, comp: Componente):
@@ -21,6 +34,10 @@ class ComponenteStatus:
             return True
         else:
             return False
+    
+    def comp_indice(self):
+        return type_value.get(self.comp_type) or 0
+
 
     def __repr__(self):
         return (

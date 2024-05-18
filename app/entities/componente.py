@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from copy import deepcopy
 from typing import List, Optional
 from pydantic import BaseModel
+from PIL import Image
 
 from app.entities.photoshop import Elemento, DesignElement
 
@@ -102,7 +103,7 @@ class Componente(BaseModel):
             if log == True:
                 print(element)
             size = element.size()
-            im = im.resize((size[0],size[1]))
+            im = im.resize((size[0],size[1]), Image.Resampling.LANCZOS)
 
             if log == True:
                 print(im.size)

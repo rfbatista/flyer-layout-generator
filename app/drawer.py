@@ -28,7 +28,7 @@ def expand_and_center(base_image: Image, base_width, base_height, target_width, 
         new_height = base_height
     
     # Resize the target image to the new dimensions
-    resized_target_image = target_image.resize((new_width, new_height))
+    resized_target_image = target_image.resize((new_width, new_height), Image.LACZOS)
     
     # Create a new image with the size of the base image and a white background
     new_image = Image.new('RGB', (base_width, base_height), (255, 255, 255))
