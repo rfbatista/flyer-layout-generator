@@ -1,6 +1,11 @@
-.PHONY: clean
 include .env
+
+SHELL := /bin/bash
 PGPASSWORD=123
+VENV_DIR = venv
+PYTHON = python
+REQUIREMENTS = requirements.txt
+
 run:
 	PYTHONPATH=. uvicorn app.main:app --reload
 upgrade:
@@ -57,8 +62,16 @@ algai:
 	docker build -t algvisual-ai:latest -f ./scripts/ai/Dockerfile.dev .
 run-algai:
 	docker run -v .:/app --net=host -p 8080:8080 -it algvisual-ai:latest
-ai:
+ai-poetry:
 	python -m poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+ai:
+	uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 db:
 	docker compose up --build
+activate:
+	@echo "Activating virtual environment"
+	@source $(VENV_DIR)/bin/activate
+environment:
+	shell python -m venv venv
 
+.PHONY: clean

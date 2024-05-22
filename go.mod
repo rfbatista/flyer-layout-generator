@@ -18,12 +18,14 @@ require (
 	github.com/a-h/templ v0.2.680 // indirect
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/oov/psd v0.0.0-20220121172623-5db5eafcecbb // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/swaggest/jsonschema-go v0.3.70 // indirect

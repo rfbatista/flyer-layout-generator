@@ -93,13 +93,17 @@ class Componente(BaseModel):
             return False
 
     def draw_in_image(self, to_image, log = False):
+        if(len(self._items) == 0):
+            if log == True:
+                print("no items found in component %s", (self.id))
         for item in self._items:
             el = [e for e in self.elements if str(e.layer_id) == str(item.layer_id())]
             if len(el) == 0:
+                if log == True:
+                    print("no element found in component %s", (self.id))
                 continue
             element = el[0]
             im = item.image()
-
             if log == True:
                 print(element)
             size = element.size()
@@ -138,4 +142,4 @@ class Componente(BaseModel):
 
     def __str__(self):
         return "component_id %s size: %s position %s" % (self.id, self.size(), self.pos())
-    
+

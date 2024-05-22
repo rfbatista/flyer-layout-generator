@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from app.build_image import BuildImageRequest, build_image
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,3 +49,8 @@ def generate_design_api(req: GenerateDesignRequest):
     except Exception as e:
         logger.exception("failed to generate design")
         raise HTTPException(status_code=500, detail="internal server error \n %s" % (e))
+
+@app.post("/api/v1/prancheta/generate")
+def generate_image_api(req: BuildImageRequest):
+    return build_image(req)
+

@@ -9,9 +9,11 @@ from app.entities.template import DesignTemplate, Template
 
 class DesignPrancheta(BaseModel):
     template: DesignTemplate
-    components: List[Componente]
+    components: List[Componente] = []
     width: int
     height: int
+    def __str__(self):
+        return "template size: %s width %s height %s" % (len(self.components), self.width, self.height)
 
 class Prancheta:
     def __init__(self, width, height) -> None:
@@ -116,7 +118,7 @@ class Prancheta:
             upper = (img.height - template.height) // 2
             right = left + template.width
             lower = upper + template.height
-            
+
             # Crop the image based on the calculated coordinates
             pos = (left, upper, right, lower)
             print(pos)

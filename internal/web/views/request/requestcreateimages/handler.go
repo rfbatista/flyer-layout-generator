@@ -1,17 +1,21 @@
 package requestcreateimages
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/rfbatista/apitools"
-	"go.uber.org/zap"
-
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/internal/web/components/notification"
+
+	"github.com/labstack/echo/v4"
+	"github.com/rfbatista/apitools"
+	"go.uber.org/zap"
 )
 
-func NewPage(db *database.Queries, client *infra.ImageGeneratorClient, log *zap.Logger,
+func NewPage(
+	db *database.Queries,
+	client *infra.ImageGeneratorClient,
+	log *zap.Logger,
+	config *infra.AppConfig,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
@@ -26,7 +30,7 @@ func NewPage(db *database.Queries, client *infra.ImageGeneratorClient, log *zap.
 				),
 			)
 		}
-		out, err := createImages(c.Request().Context(), req, db, client, log)
+		out, err := createImages(c.Request().Context(), req, db, client, log, *config)
 		if err != nil {
 			return err
 		}

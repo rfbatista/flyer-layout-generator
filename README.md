@@ -1,5 +1,16 @@
 # flyer-layout-generator
 
+- python -m venv venv
+- source ./venv/bin/activate
+- ./venv/bin/pip install -U pip setuptools
+- ./venv/bin/pip install poetry
+- ./venv/bin/poetry requirements
+- ./venv/bin/pip install -r requirements.txt
+
+# Installing new packages
+
+
+
 # Database migration 
 
 Install atlas

@@ -13,7 +13,10 @@ from app.requests import GenerateDesignRequest, GenerateDesignResult
 
 def generate_design(req: GenerateDesignRequest, log = False):
     started_at = datetime.now(timezone.utc)
-    background = [c for c in req.components if c.type == "background"][0]
+    background = None
+    bg_list = [c for c in req.components if c.type == "background"]
+    if len(bg_list) > 0:
+        background = bg_list[0]
     req.components = [c for c in req.components if c.type != "background"]
     prancheta = DesignPrancheta(
         template=req.template,
@@ -84,11 +87,13 @@ def generate_design(req: GenerateDesignRequest, log = False):
             for e in c.elements:
                 print(e)
 
-    resized_bg = resize_background(background, req.template)
+    if background is not None:
+        resized_bg = resize_background(background, req.template)
+        background = resized_bg
 
     # if log == True:
-    print("background", resized_bg.width, resized_bg.height, "template", req.template.width, req.template.height)
-    image = renderer.render_png(componentes, req, resized_bg)
+    # print("background", background.width, background.height, "template", req.template.width, req.template.height)
+    image = renderer.render_png(componentes, req, background)
     finished_at = datetime.now(timezone.utc)
     return GenerateDesignResult(
         photoshop_id=req.photoshop.id or 0,

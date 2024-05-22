@@ -12,3 +12,4 @@ server
 proxy.log
 .idea
 /data
+venv

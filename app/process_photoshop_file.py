@@ -27,7 +27,7 @@ class ProcessPhotoshopFileResult(BaseModel):
     elements: List[DesignElement]
 
 
-endpoint_url = "http://host.docker.internal:8000/api/v1/design/{}/file"
+endpoint_url = "http://localhost:8000/api/v1/design/{}/file"
 
 def process_photoshop_file(req: ProcessDesignFileRequest):
     try:

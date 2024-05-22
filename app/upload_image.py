@@ -3,7 +3,7 @@ import requests
 from PIL.Image import Image
 
 
-endpoint_url = "http://127.0.0.1:8000/api/v1/images"
+endpoint_url = "http://localhost:8000/api/v1/images"
 # endpoint_url = "http://app-dev:8000/api/v1/images"
 
 
