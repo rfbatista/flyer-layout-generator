@@ -50,6 +50,7 @@ func createImages(
 			results = append(results, result{IsError: true})
 		} else {
 			results = append(results, result{IsError: false, ImageURL: res.Data.ImageURL})
+			results = append(results, result{IsError: false, ImageURL: res.TwistedURL})
 		}
 	}
 	return &createImageResult{Results: results}, nil

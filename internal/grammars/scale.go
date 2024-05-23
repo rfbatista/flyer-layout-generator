@@ -1,0 +1,59 @@
+package grammars
+
+import "algvisual/internal/entities"
+
+func ScaleComponent(
+	world World,
+	prancheta entities.Prancheta,
+	id int32,
+) (World, entities.Prancheta) {
+	var ent *entities.DesignComponent
+	for _, c := range prancheta.Components {
+		if c.ID == id {
+			ent = &c
+		}
+	}
+	if ent == nil {
+		return world, prancheta
+	}
+	wprorp, hprop := getOriginalProportion(world, id)
+	if wprorp > hprop && ent.Width < ent.Width {
+		// calcula a escala com base na proporção do elemento no design original
+		nwidth := float64(prancheta.Width) * wprorp
+		scaleTo := (nwidth / float64(ent.Width))
+		ent.ScaleWithoutMoving(scaleTo, scaleTo)
+	} else {
+		// calcula a escala com base na proporção do elemento no design original
+		nheight := float64(prancheta.Height) * hprop
+		scaleTo := (nheight / float64(ent.Height))
+		ent.ScaleWithoutMoving(scaleTo, scaleTo)
+	}
+	if doesItFit(&prancheta, ent) {
+		for idx, c := range prancheta.Components {
+			if c.ID == id {
+				prancheta.Components[idx] = *ent
+			}
+		}
+		return world, prancheta
+	}
+	return world, prancheta
+}
+
+func getOriginalProportion(world World, id int32) (float64, float64) {
+	var ent *entities.DesignComponent
+	for _, c := range world.Components {
+		if c.ID == id {
+			ent = &c
+		}
+	}
+	if ent == nil {
+		return 1, 1
+	}
+	return float64(
+			ent.Width) / float64(world.OriginalDesign.Width), float64(
+			ent.Height) / float64(world.OriginalDesign.Height)
+}
+
+func doesItFit(pr *entities.Prancheta, ent *entities.DesignComponent) bool {
+	return true
+}

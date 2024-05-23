@@ -17,6 +17,39 @@ type DesignComponent struct {
 	BboxYii  int32           `json:"bbox_yii"`
 }
 
+func (d *DesignComponent) ScaleTo(wscale, hscale float64) {
+	d.Height = int32(float64(d.Height) * hscale)
+	d.Width = int32(float64(d.Width) * wscale)
+	d.Xi = int32(float64(d.Xi) * wscale)
+	d.Yi = int32(float64(d.Yi) * hscale)
+	d.Xii = d.Xi + d.Width
+	d.Yii = d.Yi + d.Height
+	d.ScaleElements(wscale, hscale)
+	d.ScaleElementsPositions(wscale, hscale)
+}
+
+func (d *DesignComponent) ScaleWithoutMoving(wscale, hscale float64) {
+	d.Height = int32(float64(d.Height) * hscale)
+	d.Width = int32(float64(d.Width) * wscale)
+	nxi := int32(float64(d.Xi) * wscale)
+	nyi := int32(float64(d.Yi) * hscale)
+	// movimentacao realizada
+	mxi := nxi - d.Xi
+	myi := nyi - d.Yi
+	d.Xi = nxi
+	d.Yi = nyi
+	d.Xii = d.Xi + d.Width
+	d.Yii = d.Yi + d.Height
+	d.ScaleElements(wscale, hscale)
+	for i := range d.Elements {
+		el := &d.Elements[i]
+		el.Xi = mxi + el.Xi
+		el.Yi = myi + el.Yi
+		el.Xii = el.Xi + el.Width
+		el.Yii = el.Yi + el.Height
+	}
+}
+
 func (d *DesignComponent) ScaleElements(wscale, hscale float64) {
 	for i := range d.Elements {
 		el := &d.Elements[i]
@@ -26,10 +59,20 @@ func (d *DesignComponent) ScaleElements(wscale, hscale float64) {
 }
 
 func (d *DesignComponent) SetPosition(xi, yi int32) {
+	xdif := xi - d.Xi
+	ydif := yi - d.Yi
 	d.Xi = xi
-	d.Yi = xi
+	d.Yi = yi
 	d.Xii = xi + d.Width
 	d.Yii = yi + d.Height
+	for i := range d.Elements {
+		el := &d.Elements[i]
+		el.Xi += xdif
+		el.Yi += ydif
+		el.Xii += xdif
+		el.Yii += ydif
+	}
+	return
 }
 
 func (d *DesignComponent) ScaleElementsPositions(wscale, hscale float64) {

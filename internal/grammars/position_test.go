@@ -13,23 +13,26 @@ func TestPositionComponent(t *testing.T) {
 
 	world := World{
 		Components: []entities.DesignComponent{component1, component2},
-		TwistedDesign: TwistedDesign{
+		TwistedDesign: entities.Prancheta{
 			Components: []entities.DesignComponent{twistedComponent},
 		},
 	}
-	prancheta := entities.Prancheta{}
+	prancheta := entities.Prancheta{
+		Components: []entities.DesignComponent{component1},
+	}
 
 	// Call the function
 	newWorld, newPrancheta := PositionComponent(world, prancheta, 1)
 
 	// Verify the results
-	if newWorld.Components[0].Xi != 640 || newWorld.Components[0].Yi != 364 {
-		t.Errorf("Expected component position to be (640, 364), but got (%d, %d)",
+	if newWorld.Components[0].Xi != 0 || newWorld.Components[0].Yi != 0 {
+		t.Errorf("Expected component position to be (0, 0), but got (%d, %d)",
 			newWorld.Components[0].Xi, newWorld.Components[0].Yi)
 	}
 
 	// Ensure prancheta is returned unchanged or correctly modified based on your logic
-	if newPrancheta != prancheta {
-		t.Errorf("Expected prancheta to be unchanged")
+	if newPrancheta.Components[0].Xi != 640 || newPrancheta.Components[0].Yi != 364 {
+		t.Errorf("Expected to new prancheta have element with postion (640, 364), but got (%d, %d)",
+			newPrancheta.Components[0].Xi, newPrancheta.Components[0].Yi)
 	}
 }
