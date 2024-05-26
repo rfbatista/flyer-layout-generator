@@ -1,6 +1,7 @@
 package api
 
 import (
+	"algvisual/internal/designassets"
 	"fmt"
 	"net/http"
 
@@ -12,7 +13,6 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
 )
 
 func NewListGeneratedImagesAPI(
@@ -24,12 +24,12 @@ func NewListGeneratedImagesAPI(
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.EndpointListImagesGenerated.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ListGeneratedImagesRequest
+		var req designassets.ListGeneratedImagesRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.ListGeneratedImagesUseCase(c.Request().Context(), req, queries, log)
+		result, err := designassets.ListGeneratedImagesUseCase(c.Request().Context(), req, queries, log)
 		if err != nil {
 			return err
 		}
@@ -45,14 +45,14 @@ func NewUploadImage(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.UploadImageEndpoint.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ImageUploadRequest
+		var req designassets.ImageUploadRequest
 		file, err := c.FormFile("file")
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
 		req.File = file
 		req.Filename = c.FormValue("filename")
-		result, err := usecases.ImageUploadUseCase(c.Request().Context(), req, cfg)
+		result, err := designassets.ImageUploadUseCase(c.Request().Context(), req, cfg)
 		if err != nil {
 			return err
 		}

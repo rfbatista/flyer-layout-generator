@@ -6,9 +6,9 @@ import (
 
 func PositionComponent(
 	world World,
-	prancheta entities.Prancheta,
+	prancheta entities.Layout,
 	id int32,
-) (World, entities.Prancheta) {
+) (World, entities.Layout) {
 	var ent *entities.DesignComponent
 	for _, c := range world.Components {
 		if c.ID == id {

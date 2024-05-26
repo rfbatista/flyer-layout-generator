@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"algvisual/internal/entities"
+	entities2 "algvisual/internal/entities"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -20,10 +20,10 @@ func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, er
 }
 
 type GeneratorRequest struct {
-	Template   entities.Template          `json:"template"`
-	Photoshop  entities.DesignFile        `json:"photoshop"`
-	Components []entities.DesignComponent `json:"components"`
-	Elements   []entities.DesignElement   `json:"elements"`
+	Template   entities2.Template          `json:"templates"`
+	Photoshop  entities2.DesignFile        `json:"photoshop"`
+	Components []entities2.DesignComponent `json:"components"`
+	Elements   []entities2.DesignElement   `json:"elements"`
 }
 
 type GeneratorResult struct {
@@ -115,8 +115,8 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 }
 
 type GenerateImageRequest struct {
-	DesignFile string             `json:"design_file,omitempty"`
-	Prancheta  entities.Prancheta `json:"prancheta,omitempty"`
+	DesignFile string           `json:"design_file,omitempty"`
+	Prancheta  entities2.Layout `json:"prancheta,omitempty"`
 }
 
 type GenerateImageResult struct {

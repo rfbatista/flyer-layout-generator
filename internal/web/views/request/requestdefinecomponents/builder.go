@@ -1,11 +1,12 @@
 package requestdefinecomponents
 
 import (
+	"algvisual/internal/designs"
+	"algvisual/internal/entities"
+	"algvisual/internal/mapper"
 	"context"
 
 	"algvisual/internal/database"
-	"algvisual/internal/entities"
-	"algvisual/internal/usecases/componentusecase"
 )
 
 type pageRequest struct {
@@ -21,9 +22,9 @@ func PagePropsAssembler(
 	if err != nil {
 		return nil, err
 	}
-	comps, err := componentusecase.GetComponentsByDesignIdUseCase(
+	comps, err := designs.GetComponentsByDesignIdUseCase(
 		ctx,
-		componentusecase.GetComponentsByDesignIdRequest{ID: req.DesignID},
+		designs.GetComponentsByDesignIdRequest{ID: req.DesignID},
 		db,
 	)
 	if err != nil {
@@ -51,7 +52,7 @@ func PagePropsAssembler(
 	comps.Components = comps.Components[:n]
 	return &PageProps{
 		Components: comps.Components,
-		Elements:   database.ToDesignElementEntitieList(el),
+		Elements:   mapper.ToDesignElementEntitieList(el),
 		Background: background,
 	}, nil
 }

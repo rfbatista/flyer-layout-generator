@@ -3,7 +3,7 @@ package requestcreateimages
 import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
-	"algvisual/internal/usecases"
+	"algvisual/internal/layoutgenerator"
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -41,8 +41,8 @@ func createImages(
 	}
 	var results []result
 	for _, t := range templates {
-		log.Info("processando template com id", zap.Int32("id", t.ID), zap.String("name", t.Name))
-		res, err := usecases.GenerateDesignUseCasev2(ctx, usecases.GenerateDesignRequestv2{
+		log.Info("processando templates com id", zap.Int32("id", t.ID), zap.String("name", t.Name))
+		res, err := layoutgenerator.GenerateDesignUseCasev2(ctx, layoutgenerator.GenerateDesignRequestv2{
 			PhotoshopID: req.DesignID,
 			TemplateID:  t.ID,
 		}, client, db, config, log)

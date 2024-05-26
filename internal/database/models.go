@@ -168,6 +168,54 @@ type Image struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
+type Prancheta struct {
+	ID        int64            `json:"id"`
+	Url       string           `json:"url"`
+	Width     pgtype.Int4      `json:"width"`
+	Height    pgtype.Int4      `json:"height"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
+type PranchetasComponent struct {
+	ID        int64             `json:"id"`
+	DesignID  int32             `json:"design_id"`
+	Width     pgtype.Int4       `json:"width"`
+	Height    pgtype.Int4       `json:"height"`
+	Color     pgtype.Text       `json:"color"`
+	Type      NullComponentType `json:"type"`
+	Xi        pgtype.Int4       `json:"xi"`
+	Xii       pgtype.Int4       `json:"xii"`
+	Yi        pgtype.Int4       `json:"yi"`
+	Yii       pgtype.Int4       `json:"yii"`
+	BboxXi    pgtype.Int4       `json:"bbox_xi"`
+	BboxXii   pgtype.Int4       `json:"bbox_xii"`
+	BboxYi    pgtype.Int4       `json:"bbox_yi"`
+	BboxYii   pgtype.Int4       `json:"bbox_yii"`
+	CreatedAt pgtype.Timestamp  `json:"created_at"`
+}
+
+type PranchetasGrid struct {
+	ID          int64            `json:"id"`
+	Url         string           `json:"url"`
+	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
+	TemplateID  pgtype.Int4      `json:"template_id"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+}
+
+type PranchetasTemplate struct {
+	ID        int64            `json:"id"`
+	Name      string           `json:"name"`
+	Type      NullTemplateType `json:"type"`
+	RequestID pgtype.Text      `json:"request_id"`
+	Width     pgtype.Int4      `json:"width"`
+	Height    pgtype.Int4      `json:"height"`
+	SlotsX    pgtype.Int4      `json:"slots_x"`
+	SlotsY    pgtype.Int4      `json:"slots_y"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
 type Request struct {
 	ID         int32            `json:"id"`
 	Name       string           `json:"name"`
@@ -197,8 +245,6 @@ type Template struct {
 	RequestID pgtype.Text      `json:"request_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
-	SlotsX    pgtype.Int4      `json:"slots_x"`
-	SlotsY    pgtype.Int4      `json:"slots_y"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`

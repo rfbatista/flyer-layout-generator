@@ -1,12 +1,14 @@
 package grammars
 
-import "algvisual/internal/entities"
+import (
+	"algvisual/internal/entities"
+)
 
 func ScaleComponent(
 	world World,
-	prancheta entities.Prancheta,
+	prancheta entities.Layout,
 	id int32,
-) (World, entities.Prancheta) {
+) (World, entities.Layout) {
 	var ent *entities.DesignComponent
 	for _, c := range prancheta.Components {
 		if c.ID == id {
@@ -17,7 +19,7 @@ func ScaleComponent(
 		return world, prancheta
 	}
 	wprorp, hprop := getOriginalProportion(world, id)
-	if wprorp > hprop && ent.Width < ent.Width {
+	if wprorp > hprop && ent.Width < ent.Height {
 		// calcula a escala com base na proporção do elemento no design original
 		nwidth := float64(prancheta.Width) * wprorp
 		scaleTo := (nwidth / float64(ent.Width))
@@ -54,6 +56,6 @@ func getOriginalProportion(world World, id int32) (float64, float64) {
 			ent.Height) / float64(world.OriginalDesign.Height)
 }
 
-func doesItFit(pr *entities.Prancheta, ent *entities.DesignComponent) bool {
+func doesItFit(pr *entities.Layout, ent *entities.DesignComponent) bool {
 	return true
 }

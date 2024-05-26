@@ -1,6 +1,7 @@
 package requestdefinecomponents
 
 import (
+	"algvisual/internal/designs"
 	"net/http"
 	"strconv"
 
@@ -11,7 +12,6 @@ import (
 
 	"algvisual/internal/database"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases/componentusecase"
 	"algvisual/internal/web/components/notification"
 )
 
@@ -49,7 +49,7 @@ func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) ap
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.PageRequestElementsCreateComponent.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req componentusecase.CreateComponentRequest
+		var req designs.CreateComponentRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return shared.RenderComponent(
@@ -58,7 +58,7 @@ func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) ap
 				),
 			)
 		}
-		_, err = componentusecase.CreateComponentUseCase(c.Request().Context(), req, db, tx, log)
+		_, err = designs.CreateComponentUseCase(c.Request().Context(), req, db, tx, log)
 		if err != nil {
 			return err
 		}
@@ -75,7 +75,7 @@ func RemoveElementFromComponent(db *database.Queries) apitools.Handler {
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.PageRequestElementsRemoveElement.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req componentusecase.RemoveComponentUseCaseRequest
+		var req designs.RemoveComponentUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return shared.RenderComponent(
@@ -84,7 +84,7 @@ func RemoveElementFromComponent(db *database.Queries) apitools.Handler {
 				),
 			)
 		}
-		_, err = componentusecase.RemoveComponentUseCase(c.Request().Context(), db, req)
+		_, err = designs.RemoveComponentUseCase(c.Request().Context(), db, req)
 		if err != nil {
 			return err
 		}

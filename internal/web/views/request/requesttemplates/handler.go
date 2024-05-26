@@ -1,6 +1,7 @@
 package requesttemplates
 
 import (
+	"algvisual/internal/templates"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -9,7 +10,6 @@ import (
 
 	"algvisual/internal/database"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases/templateusecase"
 	"algvisual/internal/web/components/notification"
 )
 
@@ -85,9 +85,9 @@ func NewUploadCSV(
 				),
 			)
 		}
-		out, err := templateusecase.TemplatesCsvUploadUseCase(
+		out, err := templates.TemplatesCsvUploadUseCase(
 			c.Request().Context(),
-			templateusecase.TemplatesCsvUploadRequest{
+			templates.TemplatesCsvUploadRequest{
 				File: &src,
 			},
 			pool,

@@ -1,5 +1,13 @@
 package entities
 
+func NewPosition(x, y int32) Position {
+	return Position{X: x, Y: y}
+}
+
+type Position struct {
+	X, Y int32
+}
+
 type DesignComponent struct {
 	ID       int32           `json:"id,omitempty"`
 	Elements []DesignElement `json:"elements,omitempty"`
@@ -15,6 +23,12 @@ type DesignComponent struct {
 	BboxXii  int32           `json:"bbox_xii"`
 	BboxYi   int32           `json:"bbox_yi"`
 	BboxYii  int32           `json:"bbox_yii"`
+	Xsnaped  bool
+	Ysnaped  bool
+	LeftGap  Position
+	RightGap Position
+	UpGap    Position
+	DownGap  Position
 }
 
 func (d *DesignComponent) ScaleTo(wscale, hscale float64) {

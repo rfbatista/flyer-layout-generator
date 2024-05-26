@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Optional
 
 from PIL import ImageDraw, Image
 from pydantic import BaseModel
@@ -7,11 +7,21 @@ from app.entities.componente import Componente
 from app.entities.guia import Guia
 from app.entities.template import DesignTemplate, Template
 
+class Regions(BaseModel):
+    xi: int
+    xii: int
+    yi: int
+    yii: int
+
+class Grid(BaseModel):
+    regions: Optional[List[Regions]] = []
+
 class DesignPrancheta(BaseModel):
     template: DesignTemplate
     components: List[Componente] = []
     width: int
     height: int
+    grid: Optional[Grid] = None
     def __str__(self):
         return "template size: %s width %s height %s" % (len(self.components), self.width, self.height)
 

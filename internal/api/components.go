@@ -1,6 +1,7 @@
 package api
 
 import (
+	"algvisual/internal/designs"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -10,8 +11,6 @@ import (
 
 	"algvisual/internal/database"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
-	"algvisual/internal/usecases/componentusecase"
 )
 
 func NewRemoveComponentAPI(
@@ -23,12 +22,12 @@ func NewRemoveComponentAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointRemoveComponentElements.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req componentusecase.RemoveComponentUseCaseRequest
+		var req designs.RemoveComponentUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := componentusecase.RemoveComponentUseCase(c.Request().Context(), db, req)
+		result, err := designs.RemoveComponentUseCase(c.Request().Context(), db, req)
 		if err != nil {
 			return err
 		}
@@ -46,12 +45,12 @@ func NewSetPhotoshopBackgroundAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointSetPhotoshopBackground.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req componentusecase.SetBackgroundUseCaseRequest
+		var req designs.SetBackgroundUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := componentusecase.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
+		result, err := designs.SetBackgroundUseCase(c.Request().Context(), db, conn, req, log)
 		if err != nil {
 			return err
 		}
@@ -69,12 +68,12 @@ func NewListComponentsByFileIDAPI(
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.ListComponentByFileIDEndpoint.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ListComponentsByFileIdRequest
+		var req designs.ListComponentsByFileIdRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.ListComponentsByFileIdUseCase(c.Request().Context(), req, db)
+		result, err := designs.ListComponentsByFileIdUseCase(c.Request().Context(), req, db)
 		if err != nil {
 			return err
 		}

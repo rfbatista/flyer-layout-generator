@@ -1,6 +1,7 @@
 package requestuploadfile
 
 import (
+	"algvisual/internal/designprocessor"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -10,7 +11,6 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
 	"algvisual/internal/web/components/notification"
 )
 
@@ -57,11 +57,11 @@ func NewUploadDesignAPI(
 			)
 		}
 		defer src.Close()
-		req := usecases.UploadDesignFileUseCaseRequest{
+		req := designprocessor.UploadDesignFileUseCaseRequest{
 			Filename: c.FormValue("filename"),
 			File:     src,
 		}
-		out, err := usecases.UploadDesignFileUseCase(
+		out, err := designprocessor.UploadDesignFileUseCase(
 			c.Request().Context(),
 			db,
 			req,

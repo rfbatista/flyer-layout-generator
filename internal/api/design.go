@@ -1,6 +1,9 @@
 package api
 
 import (
+	"algvisual/internal/designprocessor"
+	"algvisual/internal/designs"
+	"algvisual/internal/layoutgenerator"
 	"fmt"
 	"net/http"
 
@@ -12,8 +15,6 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
-	"algvisual/internal/usecases/componentusecase"
 )
 
 func NewGenerateDesignAPI(
@@ -26,12 +27,12 @@ func NewGenerateDesignAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.CreateNewDesignEndpoint.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.GenerateDesignRequest
+		var req layoutgenerator.GenerateDesignRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.GenerateDesignUseCase(c.Request().Context(), req, client, queries)
+		result, err := layoutgenerator.GenerateDesignUseCase(c.Request().Context(), req, client, queries)
 		if err != nil {
 			return err
 		}
@@ -59,11 +60,11 @@ func NewUploadDesignAPI(
 			return err
 		}
 		defer src.Close()
-		req := usecases.UploadDesignFileUseCaseRequest{
+		req := designprocessor.UploadDesignFileUseCaseRequest{
 			Filename: c.FormValue("filename"),
 			File:     src,
 		}
-		out, err := usecases.UploadDesignFileUseCase(
+		out, err := designprocessor.UploadDesignFileUseCase(
 			c.Request().Context(),
 			db,
 			req,
@@ -84,12 +85,12 @@ func NewListDesignElementsAPI(db *database.Queries) apitools.Handler {
 	h.SetPath(shared.EndpointListPhotoshopElements.String())
 	h.SetHandle(func(c echo.Context) error {
 		fmt.Println("teste")
-		var req usecases.ListDesignElementsUseCaseRequest
+		var req designs.ListDesignElementsUseCaseRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.ListDesignElementsUseCase(c.Request().Context(), req, db)
+		result, err := designs.ListDesignElementsUseCase(c.Request().Context(), req, db)
 		if err != nil {
 			return err
 		}
@@ -103,12 +104,12 @@ func NewListDesignFilesAPI(db *database.Queries, log *zap.Logger) apitools.Handl
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.EndpointListPhotoshop.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ListPhotoshopFilesRequest
+		var req designprocessor.ListPhotoshopFilesRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.ListPhotoshopFilesUseCase(c.Request().Context(), req, db, log)
+		result, err := designprocessor.ListPhotoshopFilesUseCase(c.Request().Context(), req, db, log)
 		if err != nil {
 			return err
 		}
@@ -126,12 +127,12 @@ func NewCreateComponentAPI(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.EndpointCreateComponent.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req componentusecase.CreateComponentRequest
+		var req designs.CreateComponentRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := componentusecase.CreateComponentUseCase(
+		result, err := designs.CreateComponentUseCase(
 			c.Request().Context(),
 			req,
 			db,
@@ -155,12 +156,12 @@ func NewGetDesignByIDAPI(
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.EndpointCreateComponent.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.GetDesignByIdRequest
+		var req designs.GetDesignByIdRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := usecases.GetPhotoshopByIdUseCase(c.Request().Context(), req, db, log)
+		result, err := designs.GetPhotoshopByIdUseCase(c.Request().Context(), req, db, log)
 		if err != nil {
 			return err
 		}

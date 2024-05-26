@@ -1,6 +1,7 @@
 package requestprocessdesign
 
 import (
+	"algvisual/internal/designprocessor"
 	"net/http"
 	"strconv"
 
@@ -12,7 +13,6 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
-	"algvisual/internal/usecases"
 	"algvisual/internal/web/components/notification"
 )
 
@@ -60,13 +60,13 @@ func NewWebProccessDesign(
 	h.SetMethod(apitools.POST)
 	h.SetPath(shared.WebEndpointProccessDesign.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req usecases.ProcessDesignFileRequest
+		var req designprocessor.ProcessDesignFileRequestv2
 		err := c.Bind(&req)
 		if err != nil {
 			c.Response().Header().Set("HX-Trigger", shared.InfoNotificationMessage(err.Error()))
 			return c.NoContent(http.StatusOK)
 		}
-		_, err = usecases.ProcessDesignFileUseCase(
+		_, err = designprocessor.ProcessDesignFileUseCasev2(
 			c.Request().Context(),
 			req,
 			proc.ProcessFile,

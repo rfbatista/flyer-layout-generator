@@ -23,7 +23,7 @@ export function CreateTemplatePage() {
     object["type"] = "distortion"
     create(object)
       .then(() => toast.success("Template criado"))
-      .catch(() => toast.error("Falha ao criar template"));
+      .catch(() => toast.error("Falha ao criar templates"));
   };
 
   return (

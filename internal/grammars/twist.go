@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func TwistDesign(world World, prancheta entities.Prancheta, log *zap.Logger) entities.Prancheta {
+func TwistDesign(world World, prancheta entities.Layout, log *zap.Logger) entities.Layout {
 	log.Info("twisting design")
 	wscale, hscale := calculateScaleToFit(
 		world.OriginalDesign.Width,
@@ -42,13 +42,13 @@ func scaleComponent(c entities.DesignComponent, wprorp, hprorp float64) entities
 	return c
 }
 
-func CloneMyStruct(orig *entities.Prancheta) (*entities.Prancheta, error) {
+func CloneMyStruct(orig *entities.Layout) (*entities.Layout, error) {
 	origJSON, err := json.Marshal(orig)
 	if err != nil {
 		return nil, err
 	}
 
-	clone := entities.Prancheta{}
+	clone := entities.Layout{}
 	if err = json.Unmarshal(origJSON, &clone); err != nil {
 		return nil, err
 	}

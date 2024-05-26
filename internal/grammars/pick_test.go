@@ -15,12 +15,12 @@ func TestPick(t *testing.T) {
 
 	world := World{
 		Components: []entities.DesignComponent{component1, component2, component3},
-		TwistedDesign: entities.Prancheta{
+		TwistedDesign: entities.Layout{
 			Components: []entities.DesignComponent{component1, component2, component3},
 		},
 	}
 
-	prancheta := entities.Prancheta{
+	prancheta := entities.Layout{
 		Width:  50,
 		Height: 50,
 		Components: []entities.DesignComponent{

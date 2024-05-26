@@ -18,6 +18,7 @@ class BuildImageResponse(BaseModel):
 
 
 def build_image(req: BuildImageRequest):
+    print(req.prancheta.grid)
     psd = PSDImage.open(req.design_file)
     print(req.prancheta)
     img = Image.new("RGB", (req.prancheta.width, req.prancheta.height), "black")
@@ -26,6 +27,12 @@ def build_image(req: BuildImageRequest):
         c.index_elements(psd)
         c.draw_in_image(img, log=True)
     created_at = datetime.now(timezone.utc)
+    draw = ImageDraw.Draw(img)
+    if req.prancheta.grid is not None:
+        if req.prancheta.grid.regions is not None:
+            for i in req.prancheta.grid.regions:
+                draw.rectangle([(i.xi,i.yi),(i.xii,i.yii)], outline ="red") 
+
     image_url = upload_image(img, str(created_at))
     return BuildImageResponse(
         image_url=image_url,

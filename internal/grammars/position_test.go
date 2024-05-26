@@ -13,11 +13,11 @@ func TestPositionComponent(t *testing.T) {
 
 	world := World{
 		Components: []entities.DesignComponent{component1, component2},
-		TwistedDesign: entities.Prancheta{
+		TwistedDesign: entities.Layout{
 			Components: []entities.DesignComponent{twistedComponent},
 		},
 	}
-	prancheta := entities.Prancheta{
+	prancheta := entities.Layout{
 		Components: []entities.DesignComponent{component1},
 	}
 

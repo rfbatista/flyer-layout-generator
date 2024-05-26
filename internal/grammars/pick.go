@@ -5,7 +5,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Pick(world World, prancheta entities.Prancheta, log *zap.Logger) *entities.DesignComponent {
+func Pick(world World, prancheta entities.Layout, log *zap.Logger) *entities.DesignComponent {
 	for x := 0; x <= int(prancheta.Width); x++ {
 		for y := 0; y <= int(prancheta.Height); y++ {
 			c := whoIsIn(world, prancheta, world.TwistedDesign.Components, x, y)
@@ -19,7 +19,7 @@ func Pick(world World, prancheta entities.Prancheta, log *zap.Logger) *entities.
 	return nil
 }
 
-func whoIsIn(world World, prancheta entities.Prancheta, comps []entities.DesignComponent, x, y int) *entities.DesignComponent {
+func whoIsIn(world World, prancheta entities.Layout, comps []entities.DesignComponent, x, y int) *entities.DesignComponent {
 	for c := range comps {
 		if comps[c].ID == 21 {
 		}

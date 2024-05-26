@@ -1,12 +1,14 @@
 package grammars
 
-import "algvisual/internal/entities"
+import (
+	"algvisual/internal/entities"
+)
 
 func CenterComponent(
 	world World,
-	prancheta entities.Prancheta,
+	prancheta entities.Layout,
 	id int32,
-) (World, entities.Prancheta) {
+) (World, entities.Layout) {
 	var ent *entities.DesignComponent
 	for _, c := range prancheta.Components {
 		if c.ID == id {
@@ -22,16 +24,16 @@ func CenterComponent(
 			ycenter := int32(c.Height/2) + c.Yi
 			xedge := xcenter - int32(ent.Width/2)
 			yedge := ycenter - int32(ent.Height/2)
-			if xedge < 0 && c.Type != "modelo" {
+			if xedge < 0 && c.Type != "modelo" && ent.Xsnaped == false {
 				xedge = 5
 			}
-			if yedge < 0 && c.Type != "modelo" {
+			if yedge < 0 && c.Type != "modelo" && ent.Ysnaped == false {
 				yedge = 5
 			}
-			if xedge+ent.Width > prancheta.Width && c.Type != "modelo" {
+			if xedge+ent.Width > prancheta.Width && c.Type != "modelo" && ent.Xsnaped == false {
 				xedge = xedge - (xedge + ent.Width - prancheta.Width) - 5
 			}
-			if yedge+ent.Height > prancheta.Height && c.Type != "modelo" {
+			if yedge+ent.Height > prancheta.Height && c.Type != "modelo" && ent.Ysnaped == false {
 				yedge = yedge - ((yedge + ent.Height) - prancheta.Height) - 5
 			}
 			ent.SetPosition(xedge, yedge)
