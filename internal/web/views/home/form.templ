@@ -1,0 +1,31 @@
+package home
+
+templ Form() {
+	<form id="generate-request-form" class="form" hx-encoding='multipart/form-data' hx-post='/request/generation'>
+		<div class="form-block">
+			<label class="form-label">Arquivo</label>
+			<select id="file" name="file" class="form-select">
+				<option value="1">1</option>
+				<option value="2">2</option>
+			</select>
+		</div>
+		<div class="form-block">
+			<label class="form-label">Template</label>
+      <button type="button" onclick="$('#template').multiSelect('select_all')">Selecionar todos</button>
+      |
+      <button type="button" onclick="$('#template').multiSelect('deselect_all');">Deselecionar todos</button>
+			<select class="form-select" multiple="multiple" id="template" name="template[]">
+				<option value="1">1</option>
+				<option value="2">2</option>
+			</select>
+		</div>
+    <button type="submit" class="btn">Gerar</button>
+	</form>
+	<script type="text/javascript">
+    $('#template').multiSelect()
+    $('#generate-request-form').submit(function(e) {
+        console.log(e)
+        e.preventDefault();
+    });
+  </script>
+}

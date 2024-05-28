@@ -56,3 +56,14 @@ make ssh
 
 - nodejs 18.3.0
 - npm i hygen -g
+
+
+# Frontend
+
+## Pages 
+### Structure
+```
+props.go  - Constroi os dados utilizados na pagina
+page.templ - Markup da pagina em HTML
+handler.go - Define o handler que ira servir o HTML da pagina
+```

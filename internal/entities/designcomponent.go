@@ -9,7 +9,8 @@ type Position struct {
 }
 
 type DesignComponent struct {
-	ID       int32           `json:"id,omitempty"`
+	ID       int32           `json:"id"`
+	DesignID int32           `json:"design_id,omitempty"`
 	Elements []DesignElement `json:"elements,omitempty"`
 	Width    int32           `json:"width"`
 	Height   int32           `json:"height"`

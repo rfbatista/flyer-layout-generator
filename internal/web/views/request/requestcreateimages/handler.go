@@ -6,6 +6,7 @@ import (
 	"algvisual/internal/shared"
 	"algvisual/internal/web/components/notification"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/rfbatista/apitools"
 	"go.uber.org/zap"
@@ -16,6 +17,7 @@ func NewPage(
 	client *infra.ImageGeneratorClient,
 	log *zap.Logger,
 	config *infra.AppConfig,
+	pool *pgxpool.Pool,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
@@ -30,7 +32,7 @@ func NewPage(
 				),
 			)
 		}
-		out, err := createImages(c.Request().Context(), req, db, client, log, *config)
+		out, err := createImages(c.Request().Context(), req, db, client, log, *config, pool)
 		if err != nil {
 			return err
 		}

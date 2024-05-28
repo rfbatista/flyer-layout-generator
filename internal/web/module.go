@@ -7,6 +7,7 @@ import (
 	"go.uber.org/fx"
 
 	"algvisual/internal/ports"
+	"algvisual/internal/web/views/files"
 	"algvisual/internal/web/views/home"
 	"algvisual/internal/web/views/request/requestcreateimages"
 	"algvisual/internal/web/views/request/requestdefinecomponents"
@@ -52,4 +53,5 @@ var Module = fx.Options(fx.Provide(
 	protected(requesttemplates.NewPageTemplatesCreated),
 	protected(requesttemplates.NewUploadCSV),
 	protected(requestcreateimages.NewPage),
+	protected(files.NewPage),
 ))

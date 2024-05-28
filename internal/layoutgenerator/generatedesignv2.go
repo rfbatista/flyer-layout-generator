@@ -2,7 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/internal/database"
-	entities2 "algvisual/internal/entities"
+	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
 	"algvisual/internal/infra"
 	"algvisual/internal/mapper"
@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
@@ -29,6 +30,7 @@ func GenerateDesignUseCasev2(
 	req GenerateDesignRequestv2,
 	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
+	db *pgxpool.Pool,
 	config infra.AppConfig,
 	log *zap.Logger,
 ) (*GenerateDesignResultv2, error) {
@@ -64,17 +66,17 @@ func GenerateDesignUseCasev2(
 		)
 		return nil, err
 	}
-	var eelements []entities2.DesignElement
+	var eelements []entities.DesignElement
 	for _, el := range elements {
 		eelements = append(eelements, mapper.ToDesignElementEntitie(el))
 	}
-	compHash := make(map[int32][]entities2.DesignElement)
+	compHash := make(map[int32][]entities.DesignElement)
 	for _, c := range eelements {
 		if c.ComponentID != 0 {
 			compHash[c.ComponentID] = append(compHash[c.ComponentID], c)
 		}
 	}
-	var components []entities2.DesignComponent
+	var components []entities.DesignComponent
 	for k := range compHash {
 		data, compErr := queries.GetComponentByID(ctx, k)
 		if compErr != nil {
@@ -98,7 +100,7 @@ func GenerateDesignUseCasev2(
 		PivotWidth:     components[r.Intn(len(components))].Width,
 		PivotHeight:    components[r.Intn(len(components))].Height,
 	}
-	prancheta := entities2.Layout{
+	prancheta := entities.Layout{
 		Width:    etemplate.Width,
 		Height:   etemplate.Height,
 		Template: etemplate,
@@ -110,6 +112,11 @@ func GenerateDesignUseCasev2(
 	}, log, config)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
+		return nil, err
+	}
+	err = SaveLayout(ctx, nprancheta, queries, db)
+	if err != nil {
+		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
 	resTwisted, err := infra.GenerateImageFromPrancheta(infra.GenerateImageRequest{

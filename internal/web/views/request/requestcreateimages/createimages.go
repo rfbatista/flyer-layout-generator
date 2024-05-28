@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
@@ -31,6 +32,7 @@ func createImages(
 	client *infra.ImageGeneratorClient,
 	log *zap.Logger,
 	config infra.AppConfig,
+	pool *pgxpool.Pool,
 ) (*createImageResult, error) {
 	templates, err := db.GetTemplatesByRequestID(
 		ctx,
@@ -42,10 +44,18 @@ func createImages(
 	var results []result
 	for _, t := range templates {
 		log.Info("processando templates com id", zap.Int32("id", t.ID), zap.String("name", t.Name))
-		res, err := layoutgenerator.GenerateDesignUseCasev2(ctx, layoutgenerator.GenerateDesignRequestv2{
-			PhotoshopID: req.DesignID,
-			TemplateID:  t.ID,
-		}, client, db, config, log)
+		res, err := layoutgenerator.GenerateDesignUseCasev2(
+			ctx,
+			layoutgenerator.GenerateDesignRequestv2{
+				PhotoshopID: req.DesignID,
+				TemplateID:  t.ID,
+			},
+			client,
+			db,
+			pool,
+			config,
+			log,
+		)
 		if err != nil {
 			results = append(results, result{IsError: true})
 		} else {

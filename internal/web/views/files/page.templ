@@ -1,0 +1,90 @@
+package files
+
+import (
+	"algvisual/internal/web/views"
+	"algvisual/internal/shared"
+	"algvisual/internal/web/components/layout"
+	"algvisual/internal/web/components/table"
+	"algvisual/internal/database"
+	"strconv"
+)
+
+func IsProcessed(d database.Design) string { 
+  if d.IsProccessed.Bool == true { 
+    return "Sim"
+  }
+  return "Não"
+}
+
+type PageProps struct {
+	files []database.Design
+}
+
+templ Page(props PageProps) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				<div class="container column is-10">
+					<div class="my-2">
+						<div class="card is-hidden1">
+							<div class="card-header"><p class="card-header-title">Cadastrar arquivo</p></div>
+							<div class="card-content">
+								<div class="content">
+									<div class="field">
+										<label class="label">Nome</label>
+										<div class="control">
+											<input form="form" class="input" type="text" name="filename" placeholder=""/>
+										</div>
+									</div>
+									<div class="field">
+										<input form="form" type="file" name="file"/>
+									</div>
+								</div>
+								<form id="form" hx-encoding="multipart/form-data" hx-post={ shared.WebEndpointUploadPhotoshop.String() }>
+									<div class="field">
+										<div class="control">
+											<button class="button">Cadastrar</button>
+										</div>
+									</div>
+									<progress class="w-full" id="progress" value="0" max="100"></progress>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="container">
+					@table.Table() {
+						@table.THead() {
+							@table.THeadRow() {
+								@table.THeadCol("Nome")
+								@table.THeadCol("Processado")
+								@table.THeadCol("Largura")
+								@table.THeadCol("Altura")
+								@table.THeadCol("Criado em")
+							}
+						}
+						@table.TBody() {
+              for _, d := range props.files {
+                  @table.TBodyRow(){
+                      @table.TBodyCol(d.Name)
+                      @table.TBodyCol(IsProcessed(d))
+                      @table.TBodyCol(strconv.FormatInt(int64(d.Width.Int32), 10))
+                      @table.TBodyCol(strconv.FormatInt(int64(d.Height.Int32), 10))
+                      @table.TBodyCol(d.CreatedAt.Time.String())
+                    }
+                }
+						}
+					}
+				</div>
+			}
+			<script>
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+    </script>
+		</body>
+	</html>
+}

@@ -30,6 +30,8 @@ type Template struct {
 	Height         int32                    `json:"height,omitempty"`
 	Distortion     TemplateDistortion       `json:"distortion,omitempty"`
 	SlotsPositions []TemplateSlotsPositions `json:"slots_positions,omitempty"`
+	SlotsX         int32                    `json:"x,omitempty"`
+	SlotsY         int32                    `json:"y,omitempty"`
 }
 
 func NewTemplateType(t string) TemplateType {

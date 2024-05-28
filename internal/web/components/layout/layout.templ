@@ -1,9 +1,16 @@
 package layout
 
+import (
+	"algvisual/internal/web/components/sidebar"
+)
+
 templ Layout() {
-	<header class="top-0">
-	</header>
-	<main class="p-4">
-		{ children... }
-	</main>
+	<div class="min-h-screen flex">
+		<nav class="w-56 flex-none ...">
+      @sidebar.Sidebar("")
+		</nav>
+		<main class="flex-1 min-w-0 overflow-auto ...">
+			{ children... }
+		</main>
+	</div>
 }

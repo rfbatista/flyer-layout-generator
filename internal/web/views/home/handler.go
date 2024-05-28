@@ -2,6 +2,7 @@ package home
 
 import (
 	"algvisual/internal/database"
+	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"context"
 
@@ -20,9 +21,14 @@ func NewPageHome(
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.PageHome.String())
 	h.SetHandle(func(c echo.Context) error {
-		component := HomePage()
+		out, err := layoutgenerator.ListLayout(c.Request().Context(), queries, 10, 0)
+		if err != nil {
+			log.Error("failed to render home page", zap.Error(err))
+			return err
+		}
+		component := HomePage(out)
 		w := c.Response().Writer
-		err := component.Render(
+		err = component.Render(
 			context.WithValue(c.Request().Context(), "page", shared.PageHome.String()),
 			w,
 		)

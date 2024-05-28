@@ -168,17 +168,19 @@ type Image struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
-type Prancheta struct {
+type Layout struct {
 	ID        int64            `json:"id"`
-	Url       string           `json:"url"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
-type PranchetasComponent struct {
+type LayoutComponent struct {
 	ID        int64             `json:"id"`
 	DesignID  int32             `json:"design_id"`
+	LayoutID  int32             `json:"layout_id"`
 	Width     pgtype.Int4       `json:"width"`
 	Height    pgtype.Int4       `json:"height"`
 	Color     pgtype.Text       `json:"color"`
@@ -192,21 +194,26 @@ type PranchetasComponent struct {
 	BboxYi    pgtype.Int4       `json:"bbox_yi"`
 	BboxYii   pgtype.Int4       `json:"bbox_yii"`
 	CreatedAt pgtype.Timestamp  `json:"created_at"`
+	UpdatedAt pgtype.Timestamp  `json:"updated_at"`
+	DeletedAt pgtype.Timestamp  `json:"deleted_at"`
 }
 
-type PranchetasGrid struct {
-	ID          int64            `json:"id"`
-	Url         string           `json:"url"`
-	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
-	TemplateID  pgtype.Int4      `json:"template_id"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-}
-
-type PranchetasTemplate struct {
+type LayoutRegion struct {
 	ID        int64            `json:"id"`
-	Name      string           `json:"name"`
+	LayoutID  int32            `json:"layout_id"`
+	Xi        pgtype.Int4      `json:"xi"`
+	Xii       pgtype.Int4      `json:"xii"`
+	Yi        pgtype.Int4      `json:"yi"`
+	Yii       pgtype.Int4      `json:"yii"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
+type LayoutTemplate struct {
+	ID        int64            `json:"id"`
+	LayoutID  int32            `json:"layout_id"`
 	Type      NullTemplateType `json:"type"`
-	RequestID pgtype.Text      `json:"request_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`
@@ -245,6 +252,8 @@ type Template struct {
 	RequestID pgtype.Text      `json:"request_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
+	SlotsX    pgtype.Int4      `json:"slots_x"`
+	SlotsY    pgtype.Int4      `json:"slots_y"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
