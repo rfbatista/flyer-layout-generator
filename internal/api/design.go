@@ -104,12 +104,12 @@ func NewListDesignFilesAPI(db *database.Queries, log *zap.Logger) apitools.Handl
 	h.SetMethod(apitools.GET)
 	h.SetPath(shared.EndpointListPhotoshop.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req designprocessor.ListPhotoshopFilesRequest
+		var req designprocessor.ListDesignFilesRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		result, err := designprocessor.ListPhotoshopFilesUseCase(c.Request().Context(), req, db, log)
+		result, err := designprocessor.ListDesignFiles(c.Request().Context(), req, db, log)
 		if err != nil {
 			return err
 		}

@@ -107,7 +107,6 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 type Design struct {
 	ID             int32            `json:"id"`
 	Name           string           `json:"name"`
-	RequestID      pgtype.Int4      `json:"request_id"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	FileUrl        pgtype.Text      `json:"file_url"`
@@ -170,6 +169,7 @@ type Image struct {
 
 type Layout struct {
 	ID        int64            `json:"id"`
+	DesignID  pgtype.Int4      `json:"design_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
@@ -178,24 +178,24 @@ type Layout struct {
 }
 
 type LayoutComponent struct {
-	ID        int64             `json:"id"`
-	DesignID  int32             `json:"design_id"`
-	LayoutID  int32             `json:"layout_id"`
-	Width     pgtype.Int4       `json:"width"`
-	Height    pgtype.Int4       `json:"height"`
-	Color     pgtype.Text       `json:"color"`
-	Type      NullComponentType `json:"type"`
-	Xi        pgtype.Int4       `json:"xi"`
-	Xii       pgtype.Int4       `json:"xii"`
-	Yi        pgtype.Int4       `json:"yi"`
-	Yii       pgtype.Int4       `json:"yii"`
-	BboxXi    pgtype.Int4       `json:"bbox_xi"`
-	BboxXii   pgtype.Int4       `json:"bbox_xii"`
-	BboxYi    pgtype.Int4       `json:"bbox_yi"`
-	BboxYii   pgtype.Int4       `json:"bbox_yii"`
-	CreatedAt pgtype.Timestamp  `json:"created_at"`
-	UpdatedAt pgtype.Timestamp  `json:"updated_at"`
-	DeletedAt pgtype.Timestamp  `json:"deleted_at"`
+	ID        int64            `json:"id"`
+	DesignID  int32            `json:"design_id"`
+	LayoutID  int32            `json:"layout_id"`
+	Width     pgtype.Int4      `json:"width"`
+	Height    pgtype.Int4      `json:"height"`
+	Color     pgtype.Text      `json:"color"`
+	Type      pgtype.Text      `json:"type"`
+	Xi        pgtype.Int4      `json:"xi"`
+	Xii       pgtype.Int4      `json:"xii"`
+	Yi        pgtype.Int4      `json:"yi"`
+	Yii       pgtype.Int4      `json:"yii"`
+	BboxXi    pgtype.Int4      `json:"bbox_xi"`
+	BboxXii   pgtype.Int4      `json:"bbox_xii"`
+	BboxYi    pgtype.Int4      `json:"bbox_yi"`
+	BboxYii   pgtype.Int4      `json:"bbox_yii"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
 type LayoutRegion struct {
@@ -210,10 +210,41 @@ type LayoutRegion struct {
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
+type LayoutRequest struct {
+	ID         int64            `json:"id"`
+	DesignID   pgtype.Int4      `json:"design_id"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
+	StartedAt  pgtype.Timestamp `json:"started_at"`
+	Status     pgtype.Text      `json:"status"`
+	Log        pgtype.Text      `json:"log"`
+	Config     pgtype.Text      `json:"config"`
+	FinishedAt pgtype.Timestamp `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp `json:"error_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+}
+
+type LayoutRequestsJob struct {
+	ID         int64            `json:"id"`
+	LayoutID   pgtype.Int4      `json:"layout_id"`
+	RequestID  pgtype.Int4      `json:"request_id"`
+	TemplateID pgtype.Int4      `json:"template_id"`
+	Status     pgtype.Text      `json:"status"`
+	ImageUrl   pgtype.Text      `json:"image_url"`
+	StartedAt  pgtype.Timestamp `json:"started_at"`
+	FinishedAt pgtype.Timestamp `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp `json:"error_at"`
+	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	Log        pgtype.Text      `json:"log"`
+}
+
 type LayoutTemplate struct {
 	ID        int64            `json:"id"`
 	LayoutID  int32            `json:"layout_id"`
-	Type      NullTemplateType `json:"type"`
+	Type      pgtype.Text      `json:"type"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`
@@ -221,28 +252,6 @@ type LayoutTemplate struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
-}
-
-type Request struct {
-	ID         int32            `json:"id"`
-	Name       string           `json:"name"`
-	StartedAt  pgtype.Timestamp `json:"started_at"`
-	FinishedAt pgtype.Timestamp `json:"finished_at"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
-	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
-}
-
-type RequestStep struct {
-	ID         int32            `json:"id"`
-	Name       string           `json:"name"`
-	RequestID  int32            `json:"request_id"`
-	StartedAt  pgtype.Timestamp `json:"started_at"`
-	FinishedAt pgtype.Timestamp `json:"finished_at"`
-	ErrorAt    pgtype.Timestamp `json:"error_at"`
-	Log        pgtype.Text      `json:"log"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 }
 
 type Template struct {

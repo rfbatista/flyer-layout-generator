@@ -1,7 +1,7 @@
 package table
 
 templ Table() {
-	<table class="table">
+	<table class="table text-sm">
 		{ children... }
 	</table>
 }
@@ -38,6 +38,7 @@ templ TBodyRow() {
 
 templ TBodyCol(name string) {
 	<th>
-		{ name }
+    { children... }
+    { name }
 	</th>
 }

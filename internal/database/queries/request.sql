@@ -1,24 +1,32 @@
--- name: StartRequestProcess :one
-INSERT INTO request (name, started_at)
+-- name: CreateLayoutRequest :one
+INSERT INTO layout_requests (design_id, config)
 VALUES ($1, $2)
 RETURNING *;
 
--- name: FinishRequestProcess :one
-UPDATE request
+-- name: StartLayoutRequest :one
+UPDATE layout_requests_jobs
+SET
+    started_at = now(),
+    updated_at = now()
+WHERE id = $1
+RETURNING *;
+
+-- name: FinishLayoutRequest :one
+UPDATE layout_requests_jobs
 SET
     finished_at = $2,
     updated_at = now()
 WHERE id = $1
 RETURNING *;
 
--- name: StarRequestStep :one
-INSERT INTO request_steps
-( name, request_id, started_at)
-VALUES ($1,$2,$3)
+-- name: CreateLayoutRequestJob :one
+INSERT INTO layout_requests_jobs
+(request_id, template_id)
+VALUES ($1,$2)
 RETURNING *;
 
--- name: UpdateRequestStep :one
-UPDATE request_steps
+-- name: UpdateLayoutRequest :one
+UPDATE layout_requests
 SET
     log = CASE WHEN @do_add_log::boolean
                     THEN sqlc.narg(log) ELSE log END,
@@ -26,6 +34,50 @@ SET
                    THEN sqlc.narg(error_at) ELSE error_at END,
     finished_at = CASE WHEN @do_add_finished_at::boolean
                         THEN sqlc.narg(finished_at) ELSE finished_at END,
+    started_at = CASE WHEN @do_add_started_at::boolean
+                        THEN sqlc.narg(started_at) ELSE started_at END,
+    stopped_at = CASE WHEN @do_add_stopped_at::boolean
+                        THEN sqlc.narg(stopped_at) ELSE stopped_at END,
+    status = CASE WHEN @do_add_status::boolean
+                        THEN sqlc.narg(status) ELSE status END,
     updated_at = now()
-WHERE id = @request_step_id
+WHERE id = @layout_request_id
 RETURNING *;
+
+-- name: UpdateLayoutRequestJob :one
+UPDATE layout_requests_jobs
+SET
+    log = CASE WHEN @do_add_log::boolean
+                    THEN sqlc.narg(log) ELSE log END,
+    error_at = CASE WHEN @do_add_error_at::boolean
+                   THEN sqlc.narg(error_at) ELSE error_at END,
+    finished_at = CASE WHEN @do_add_finished_at::boolean
+                        THEN sqlc.narg(finished_at) ELSE finished_at END,
+    started_at = CASE WHEN @do_add_started_at::boolean
+                        THEN sqlc.narg(started_at) ELSE started_at END,
+    stopped_at = CASE WHEN @do_add_stopped_at::boolean
+                        THEN sqlc.narg(stopped_at) ELSE stopped_at END,
+    status = CASE WHEN @do_add_status::boolean
+                        THEN sqlc.narg(status) ELSE status END,
+    image_url = CASE WHEN @do_add_image_url::boolean
+                        THEN sqlc.narg(image_url) ELSE image_url END,
+    updated_at = now()
+WHERE id = @layout_request_job_id
+RETURNING *;
+
+-- name: ListLayoutRequestJobsNotStarted :many
+SELECT *
+FROM layout_requests_jobs
+WHERE started_at is NULL;
+
+-- name: ListLayoutRequestJobs :many
+SELECT *
+FROM layout_requests_jobs
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2;
+
+-- name: GetLayoutRequestByID :one
+SELECT *
+FROM layout_requests
+WHERE id = $1
+LIMIT 1;

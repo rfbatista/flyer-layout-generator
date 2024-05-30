@@ -6,6 +6,8 @@ import (
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
+	"algvisual/internal/entities"
+	"algvisual/internal/mapper"
 	"algvisual/internal/shared"
 )
 
@@ -15,7 +17,7 @@ type ListTemplatesUseCaseRequest struct {
 }
 
 type ListTemplatesUseCaseResult struct {
-	Data []database.Template `json:"data,omitempty"`
+	Data []entities.Template `json:"data,omitempty"`
 }
 
 func ListTemplatesUseCase(
@@ -37,7 +39,11 @@ func ListTemplatesUseCase(
 		log.Error(err.Error())
 		return nil, err
 	}
+	var templates []entities.Template
+	for _, t := range result {
+		templates = append(templates, mapper.TemplateToDomain(t))
+	}
 	return &ListTemplatesUseCaseResult{
-		Data: result,
+		Data: templates,
 	}, nil
 }

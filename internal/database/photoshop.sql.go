@@ -119,7 +119,7 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (D
 }
 
 const getdesign = `-- name: Getdesign :one
-SELECT id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 WHERE id = $1 LIMIT 1
 `
 
@@ -129,7 +129,6 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
 		&i.FileUrl,
@@ -200,7 +199,7 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (D
 }
 
 const listdesign = `-- name: Listdesign :many
-SELECT id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 OFFSET $1 LIMIT $2
 `
 
@@ -221,7 +220,6 @@ func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Desig
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.RequestID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.FileUrl,

@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"algvisual/internal/database"
+	"algvisual/internal/entities"
 	"algvisual/internal/shared"
 	"algvisual/internal/web/components/layout"
 	"algvisual/internal/web/components/table"
@@ -19,15 +19,15 @@ import (
 	"strconv"
 )
 
-func IsProcessed(d database.Design) string {
-	if d.IsProccessed.Bool == true {
+func IsProcessed(d entities.DesignFile) string {
+	if d.IsProcessed == true {
 		return "Sim"
 	}
 	return "Não"
 }
 
 type PageProps struct {
-	files []database.Design
+	files []entities.DesignFile
 }
 
 func Page(props PageProps) templ.Component {
@@ -183,7 +183,7 @@ func Page(props PageProps) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = table.TBodyCol(strconv.FormatInt(int64(d.Width.Int32), 10)).Render(ctx, templ_7745c5c3_Buffer)
+							templ_7745c5c3_Err = table.TBodyCol(strconv.FormatInt(int64(d.Width), 10)).Render(ctx, templ_7745c5c3_Buffer)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -191,7 +191,7 @@ func Page(props PageProps) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = table.TBodyCol(strconv.FormatInt(int64(d.Height.Int32), 10)).Render(ctx, templ_7745c5c3_Buffer)
+							templ_7745c5c3_Err = table.TBodyCol(strconv.FormatInt(int64(d.Height), 10)).Render(ctx, templ_7745c5c3_Buffer)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -199,7 +199,7 @@ func Page(props PageProps) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = table.TBodyCol(d.CreatedAt.Time.String()).Render(ctx, templ_7745c5c3_Buffer)
+							templ_7745c5c3_Err = table.TBodyCol(d.CreatedAt.String()).Render(ctx, templ_7745c5c3_Buffer)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}

@@ -29,7 +29,7 @@ func NewPage(
 			log.Error("failed to render home page", zap.Error(err))
 			return err
 		}
-		component := Page(*props)
+		component := Page(props)
 		w := c.Response().Writer
 		err = component.Render(
 			context.WithValue(c.Request().Context(), "page", shared.PageHome.String()),

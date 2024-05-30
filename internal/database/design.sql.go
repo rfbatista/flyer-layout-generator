@@ -19,7 +19,7 @@ INSERT INTO design (
   $1,
   $2
 )
-RETURNING id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type CreatedesignParams struct {
@@ -33,7 +33,6 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
 		&i.FileUrl,
@@ -53,7 +52,7 @@ SET
     is_proccessed = true
 WHERE
     id = $1
-RETURNING id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (Design, error) {
@@ -62,7 +61,6 @@ func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (De
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
 		&i.FileUrl,
@@ -93,7 +91,7 @@ SET
 
 WHERE
     id = $9
-RETURNING id, name, request_id, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type UpdateDesignByIDParams struct {
@@ -125,7 +123,6 @@ func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDPara
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.RequestID,
 		&i.ImageUrl,
 		&i.ImageExtension,
 		&i.FileUrl,

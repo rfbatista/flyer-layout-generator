@@ -26,7 +26,9 @@ const (
 	DownloadDesignFileEndpoint    RoutePath = "/api/v1/design/:id/file"
 
 	PageHome                 RoutePath = "/"
+	PageHomeCreateRequest    RoutePath = "/request/generation"
 	PageUploadDesign         RoutePath = "/upload"
+	PageJobs                 RoutePath = "/jobs"
 	PageProccessDesing       RoutePath = "/process"
 	PageGenerateImage        RoutePath = "/generate"
 	PageCreateTemplate       RoutePath = "/templates"

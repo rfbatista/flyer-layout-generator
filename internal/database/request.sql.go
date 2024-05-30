@@ -11,93 +11,250 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const finishRequestProcess = `-- name: FinishRequestProcess :one
-UPDATE request
+const createLayoutRequest = `-- name: CreateLayoutRequest :one
+INSERT INTO layout_requests (design_id, config)
+VALUES ($1, $2)
+RETURNING id, design_id, created_at, stopped_at, started_at, status, log, config, finished_at, error_at, updated_at, deleted_at
+`
+
+type CreateLayoutRequestParams struct {
+	DesignID pgtype.Int4 `json:"design_id"`
+	Config   pgtype.Text `json:"config"`
+}
+
+func (q *Queries) CreateLayoutRequest(ctx context.Context, arg CreateLayoutRequestParams) (LayoutRequest, error) {
+	row := q.db.QueryRow(ctx, createLayoutRequest, arg.DesignID, arg.Config)
+	var i LayoutRequest
+	err := row.Scan(
+		&i.ID,
+		&i.DesignID,
+		&i.CreatedAt,
+		&i.StoppedAt,
+		&i.StartedAt,
+		&i.Status,
+		&i.Log,
+		&i.Config,
+		&i.FinishedAt,
+		&i.ErrorAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const createLayoutRequestJob = `-- name: CreateLayoutRequestJob :one
+INSERT INTO layout_requests_jobs
+(request_id, template_id)
+VALUES ($1,$2)
+RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
+`
+
+type CreateLayoutRequestJobParams struct {
+	RequestID  pgtype.Int4 `json:"request_id"`
+	TemplateID pgtype.Int4 `json:"template_id"`
+}
+
+func (q *Queries) CreateLayoutRequestJob(ctx context.Context, arg CreateLayoutRequestJobParams) (LayoutRequestsJob, error) {
+	row := q.db.QueryRow(ctx, createLayoutRequestJob, arg.RequestID, arg.TemplateID)
+	var i LayoutRequestsJob
+	err := row.Scan(
+		&i.ID,
+		&i.LayoutID,
+		&i.RequestID,
+		&i.TemplateID,
+		&i.Status,
+		&i.ImageUrl,
+		&i.StartedAt,
+		&i.FinishedAt,
+		&i.ErrorAt,
+		&i.StoppedAt,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+		&i.Log,
+	)
+	return i, err
+}
+
+const finishLayoutRequest = `-- name: FinishLayoutRequest :one
+UPDATE layout_requests_jobs
 SET
     finished_at = $2,
     updated_at = now()
 WHERE id = $1
-RETURNING id, name, started_at, finished_at, created_at, updated_at, deleted_at
+RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
 `
 
-type FinishRequestProcessParams struct {
-	ID         int32            `json:"id"`
+type FinishLayoutRequestParams struct {
+	ID         int64            `json:"id"`
 	FinishedAt pgtype.Timestamp `json:"finished_at"`
 }
 
-func (q *Queries) FinishRequestProcess(ctx context.Context, arg FinishRequestProcessParams) (Request, error) {
-	row := q.db.QueryRow(ctx, finishRequestProcess, arg.ID, arg.FinishedAt)
-	var i Request
+func (q *Queries) FinishLayoutRequest(ctx context.Context, arg FinishLayoutRequestParams) (LayoutRequestsJob, error) {
+	row := q.db.QueryRow(ctx, finishLayoutRequest, arg.ID, arg.FinishedAt)
+	var i LayoutRequestsJob
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
-		&i.StartedAt,
-		&i.FinishedAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
-const starRequestStep = `-- name: StarRequestStep :one
-INSERT INTO request_steps
-( name, request_id, started_at)
-VALUES ($1,$2,$3)
-RETURNING id, name, request_id, started_at, finished_at, error_at, log, created_at, updated_at
-`
-
-type StarRequestStepParams struct {
-	Name      string           `json:"name"`
-	RequestID int32            `json:"request_id"`
-	StartedAt pgtype.Timestamp `json:"started_at"`
-}
-
-func (q *Queries) StarRequestStep(ctx context.Context, arg StarRequestStepParams) (RequestStep, error) {
-	row := q.db.QueryRow(ctx, starRequestStep, arg.Name, arg.RequestID, arg.StartedAt)
-	var i RequestStep
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
+		&i.LayoutID,
 		&i.RequestID,
+		&i.TemplateID,
+		&i.Status,
+		&i.ImageUrl,
 		&i.StartedAt,
 		&i.FinishedAt,
 		&i.ErrorAt,
-		&i.Log,
-		&i.CreatedAt,
+		&i.StoppedAt,
 		&i.UpdatedAt,
+		&i.CreatedAt,
+		&i.Log,
 	)
 	return i, err
 }
 
-const startRequestProcess = `-- name: StartRequestProcess :one
-INSERT INTO request (name, started_at)
-VALUES ($1, $2)
-RETURNING id, name, started_at, finished_at, created_at, updated_at, deleted_at
+const getLayoutRequestByID = `-- name: GetLayoutRequestByID :one
+SELECT id, design_id, created_at, stopped_at, started_at, status, log, config, finished_at, error_at, updated_at, deleted_at
+FROM layout_requests
+WHERE id = $1
+LIMIT 1
 `
 
-type StartRequestProcessParams struct {
-	Name      string           `json:"name"`
-	StartedAt pgtype.Timestamp `json:"started_at"`
-}
-
-func (q *Queries) StartRequestProcess(ctx context.Context, arg StartRequestProcessParams) (Request, error) {
-	row := q.db.QueryRow(ctx, startRequestProcess, arg.Name, arg.StartedAt)
-	var i Request
+func (q *Queries) GetLayoutRequestByID(ctx context.Context, id int64) (LayoutRequest, error) {
+	row := q.db.QueryRow(ctx, getLayoutRequestByID, id)
+	var i LayoutRequest
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
-		&i.StartedAt,
-		&i.FinishedAt,
+		&i.DesignID,
 		&i.CreatedAt,
+		&i.StoppedAt,
+		&i.StartedAt,
+		&i.Status,
+		&i.Log,
+		&i.Config,
+		&i.FinishedAt,
+		&i.ErrorAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
 	)
 	return i, err
 }
 
-const updateRequestStep = `-- name: UpdateRequestStep :one
-UPDATE request_steps
+const listLayoutRequestJobs = `-- name: ListLayoutRequestJobs :many
+SELECT id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
+FROM layout_requests_jobs
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2
+`
+
+type ListLayoutRequestJobsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListLayoutRequestJobs(ctx context.Context, arg ListLayoutRequestJobsParams) ([]LayoutRequestsJob, error) {
+	rows, err := q.db.Query(ctx, listLayoutRequestJobs, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LayoutRequestsJob
+	for rows.Next() {
+		var i LayoutRequestsJob
+		if err := rows.Scan(
+			&i.ID,
+			&i.LayoutID,
+			&i.RequestID,
+			&i.TemplateID,
+			&i.Status,
+			&i.ImageUrl,
+			&i.StartedAt,
+			&i.FinishedAt,
+			&i.ErrorAt,
+			&i.StoppedAt,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+			&i.Log,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listLayoutRequestJobsNotStarted = `-- name: ListLayoutRequestJobsNotStarted :many
+SELECT id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
+FROM layout_requests_jobs
+WHERE started_at is NULL
+`
+
+func (q *Queries) ListLayoutRequestJobsNotStarted(ctx context.Context) ([]LayoutRequestsJob, error) {
+	rows, err := q.db.Query(ctx, listLayoutRequestJobsNotStarted)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LayoutRequestsJob
+	for rows.Next() {
+		var i LayoutRequestsJob
+		if err := rows.Scan(
+			&i.ID,
+			&i.LayoutID,
+			&i.RequestID,
+			&i.TemplateID,
+			&i.Status,
+			&i.ImageUrl,
+			&i.StartedAt,
+			&i.FinishedAt,
+			&i.ErrorAt,
+			&i.StoppedAt,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+			&i.Log,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const startLayoutRequest = `-- name: StartLayoutRequest :one
+UPDATE layout_requests_jobs
+SET
+    started_at = now(),
+    updated_at = now()
+WHERE id = $1
+RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
+`
+
+func (q *Queries) StartLayoutRequest(ctx context.Context, id int64) (LayoutRequestsJob, error) {
+	row := q.db.QueryRow(ctx, startLayoutRequest, id)
+	var i LayoutRequestsJob
+	err := row.Scan(
+		&i.ID,
+		&i.LayoutID,
+		&i.RequestID,
+		&i.TemplateID,
+		&i.Status,
+		&i.ImageUrl,
+		&i.StartedAt,
+		&i.FinishedAt,
+		&i.ErrorAt,
+		&i.StoppedAt,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+		&i.Log,
+	)
+	return i, err
+}
+
+const updateLayoutRequest = `-- name: UpdateLayoutRequest :one
+UPDATE layout_requests
 SET
     log = CASE WHEN $1::boolean
                     THEN $2 ELSE log END,
@@ -105,42 +262,140 @@ SET
                    THEN $4 ELSE error_at END,
     finished_at = CASE WHEN $5::boolean
                         THEN $6 ELSE finished_at END,
+    started_at = CASE WHEN $7::boolean
+                        THEN $8 ELSE started_at END,
+    stopped_at = CASE WHEN $9::boolean
+                        THEN $10 ELSE stopped_at END,
+    status = CASE WHEN $11::boolean
+                        THEN $12 ELSE status END,
     updated_at = now()
-WHERE id = $7
-RETURNING id, name, request_id, started_at, finished_at, error_at, log, created_at, updated_at
+WHERE id = $13
+RETURNING id, design_id, created_at, stopped_at, started_at, status, log, config, finished_at, error_at, updated_at, deleted_at
 `
 
-type UpdateRequestStepParams struct {
+type UpdateLayoutRequestParams struct {
 	DoAddLog        bool             `json:"do_add_log"`
 	Log             pgtype.Text      `json:"log"`
 	DoAddErrorAt    bool             `json:"do_add_error_at"`
 	ErrorAt         pgtype.Timestamp `json:"error_at"`
 	DoAddFinishedAt bool             `json:"do_add_finished_at"`
 	FinishedAt      pgtype.Timestamp `json:"finished_at"`
-	RequestStepID   int32            `json:"request_step_id"`
+	DoAddStartedAt  bool             `json:"do_add_started_at"`
+	StartedAt       pgtype.Timestamp `json:"started_at"`
+	DoAddStoppedAt  bool             `json:"do_add_stopped_at"`
+	StoppedAt       pgtype.Timestamp `json:"stopped_at"`
+	DoAddStatus     bool             `json:"do_add_status"`
+	Status          pgtype.Text      `json:"status"`
+	LayoutRequestID int64            `json:"layout_request_id"`
 }
 
-func (q *Queries) UpdateRequestStep(ctx context.Context, arg UpdateRequestStepParams) (RequestStep, error) {
-	row := q.db.QueryRow(ctx, updateRequestStep,
+func (q *Queries) UpdateLayoutRequest(ctx context.Context, arg UpdateLayoutRequestParams) (LayoutRequest, error) {
+	row := q.db.QueryRow(ctx, updateLayoutRequest,
 		arg.DoAddLog,
 		arg.Log,
 		arg.DoAddErrorAt,
 		arg.ErrorAt,
 		arg.DoAddFinishedAt,
 		arg.FinishedAt,
-		arg.RequestStepID,
+		arg.DoAddStartedAt,
+		arg.StartedAt,
+		arg.DoAddStoppedAt,
+		arg.StoppedAt,
+		arg.DoAddStatus,
+		arg.Status,
+		arg.LayoutRequestID,
 	)
-	var i RequestStep
+	var i LayoutRequest
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
+		&i.DesignID,
+		&i.CreatedAt,
+		&i.StoppedAt,
+		&i.StartedAt,
+		&i.Status,
+		&i.Log,
+		&i.Config,
+		&i.FinishedAt,
+		&i.ErrorAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const updateLayoutRequestJob = `-- name: UpdateLayoutRequestJob :one
+UPDATE layout_requests_jobs
+SET
+    log = CASE WHEN $1::boolean
+                    THEN $2 ELSE log END,
+    error_at = CASE WHEN $3::boolean
+                   THEN $4 ELSE error_at END,
+    finished_at = CASE WHEN $5::boolean
+                        THEN $6 ELSE finished_at END,
+    started_at = CASE WHEN $7::boolean
+                        THEN $8 ELSE started_at END,
+    stopped_at = CASE WHEN $9::boolean
+                        THEN $10 ELSE stopped_at END,
+    status = CASE WHEN $11::boolean
+                        THEN $12 ELSE status END,
+    image_url = CASE WHEN $13::boolean
+                        THEN $14 ELSE image_url END,
+    updated_at = now()
+WHERE id = $15
+RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, log
+`
+
+type UpdateLayoutRequestJobParams struct {
+	DoAddLog           bool             `json:"do_add_log"`
+	Log                pgtype.Text      `json:"log"`
+	DoAddErrorAt       bool             `json:"do_add_error_at"`
+	ErrorAt            pgtype.Timestamp `json:"error_at"`
+	DoAddFinishedAt    bool             `json:"do_add_finished_at"`
+	FinishedAt         pgtype.Timestamp `json:"finished_at"`
+	DoAddStartedAt     bool             `json:"do_add_started_at"`
+	StartedAt          pgtype.Timestamp `json:"started_at"`
+	DoAddStoppedAt     bool             `json:"do_add_stopped_at"`
+	StoppedAt          pgtype.Timestamp `json:"stopped_at"`
+	DoAddStatus        bool             `json:"do_add_status"`
+	Status             pgtype.Text      `json:"status"`
+	DoAddImageUrl      bool             `json:"do_add_image_url"`
+	ImageUrl           pgtype.Text      `json:"image_url"`
+	LayoutRequestJobID int64            `json:"layout_request_job_id"`
+}
+
+func (q *Queries) UpdateLayoutRequestJob(ctx context.Context, arg UpdateLayoutRequestJobParams) (LayoutRequestsJob, error) {
+	row := q.db.QueryRow(ctx, updateLayoutRequestJob,
+		arg.DoAddLog,
+		arg.Log,
+		arg.DoAddErrorAt,
+		arg.ErrorAt,
+		arg.DoAddFinishedAt,
+		arg.FinishedAt,
+		arg.DoAddStartedAt,
+		arg.StartedAt,
+		arg.DoAddStoppedAt,
+		arg.StoppedAt,
+		arg.DoAddStatus,
+		arg.Status,
+		arg.DoAddImageUrl,
+		arg.ImageUrl,
+		arg.LayoutRequestJobID,
+	)
+	var i LayoutRequestsJob
+	err := row.Scan(
+		&i.ID,
+		&i.LayoutID,
 		&i.RequestID,
+		&i.TemplateID,
+		&i.Status,
+		&i.ImageUrl,
 		&i.StartedAt,
 		&i.FinishedAt,
 		&i.ErrorAt,
-		&i.Log,
-		&i.CreatedAt,
+		&i.StoppedAt,
 		&i.UpdatedAt,
+		&i.CreatedAt,
+		&i.Log,
 	)
 	return i, err
 }

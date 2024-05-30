@@ -8,6 +8,7 @@ import (
 	"algvisual/internal/mapper"
 	"algvisual/internal/shared"
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -41,7 +42,7 @@ func GenerateDesignUseCasev2(
 	}
 	template, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o templates", "")
+		err = shared.WrapWithAppError(err, fmt.Sprintf("Não foi possivel encontrar o template %d", req.TemplateID), "")
 		return nil, err
 	}
 	distortionConfig, err := queries.GetTemplateDistortion(ctx, req.TemplateID)
@@ -53,7 +54,7 @@ func GenerateDesignUseCasev2(
 		)
 		return nil, err
 	}
-	etemplate := mapper.ToTemplateEntitie(template.Template)
+	etemplate := mapper.TemplateToDomain(template.Template)
 	etemplate.Distortion = mapper.ToTemplateDistortionEntitie(
 		distortionConfig.TemplatesDistortion,
 	)
@@ -91,6 +92,9 @@ func GenerateDesignUseCasev2(
 		comp.Elements = compHash[k]
 		components = append(components, comp)
 	}
+	if len(components) == 0 {
+		return nil, shared.NewAppError(400, "nenhum componente definido para o design escolhido", "")
+	}
 	s := rand.NewSource(time.Now().Unix())
 	r := rand.New(s) // initialize local pseudorandom generator
 	world := grammars.World{
@@ -101,6 +105,7 @@ func GenerateDesignUseCasev2(
 		PivotHeight:    components[r.Intn(len(components))].Height,
 	}
 	prancheta := entities.Layout{
+		DesignID: req.PhotoshopID,
 		Width:    etemplate.Width,
 		Height:   etemplate.Height,
 		Template: etemplate,

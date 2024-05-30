@@ -1,30 +1,32 @@
 package designprocessor
 
 import (
+	"algvisual/internal/database"
+	"algvisual/internal/entities"
+	"algvisual/internal/mapper"
+	"algvisual/internal/shared"
 	"context"
 
 	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/shared"
 )
 
-type ListPhotoshopFilesRequest struct {
+type ListDesignFilesRequest struct {
 	Limit int `query:"limit" json:"limit,omitempty"`
 	Skip  int `query:"skip"  json:"skip,omitempty"`
 }
 
-type ListPhotoshopFilesResult struct {
-	Status string            `json:"status,omitempty"`
-	Data   []database.Design `json:"data,omitempty"`
+type ListDesignFilesResult struct {
+	Status string                `json:"status,omitempty"`
+	Data   []entities.DesignFile `json:"data,omitempty"`
 }
 
-func ListPhotoshopFilesUseCase(
+func ListDesignFiles(
 	ctx context.Context,
-	req ListPhotoshopFilesRequest,
+	req ListDesignFilesRequest,
 	queries *database.Queries,
 	log *zap.Logger,
-) (*ListPhotoshopFilesResult, error) {
+) (*ListDesignFilesResult, error) {
+	log.Debug("listint")
 	limit := req.Limit
 	if limit == 0 {
 		limit = 10
@@ -37,5 +39,9 @@ func ListPhotoshopFilesUseCase(
 		log.Error("failed to list photoshop files", zap.Error(err))
 		return nil, shared.WrapWithAppError(err, "Falha ao listar aquivos do Photoshop", "")
 	}
-	return &ListPhotoshopFilesResult{Data: files, Status: "success"}, nil
+	var dfiles []entities.DesignFile
+	for _, d := range files {
+		dfiles = append(dfiles, mapper.DesignFileToDomain(d))
+	}
+	return &ListDesignFilesResult{Data: dfiles, Status: "success"}, nil
 }

@@ -1,19 +1,20 @@
 package web
 
 import (
-	"fmt"
-
-	"github.com/rfbatista/apitools"
-	"go.uber.org/fx"
-
 	"algvisual/internal/ports"
+	"algvisual/internal/web/views/components"
 	"algvisual/internal/web/views/files"
 	"algvisual/internal/web/views/home"
+	"algvisual/internal/web/views/jobs"
 	"algvisual/internal/web/views/request/requestcreateimages"
 	"algvisual/internal/web/views/request/requestdefinecomponents"
 	"algvisual/internal/web/views/request/requestprocessdesign"
 	"algvisual/internal/web/views/request/requesttemplates"
 	"algvisual/internal/web/views/request/requestuploadfile"
+	"fmt"
+
+	"github.com/rfbatista/apitools"
+	"go.uber.org/fx"
 )
 
 func protected(f any) any {
@@ -54,4 +55,7 @@ var Module = fx.Options(fx.Provide(
 	protected(requesttemplates.NewUploadCSV),
 	protected(requestcreateimages.NewPage),
 	protected(files.NewPage),
+	protected(home.CreateRequest),
+	protected(components.NewPage),
+	protected(jobs.NewPage),
 ))

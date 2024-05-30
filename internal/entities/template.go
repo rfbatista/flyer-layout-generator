@@ -1,5 +1,7 @@
 package entities
 
+import "strconv"
+
 type TemplateType string
 
 const (
@@ -26,6 +28,7 @@ type TemplateDistortion struct {
 type Template struct {
 	ID             int32                    `json:"id,omitempty"`
 	Type           TemplateType             `json:"type,omitempty"`
+	Name           string                   `json:"name,omitempty"`
 	Width          int32                    `json:"width,omitempty"`
 	Height         int32                    `json:"height,omitempty"`
 	Distortion     TemplateDistortion       `json:"distortion,omitempty"`
@@ -41,4 +44,16 @@ func NewTemplateType(t string) TemplateType {
 	default:
 		return TemplateDistortionType
 	}
+}
+
+func (d *Template) SID() string {
+	return strconv.FormatInt(int64(d.ID), 10)
+}
+
+func (d *Template) SWidth() string {
+	return strconv.FormatInt(int64(d.Width), 10)
+}
+
+func (d *Template) SHeigth() string {
+	return strconv.FormatInt(int64(d.Height), 10)
 }

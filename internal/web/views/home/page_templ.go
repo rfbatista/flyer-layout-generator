@@ -16,12 +16,12 @@ import (
 	"algvisual/internal/web/views"
 )
 
-type Props struct {
+type PageProps struct {
 	files    []entities.DesignFile
 	template []entities.Template
 }
 
-func HomePage(layouts []entities.Layout) templ.Component {
+func HomePage(props PageProps) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -52,7 +52,7 @@ func HomePage(layouts []entities.Layout) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = Form().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Form(props).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

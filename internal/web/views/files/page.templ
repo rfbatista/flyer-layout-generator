@@ -5,19 +5,19 @@ import (
 	"algvisual/internal/shared"
 	"algvisual/internal/web/components/layout"
 	"algvisual/internal/web/components/table"
-	"algvisual/internal/database"
 	"strconv"
+	"algvisual/internal/entities"
 )
 
-func IsProcessed(d database.Design) string { 
-  if d.IsProccessed.Bool == true { 
+func IsProcessed(d entities.DesignFile) string { 
+  if d.IsProcessed == true { 
     return "Sim"
   }
   return "Não"
 }
 
 type PageProps struct {
-	files []database.Design
+	files []entities.DesignFile
 }
 
 templ Page(props PageProps) {
@@ -71,9 +71,9 @@ templ Page(props PageProps) {
                   @table.TBodyRow(){
                       @table.TBodyCol(d.Name)
                       @table.TBodyCol(IsProcessed(d))
-                      @table.TBodyCol(strconv.FormatInt(int64(d.Width.Int32), 10))
-                      @table.TBodyCol(strconv.FormatInt(int64(d.Height.Int32), 10))
-                      @table.TBodyCol(d.CreatedAt.Time.String())
+                      @table.TBodyCol(strconv.FormatInt(int64(d.Width), 10))
+                      @table.TBodyCol(strconv.FormatInt(int64(d.Height), 10))
+                      @table.TBodyCol(d.CreatedAt.String())
                     }
                 }
 						}

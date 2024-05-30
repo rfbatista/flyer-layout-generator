@@ -15,6 +15,7 @@ type World struct {
 	PivotWidth     int32
 	PivotHeight    int32
 	TwistedDesign  entities.Layout
+	Confi          entities.LayoutRequestConfig
 }
 
 type Grammar func(world World, prancheta entities.Layout) (*World, *entities.Layout, error)

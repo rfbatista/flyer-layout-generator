@@ -21,6 +21,9 @@ func NewPage(db *database.Queries) apitools.Handler {
 	h.SetPath(shared.PageRequestElements.String())
 	h.SetHandle(func(c echo.Context) error {
 		sId := c.Param("id")
+		if sId == "" {
+			sId = "0"
+		}
 		id, err := strconv.ParseInt(sId, 10, 32)
 		if err != nil {
 			return shared.RenderComponent(

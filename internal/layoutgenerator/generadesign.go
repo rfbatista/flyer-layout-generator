@@ -44,7 +44,7 @@ func GenerateDesignUseCase(
 		)
 		return nil, err
 	}
-	etemplate := mapper.ToTemplateEntitie(template.Template)
+	etemplate := mapper.TemplateToDomain(template.Template)
 	etemplate.Distortion = mapper.ToTemplateDistortionEntitie(
 		distortionConfig.TemplatesDistortion,
 	)

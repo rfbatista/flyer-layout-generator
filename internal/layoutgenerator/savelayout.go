@@ -23,8 +23,9 @@ func SaveLayout(
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
 	layoutCreated, err := qtx.CreateLayout(ctx, database.CreateLayoutParams{
-		Width:  pgtype.Int4{Int32: l.Width, Valid: true},
-		Height: pgtype.Int4{Int32: l.Height, Valid: true},
+		Width:    pgtype.Int4{Int32: l.Width, Valid: true},
+		Height:   pgtype.Int4{Int32: l.Height, Valid: true},
+		DesignID: pgtype.Int4{Int32: l.DesignID, Valid: true},
 	})
 	if err != nil {
 		return err
@@ -33,7 +34,7 @@ func SaveLayout(
 		comp := mapper.LayoutComponentFromDomain(c)
 		_, err = qtx.CreateLayoutComponent(ctx, database.CreateLayoutComponentParams{
 			LayoutID: int32(layoutCreated.ID),
-			DesignID: comp.DesignID,
+			DesignID: l.DesignID,
 			Xi:       comp.Xi,
 			Xii:      comp.Xii,
 			Yi:       comp.Yi,

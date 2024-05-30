@@ -6,19 +6,19 @@ import (
 	"algvisual/internal/entities"
 )
 
-type Props struct {
+type PageProps struct {
 	files    []entities.DesignFile
 	template []entities.Template
 }
 
-templ HomePage(layouts []entities.Layout) {
+templ HomePage(props PageProps) {
 	<html>
 		<head>
 			@views.Header()
 		</head>
 		<body>
 			@layout.Layout() {
-				@Form()
+				@Form(props)
 			}
 			<script src="/web/js/jquery.multi-select.js" type="text/javascript"></script>
 		</body>

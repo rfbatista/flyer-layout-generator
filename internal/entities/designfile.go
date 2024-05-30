@@ -1,6 +1,9 @@
 package entities
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 type DesignFile struct {
 	ID             int32     `json:"id,omitempty"`
@@ -12,4 +15,17 @@ type DesignFile struct {
 	Width          int32     `json:"width,omitempty"`
 	Height         int32     `json:"height,omitempty"`
 	CreatedAt      time.Time `json:"created_at,omitempty"`
+	IsProcessed    bool      `json:"is_processed,omitempty"`
+}
+
+func (d *DesignFile) SID() string {
+	return strconv.FormatInt(int64(d.ID), 10)
+}
+
+func (d *DesignFile) SWidth() string {
+	return strconv.FormatInt(int64(d.Width), 10)
+}
+
+func (d *DesignFile) SHeigth() string {
+	return strconv.FormatInt(int64(d.Height), 10)
 }

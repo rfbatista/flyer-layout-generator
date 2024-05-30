@@ -12,19 +12,21 @@ import (
 )
 
 const createLayout = `-- name: CreateLayout :one
-INSERT INTO layout (width, height) VALUES ($1, $2) RETURNING id, width, height, created_at, updated_at, deleted_at
+INSERT INTO layout (width, height, design_id) VALUES ($1, $2, $3) RETURNING id, design_id, width, height, created_at, updated_at, deleted_at
 `
 
 type CreateLayoutParams struct {
-	Width  pgtype.Int4 `json:"width"`
-	Height pgtype.Int4 `json:"height"`
+	Width    pgtype.Int4 `json:"width"`
+	Height   pgtype.Int4 `json:"height"`
+	DesignID pgtype.Int4 `json:"design_id"`
 }
 
 func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Layout, error) {
-	row := q.db.QueryRow(ctx, createLayout, arg.Width, arg.Height)
+	row := q.db.QueryRow(ctx, createLayout, arg.Width, arg.Height, arg.DesignID)
 	var i Layout
 	err := row.Scan(
 		&i.ID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
 		&i.CreatedAt,
@@ -70,20 +72,20 @@ RETURNING id, design_id, layout_id, width, height, color, type, xi, xii, yi, yii
 `
 
 type CreateLayoutComponentParams struct {
-	LayoutID int32             `json:"layout_id"`
-	DesignID int32             `json:"design_id"`
-	Width    pgtype.Int4       `json:"width"`
-	Height   pgtype.Int4       `json:"height"`
-	Color    pgtype.Text       `json:"color"`
-	Type     NullComponentType `json:"type"`
-	Xi       pgtype.Int4       `json:"xi"`
-	Xii      pgtype.Int4       `json:"xii"`
-	Yi       pgtype.Int4       `json:"yi"`
-	Yii      pgtype.Int4       `json:"yii"`
-	BboxXi   pgtype.Int4       `json:"bbox_xi"`
-	BboxXii  pgtype.Int4       `json:"bbox_xii"`
-	BboxYi   pgtype.Int4       `json:"bbox_yi"`
-	BboxYii  pgtype.Int4       `json:"bbox_yii"`
+	LayoutID int32       `json:"layout_id"`
+	DesignID int32       `json:"design_id"`
+	Width    pgtype.Int4 `json:"width"`
+	Height   pgtype.Int4 `json:"height"`
+	Color    pgtype.Text `json:"color"`
+	Type     pgtype.Text `json:"type"`
+	Xi       pgtype.Int4 `json:"xi"`
+	Xii      pgtype.Int4 `json:"xii"`
+	Yi       pgtype.Int4 `json:"yi"`
+	Yii      pgtype.Int4 `json:"yii"`
+	BboxXi   pgtype.Int4 `json:"bbox_xi"`
+	BboxXii  pgtype.Int4 `json:"bbox_xii"`
+	BboxYi   pgtype.Int4 `json:"bbox_yi"`
+	BboxYii  pgtype.Int4 `json:"bbox_yii"`
 }
 
 func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutComponentParams) (LayoutComponent, error) {
@@ -191,10 +193,10 @@ RETURNING id, layout_id, type, width, height, slots_x, slots_y, created_at, upda
 `
 
 type CreateLayoutTemplateParams struct {
-	LayoutID int32            `json:"layout_id"`
-	Type     NullTemplateType `json:"type"`
-	Width    pgtype.Int4      `json:"width"`
-	Height   pgtype.Int4      `json:"height"`
+	LayoutID int32       `json:"layout_id"`
+	Type     pgtype.Text `json:"type"`
+	Width    pgtype.Int4 `json:"width"`
+	Height   pgtype.Int4 `json:"height"`
 }
 
 func (q *Queries) CreateLayoutTemplate(ctx context.Context, arg CreateLayoutTemplateParams) (LayoutTemplate, error) {
@@ -339,7 +341,7 @@ func (q *Queries) GetLayoutTemplateByLayoutID(ctx context.Context, layoutID int3
 }
 
 const listLayouts = `-- name: ListLayouts :many
-SELECT id, width, height, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, width, height, created_at, updated_at, deleted_at FROM layout 
 ORDER BY created_at desc
 LIMIT $1 OFFSET $2
 `
@@ -360,6 +362,7 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 		var i Layout
 		if err := rows.Scan(
 			&i.ID,
+			&i.DesignID,
 			&i.Width,
 			&i.Height,
 			&i.CreatedAt,
