@@ -149,7 +149,11 @@ func Form(props PageProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos componentes</label> <input type=\"number\" class=\"input\" name=\"minimium_component_size\" value=\"50\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos textos</label> <input type=\"number\" class=\"input\" name=\"minimium_text_size\" value=\"12\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Margem</label> <input type=\"number\" class=\"input\" name=\"padding\" value=\"0\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos componentes</label> <input type=\"number\" class=\"input\" name=\"minimium_component_size\" value=\"50\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos textos</label> <input type=\"number\" class=\"input\" name=\"minimium_text_size\" value=\"12\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = toggle.Toggle("Manter proporções", "true", "keep_proportions").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

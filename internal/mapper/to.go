@@ -3,6 +3,8 @@ package mapper
 import (
 	"algvisual/internal/database"
 	"algvisual/internal/entities"
+	"encoding/json"
+	"fmt"
 )
 
 func LayoutRequestToDomain(raw database.LayoutRequest) entities.LayoutRequest {
@@ -26,6 +28,15 @@ func LayoutRequestJobToDomain(raw database.LayoutRequestsJob) entities.LayoutReq
 		Log:        raw.Log.String,
 		ImageURL:   raw.ImageUrl.String,
 	}
+	if raw.Config.String != "" {
+		var c entities.LayoutRequestConfig
+		err := json.Unmarshal([]byte(raw.Config.String), &c)
+		if err != nil {
+			fmt.Println("falha ao realizar parser da config")
+		} else {
+			l.Config = &c
+		}
+	}
 	if raw.StartedAt.Valid {
 		l.StartedAt = &raw.StartedAt.Time
 	}
@@ -38,6 +49,9 @@ func LayoutRequestJobToDomain(raw database.LayoutRequestsJob) entities.LayoutReq
 	if raw.FinishedAt.Valid {
 		l.FinishedAt = &raw.FinishedAt.Time
 	}
+	if raw.ErrorAt.Valid {
+		l.ErrorAt = &raw.ErrorAt.Time
+	}
 	return l
 }
 
@@ -48,6 +62,7 @@ func DesignFileToDomain(raw database.Design) entities.DesignFile {
 		Filepath:       raw.FileUrl.String,
 		FileExtension:  raw.FileExtension.String,
 		ImagePath:      raw.ImageUrl.String,
+		ImageURL:       raw.ImageUrl.String,
 		ImageExtension: raw.ImageExtension.String,
 		Width:          raw.Width.Int32,
 		Height:         raw.Height.Int32,
@@ -154,11 +169,14 @@ func ToDesignElementEntitieList(raw []database.DesignElement) []entities.DesignE
 
 func TemplateToDomain(raw database.Template) entities.Template {
 	return entities.Template{
-		ID:     raw.ID,
-		Name:   raw.Name,
-		Width:  raw.Width.Int32,
-		Height: raw.Height.Int32,
-		Type:   entities.NewTemplateType(string(raw.Type.TemplateType)),
+		ID:        raw.ID,
+		Name:      raw.Name,
+		Width:     raw.Width.Int32,
+		Height:    raw.Height.Int32,
+		Type:      entities.NewTemplateType(string(raw.Type.TemplateType)),
+		MaxSlotsX: raw.MaxSlotsX.Int32,
+		MaxSlotsY: raw.MaxSlotsY.Int32,
+		CreatedAt: raw.CreatedAt.Time,
 	}
 }
 

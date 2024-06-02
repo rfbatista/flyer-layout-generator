@@ -21,8 +21,8 @@ RETURNING *;
 
 -- name: CreateLayoutRequestJob :one
 INSERT INTO layout_requests_jobs
-(request_id, template_id)
-VALUES ($1,$2)
+(request_id, template_id, config)
+VALUES ($1,$2, $3)
 RETURNING *;
 
 -- name: UpdateLayoutRequest :one
@@ -68,7 +68,10 @@ RETURNING *;
 -- name: ListLayoutRequestJobsNotStarted :many
 SELECT *
 FROM layout_requests_jobs
-WHERE started_at is NULL;
+WHERE started_at is NULL
+ORDER BY created_at ASC
+LIMIT $1
+;
 
 -- name: ListLayoutRequestJobs :many
 SELECT *

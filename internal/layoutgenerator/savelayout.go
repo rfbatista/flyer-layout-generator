@@ -53,10 +53,11 @@ func SaveLayout(
 	for _, region := range l.Grid.Regions {
 		e := mapper.LayoutRegionFromDomain(region)
 		_, err = qtx.CreateLayoutRegion(ctx, database.CreateLayoutRegionParams{
-			Xi:  e.Xi,
-			Xii: e.Xii,
-			Yi:  e.Yi,
-			Yii: e.Yii,
+			LayoutID: int32(layoutCreated.ID),
+			Xi:       e.Xi,
+			Xii:      e.Xii,
+			Yi:       e.Yi,
+			Yii:      e.Yii,
 		})
 		if err != nil {
 			return err

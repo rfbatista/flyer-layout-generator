@@ -10,40 +10,27 @@ func isActive(path, curr string) string {
 }
 
 templ Sidebar(curPath string) {
-	<aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+	<aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-56 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
 		<div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
 			<ul class="space-y-2 font-medium">
 				<li>
-					<a href={ templ.SafeURL(shared.PageHome.String()) } class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
+					<a href={ templ.SafeURL(shared.PageHome.String()) } class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">
+						Inicio
+					</a>
 				</li>
 				<li>
 					<a href={ templ.SafeURL(shared.PageJobs.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Jobs
+						Imagens
 					</a>
 				</li>
 				<li>
 					<a href={ templ.SafeURL(shared.PageUploadDesign.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Upload Arquivo
+						Arquivos
 					</a>
 				</li>
 				<li>
-					<a href={ templ.SafeURL(shared.PageProccessDesing.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Processar 
-					</a>
-				</li>
-				<li>
-					<a href={ templ.SafeURL(shared.PageDefineElements.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Definir elementos
-					</a>
-				</li>
-				<li>
-					<a href={ templ.SafeURL(shared.PageGenerateImage.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Ajustes de layout
-					</a>
-				</li>
-				<li>
-					<a href={ templ.SafeURL(shared.PageCreateTemplate.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-						Criar template
+					<a href={ templ.SafeURL(shared.PageListTemplate.String()) } class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+						Templates
 					</a>
 				</li>
 			</ul>

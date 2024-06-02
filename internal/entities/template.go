@@ -1,6 +1,9 @@
 package entities
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
 
 type TemplateType string
 
@@ -34,7 +37,77 @@ type Template struct {
 	Distortion     TemplateDistortion       `json:"distortion,omitempty"`
 	SlotsPositions []TemplateSlotsPositions `json:"slots_positions,omitempty"`
 	SlotsX         int32                    `json:"x,omitempty"`
+	MaxSlotsX      int32                    `json:"max_slots_x,omitempty"`
 	SlotsY         int32                    `json:"y,omitempty"`
+	MaxSlotsY      int32                    `json:"max_slots_y,omitempty"`
+	CreatedAt      time.Time                `json:"created_at,omitempty"`
+}
+
+const (
+	minSlotSize = 50
+	maxSlots    = 6
+)
+
+func (t *Template) Grids() []Grid {
+	var g []Grid
+	maxXSlots := t.Width / minSlotSize
+	if maxXSlots > maxSlots {
+		maxXSlots = maxSlots
+	}
+
+	maxYSlots := t.Height / minSlotSize
+	if maxYSlots > maxSlots {
+		maxYSlots = maxSlots
+	}
+
+	for x := 1; x <= int(maxXSlots); x++ {
+		slotWidth := int(t.Width) / x
+		if slotWidth < minSlotSize {
+			break
+		}
+		for y := 1; y <= int(maxYSlots); y++ {
+			slotHeight := int(t.Height) / y
+			if slotHeight < minSlotSize {
+				break
+			}
+			grid, _ := NewGrid(
+				WithDefault(t.Width, t.Height),
+				WithPivot(int32(slotWidth), int32(slotHeight)),
+			)
+			if grid != nil {
+				g = append(
+					g, *grid,
+				)
+			}
+		}
+	}
+	return g
+}
+
+func (t *Template) MaxSlotsXText() string {
+	if t.MaxSlotsX == 0 {
+		return ""
+	}
+	return strconv.FormatInt(int64(t.MaxSlotsX), 10)
+}
+
+func (t *Template) MaxSlotsYText() string {
+	if t.MaxSlotsY == 0 {
+		return ""
+	}
+	return strconv.FormatInt(int64(t.MaxSlotsY), 10)
+}
+
+func (t *Template) WidthS() string {
+	return strconv.FormatInt(int64(t.Width), 10)
+}
+
+func (t *Template) HeightS() string {
+	return strconv.FormatInt(int64(t.Height), 10)
+}
+
+func (t *Template) CreatedAtText() string {
+	return t.CreatedAt.Format(timeformat)
 }
 
 func NewTemplateType(t string) TemplateType {

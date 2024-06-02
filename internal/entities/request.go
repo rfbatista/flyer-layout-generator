@@ -2,8 +2,6 @@ package entities
 
 import "time"
 
-var timeformat = "2006-01-02"
-
 type LayoutRequest struct {
 	ID        int32     `json:"id,omitempty"`
 	DesignID  int32     `json:"design_id,omitempty"`
@@ -20,20 +18,26 @@ type LayoutRequestConfig struct {
 	ShowGrid              bool  `json:"show_grid,omitempty"`
 	MinimiumComponentSize int32 `json:"minimium_component_size,omitempty"`
 	MinimiumTextSize      int32 `json:"minimium_text_size,omitempty"`
+	SlotsX                int32 `json:"slots_x,omitempty"`
+	SlotsY                int32 `json:"slots_y,omitempty"`
+	Grid                  Grid  `json:"grid,omitempty"`
+	Padding               int32 `json:"padding,omitempty"`
+	KeepProportions       bool  `json:"keep_proportions,omitempty"`
 }
 
 type LayoutRequestJob struct {
-	ID         int32      `json:"id,omitempty"`
-	RequestID  int32      `json:"request_id,omitempty"`
-	TemplateID int32      `json:"template_id,omitempty"`
-	CreatedAt  *time.Time `json:"created_at,omitempty"`
-	StartedAt  *time.Time `json:"started_at,omitempty"`
-	StoppedAt  *time.Time `json:"stopped_at,omitempty"`
-	FinishedAt *time.Time `json:"finished_at,omitempty"`
-	ImageURL   string     `json:"image_url,omitempty"`
-	ErrorAt    *time.Time `json:"error_at,omitempty"`
-	Status     string     `json:"status,omitempty"`
-	Log        string     `json:"log,omitempty"`
+	ID         int32                `json:"id,omitempty"`
+	RequestID  int32                `json:"request_id,omitempty"`
+	TemplateID int32                `json:"template_id,omitempty"`
+	CreatedAt  *time.Time           `json:"created_at,omitempty"`
+	StartedAt  *time.Time           `json:"started_at,omitempty"`
+	StoppedAt  *time.Time           `json:"stopped_at,omitempty"`
+	FinishedAt *time.Time           `json:"finished_at,omitempty"`
+	ImageURL   string               `json:"image_url,omitempty"`
+	Config     *LayoutRequestConfig `json:"config,omitempty"`
+	ErrorAt    *time.Time           `json:"error_at,omitempty"`
+	Status     string               `json:"status,omitempty"`
+	Log        string               `json:"log,omitempty"`
 }
 
 func (l *LayoutRequestJob) StatusMessage() string {
@@ -87,7 +91,7 @@ func (l *LayoutRequestJob) IsCompleted() bool {
 }
 
 func (l *LayoutRequestJob) IsRunning() bool {
-	return l.FinishedAt == nil && l.StartedAt != nil
+	return l.FinishedAt == nil && l.StartedAt != nil && l.ErrorAt == nil
 }
 
 func (l *LayoutRequestJob) DurationText() string {

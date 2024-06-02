@@ -11,6 +11,7 @@ import (
 	"algvisual/internal/web/views/request/requestprocessdesign"
 	"algvisual/internal/web/views/request/requesttemplates"
 	"algvisual/internal/web/views/request/requestuploadfile"
+	"algvisual/internal/web/views/templates"
 	"fmt"
 
 	"github.com/rfbatista/apitools"
@@ -55,7 +56,12 @@ var Module = fx.Options(fx.Provide(
 	protected(requesttemplates.NewUploadCSV),
 	protected(requestcreateimages.NewPage),
 	protected(files.NewPage),
+	protected(files.NewUploadDesignAPI),
+	protected(files.NewProcessDesignFile),
 	protected(home.CreateRequest),
 	protected(components.NewPage),
+	protected(components.RemoveElementFromComponent),
+	protected(components.CreateComponent),
 	protected(jobs.NewPage),
+	protected(templates.NewPage),
 ))

@@ -18,7 +18,9 @@ type CreateLayoutRequestInput struct {
 	ShowGrid              bool    `form:"show_grid"               json:"show_grid,omitempty"`
 	MinimiumComponentSize int32   `form:"minimium_component_size" json:"minimium_component_size,omitempty"`
 	MinimiumTextSize      int32   `form:"minimium_text_size"      json:"minimium_text_size,omitempty"`
-	Templates             []int32 `form:"templates[]"               json:"templates,omitempty"`
+	Templates             []int32 `form:"templates[]"             json:"templates,omitempty"`
+	Padding               int32   `form:"padding"                 json:"padding,omitempty"`
+	KeepProportions       bool    `form:"keep_proportions"        json:"keep_proportions,omitempty"`
 }
 
 type CreateLayoutRequestOutput struct {
@@ -38,21 +40,10 @@ func CreateLayoutRequestUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
-	c, err := json.Marshal(entities.LayoutRequestConfig{
-		LimitSizerPerElement:  req.LimitSizerPerElement,
-		AnchorElements:        req.AnchorElements,
-		ShowGrid:              req.ShowGrid,
-		MinimiumComponentSize: req.MinimiumComponentSize,
-		MinimiumTextSize:      req.MinimiumComponentSize,
-	})
-	if err != nil {
-		return nil, err
-	}
 	layoutRes, err := qtx.CreateLayoutRequest(
 		ctx,
 		database.CreateLayoutRequestParams{
 			DesignID: pgtype.Int4{Int32: req.DesignID, Valid: true},
-			Config:   pgtype.Text{String: string(c), Valid: true},
 		},
 	)
 	if err != nil {
@@ -60,14 +51,35 @@ func CreateLayoutRequestUseCase(
 	}
 	var jobs []entities.LayoutRequestJob
 	for _, tid := range req.Templates {
-		job, jerr := qtx.CreateLayoutRequestJob(ctx, database.CreateLayoutRequestJobParams{
-			RequestID:  pgtype.Int4{Int32: int32(layoutRes.ID), Valid: true},
-			TemplateID: pgtype.Int4{Int32: tid, Valid: true},
-		})
-		if jerr != nil {
-			return nil, jerr
+		templateFound, getTemplErr := qtx.GetTemplateByID(ctx, tid)
+		if getTemplErr != nil {
+			continue
 		}
-		jobs = append(jobs, mapper.LayoutRequestJobToDomain(job))
+		templateDomain := mapper.TemplateToDomain(templateFound)
+		for _, grid := range templateDomain.Grids() {
+			c, unmarshErr := json.Marshal(entities.LayoutRequestConfig{
+				LimitSizerPerElement:  req.LimitSizerPerElement,
+				AnchorElements:        req.AnchorElements,
+				ShowGrid:              req.ShowGrid,
+				MinimiumComponentSize: req.MinimiumComponentSize,
+				MinimiumTextSize:      req.MinimiumComponentSize,
+				Grid:                  grid,
+				Padding:               req.Padding,
+				KeepProportions:       req.KeepProportions,
+			})
+			if unmarshErr != nil {
+				return nil, unmarshErr
+			}
+			job, jerr := qtx.CreateLayoutRequestJob(ctx, database.CreateLayoutRequestJobParams{
+				RequestID:  pgtype.Int4{Int32: int32(layoutRes.ID), Valid: true},
+				TemplateID: pgtype.Int4{Int32: tid, Valid: true},
+				Config:     pgtype.Text{String: string(c), Valid: true},
+			})
+			if jerr != nil {
+				return nil, jerr
+			}
+			jobs = append(jobs, mapper.LayoutRequestJobToDomain(job))
+		}
 	}
 	err = tx.Commit(ctx)
 	if err != nil {

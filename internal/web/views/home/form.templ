@@ -24,6 +24,10 @@ templ Form(props PageProps) {
 			</select>
 		</div>
 		<div class="mb-5">
+			<label for="base-input" class="input-label">Margem</label>
+			<input type="number" class="input" name="padding" value="0"/>
+		</div>
+		<div class="mb-5">
 			<label for="base-input" class="input-label">Tamanho minimo dos componentes</label>
 			<input type="number" class="input" name="minimium_component_size" value="50"/>
 		</div>
@@ -31,6 +35,7 @@ templ Form(props PageProps) {
 			<label for="base-input" class="input-label">Tamanho minimo dos textos</label>
 			<input type="number" class="input" name="minimium_text_size" value="12"/>
 		</div>
+		@toggle.Toggle("Manter proporções", "true", "keep_proportions")
 		@toggle.Toggle("Ancorar elementos", "true", "anchor_elements")
 		@toggle.Toggle("Definir tamanhos limite por tipo de componente", "true", "limit_sizer_per_element")
 		@toggle.Toggle("Mostrar grid", "true", "show_grid")

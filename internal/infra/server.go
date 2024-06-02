@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"algvisual/internal/ports"
+	"algvisual/internal/shared"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,9 +12,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
-
-	"algvisual/internal/ports"
-	"algvisual/internal/shared"
 )
 
 type HTTPServerParams struct {
@@ -21,6 +20,7 @@ type HTTPServerParams struct {
 	Config      *AppConfig
 	Controllers []ports.Controller `group:"controller"`
 	Pool        *pgxpool.Pool
+	Sse         *ServerSideEventManager
 }
 
 type HTTPError struct {
@@ -74,6 +74,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e := echo.New()
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	// e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(
 		middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
@@ -91,7 +92,6 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 				return nil
 			},
 		}))
-	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -112,6 +112,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	// 	Filesystem: nil,
 	// }))
 	webStaticPath := fmt.Sprintf("%s/internal/web/static", FindProjectRoot())
+	e.GET("/sse", p.Sse.HandleConnection)
 	webgroup := e.Group("/web")
 	webgroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{

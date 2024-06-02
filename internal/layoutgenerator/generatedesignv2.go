@@ -17,19 +17,19 @@ import (
 )
 
 type GenerateDesignRequestv2 struct {
-	PhotoshopID int32 `form:"photoshop_id" json:"photoshop_id,omitempty"`
-	TemplateID  int32 `form:"template_id"  json:"template_id,omitempty"`
+	PhotoshopID int32                        `form:"photoshop_id" json:"photoshop_id,omitempty"`
+	TemplateID  int32                        `form:"template_id" json:"template_id,omitempty"`
+	Config      entities.LayoutRequestConfig `json:"config,omitempty"`
 }
 
 type GenerateDesignResultv2 struct {
-	Data       *infra.GenerateImageResult `json:"data,omitempty"`
+	Data       *GenerateImageResult `json:"data,omitempty"`
 	TwistedURL string
 }
 
 func GenerateDesignUseCasev2(
 	ctx context.Context,
 	req GenerateDesignRequestv2,
-	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
 	db *pgxpool.Pool,
 	config infra.AppConfig,
@@ -42,22 +42,14 @@ func GenerateDesignUseCasev2(
 	}
 	template, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
-		err = shared.WrapWithAppError(err, fmt.Sprintf("Não foi possivel encontrar o template %d", req.TemplateID), "")
-		return nil, err
-	}
-	distortionConfig, err := queries.GetTemplateDistortion(ctx, req.TemplateID)
-	if err != nil {
 		err = shared.WrapWithAppError(
 			err,
-			"Não foi possivel encontrar a cofiguração do templates",
+			fmt.Sprintf("Não foi possivel encontrar o template %d", req.TemplateID),
 			"",
 		)
 		return nil, err
 	}
 	etemplate := mapper.TemplateToDomain(template.Template)
-	etemplate.Distortion = mapper.ToTemplateDistortionEntitie(
-		distortionConfig.TemplatesDistortion,
-	)
 	elements, err := queries.GetElements(ctx, designFile.ID)
 	if err != nil {
 		err = shared.WrapWithAppError(
@@ -78,6 +70,7 @@ func GenerateDesignUseCasev2(
 		}
 	}
 	var components []entities.DesignComponent
+	var bg *entities.DesignComponent
 	for k := range compHash {
 		data, compErr := queries.GetComponentByID(ctx, k)
 		if compErr != nil {
@@ -90,10 +83,18 @@ func GenerateDesignUseCasev2(
 		}
 		comp := mapper.TodesignComponentEntitie(data)
 		comp.Elements = compHash[k]
-		components = append(components, comp)
+		if comp.IsBackground() {
+			bg = &comp
+		} else {
+			components = append(components, comp)
+		}
 	}
 	if len(components) == 0 {
-		return nil, shared.NewAppError(400, "nenhum componente definido para o design escolhido", "")
+		return nil, shared.NewAppError(
+			400,
+			"nenhum componente definido para o design escolhido",
+			"",
+		)
 	}
 	s := rand.NewSource(time.Now().Unix())
 	r := rand.New(s) // initialize local pseudorandom generator
@@ -103,15 +104,17 @@ func GenerateDesignUseCasev2(
 		Elements:       eelements,
 		PivotWidth:     components[r.Intn(len(components))].Width,
 		PivotHeight:    components[r.Intn(len(components))].Height,
+		Config:         req.Config,
 	}
 	prancheta := entities.Layout{
-		DesignID: req.PhotoshopID,
-		Width:    etemplate.Width,
-		Height:   etemplate.Height,
-		Template: etemplate,
+		DesignID:   req.PhotoshopID,
+		Width:      etemplate.Width,
+		Height:     etemplate.Height,
+		Template:   etemplate,
+		Background: bg,
 	}
 	world, nprancheta, _ := grammars.Run(world, prancheta, log)
-	res, err := infra.GenerateImageFromPrancheta(infra.GenerateImageRequest{
+	res, err := GenerateImageFromPrancheta(GenerateImageRequest{
 		DesignFile: designFile.FileUrl.String,
 		Prancheta:  nprancheta,
 	}, log, config)
@@ -124,16 +127,7 @@ func GenerateDesignUseCasev2(
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
-	resTwisted, err := infra.GenerateImageFromPrancheta(infra.GenerateImageRequest{
-		DesignFile: designFile.FileUrl.String,
-		Prancheta:  world.TwistedDesign,
-	}, log, config)
-	if err != nil {
-		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
-		return nil, err
-	}
 	return &GenerateDesignResultv2{
-		Data:       res,
-		TwistedURL: resTwisted.ImageURL,
+		Data: res,
 	}, nil
 }

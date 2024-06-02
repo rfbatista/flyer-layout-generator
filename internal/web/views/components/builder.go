@@ -5,30 +5,33 @@ import (
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"
 	"context"
+	"fmt"
 
 	"algvisual/internal/database"
 )
 
 type pageRequest struct {
-	DesignID int32 `json:"id,omitempty"`
+	DesignID int32 `param:"design_id" json:"id,omitempty"`
 }
 
-func PagePropsAssembler(
+func Props(
 	ctx context.Context,
 	db *database.Queries,
 	req pageRequest,
-) (*PageProps, error) {
+) (PageProps, error) {
+	var props PageProps
 	el, err := db.GetElements(ctx, req.DesignID)
 	if err != nil {
-		return nil, err
+		return props, err
 	}
+	fmt.Println(req.DesignID)
 	comps, err := designs.GetComponentsByDesignIdUseCase(
 		ctx,
 		designs.GetComponentsByDesignIdRequest{ID: req.DesignID},
 		db,
 	)
 	if err != nil {
-		return nil, err
+		return props, err
 	}
 	for _, c := range comps.Components {
 		for _, ce := range c.Elements {
@@ -50,11 +53,10 @@ func PagePropsAssembler(
 		}
 	}
 	comps.Components = comps.Components[:n]
-	return &PageProps{
-		Components: comps.Components,
-		Elements:   mapper.ToDesignElementEntitieList(el),
-		Background: background,
-	}, nil
+	props.Components = comps.Components
+	props.Elements = mapper.ToDesignElementEntitieList(el)
+	props.Background = background
+	return props, nil
 }
 
 func RemoveDesignComponentIndex(

@@ -18,11 +18,20 @@ import (
 func NewPage(db *database.Queries) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath(shared.PageDefineElements.String())
+	h.SetPath(shared.PageDefineComponents.String())
 	h.SetHandle(func(c echo.Context) error {
+		var req pageRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := Props(c.Request().Context(), db, req)
+		if err != nil {
+			return err
+		}
 		return shared.RenderComponent(
 			shared.WithComponent(
-				Page(),
+				Page(req.DesignID, out),
 				c,
 			),
 			shared.WithPage(shared.PageRequestUploadFile.String()),
@@ -34,7 +43,7 @@ func NewPage(db *database.Queries) apitools.Handler {
 func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath(shared.PageRequestElementsCreateComponent.String())
+	h.SetPath(shared.PageDefineComponentsCreate.String())
 	h.SetHandle(func(c echo.Context) error {
 		var req designs.CreateComponentRequest
 		err := c.Bind(&req)
@@ -60,7 +69,7 @@ func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) ap
 func RemoveElementFromComponent(db *database.Queries) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath(shared.PageRequestElementsRemoveElement.String())
+	h.SetPath(shared.PageDefineComponentsRemove.String())
 	h.SetHandle(func(c echo.Context) error {
 		var req designs.RemoveComponentUseCaseRequest
 		err := c.Bind(&req)

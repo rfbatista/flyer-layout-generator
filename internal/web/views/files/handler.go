@@ -7,7 +7,7 @@ import (
 	"algvisual/internal/shared"
 	"algvisual/internal/web/components/notification"
 	"context"
-	"strconv"
+	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -52,7 +52,7 @@ func NewUploadDesignAPI(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath(shared.WebEndpointUploadPhotoshop.String())
+	h.SetPath(shared.PageUploadDesignFile.String())
 	h.SetHandle(func(c echo.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -64,11 +64,8 @@ func NewUploadDesignAPI(
 		}
 		src, err := file.Open()
 		if err != nil {
-			return shared.RenderComponent(
-				shared.WithComponent(
-					notification.FailureMessage(err.Error()), c,
-				),
-			)
+			shared.Error(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
 		}
 		defer src.Close()
 		req := designprocessor.UploadDesignFileUseCaseRequest{
@@ -83,16 +80,46 @@ func NewUploadDesignAPI(
 			log,
 		)
 		if err != nil {
-			return shared.RenderComponent(
-				shared.WithComponent(
-					notification.FailureMessage(err.Error()), c,
-				),
-			)
+			shared.Error(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
 		}
-		c.Response().
-			Header().
-			Set("HX-Redirect", shared.PageRequestProcessDesign.Replace([]string{strconv.Itoa(int(out.Design.ID))}))
-		return nil
+		shared.Success(c, "sucesso")
+		return c.JSON(http.StatusOK, out)
+	})
+	return h
+}
+
+func NewProcessDesignFile(
+	db *database.Queries,
+	proc *infra.PhotoshopProcessor,
+	storage infra.FileStorage,
+	log *zap.Logger,
+	pool *pgxpool.Pool,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath(shared.PageUploadDesignFileProcess.String())
+	h.SetHandle(func(c echo.Context) error {
+		var req designprocessor.ProcessDesignFileRequestv2
+		err := c.Bind(&req)
+		if err != nil {
+			shared.Error(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
+		}
+		out, err := designprocessor.ProcessDesignFileUseCasev2(
+			c.Request().Context(),
+			req,
+			proc.ProcessFile,
+			log,
+			db,
+			pool,
+		)
+		if err != nil {
+			shared.Error(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
+		}
+		shared.Success(c, "sucesso")
+		return c.JSON(http.StatusOK, out)
 	})
 	return h
 }

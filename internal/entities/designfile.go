@@ -11,6 +11,7 @@ type DesignFile struct {
 	Filepath       string    `json:"filepath,omitempty"`
 	FileExtension  string    `json:"file_extension,omitempty"`
 	ImagePath      string    `json:"image_path,omitempty"`
+	ImageURL       string    `json:"image_url,omitempty"`
 	ImageExtension string    `json:"image_extension,omitempty"`
 	Width          int32     `json:"width,omitempty"`
 	Height         int32     `json:"height,omitempty"`

@@ -238,6 +238,7 @@ type LayoutRequestsJob struct {
 	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
 	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	Config     pgtype.Text      `json:"config"`
 	Log        pgtype.Text      `json:"log"`
 }
 
@@ -263,6 +264,8 @@ type Template struct {
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`
 	SlotsY    pgtype.Int4      `json:"slots_y"`
+	MaxSlotsX pgtype.Int4      `json:"max_slots_x"`
+	MaxSlotsY pgtype.Int4      `json:"max_slots_y"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`

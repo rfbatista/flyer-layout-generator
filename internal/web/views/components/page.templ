@@ -2,7 +2,10 @@ package components
 
 import "algvisual/internal/web/views"
 import "algvisual/internal/web/components/layout"
+import "algvisual/internal/web/components/elementtree"
+import "strconv"
 import "algvisual/internal/entities"
+import "algvisual/internal/shared"
 
 type PageProps struct {
 	DesignID   int32
@@ -11,7 +14,7 @@ type PageProps struct {
 	Background entities.DesignComponent
 }
 
-templ Page() {
+templ Page(id int32, props PageProps) {
 	<html>
 		<head>
 			@views.Header()
@@ -20,6 +23,7 @@ templ Page() {
 			@layout.Layout() {
 				<div class="mx-auto max-w-[900px]">
 					<div class="mx-auto max-w-[900px]">
+						<button type="button" class="btn" hx-post={ shared.PageDefineComponentsCreate.Replace([]string{strconv.FormatInt(int64(id), 10)}) } hx-vals='js:{"elements": activeItems,"type":type}'>Criar componente</button>
 						<select id="tipo_componente">
 							<option value="background">Planto de fundo</option>
 							<option value="logotipo_marca">Marca</option>
@@ -33,7 +37,29 @@ templ Page() {
 							<option value="grafismo">Grafismo</option>
 							<option value="texto_cta">Call to action</option>
 						</select>
+						<button type="button" class="btn" hx-post={ shared.PageDefineComponentsRemove.Replace([]string{strconv.FormatInt(int64(id), 10)}) } hx-vals='js:{"elements": activeItems,"type":"logotipo_marca"}'>Remover</button>
 					</div>
+					@elementtree.Tree("elements") {
+						for _, d := range props.Elements {
+							@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+						}
+					}
+					Plano de Fundo:
+					@elementtree.Tree("background") {
+						for _, d := range props.Background.Elements {
+							@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+						}
+					}
+					Componentes:
+					for idx, c := range props.Components {
+						<div>{ strconv.FormatInt(int64(idx), 10) }</div>
+						<hr/>
+						@elementtree.Tree("components") {
+							for _, d := range c.Elements {
+								@elementtree.TreeNode(elementtree.NodeProps{Text: d.Name, ImageURL: d.ImageURL, Value: strconv.FormatInt(int64(d.ID), 10)})
+							}
+						}
+					}
 				</div>
 			}
 			<script>

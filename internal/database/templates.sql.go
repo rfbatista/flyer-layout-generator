@@ -25,7 +25,7 @@ INSERT INTO templates (
   $4,
   $5
 )
-RETURNING id, name, type, request_id, width, height, slots_x, slots_y, created_at, updated_at, deleted_at
+RETURNING id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 `
 
 type CreateTemplateParams struct {
@@ -54,6 +54,8 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		&i.Height,
 		&i.SlotsX,
 		&i.SlotsY,
+		&i.MaxSlotsX,
+		&i.MaxSlotsY,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -144,7 +146,7 @@ func (q *Queries) CreateTemplateSlot(ctx context.Context, arg CreateTemplateSlot
 }
 
 const getTemplate = `-- name: GetTemplate :one
-SELECT templates.id, templates.name, templates.type, templates.request_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.created_at, templates.updated_at, templates.deleted_at
+SELECT templates.id, templates.name, templates.type, templates.request_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
 FROM templates
 WHERE templates.id = $1 LIMIT 1
 `
@@ -165,9 +167,38 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 		&i.Template.Height,
 		&i.Template.SlotsX,
 		&i.Template.SlotsY,
+		&i.Template.MaxSlotsX,
+		&i.Template.MaxSlotsY,
 		&i.Template.CreatedAt,
 		&i.Template.UpdatedAt,
 		&i.Template.DeletedAt,
+	)
+	return i, err
+}
+
+const getTemplateByID = `-- name: GetTemplateByID :one
+SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+FROM templates
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetTemplateByID(ctx context.Context, id int32) (Template, error) {
+	row := q.db.QueryRow(ctx, getTemplateByID, id)
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Type,
+		&i.RequestID,
+		&i.Width,
+		&i.Height,
+		&i.SlotsX,
+		&i.SlotsY,
+		&i.MaxSlotsX,
+		&i.MaxSlotsY,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -238,7 +269,7 @@ func (q *Queries) GetTemplateSlots(ctx context.Context, templateID int32) ([]Get
 }
 
 const getTemplatesByRequestID = `-- name: GetTemplatesByRequestID :many
-SELECT id, name, type, request_id, width, height, slots_x, slots_y, created_at, updated_at, deleted_at
+SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 WHERE request_id = $1
 `
@@ -261,6 +292,8 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 			&i.Height,
 			&i.SlotsX,
 			&i.SlotsY,
+			&i.MaxSlotsX,
+			&i.MaxSlotsY,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -276,7 +309,7 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT id, name, type, request_id, width, height, slots_x, slots_y, created_at, updated_at, deleted_at
+SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 LIMIT $1 OFFSET $2
 `
@@ -304,6 +337,8 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 			&i.Height,
 			&i.SlotsX,
 			&i.SlotsY,
+			&i.MaxSlotsX,
+			&i.MaxSlotsY,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,

@@ -20,6 +20,7 @@ var Module = fx.Options(
 		NewFileStorage,
 		NewPhotoshpProcessor,
 		NewImageGenerator,
+		NewServerSideEventManager,
 	),
 	fx.Invoke(RegisterHooks),
 )

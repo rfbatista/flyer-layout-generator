@@ -22,10 +22,14 @@ def build_image(req: BuildImageRequest):
     psd = PSDImage.open(req.design_file)
     print(req.prancheta)
     img = Image.new("RGB", (req.prancheta.width, req.prancheta.height), "black")
+    if req.prancheta.background is not None:
+        req.prancheta.background.index_elements(psd)
+        req.prancheta.background.draw_in_image(img, log=True)
     for c in req.prancheta.components:
         print(c)
         c.index_elements(psd)
         c.draw_in_image(img, log=True)
+
     created_at = datetime.now(timezone.utc)
     draw = ImageDraw.Draw(img)
     if req.prancheta.grid is not None:

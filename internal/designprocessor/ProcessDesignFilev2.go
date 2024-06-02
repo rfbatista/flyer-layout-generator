@@ -13,7 +13,7 @@ import (
 )
 
 type ProcessDesignFileRequestv2 struct {
-	ID int32 `param:"id" json:"id,omitempty"`
+	ID int32 `param:"design_id" json:"id,omitempty"`
 }
 
 type ProcessDesignFileResultv2 struct{}

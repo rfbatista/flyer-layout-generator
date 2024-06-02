@@ -8,6 +8,10 @@ SELECT sqlc.embed(templates)
 FROM templates
 WHERE templates.id = $1 LIMIT 1;
 
+-- name: GetTemplateByID :one
+SELECT *
+FROM templates
+WHERE id = $1 LIMIT 1;
 
 -- name: GetTemplatesByRequestID :many
 SELECT *

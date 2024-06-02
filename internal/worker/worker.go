@@ -23,6 +23,7 @@ func NewWorkerPool(
 	db *pgxpool.Pool,
 	config *infra.AppConfig,
 	log *zap.Logger,
+	sse *infra.ServerSideEventManager,
 ) (WorkerPool, error) {
 	return WorkerPool{
 		client:  client,
@@ -30,6 +31,7 @@ func NewWorkerPool(
 		db:      db,
 		config:  config,
 		log:     log,
+		sse:     sse,
 	}, nil
 }
 
@@ -39,6 +41,7 @@ type WorkerPool struct {
 	db      *pgxpool.Pool
 	config  *infra.AppConfig
 	log     *zap.Logger
+	sse     *infra.ServerSideEventManager
 }
 
 func (w WorkerPool) Start() {
@@ -47,7 +50,7 @@ func (w WorkerPool) Start() {
 		for {
 			select {
 			case <-ticker.C:
-				createWorkerPool(w.client, w.queries, w.db, w.config, w.log)
+				createWorkerPool(w.client, w.queries, w.db, w.config, w.log, w.sse)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -64,8 +67,18 @@ func worker(
 	db *pgxpool.Pool,
 	config *infra.AppConfig,
 	log *zap.Logger,
+	sse *infra.ServerSideEventManager,
 ) {
-	err := layoutgenerator.StartRequestJobUseCase(
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+	err := sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
+	if err != nil {
+		log.Error("falha ao enviar evento sse", zap.Error(err))
+	}
+	err = layoutgenerator.StartRequestJobUseCase(
 		client,
 		queries,
 		db,
@@ -76,6 +89,10 @@ func worker(
 	if err != nil {
 		log.Error("Falha no processamento da layout request job", zap.Error(err))
 	}
+	err = sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
+	if err != nil {
+		log.Error("falha ao enviar evento sse", zap.Error(err))
+	}
 	wg.Done()
 }
 
@@ -85,6 +102,7 @@ func createWorkerPool(
 	db *pgxpool.Pool,
 	config *infra.AppConfig,
 	log *zap.Logger,
+	sse *infra.ServerSideEventManager,
 ) error {
 	log.Info("buscando novo bactch de jobs")
 	out, err := layoutgenerator.ListLayoutRequestJobsNotStartedUseCase(context.TODO(), queries)
@@ -100,7 +118,7 @@ func createWorkerPool(
 	var wg sync.WaitGroup
 	wg.Add(len(out.Data))
 	for _, l := range out.Data {
-		go worker(&wg, l.ID, client, queries, db, config, log)
+		go worker(&wg, l.ID, client, queries, db, config, log, sse)
 	}
 	wg.Wait()
 	return nil

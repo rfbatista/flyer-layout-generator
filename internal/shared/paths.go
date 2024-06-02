@@ -25,17 +25,21 @@ const (
 	DownloadImageEndpoint         RoutePath = "/api/v1/images/:image_name"
 	DownloadDesignFileEndpoint    RoutePath = "/api/v1/design/:id/file"
 
-	PageHome                 RoutePath = "/"
-	PageHomeCreateRequest    RoutePath = "/request/generation"
-	PageUploadDesign         RoutePath = "/upload"
-	PageJobs                 RoutePath = "/jobs"
-	PageProccessDesing       RoutePath = "/process"
-	PageGenerateImage        RoutePath = "/generate"
-	PageCreateTemplate       RoutePath = "/templates"
-	PageDefineElements       RoutePath = "/elements"
-	PageRequestUploadFile    RoutePath = "/request/file-upload"
-	PageRequestProcessDesign RoutePath = "/request/file/:id/process"
-	PageRequestElements      RoutePath = "/request/design/:id/elements"
+	PageHome              RoutePath = "/"
+	PageHomeCreateRequest RoutePath = "/request/generation"
+	PageJobs              RoutePath = "/jobs"
+	PageProccessDesing    RoutePath = "/process"
+	PageGenerateImage     RoutePath = "/generate"
+
+	PageListTemplate RoutePath = "/templates"
+
+	PageDefineComponents       RoutePath = "/design/:design_id/elements"
+	PageDefineComponentsCreate RoutePath = "/design/:design_id/elements/create"
+	PageDefineComponentsRemove RoutePath = "/design/:design_id/elements/remove"
+
+	PageUploadDesign            RoutePath = "/upload"
+	PageUploadDesignFile        RoutePath = "/upload/design"
+	PageUploadDesignFileProcess RoutePath = "/upload/design/:design_id/process"
 
 	PageRequestElementsCreateComponent    RoutePath = "/request/design/:design_id/component"
 	PageRequestElementsDefineBackground   RoutePath = "/request/design/:design_id/background"
@@ -44,9 +48,11 @@ const (
 	PageRequestUploadSheetCreateTemplates RoutePath = "/request/design/:design_id/sheet-upload/create-templates"
 	PageRequestTemplatesCreated           RoutePath = "/request/design/:design_id/request/:request_id/templates"
 	PageRequestGenerateImages             RoutePath = "/request/design/:design_id/request/:request_id/generate"
-
-	PageRequestResult       RoutePath = "/request/results"
-	PageRequestAdjustImages RoutePath = "/request/adjust-image"
+	PageRequestUploadFile                 RoutePath = "/request/file-upload"
+	PageRequestProcessDesign              RoutePath = "/request/file/:id/process"
+	PageRequestElements                   RoutePath = "/request/design/:id/elements"
+	PageRequestResult                     RoutePath = "/request/results"
+	PageRequestAdjustImages               RoutePath = "/request/adjust-image"
 
 	WebEndpointUploadPhotoshop RoutePath = "/api/v1/web/design/file"
 	WebEndpointProccessDesign  RoutePath = "/api/v1/web/design/:id/proccess"

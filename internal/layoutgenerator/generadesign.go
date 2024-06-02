@@ -35,19 +35,7 @@ func GenerateDesignUseCase(
 		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o templates", "")
 		return nil, err
 	}
-	distortionConfig, err := queries.GetTemplateDistortion(ctx, req.TemplateID)
-	if err != nil {
-		err = shared.WrapWithAppError(
-			err,
-			"Não foi possivel encontrar a cofiguração do templates",
-			"",
-		)
-		return nil, err
-	}
 	etemplate := mapper.TemplateToDomain(template.Template)
-	etemplate.Distortion = mapper.ToTemplateDistortionEntitie(
-		distortionConfig.TemplatesDistortion,
-	)
 	elements, err := queries.GetElements(ctx, photoshop.ID)
 	if err != nil {
 		err = shared.WrapWithAppError(

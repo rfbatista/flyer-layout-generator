@@ -3,6 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
+	"algvisual/internal/mapper"
 	"context"
 	"time"
 
@@ -45,13 +46,17 @@ func StartRequestJobUseCase(
 		}
 		return err
 	}
+	job := mapper.LayoutRequestJobToDomain(layoutJobReq)
+	jobReq := GenerateDesignRequestv2{
+		PhotoshopID: layoutReq.DesignID.Int32,
+		TemplateID:  layoutJobReq.TemplateID.Int32,
+	}
+	if job.Config != nil {
+		jobReq.Config = *job.Config
+	}
 	out, err := GenerateDesignUseCasev2(
 		ctx,
-		GenerateDesignRequestv2{
-			PhotoshopID: layoutReq.DesignID.Int32,
-			TemplateID:  layoutJobReq.TemplateID.Int32,
-		},
-		client,
+		jobReq,
 		queries,
 		db,
 		config,

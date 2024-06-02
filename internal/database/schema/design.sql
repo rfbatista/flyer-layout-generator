@@ -13,6 +13,8 @@ CREATE TABLE templates (
   height INT,
   slots_x INT,
   slots_y INT,
+  max_slots_x INT,
+  max_slots_y INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP
@@ -217,6 +219,7 @@ CREATE TABLE layout_requests_jobs (
   stopped_at TIMESTAMP,
   updated_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  config TEXT,
   log TEXT,
   FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (request_id) REFERENCES layout_requests (id) ON DELETE CASCADE ON UPDATE CASCADE,

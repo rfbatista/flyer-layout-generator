@@ -19,6 +19,7 @@ class Grid(BaseModel):
 class DesignPrancheta(BaseModel):
     template: DesignTemplate
     components: List[Componente] = []
+    background: Optional[Componente] = None
     width: int
     height: int
     grid: Optional[Grid] = None

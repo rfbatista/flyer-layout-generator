@@ -32,6 +32,45 @@ type DesignComponent struct {
 	DownGap  Position
 }
 
+func (d *DesignComponent) BboxWidth() int32 {
+	return d.BboxXii - d.BboxXi
+}
+
+func (d *DesignComponent) BboxHeigth() int32 {
+	return d.BboxYii - d.BboxYi
+}
+
+func (d *DesignComponent) IsBackground() bool {
+	return d.Type == "background"
+}
+
+func (d *DesignComponent) CenterInRegion(r Region) {
+	xi := r.Xi
+	yi := r.Yi
+	if r.Width() > d.Width {
+		xi = r.Xi + ((r.Width() - d.Width) / 2)
+	}
+	if r.Height() > d.Height {
+		yi = r.Yi + ((r.Height() - d.Height) / 2)
+	}
+	d.SetPosition(xi, yi)
+}
+
+func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
+	scaleFactor := calculateScaleFactor(float64(d.Width), float64(d.Height), float64(w), float64(h))
+	d.ScaleTo(scaleFactor, scaleFactor)
+}
+
+func calculateScaleFactor(elementWidth, elementHeight, containerWidth, containerHeight float64) float64 {
+	widthScaleFactor := containerWidth / elementWidth
+	heightScaleFactor := containerHeight / elementHeight
+
+	if widthScaleFactor < heightScaleFactor {
+		return widthScaleFactor
+	}
+	return heightScaleFactor
+}
+
 func (d *DesignComponent) ScaleTo(wscale, hscale float64) {
 	d.Height = int32(float64(d.Height) * hscale)
 	d.Width = int32(float64(d.Width) * wscale)

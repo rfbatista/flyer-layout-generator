@@ -1,11 +1,12 @@
 package entities
 
 type Layout struct {
-	ID         int32
-	DesignID   int32
+	ID         int32             `json:"id,omitempty"`
+	Background *DesignComponent  `json:"background,omitempty"`
+	DesignID   int32             `json:"design_id,omitempty"`
 	Width      int32             `json:"width,omitempty"`
 	Height     int32             `json:"height,omitempty"`
 	Components []DesignComponent `json:"components,omitempty"`
 	Template   Template          `json:"template,omitempty"`
-	Grid       Grid              `json:"grid"`
+	Grid       Grid              `json:"grid,omitempty"`
 }

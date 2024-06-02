@@ -48,30 +48,29 @@ class DesignTemplate(BaseModel):
     name: str = ""
     width: int
     height: int
-    distortion: DesginTemplateDistortion
     background: Optional[Componente] = None
 
-    def regions(self) -> List[DesignTemplateRegion]:
-        width = int(self.width / self.distortion.x)
-        height = int(self.height / self.distortion.y)
-        regions = []
-        xi = 0
-        yi = 0
-        for _ in range(self.distortion.y):
-            for _ in range(self.distortion.x):
-                r = DesignTemplateRegion(
-                    id=create_id(),
-                    xi=xi,
-                    xii=xi + width,
-                    yi=yi,
-                    yii=yi + height,
-                )
-                regions.append(r)
-                xi = xi + width
-            yi = yi + height
-            xi = 0
-        # print('regioes geradas: ', ["%s %s" % (c.id, c.bbox()) for c in regions])
-        return regions
+    # def regions(self) -> List[DesignTemplateRegion]:
+    #     width = int(self.width / self.distortion.x)
+    #     height = int(self.height / self.distortion.y)
+    #     regions = []
+    #     xi = 0
+    #     yi = 0
+    #     for _ in range(self.distortion.y):
+    #         for _ in range(self.distortion.x):
+    #             r = DesignTemplateRegion(
+    #                 id=create_id(),
+    #                 xi=xi,
+    #                 xii=xi + width,
+    #                 yi=yi,
+    #                 yii=yi + height,
+    #             )
+    #             regions.append(r)
+    #             xi = xi + width
+    #         yi = yi + height
+    #         xi = 0
+    #     # print('regioes geradas: ', ["%s %s" % (c.id, c.bbox()) for c in regions])
+    #     return regions
 
     def set_background(self, c: Componente):
         self.background = c

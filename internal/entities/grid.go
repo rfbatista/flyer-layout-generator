@@ -1,8 +1,9 @@
 package entities
 
 import (
-	"github.com/google/uuid"
 	"math"
+
+	"github.com/google/uuid"
 )
 
 func NewRegion(x, y, xx, yy int32) *Region {
@@ -21,6 +22,14 @@ type Region struct {
 	Xii int32     `json:"xii"`
 	Yi  int32     `json:"yi"`
 	Yii int32     `json:"yii"`
+}
+
+func (r *Region) Width() int32 {
+	return r.Xii - r.Xi
+}
+
+func (r *Region) Height() int32 {
+	return r.Yii - r.Yi
 }
 
 func (r *Region) DistanceToEdge(p Point) int32 {
@@ -92,7 +101,7 @@ func NewGrid(opts ...GridOption) (*Grid, error) {
 		yi := int32(restY / 2)
 		yii := yi + in.pivotY
 		for y := int32(0); y < slotsY; y++ {
-			regions = append(regions, *NewRegion(xi, yi, xii, yii))
+			regions = append(regions, *NewRegion(xi, yi, xii-1, yii-1))
 			yi = yi + in.pivotY
 			yii = yii + in.pivotY
 		}
@@ -113,6 +122,38 @@ type Point struct {
 
 type Grid struct {
 	Regions []Region `json:"regions"`
+}
+
+type OverlapResult struct {
+	Region  Region `json:"region"`
+	Overlap int32  `json:"overlap"`
+}
+
+func findOverlappingRegions(rect DesignComponent, regions []Region) []OverlapResult {
+	var overlappingRegions []OverlapResult
+	for _, region := range regions {
+		if overlap, area := isOverlap(rect, region); overlap {
+			overlappingRegions = append(
+				overlappingRegions,
+				OverlapResult{Region: region, Overlap: area},
+			)
+		}
+	}
+	return overlappingRegions
+}
+
+func isOverlap(rect DesignComponent, region Region) (bool, int32) {
+	// Calculate the overlapping area if the rectangle overlaps with the region
+	xOverlap := min(rect.Xii, region.Xii) - max(rect.Xi, region.Xi)
+	yOverlap := min(rect.Yii, region.Yii) - max(rect.Yi, region.Yi)
+	if xOverlap > 0 && yOverlap > 0 {
+		return true, xOverlap * yOverlap
+	}
+	return false, 0
+}
+
+func (g *Grid) FindOverlappingRegions(e DesignComponent) []OverlapResult {
+	return findOverlappingRegions(e, g.Regions)
 }
 
 func (g *Grid) WhereToSnap(e DesignComponent) (Region, bool) {
@@ -167,7 +208,6 @@ func (g *Grid) RemoveRegion(re Region) {
 		}
 		return true
 	})
-
 }
 
 func filterRegion(ss []Region, test func(r Region) bool) (ret []Region) {

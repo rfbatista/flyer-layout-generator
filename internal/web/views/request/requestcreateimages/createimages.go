@@ -50,7 +50,6 @@ func createImages(
 				PhotoshopID: req.DesignID,
 				TemplateID:  t.ID,
 			},
-			client,
 			db,
 			pool,
 			config,

@@ -45,7 +45,7 @@ def save_file(req: ProcessDesignFileRequest):
 @app.post("/api/v1/generate/distortion")
 def generate_design_api(req: GenerateDesignRequest):
     try:
-        return generate_design(req)
+        return generate_design(req, log=True)
     except Exception as e:
         logger.exception("failed to generate design")
         raise HTTPException(status_code=500, detail="internal server error \n %s" % (e))
