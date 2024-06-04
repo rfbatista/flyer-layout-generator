@@ -79,8 +79,8 @@ func LayoutToDomain(raw database.Layout) entities.Layout {
 	}
 }
 
-func LayoutRegionToDomain(raw database.LayoutRegion) entities.Region {
-	return entities.Region{
+func LayoutRegionToDomain(raw database.LayoutRegion) entities.Cell {
+	return entities.Cell{
 		Xi:  raw.Xi.Int32,
 		Xii: raw.Xii.Int32,
 		Yi:  raw.Yi.Int32,

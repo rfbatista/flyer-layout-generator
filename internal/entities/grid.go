@@ -2,49 +2,7 @@ package entities
 
 import (
 	"math"
-
-	"github.com/google/uuid"
 )
-
-func NewRegion(x, y, xx, yy int32) *Region {
-	return &Region{
-		ID:  uuid.New(),
-		Xi:  x,
-		Yi:  y,
-		Xii: xx,
-		Yii: yy,
-	}
-}
-
-type Region struct {
-	ID  uuid.UUID `json:"id"`
-	Xi  int32     `json:"xi"`
-	Xii int32     `json:"xii"`
-	Yi  int32     `json:"yi"`
-	Yii int32     `json:"yii"`
-}
-
-func (r *Region) Width() int32 {
-	return r.Xii - r.Xi
-}
-
-func (r *Region) Height() int32 {
-	return r.Yii - r.Yi
-}
-
-func (r *Region) DistanceToEdge(p Point) int32 {
-	smallerDistance := int32(math.Abs(float64(r.Xi - p.X)))
-	if smallerDistance < r.Xii-p.X {
-		smallerDistance = r.Xii - p.X
-	}
-	if smallerDistance < r.Yi-p.Y {
-		smallerDistance = r.Yi - p.Y
-	}
-	if smallerDistance < r.Yii-p.Y {
-		smallerDistance = r.Yii - p.Y
-	}
-	return smallerDistance
-}
 
 type gridOption struct {
 	width, height, padding, pivotX, pivotY int32
@@ -96,12 +54,12 @@ func NewGrid(opts ...GridOption) (*Grid, error) {
 	var grid Grid
 	xi := int32(restX / 2)
 	xii := int32(xi + in.pivotX)
-	var regions []Region
+	var regions []Cell
 	for x := int32(0); x < slotsX; x++ {
 		yi := int32(restY / 2)
 		yii := yi + in.pivotY
 		for y := int32(0); y < slotsY; y++ {
-			regions = append(regions, *NewRegion(xi, yi, xii-1, yii-1))
+			regions = append(regions, *NewCell(xi, yi, xii-1, yii-1))
 			yi = yi + in.pivotY
 			yii = yii + in.pivotY
 		}
@@ -112,24 +70,16 @@ func NewGrid(opts ...GridOption) (*Grid, error) {
 	return &grid, nil
 }
 
-func NewPoint(x, y int32) *Point {
-	return &Point{X: x, Y: y}
-}
-
-type Point struct {
-	X, Y int32
-}
-
 type Grid struct {
-	Regions []Region `json:"regions"`
+	Regions []Cell `json:"regions"`
 }
 
 type OverlapResult struct {
-	Region  Region `json:"region"`
+	Region  Cell `json:"region"`
 	Overlap int32  `json:"overlap"`
 }
 
-func findOverlappingRegions(rect DesignComponent, regions []Region) []OverlapResult {
+func findOverlappingRegions(rect DesignComponent, regions []Cell) []OverlapResult {
 	var overlappingRegions []OverlapResult
 	for _, region := range regions {
 		if overlap, area := isOverlap(rect, region); overlap {
@@ -142,7 +92,7 @@ func findOverlappingRegions(rect DesignComponent, regions []Region) []OverlapRes
 	return overlappingRegions
 }
 
-func isOverlap(rect DesignComponent, region Region) (bool, int32) {
+func isOverlap(rect DesignComponent, region Cell) (bool, int32) {
 	// Calculate the overlapping area if the rectangle overlaps with the region
 	xOverlap := min(rect.Xii, region.Xii) - max(rect.Xi, region.Xi)
 	yOverlap := min(rect.Yii, region.Yii) - max(rect.Yi, region.Yi)
@@ -156,12 +106,12 @@ func (g *Grid) FindOverlappingRegions(e DesignComponent) []OverlapResult {
 	return findOverlappingRegions(e, g.Regions)
 }
 
-func (g *Grid) WhereToSnap(e DesignComponent) (Region, bool) {
+func (g *Grid) WhereToSnap(e DesignComponent) (Cell, bool) {
 	snapToLeft := true
-	upleft := NewPoint(e.Xi, e.Yi)
-	upright := NewPoint(e.Xii, e.Yi)
-	downleft := NewPoint(e.Xi, e.Yii)
-	downright := NewPoint(e.Xii, e.Yii)
+	upleft := NewPointp(e.Xi, e.Yi)
+	upright := NewPointp(e.Xii, e.Yi)
+	downleft := NewPointp(e.Xi, e.Yii)
+	downright := NewPointp(e.Xii, e.Yii)
 	smallerDistance := int32(999999)
 	nearestRegion := g.Regions[0]
 	for _, region := range g.Regions {
@@ -201,8 +151,8 @@ func (g *Grid) RemoveAllRegionsInThisPosition(xi, yi, xii, yii int32) {
 	}
 }
 
-func (g *Grid) RemoveRegion(re Region) {
-	g.Regions = filterRegion(g.Regions, func(r Region) bool {
+func (g *Grid) RemoveRegion(re Cell) {
+	g.Regions = filterRegion(g.Regions, func(r Cell) bool {
 		if r.ID == re.ID {
 			return false
 		}
@@ -210,7 +160,7 @@ func (g *Grid) RemoveRegion(re Region) {
 	})
 }
 
-func filterRegion(ss []Region, test func(r Region) bool) (ret []Region) {
+func filterRegion(ss []Cell, test func(r Cell) bool) (ret []Cell) {
 	for _, s := range ss {
 		if test(s) {
 			ret = append(ret, s)

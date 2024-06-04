@@ -59,8 +59,8 @@ func Run(
 			}
 		}
 	}
-	// origJSON, _ := json.Marshal(layout)
-	// fmt.Println(string(origJSON))
+	origJSON, _ := json.Marshal(layout)
+	fmt.Println(string(origJSON))
 	log.Debug(fmt.Sprintf("regions %d components in %d", len(layout.Grid.Regions), len(layout.Components)))
 	return world, layout, nil
 }

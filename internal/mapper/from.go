@@ -19,7 +19,7 @@ func LayoutComponentFromDomain(c entities.DesignComponent) database.LayoutCompon
 	}
 }
 
-func LayoutRegionFromDomain(c entities.Region) database.LayoutRegion {
+func LayoutRegionFromDomain(c entities.Cell) database.LayoutRegion {
 	return database.LayoutRegion{}
 }
 

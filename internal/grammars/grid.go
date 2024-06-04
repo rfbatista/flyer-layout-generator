@@ -32,7 +32,7 @@ func ResizeToFitInRegion(
 	if len(regions) == 0 {
 		return world, prancheta
 	}
-	var region entities.Region
+	var region entities.Cell
 	var size int32
 	for _, r := range regions {
 		if r.Overlap > size {
@@ -81,7 +81,7 @@ func RepositonButKeepProportions(
 		return world, prancheta
 	}
 	// region, _ := g.WhereToSnap(*ent)
-	var regions []entities.Region
+	var regions []entities.Cell
 	for _, region := range world.Config.Grid.Regions {
 		if region.Xi > ent.Xii || region.Xii < ent.Xi {
 			continue
@@ -118,7 +118,7 @@ func RepositonButKeepProportions(
 			yii = e.Yii
 		}
 	}
-	ent.CenterInRegion(*entities.NewRegion(xi, yi, xii, yii))
+	ent.CenterInRegion(*entities.NewCell(xi, yi, xii, yii))
 	for idx := range prancheta.Components {
 		if prancheta.Components[idx].ID == id {
 			prancheta.Components[idx] = *ent

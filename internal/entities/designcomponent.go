@@ -8,28 +8,88 @@ type Position struct {
 	X, Y int32
 }
 
-type DesignComponent struct {
-	ID       int32           `json:"id"`
+type DesignComponentDTO struct {
+	ID       int32           `json:"id,omitempty"`
 	DesignID int32           `json:"design_id,omitempty"`
 	Elements []DesignElement `json:"elements,omitempty"`
-	Width    int32           `json:"width"`
-	Height   int32           `json:"height"`
+	Width    int32           `json:"width,omitempty"`
+	Height   int32           `json:"height,omitempty"`
 	Color    string          `json:"color,omitempty"`
 	Type     string          `json:"type,omitempty"`
-	Xi       int32           `json:"xi"`
-	Xii      int32           `json:"xii"`
-	Yi       int32           `json:"yi"`
-	Yii      int32           `json:"yii"`
-	BboxXi   int32           `json:"bbox_xi"`
-	BboxXii  int32           `json:"bbox_xii"`
-	BboxYi   int32           `json:"bbox_yi"`
-	BboxYii  int32           `json:"bbox_yii"`
-	Xsnaped  bool
-	Ysnaped  bool
-	LeftGap  Position
-	RightGap Position
-	UpGap    Position
-	DownGap  Position
+	Xi       int32           `json:"xi,omitempty"`
+	Xii      int32           `json:"xii,omitempty"`
+	Yi       int32           `json:"yi,omitempty"`
+	Yii      int32           `json:"yii,omitempty"`
+	BboxXi   int32           `json:"bbox_xi,omitempty"`
+	BboxXii  int32           `json:"bbox_xii,omitempty"`
+	BboxYi   int32           `json:"bbox_yi,omitempty"`
+	BboxYii  int32           `json:"bbox_yii,omitempty"`
+	Xsnaped  bool            `json:"xsnaped,omitempty"`
+	Ysnaped  bool            `json:"ysnaped,omitempty"`
+	LeftGap  Position        `json:"left_gap,omitempty"`
+	RightGap Position        `json:"right_gap,omitempty"`
+}
+
+type DesignComponent struct {
+	ID             int32           `json:"id,omitempty"`
+	DesignID       int32           `json:"design_id,omitempty"`
+	Elements       []DesignElement `json:"elements,omitempty"`
+	Width          int32           `json:"width,omitempty"`
+	Height         int32           `json:"height,omitempty"`
+	Color          string          `json:"color,omitempty"`
+	Type           string          `json:"type,omitempty"`
+	Xi             int32           `json:"xi,omitempty"`
+	Xii            int32           `json:"xii,omitempty"`
+	Yi             int32           `json:"yi,omitempty"`
+	Yii            int32           `json:"yii,omitempty"`
+	BboxXi         int32           `json:"bbox_xi,omitempty"`
+	BboxXii        int32           `json:"bbox_xii,omitempty"`
+	BboxYi         int32           `json:"bbox_yi,omitempty"`
+	BboxYii        int32           `json:"bbox_yii,omitempty"`
+	Xsnaped        bool            `json:"xsnaped,omitempty"`
+	Ysnaped        bool            `json:"ysnaped,omitempty"`
+	LeftGap        Position        `json:"left_gap,omitempty"`
+	RightGap       Position        `json:"right_gap,omitempty"`
+	UpGap          Position        `json:"up_gap,omitempty"`
+	DownGap        Position        `json:"down_gap,omitempty"`
+	innerContainer Container
+	outerContainer Container
+}
+
+func (d *DesignComponent) MoveTo(p Point) {
+	displacement := d.innerContainer.DisplacementFrom(p)
+	d.innerContainer.Move(displacement)
+	d.outerContainer.Move(displacement)
+}
+
+func (d *DesignComponent) Center() Point {
+	return Point{}
+}
+
+func (d *DesignComponent) UpLeft() Point {
+	return d.innerContainer.UpperLeft
+}
+
+func (d *DesignComponent) DownRight() Point {
+	return d.innerContainer.DownRight
+}
+
+func (d *DesignComponent) OrderPriority() int32 {
+	switch d.Type {
+	case "produto":
+		return 1
+	case "logo":
+		return 2
+	case "oferta":
+		return 4
+	case "modelo":
+		return 5
+	case "texto":
+		return 6
+	case "icone":
+		return 7
+	}
+	return 6
 }
 
 func (d *DesignComponent) BboxWidth() int32 {
@@ -44,7 +104,7 @@ func (d *DesignComponent) IsBackground() bool {
 	return d.Type == "background"
 }
 
-func (d *DesignComponent) CenterInRegion(r Region) {
+func (d *DesignComponent) CenterInRegion(r Cell) {
 	xi := r.Xi
 	yi := r.Yi
 	if r.Width() > d.Width {
@@ -61,7 +121,9 @@ func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
 	d.ScaleTo(scaleFactor, scaleFactor)
 }
 
-func calculateScaleFactor(elementWidth, elementHeight, containerWidth, containerHeight float64) float64 {
+func calculateScaleFactor(
+	elementWidth, elementHeight, containerWidth, containerHeight float64,
+) float64 {
 	widthScaleFactor := containerWidth / elementWidth
 	heightScaleFactor := containerHeight / elementHeight
 

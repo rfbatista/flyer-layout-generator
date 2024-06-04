@@ -1,5 +1,6 @@
 package entities
 
+// Prancheta
 type Layout struct {
 	ID         int32             `json:"id,omitempty"`
 	Background *DesignComponent  `json:"background,omitempty"`
