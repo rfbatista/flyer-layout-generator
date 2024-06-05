@@ -102,7 +102,12 @@ func GenerateDesignUseCasev3(
 		Background: bg,
 		Components: components,
 	}
-	nprancheta, err := grammars.RunV1(prancheta, mapper.TemplateToDomain(template.Template), req.Config.SlotsX, req.Config.SlotsY)
+	nprancheta, err := grammars.RunV1(
+		prancheta,
+		mapper.TemplateToDomain(template.Template),
+		req.Config.SlotsX,
+		req.Config.SlotsY,
+	)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err

@@ -16,10 +16,10 @@ type DesignComponentDTO struct {
 	Height   int32              `json:"height,omitempty"`
 	Color    string             `json:"color,omitempty"`
 	Type     string             `json:"type,omitempty"`
-	Xi       int32              `json:"xi,omitempty"`
-	Xii      int32              `json:"xii,omitempty"`
-	Yi       int32              `json:"yi,omitempty"`
-	Yii      int32              `json:"yii,omitempty"`
+	Xi       int32              `json:"xi"`
+	Xii      int32              `json:"xii"`
+	Yi       int32              `json:"yi"`
+	Yii      int32              `json:"yii"`
 	BboxXi   int32              `json:"bbox_xi,omitempty"`
 	BboxXii  int32              `json:"bbox_xii,omitempty"`
 	BboxYi   int32              `json:"bbox_yi,omitempty"`
@@ -69,10 +69,9 @@ func (d *DesignComponent) MoveTo(p Point) {
 	displacement := d.InnerContainer.DisplacementFrom(p)
 	d.InnerContainer.Move(displacement)
 	d.OuterContainer.Move(displacement)
-	d.Xi = d.InnerContainer.UpperLeft.X
-	d.Xii = d.InnerContainer.DownRight.X
-	d.Yi = d.InnerContainer.UpperLeft.Y
-	d.Yii = d.InnerContainer.DownRight.Y
+	for idx := range d.Elements {
+		d.Elements[idx].Move(displacement)
+	}
 }
 
 func (d *DesignComponent) Center() Point {
@@ -135,21 +134,22 @@ func (d *DesignComponent) CenterInRegion(r GridCell) {
 func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
 	scaleFactor := calculateScaleFactor(
 		float64(d.InnerContainer.Width()),
-		float64(d.InnerContainer.Width()),
+		float64(d.InnerContainer.Height()),
 		float64(w),
 		float64(h),
 	)
-	for i := range d.Elements {
-		d.Elements[i].Scale(scaleFactor)
-		d.Elements[i].MoveTo(
-			NewPoint(
-				d.Elements[i].UpLeft().X*int32(scaleFactor),
-				d.Elements[i].UpLeft().Y*int32(scaleFactor),
-			),
-		)
-	}
 	d.OuterContainer.Scale(scaleFactor)
 	d.InnerContainer.Scale(scaleFactor)
+	upl := d.InnerContainer.UpperLeft
+	for i := range d.Elements {
+		c := d.Elements[i].UpLeft()
+		p := NewPoint(
+			int32(float64(c.X-upl.X)*scaleFactor+float64(upl.X)),
+			int32(float64(c.Y-upl.Y)*scaleFactor+float64(upl.Y)),
+		)
+		d.Elements[i].MoveTo(p)
+		d.Elements[i].Scale(scaleFactor)
+	}
 }
 
 func calculateScaleFactor(

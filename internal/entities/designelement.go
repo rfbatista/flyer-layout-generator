@@ -64,6 +64,10 @@ func (d *DesignElement) DownRight() Point {
 	return d.InnerContainer.DownRight
 }
 
+func (d *DesignElement) Center() Point {
+	return d.InnerContainer.Center()
+}
+
 func (d *DesignElement) Scale(s float64) {
 	d.InnerContainer.Scale(s)
 	d.OuterContainer.Scale(s)
@@ -72,6 +76,11 @@ func (d *DesignElement) Scale(s float64) {
 func (d *DesignElement) MoveTo(p Point) {
 	d.InnerContainer.MoveTo(p)
 	d.OuterContainer.MoveTo(p)
+}
+
+func (d *DesignElement) Move(p Point) {
+	d.InnerContainer.Move(p)
+	d.OuterContainer.Move(p)
 }
 
 func (d *DesignComponent) Widthf() float64 {
@@ -98,7 +107,9 @@ func resizeDesignElement(element DesignElement, width int32, height int32) Desig
 	nelement.FWidth = width
 	nelement.FHeight = height
 	nelement.Xi = int32(math.Round(float64(element.Xi) * float64(width) / float64(element.FWidth)))
-	nelement.Yi = int32(math.Round(float64(element.Yi) * float64(height) / float64(element.FHeight)))
+	nelement.Yi = int32(
+		math.Round(float64(element.Yi) * float64(height) / float64(element.FHeight)),
+	)
 	nelement.Xii = nelement.Xi + nelement.FWidth
 	nelement.Yii = nelement.Yi + nelement.FHeight
 	return nelement

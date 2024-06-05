@@ -30,14 +30,29 @@ func RunV1(
 		cell.Ocupy(c.ID)
 		stage1components = append(stage1components, c)
 	}
+	sort.Slice(stage1components, func(i, j int) bool {
+		return stage1components[i].OrderPriority() < stage1components[j].OrderPriority()
+	})
 	var stage2components []entities.DesignComponent
+	// stage2grid, err := entities.NewGrid(
+	// 	entities.WithDefault(original.Width, original.Height),
+	// 	entities.WithCells(gridX, gridY),
+	// )
+	if err != nil {
+		return out, err
+	}
 	for _, c := range stage1components {
 		cell := grid.WhereIsId(c.ID)
 		if cell == nil {
 			continue
 		}
-		c.ScaleToFitInSize(cell.Width(), cell.Height())
-		c.MoveTo(c.UpLeft())
+		positions, err := grid.FindPositionsToFitBasedOnPivot(cell.Position(), c.InnerContainer)
+		if err != nil {
+			continue
+		}
+		cont := grid.PositionsToContainer(positions)
+		c.MoveTo(cont.UpperLeft)
+		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		stage2components = append(stage2components, c)
 	}
 	out.Components = stage2components

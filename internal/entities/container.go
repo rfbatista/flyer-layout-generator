@@ -9,6 +9,7 @@ type Container struct {
 	DownRight Point
 }
 
+// Move the container to a new point position, using up left as origin
 func (c *Container) MoveTo(p Point) {
 	newDownRightPosition := NewPoint(p.X+c.Width(), p.Y+c.Height())
 	c.UpperLeft.Move(c.UpperLeft.DisplacementFrom(p))
