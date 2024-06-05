@@ -37,7 +37,7 @@ func ListLayout(
 		grid := entities.Grid{}
 		for _, t := range regions {
 			region := mapper.LayoutRegionToDomain(t)
-			grid.Regions = append(grid.Regions, region)
+			grid.Cells = append(grid.Cells, region)
 		}
 		lay.Grid = grid
 		e = append(e, lay)

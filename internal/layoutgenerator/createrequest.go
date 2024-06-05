@@ -66,6 +66,8 @@ func CreateLayoutRequestUseCase(
 				Grid:                  grid,
 				Padding:               req.Padding,
 				KeepProportions:       req.KeepProportions,
+				SlotsX:                grid.SlotsX,
+				SlotsY:                grid.SlotsY,
 			})
 			if unmarshErr != nil {
 				return nil, unmarshErr

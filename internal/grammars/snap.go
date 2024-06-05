@@ -25,7 +25,7 @@ func SnapComponent(
 				ent.Xsnaped = true
 			}
 			if c.Xii > world.TwistedDesign.Width-10 {
-				ent.SetPosition(c.Xii-ent.Width, ent.Yi)
+				ent.SetPosition(c.Xii-ent.FWidth, ent.Yi)
 				ent.Xsnaped = true
 			}
 			if c.Yi < 10 {
@@ -33,7 +33,7 @@ func SnapComponent(
 				ent.Ysnaped = true
 			}
 			if c.Yii > world.TwistedDesign.Height-10 {
-				ent.SetPosition(ent.Xi, c.Yii-ent.Height)
+				ent.SetPosition(ent.Xi, c.Yii-ent.FHeight)
 				ent.Ysnaped = true
 			}
 		}

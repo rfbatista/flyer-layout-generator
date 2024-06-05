@@ -3,6 +3,7 @@ package grammars
 import (
 	"algvisual/internal/entities"
 	"encoding/json"
+
 	"go.uber.org/zap"
 )
 
@@ -33,8 +34,8 @@ func calculateScaleToFit(
 }
 
 func scaleComponent(c entities.DesignComponent, wprorp, hprorp float64) entities.DesignComponent {
-	c.Width = int32(float64(c.Width) * wprorp)
-	c.Height = int32(float64(c.Height) * hprorp)
+	c.FWidth = int32(float64(c.FWidth) * wprorp)
+	c.FHeight = int32(float64(c.FHeight) * hprorp)
 	c.Xi = int32(float64(c.Xi) * wprorp)
 	c.Yi = int32(float64(c.Yi) * hprorp)
 	c.Xii = int32(float64(c.Xii) * wprorp)

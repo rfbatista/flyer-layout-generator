@@ -10,8 +10,8 @@ import (
 func LayoutComponentFromDomain(c entities.DesignComponent) database.LayoutComponent {
 	return database.LayoutComponent{
 		DesignID: c.DesignID,
-		Width:    pgtype.Int4{Int32: c.Width, Valid: true},
-		Height:   pgtype.Int4{Int32: c.Height, Valid: true},
+		Width:    pgtype.Int4{Int32: c.FWidth, Valid: true},
+		Height:   pgtype.Int4{Int32: c.FHeight, Valid: true},
 		Xi:       pgtype.Int4{Int32: c.Xi, Valid: true},
 		Xii:      pgtype.Int4{Int32: c.Xii, Valid: true},
 		Yi:       pgtype.Int4{Int32: c.Yi, Valid: true},
@@ -19,7 +19,7 @@ func LayoutComponentFromDomain(c entities.DesignComponent) database.LayoutCompon
 	}
 }
 
-func LayoutRegionFromDomain(c entities.Cell) database.LayoutRegion {
+func LayoutRegionFromDomain(c entities.GridCell) database.LayoutRegion {
 	return database.LayoutRegion{}
 }
 

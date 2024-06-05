@@ -24,7 +24,7 @@ func SnapGridComponent(
 		ent.SetPosition(regionToSnap.Xi, regionToSnap.Yi)
 		grid.RemoveRegion(regionToSnap)
 	} else {
-		ent.SetPosition(regionToSnap.Xii-ent.Width, regionToSnap.Yi)
+		ent.SetPosition(regionToSnap.Xii-ent.FWidth, regionToSnap.Yi)
 		grid.RemoveRegion(regionToSnap)
 	}
 	for idx := range prancheta.Components {

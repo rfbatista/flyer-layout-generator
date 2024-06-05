@@ -95,6 +95,7 @@ CREATE TABLE design_components
     bbox_xii        INT,
     bbox_yi         INT,
     bbox_yii        INT,
+    priority        INT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

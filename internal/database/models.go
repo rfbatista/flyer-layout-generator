@@ -133,6 +133,7 @@ type DesignComponent struct {
 	BboxXii   pgtype.Int4       `json:"bbox_xii"`
 	BboxYi    pgtype.Int4       `json:"bbox_yi"`
 	BboxYii   pgtype.Int4       `json:"bbox_yii"`
+	Priority  pgtype.Int4       `json:"priority"`
 	CreatedAt pgtype.Timestamp  `json:"created_at"`
 }
 

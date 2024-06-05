@@ -105,7 +105,7 @@ func (c ImageGeneratorClient) GenerateImageWithDistortionStrategy(
 			zap.Int("StatusCode", res.StatusCode),
 			zap.Error(err),
 		)
-		err = fmt.Errorf("falha ao requisitar processamento do arquivo photoshop %s", buf.String())
+		err = fmt.Errorf("falha ao requisitar geracao da imagem %s", buf.String())
 		c.log.Error(err.Error())
 		return nil, err
 	}

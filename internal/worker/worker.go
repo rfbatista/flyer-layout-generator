@@ -71,13 +71,19 @@ func worker(
 ) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			err, ok := r.(error)
+			if ok {
+				log.Error("panic error in worker", zap.Error(err))
+			} else {
+				log.Error("unknown panic error in worker")
+			}
 		}
 	}()
 	err := sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
 	if err != nil {
 		log.Error("falha ao enviar evento sse", zap.Error(err))
 	}
+	log.Info("starting request job")
 	err = layoutgenerator.StartRequestJobUseCase(
 		client,
 		queries,

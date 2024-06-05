@@ -9,33 +9,33 @@ type Position struct {
 }
 
 type DesignComponentDTO struct {
-	ID       int32           `json:"id,omitempty"`
-	DesignID int32           `json:"design_id,omitempty"`
-	Elements []DesignElement `json:"elements,omitempty"`
-	Width    int32           `json:"width,omitempty"`
-	Height   int32           `json:"height,omitempty"`
-	Color    string          `json:"color,omitempty"`
-	Type     string          `json:"type,omitempty"`
-	Xi       int32           `json:"xi,omitempty"`
-	Xii      int32           `json:"xii,omitempty"`
-	Yi       int32           `json:"yi,omitempty"`
-	Yii      int32           `json:"yii,omitempty"`
-	BboxXi   int32           `json:"bbox_xi,omitempty"`
-	BboxXii  int32           `json:"bbox_xii,omitempty"`
-	BboxYi   int32           `json:"bbox_yi,omitempty"`
-	BboxYii  int32           `json:"bbox_yii,omitempty"`
-	Xsnaped  bool            `json:"xsnaped,omitempty"`
-	Ysnaped  bool            `json:"ysnaped,omitempty"`
-	LeftGap  Position        `json:"left_gap,omitempty"`
-	RightGap Position        `json:"right_gap,omitempty"`
+	ID       int32              `json:"id,omitempty"`
+	DesignID int32              `json:"design_id,omitempty"`
+	Elements []DesignElementDTO `json:"elements,omitempty"`
+	Width    int32              `json:"width,omitempty"`
+	Height   int32              `json:"height,omitempty"`
+	Color    string             `json:"color,omitempty"`
+	Type     string             `json:"type,omitempty"`
+	Xi       int32              `json:"xi,omitempty"`
+	Xii      int32              `json:"xii,omitempty"`
+	Yi       int32              `json:"yi,omitempty"`
+	Yii      int32              `json:"yii,omitempty"`
+	BboxXi   int32              `json:"bbox_xi,omitempty"`
+	BboxXii  int32              `json:"bbox_xii,omitempty"`
+	BboxYi   int32              `json:"bbox_yi,omitempty"`
+	BboxYii  int32              `json:"bbox_yii,omitempty"`
+	Xsnaped  bool               `json:"xsnaped,omitempty"`
+	Ysnaped  bool               `json:"ysnaped,omitempty"`
+	LeftGap  Position           `json:"left_gap,omitempty"`
+	RightGap Position           `json:"right_gap,omitempty"`
 }
 
 type DesignComponent struct {
 	ID             int32           `json:"id,omitempty"`
 	DesignID       int32           `json:"design_id,omitempty"`
 	Elements       []DesignElement `json:"elements,omitempty"`
-	Width          int32           `json:"width,omitempty"`
-	Height         int32           `json:"height,omitempty"`
+	FWidth         int32           `json:"width,omitempty"`
+	FHeight        int32           `json:"height,omitempty"`
 	Color          string          `json:"color,omitempty"`
 	Type           string          `json:"type,omitempty"`
 	Xi             int32           `json:"xi,omitempty"`
@@ -52,29 +52,45 @@ type DesignComponent struct {
 	RightGap       Position        `json:"right_gap,omitempty"`
 	UpGap          Position        `json:"up_gap,omitempty"`
 	DownGap        Position        `json:"down_gap,omitempty"`
-	innerContainer Container
-	outerContainer Container
+	InnerContainer Container
+	OuterContainer Container
+	Priority       int32
+}
+
+func (d *DesignComponent) Width() int32 {
+	return d.InnerContainer.Width()
+}
+
+func (d *DesignComponent) Height() int32 {
+	return d.InnerContainer.Height()
 }
 
 func (d *DesignComponent) MoveTo(p Point) {
-	displacement := d.innerContainer.DisplacementFrom(p)
-	d.innerContainer.Move(displacement)
-	d.outerContainer.Move(displacement)
+	displacement := d.InnerContainer.DisplacementFrom(p)
+	d.InnerContainer.Move(displacement)
+	d.OuterContainer.Move(displacement)
+	d.Xi = d.InnerContainer.UpperLeft.X
+	d.Xii = d.InnerContainer.DownRight.X
+	d.Yi = d.InnerContainer.UpperLeft.Y
+	d.Yii = d.InnerContainer.DownRight.Y
 }
 
 func (d *DesignComponent) Center() Point {
-	return Point{}
+	return d.InnerContainer.Center()
 }
 
 func (d *DesignComponent) UpLeft() Point {
-	return d.innerContainer.UpperLeft
+	return d.InnerContainer.UpperLeft
 }
 
 func (d *DesignComponent) DownRight() Point {
-	return d.innerContainer.DownRight
+	return d.InnerContainer.DownRight
 }
 
 func (d *DesignComponent) OrderPriority() int32 {
+	if d.Priority != 0 {
+		return d.Priority
+	}
 	switch d.Type {
 	case "produto":
 		return 1
@@ -104,21 +120,36 @@ func (d *DesignComponent) IsBackground() bool {
 	return d.Type == "background"
 }
 
-func (d *DesignComponent) CenterInRegion(r Cell) {
+func (d *DesignComponent) CenterInRegion(r GridCell) {
 	xi := r.Xi
 	yi := r.Yi
-	if r.Width() > d.Width {
-		xi = r.Xi + ((r.Width() - d.Width) / 2)
+	if r.Width() > d.Width() {
+		xi = r.Xi + ((r.Width() - d.FWidth) / 2)
 	}
-	if r.Height() > d.Height {
-		yi = r.Yi + ((r.Height() - d.Height) / 2)
+	if r.Height() > d.FHeight {
+		yi = r.Yi + ((r.Height() - d.FHeight) / 2)
 	}
 	d.SetPosition(xi, yi)
 }
 
 func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
-	scaleFactor := calculateScaleFactor(float64(d.Width), float64(d.Height), float64(w), float64(h))
-	d.ScaleTo(scaleFactor, scaleFactor)
+	scaleFactor := calculateScaleFactor(
+		float64(d.InnerContainer.Width()),
+		float64(d.InnerContainer.Width()),
+		float64(w),
+		float64(h),
+	)
+	for i := range d.Elements {
+		d.Elements[i].Scale(scaleFactor)
+		d.Elements[i].MoveTo(
+			NewPoint(
+				d.Elements[i].UpLeft().X*int32(scaleFactor),
+				d.Elements[i].UpLeft().Y*int32(scaleFactor),
+			),
+		)
+	}
+	d.OuterContainer.Scale(scaleFactor)
+	d.InnerContainer.Scale(scaleFactor)
 }
 
 func calculateScaleFactor(
@@ -134,19 +165,19 @@ func calculateScaleFactor(
 }
 
 func (d *DesignComponent) ScaleTo(wscale, hscale float64) {
-	d.Height = int32(float64(d.Height) * hscale)
-	d.Width = int32(float64(d.Width) * wscale)
+	d.FHeight = int32(float64(d.FHeight) * hscale)
+	d.FWidth = int32(float64(d.FWidth) * wscale)
 	d.Xi = int32(float64(d.Xi) * wscale)
 	d.Yi = int32(float64(d.Yi) * hscale)
-	d.Xii = d.Xi + d.Width
-	d.Yii = d.Yi + d.Height
+	d.Xii = d.Xi + d.FWidth
+	d.Yii = d.Yi + d.FHeight
 	d.ScaleElements(wscale, hscale)
 	d.ScaleElementsPositions(wscale, hscale)
 }
 
 func (d *DesignComponent) ScaleWithoutMoving(wscale, hscale float64) {
-	d.Height = int32(float64(d.Height) * hscale)
-	d.Width = int32(float64(d.Width) * wscale)
+	d.FHeight = int32(float64(d.FHeight) * hscale)
+	d.FWidth = int32(float64(d.FWidth) * wscale)
 	nxi := int32(float64(d.Xi) * wscale)
 	nyi := int32(float64(d.Yi) * hscale)
 	// movimentacao realizada
@@ -154,23 +185,23 @@ func (d *DesignComponent) ScaleWithoutMoving(wscale, hscale float64) {
 	myi := nyi - d.Yi
 	d.Xi = nxi
 	d.Yi = nyi
-	d.Xii = d.Xi + d.Width
-	d.Yii = d.Yi + d.Height
+	d.Xii = d.Xi + d.FWidth
+	d.Yii = d.Yi + d.FHeight
 	d.ScaleElements(wscale, hscale)
 	for i := range d.Elements {
 		el := &d.Elements[i]
 		el.Xi = mxi + el.Xi
 		el.Yi = myi + el.Yi
-		el.Xii = el.Xi + el.Width
-		el.Yii = el.Yi + el.Height
+		el.Xii = el.Xi + el.FWidth
+		el.Yii = el.Yi + el.FHeight
 	}
 }
 
 func (d *DesignComponent) ScaleElements(wscale, hscale float64) {
 	for i := range d.Elements {
 		el := &d.Elements[i]
-		el.Width = int32(float64(el.Width) * wscale)
-		el.Height = int32(float64(el.Height) * hscale)
+		el.FWidth = int32(float64(el.FWidth) * wscale)
+		el.FHeight = int32(float64(el.FHeight) * hscale)
 	}
 }
 
@@ -179,8 +210,8 @@ func (d *DesignComponent) SetPosition(xi, yi int32) {
 	ydif := yi - d.Yi
 	d.Xi = xi
 	d.Yi = yi
-	d.Xii = xi + d.Width
-	d.Yii = yi + d.Height
+	d.Xii = xi + d.FWidth
+	d.Yii = yi + d.FHeight
 	for i := range d.Elements {
 		el := &d.Elements[i]
 		el.Xi += xdif

@@ -31,3 +31,16 @@ func (c *Container) Width() int32 {
 func (c *Container) Height() int32 {
 	return c.UpperLeft.DisplacementFrom(c.DownRight).Y
 }
+
+func (c *Container) Scale(s float64) {
+	c.DownRight = NewPoint(
+		int32(float64(c.Width())*s)+c.UpperLeft.X,
+		int32(float64(c.Height())*s)+c.UpperLeft.Y,
+	)
+}
+
+func (c *Container) Center() Point {
+	x := (float64(c.Width()) / 2) + float64(c.UpperLeft.X)
+	y := (float64(c.Height()) / 2) + float64(c.UpperLeft.Y)
+	return NewPoint(int32(x), int32(y))
+}

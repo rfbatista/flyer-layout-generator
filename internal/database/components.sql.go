@@ -43,7 +43,7 @@ INSERT INTO design_components (
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 )
-RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at
+RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at
 `
 
 type CreateComponentParams struct {
@@ -94,13 +94,14 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		&i.BboxXii,
 		&i.BboxYi,
 		&i.BboxYii,
+		&i.Priority,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getComponentByID = `-- name: GetComponentByID :one
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
 where pc.id = $1 LIMIT 1
 `
 
@@ -122,13 +123,14 @@ func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignCompone
 		&i.BboxXii,
 		&i.BboxYi,
 		&i.BboxYii,
+		&i.Priority,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getComponentsByDesignID = `-- name: GetComponentsByDesignID :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
 where pc.design_id = $1
 `
 
@@ -156,6 +158,7 @@ func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) (
 			&i.BboxXii,
 			&i.BboxYi,
 			&i.BboxYii,
+			&i.Priority,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -169,7 +172,7 @@ func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) (
 }
 
 const haveElementsIn = `-- name: HaveElementsIn :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
 inner join design_element as pe on pe.component_id = pc.id 
 where pc.id = $1
 `
@@ -198,6 +201,7 @@ func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignCompone
 			&i.BboxXii,
 			&i.BboxYi,
 			&i.BboxYii,
+			&i.Priority,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

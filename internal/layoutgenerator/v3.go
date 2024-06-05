@@ -9,32 +9,30 @@ import (
 	"algvisual/internal/shared"
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
-type GenerateDesignRequestv2 struct {
+type GenerateDesignRequestv3 struct {
 	PhotoshopID int32                        `form:"photoshop_id" json:"photoshop_id,omitempty"`
-	TemplateID  int32                        `form:"template_id" json:"template_id,omitempty"`
-	Config      entities.LayoutRequestConfig `json:"config,omitempty"`
+	TemplateID  int32                        `form:"template_id"  json:"template_id,omitempty"`
+	Config      entities.LayoutRequestConfig `                    json:"config,omitempty"`
 }
 
-type GenerateDesignResultv2 struct {
-	Data       *GenerateImageResult `json:"data,omitempty"`
+type GenerateDesignResultv3 struct {
+	Data       *GenerateImageResultV2 `json:"data,omitempty"`
 	TwistedURL string
 }
 
-func GenerateDesignUseCasev2(
+func GenerateDesignUseCasev3(
 	ctx context.Context,
-	req GenerateDesignRequestv2,
+	req GenerateDesignRequestv3,
 	queries *database.Queries,
 	db *pgxpool.Pool,
 	config infra.AppConfig,
 	log *zap.Logger,
-) (*GenerateDesignResultv2, error) {
+) (*GenerateDesignResultv3, error) {
 	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
@@ -96,27 +94,22 @@ func GenerateDesignUseCasev2(
 			"",
 		)
 	}
-	s := rand.NewSource(time.Now().Unix())
-	r := rand.New(s) // initialize local pseudorandom generator
-	world := grammars.World{
-		OriginalDesign: mapper.TodesignEntitie(designFile),
-		Components:     components,
-		Elements:       eelements,
-		PivotWidth:     components[r.Intn(len(components))].FWidth,
-		PivotHeight:    components[r.Intn(len(components))].FHeight,
-		Config:         req.Config,
-	}
 	prancheta := entities.Layout{
 		DesignID:   req.PhotoshopID,
-		Width:      etemplate.Width,
-		Height:     etemplate.Height,
+		Width:      designFile.Width.Int32,
+		Height:     designFile.Height.Int32,
 		Template:   etemplate,
 		Background: bg,
+		Components: components,
 	}
-	world, nprancheta, _ := grammars.Run(world, prancheta, log)
-	res, err := GenerateImageFromPrancheta(GenerateImageRequest{
+	nprancheta, err := grammars.RunV1(prancheta, mapper.TemplateToDomain(template.Template), req.Config.SlotsX, req.Config.SlotsY)
+	if err != nil {
+		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
+		return nil, err
+	}
+	res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
 		DesignFile: designFile.FileUrl.String,
-		Prancheta:  nprancheta,
+		Prancheta:  mapper.LayoutToDto(nprancheta),
 	}, log, config)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
@@ -127,7 +120,7 @@ func GenerateDesignUseCasev2(
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
-	return &GenerateDesignResultv2{
+	return &GenerateDesignResultv3{
 		Data: res,
 	}, nil
 }

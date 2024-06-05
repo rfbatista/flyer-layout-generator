@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-import "algvisual/web/views"
+import "algvisual/internal/web/views"
 
 func CreateTemplatePage() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {

@@ -81,8 +81,8 @@ func ProcessDesignFileUseCase(
 			GroupID:        pgtype.Int4{Int32: int32(i.GroupId), Valid: true},
 			Level:          pgtype.Int4{Int32: int32(i.Level), Valid: true},
 			ImageUrl:       pgtype.Text{String: i.ImageURL, Valid: true},
-			Width:          pgtype.Int4{Int32: int32(i.Width), Valid: true},
-			Height:         pgtype.Int4{Int32: int32(i.Height), Valid: true},
+			Width:          pgtype.Int4{Int32: int32(i.FWidth), Valid: true},
+			Height:         pgtype.Int4{Int32: int32(i.FHeight), Valid: true},
 			ImageExtension: pgtype.Text{String: i.ImageExtension, Valid: true},
 		})
 		if err != nil {

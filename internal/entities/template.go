@@ -72,7 +72,7 @@ func (t *Template) Grids() []Grid {
 			}
 			grid, _ := NewGrid(
 				WithDefault(t.Width, t.Height),
-				WithPivot(int32(slotWidth), int32(slotHeight)),
+				WithCells(int32(x), int32(y)),
 			)
 			if grid != nil {
 				g = append(

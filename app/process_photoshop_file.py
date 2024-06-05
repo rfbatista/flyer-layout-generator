@@ -62,21 +62,20 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                 text = ""
                 if layer.kind == "type":
                     text = layer.text
-
                 items.append(
                     DesignElement(
                         id=None,
                         photoshop_id=None,
                         xi=layer.left,
-                        image_extension="png",
                         yi=layer.top,
                         xii=layer.right,
+                        yii=layer.bottom,
+                        image_extension="png",
                         width=layer.width,
                         height=layer.height,
                         kind=layer.kind,
                         name=layer.name,
                         text=text,
-                        yii=layer.bottom,
                         is_group=layer.is_group(),
                         group_id=group_id,
                         layer_id=str(layer.layer_id),

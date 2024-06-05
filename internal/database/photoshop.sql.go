@@ -143,7 +143,7 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 }
 
 const getdesignBackgroundComponent = `-- name: GetdesignBackgroundComponent :one
-SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at FROM design_components
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at FROM design_components
 WHERE design_id = $1 AND type = 'background' LIMIT 1
 `
 
@@ -165,13 +165,14 @@ func (q *Queries) GetdesignBackgroundComponent(ctx context.Context, designID int
 		&i.BboxXii,
 		&i.BboxYi,
 		&i.BboxYii,
+		&i.Priority,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getdesignComponentByID = `-- name: GetdesignComponentByID :one
-SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at FROM design_components
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at FROM design_components
 WHERE design_id = $1 LIMIT 1
 `
 
@@ -193,6 +194,7 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (D
 		&i.BboxXii,
 		&i.BboxYi,
 		&i.BboxYii,
+		&i.Priority,
 		&i.CreatedAt,
 	)
 	return i, err

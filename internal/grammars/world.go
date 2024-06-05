@@ -46,7 +46,7 @@ func Run(
 		layout.Grid = world.Config.Grid
 		for idx := range layout.Components {
 			ent := &layout.Components[idx]
-			if len(world.Config.Grid.Regions) == 0 {
+			if len(world.Config.Grid.Cells) == 0 {
 				continue
 			}
 			if world.Config.KeepProportions {
@@ -61,7 +61,7 @@ func Run(
 	}
 	origJSON, _ := json.Marshal(layout)
 	fmt.Println(string(origJSON))
-	log.Debug(fmt.Sprintf("regions %d components in %d", len(layout.Grid.Regions), len(layout.Components)))
+	log.Debug(fmt.Sprintf("regions %d components in %d", len(layout.Grid.Cells), len(layout.Components)))
 	return world, layout, nil
 }
 
