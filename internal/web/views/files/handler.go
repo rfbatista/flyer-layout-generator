@@ -109,7 +109,7 @@ func NewProcessDesignFile(
 		out, err := designprocessor.ProcessDesignFileUseCasev2(
 			c.Request().Context(),
 			req,
-			proc.ProcessFile,
+			proc,
 			log,
 			db,
 			pool,

@@ -39,11 +39,15 @@ INSERT INTO design_components (
   bbox_xi,
   bbox_yi,
   bbox_xii,
-  bbox_yii
+  bbox_yii,
+  inner_xi,
+  inner_xii,
+  inner_yi,
+  inner_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
 )
-RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at
+RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at
 `
 
 type CreateComponentParams struct {
@@ -60,6 +64,10 @@ type CreateComponentParams struct {
 	BboxYi   pgtype.Int4       `json:"bbox_yi"`
 	BboxXii  pgtype.Int4       `json:"bbox_xii"`
 	BboxYii  pgtype.Int4       `json:"bbox_yii"`
+	InnerXi  pgtype.Int4       `json:"inner_xi"`
+	InnerXii pgtype.Int4       `json:"inner_xii"`
+	InnerYi  pgtype.Int4       `json:"inner_yi"`
+	InnerYii pgtype.Int4       `json:"inner_yii"`
 }
 
 func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (DesignComponent, error) {
@@ -77,6 +85,10 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		arg.BboxYi,
 		arg.BboxXii,
 		arg.BboxYii,
+		arg.InnerXi,
+		arg.InnerXii,
+		arg.InnerYi,
+		arg.InnerYii,
 	)
 	var i DesignComponent
 	err := row.Scan(
@@ -95,13 +107,17 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		&i.BboxYi,
 		&i.BboxYii,
 		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getComponentByID = `-- name: GetComponentByID :one
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
 where pc.id = $1 LIMIT 1
 `
 
@@ -124,13 +140,17 @@ func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignCompone
 		&i.BboxYi,
 		&i.BboxYii,
 		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getComponentsByDesignID = `-- name: GetComponentsByDesignID :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
 where pc.design_id = $1
 `
 
@@ -159,6 +179,10 @@ func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) (
 			&i.BboxYi,
 			&i.BboxYii,
 			&i.Priority,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -172,7 +196,7 @@ func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) (
 }
 
 const haveElementsIn = `-- name: HaveElementsIn :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.created_at from design_components pc
+select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
 inner join design_element as pe on pe.component_id = pc.id 
 where pc.id = $1
 `
@@ -202,6 +226,10 @@ func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignCompone
 			&i.BboxYi,
 			&i.BboxYii,
 			&i.Priority,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -220,7 +248,7 @@ SET
     component_id = NULL
 WHERE
     id = ANY ($1) and design_id = $2
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type RemoveComponentFromElementsParams struct {
@@ -247,6 +275,10 @@ func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveCom
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,
@@ -279,7 +311,7 @@ SET
         THEN $4 ELSE name END
 WHERE
     id = ANY ($5) and design_id = $6
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type UpdateManydesignElementParams struct {
@@ -318,6 +350,10 @@ func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydes
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,

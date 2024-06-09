@@ -1,5 +1,7 @@
 package entities
 
+import "fmt"
+
 func NewPoint(x, y int32) Point {
 	return Point{X: x, Y: y}
 }
@@ -19,4 +21,8 @@ func (p *Point) DisplacementFrom(d Point) Point {
 func (p *Point) Move(d Point) {
 	p.X += d.X
 	p.Y += d.Y
+}
+
+func (p *Point) Print() {
+	fmt.Printf("\nPoint x: %d, y: %d", p.X, p.Y)
 }

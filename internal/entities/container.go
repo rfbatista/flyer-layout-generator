@@ -1,12 +1,20 @@
 package entities
 
+import "fmt"
+
 func NewContainer(ul Point, dr Point) Container {
-	return Container{UpperLeft: ul, DownRight: dr}
+	return Container{UpperLeft: ul, DownRight: dr, width: dr.X - ul.X, heigth: dr.Y - ul.Y}
 }
 
 type Container struct {
+	width     int32
+	heigth    int32
 	UpperLeft Point
 	DownRight Point
+}
+
+func (c *Container) Print() {
+	fmt.Printf("Container Width: %d Height: %d", c.Width(), c.Height())
 }
 
 // Move the container to a new point position, using up left as origin
@@ -38,6 +46,8 @@ func (c *Container) Scale(s float64) {
 		int32(float64(c.Width())*s)+c.UpperLeft.X,
 		int32(float64(c.Height())*s)+c.UpperLeft.Y,
 	)
+	c.width = c.Width()
+	c.heigth = c.Height()
 }
 
 func (c *Container) Center() Point {

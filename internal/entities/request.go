@@ -96,10 +96,10 @@ func (l *LayoutRequestJob) IsRunning() bool {
 
 func (l *LayoutRequestJob) DurationText() string {
 	if l.ErrorAt != nil {
-		return time.Time{}.Add(l.ErrorAt.Sub(*l.StartedAt)).Format("04m05s")
+		return time.Time{}.Add(l.ErrorAt.Sub(*l.StartedAt)).Format("5.000s")
 	}
 	if l.FinishedAt != nil {
-		return time.Time{}.Add(l.FinishedAt.Sub(*l.StartedAt)).Format("04m05s")
+		return time.Time{}.Add(l.FinishedAt.Sub(*l.StartedAt)).Format("5.000s")
 	}
 	return ""
 }

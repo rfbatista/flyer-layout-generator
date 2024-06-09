@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"algvisual/internal/database"
+	"algvisual/internal/infra"
 	"algvisual/internal/ports"
 	"algvisual/internal/shared"
 )
@@ -21,7 +22,7 @@ type ProcessDesignFileResultv2 struct{}
 func ProcessDesignFileUseCasev2(
 	ctx context.Context,
 	req ProcessDesignFileRequestv2,
-	processorFile ports.PhotoshopProcessorServiceProcessFile,
+	processorFile *infra.PhotoshopProcessor,
 	log *zap.Logger,
 	queries *database.Queries,
 	db *pgxpool.Pool,
@@ -37,7 +38,7 @@ func ProcessDesignFileUseCasev2(
 		log.Error("falha buscar arquivo design", zap.Error(err))
 		return nil, err
 	}
-	res, err := processorFile(
+	res, err := processorFile.ProcessFile(
 		ports.ProcessFileInput{Filepath: design.FileUrl.String, ID: design.ID},
 	)
 	if err != nil {
@@ -76,6 +77,10 @@ func ProcessDesignFileUseCasev2(
 			Yi:             pgtype.Int4{Int32: int32(i.Yi), Valid: true},
 			Xii:            pgtype.Int4{Int32: int32(i.Xii), Valid: true},
 			Yii:            pgtype.Int4{Int32: int32(i.Yii), Valid: true},
+			InnerXi:        pgtype.Int4{Int32: int32(i.InnerXi), Valid: true},
+			InnerXii:       pgtype.Int4{Int32: int32(i.InnerXii), Valid: true},
+			InnerYi:        pgtype.Int4{Int32: int32(i.InnerYi), Valid: true},
+			InnerYii:       pgtype.Int4{Int32: int32(i.InnerYii), Valid: true},
 			Kind:           pgtype.Text{String: i.Kind, Valid: true},
 			IsGroup:        pgtype.Bool{Bool: i.IsGroup, Valid: true},
 			GroupID:        pgtype.Int4{Int32: int32(i.GroupId), Valid: true},

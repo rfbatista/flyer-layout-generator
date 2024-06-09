@@ -91,8 +91,8 @@ func LayoutRegionToDomain(raw database.LayoutRegion) entities.GridCell {
 func LayoutComponentToDomain(raw database.LayoutComponent) entities.DesignComponent {
 	return entities.DesignComponent{
 		ID:      int32(raw.ID),
-		FWidth:   raw.Width.Int32,
-		FHeight:  raw.Height.Int32,
+		FWidth:  raw.Width.Int32,
+		FHeight: raw.Height.Int32,
 		Xi:      raw.Xi.Int32,
 		Xii:     raw.Xii.Int32,
 		Yi:      raw.Yi.Int32,
@@ -130,8 +130,8 @@ func TodesignEntitie(raw database.Design) entities.DesignFile {
 func TodesignComponentEntitie(raw database.DesignComponent) entities.DesignComponent {
 	return entities.DesignComponent{
 		ID:      raw.ID,
-		FWidth:   raw.Width.Int32,
-		FHeight:  raw.Height.Int32,
+		FWidth:  raw.Width.Int32,
+		FHeight: raw.Height.Int32,
 		Xi:      raw.Xi.Int32,
 		Xii:     raw.Xii.Int32,
 		Yi:      raw.Yi.Int32,
@@ -147,8 +147,8 @@ func TodesignComponentEntitie(raw database.DesignComponent) entities.DesignCompo
 			entities.NewPoint(raw.Xii.Int32, raw.Yii.Int32),
 		),
 		InnerContainer: entities.NewContainer(
-			entities.NewPoint(raw.Xi.Int32, raw.Yi.Int32),
-			entities.NewPoint(raw.Xii.Int32, raw.Yii.Int32),
+			entities.NewPoint(raw.InnerXi.Int32, raw.InnerYi.Int32),
+			entities.NewPoint(raw.InnerXii.Int32, raw.InnerYii.Int32),
 		),
 		Priority: raw.Priority.Int32,
 	}
@@ -161,9 +161,13 @@ func ToDesignElementEntitie(raw database.DesignElement) entities.DesignElement {
 		Xii:         raw.Xii.Int32,
 		Yi:          raw.Yi.Int32,
 		Yii:         raw.Yii.Int32,
+		InnerXi:     raw.InnerXi.Int32,
+		InnerXii:    raw.InnerXii.Int32,
+		InnerYi:     raw.InnerYi.Int32,
+		InnerYii:    raw.InnerYii.Int32,
 		LayerID:     raw.LayerID.String,
-		FWidth:       raw.Width.Int32,
-		FHeight:      raw.Height.Int32,
+		FWidth:      raw.Width.Int32,
+		FHeight:     raw.Height.Int32,
 		Kind:        raw.Kind.String,
 		Name:        raw.Name.String,
 		IsGroup:     raw.IsGroup.Bool,
@@ -178,8 +182,8 @@ func ToDesignElementEntitie(raw database.DesignElement) entities.DesignElement {
 			entities.NewPoint(raw.Xii.Int32, raw.Yii.Int32),
 		),
 		InnerContainer: entities.NewContainer(
-			entities.NewPoint(raw.Xi.Int32, raw.Yi.Int32),
-			entities.NewPoint(raw.Xii.Int32, raw.Yii.Int32),
+			entities.NewPoint(raw.InnerXi.Int32, raw.InnerYi.Int32),
+			entities.NewPoint(raw.InnerXii.Int32, raw.InnerYii.Int32),
 		),
 	}
 }

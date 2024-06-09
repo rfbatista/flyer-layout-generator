@@ -45,4 +45,19 @@ func TestDesignComponent(t *testing.T) {
 			tt.Errorf("expected 2 received %f", scale2)
 		}
 	})
+
+	t.Run("should scale component correctly", func(tt *testing.T) {
+		d := DesignComponent{
+			InnerContainer: NewContainer(NewPoint(5, 5), NewPoint(15, 15)),
+			OuterContainer: NewContainer(NewPoint(0, 0), NewPoint(20, 20)),
+		}
+		d.ScaleToFitInSize(20, 30)
+		if d.InnerContainer.Width() != 20 {
+			tt.Errorf("expected width = 20, received x = %d", d.InnerContainer.Width())
+		}
+		if d.InnerContainer.Height() != 20 {
+			tt.Errorf("expected height = 20, received x = %d", d.InnerContainer.Height())
+		}
+	})
+
 }

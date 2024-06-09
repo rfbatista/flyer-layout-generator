@@ -107,6 +107,7 @@ func GenerateDesignUseCasev3(
 		mapper.TemplateToDomain(template.Template),
 		req.Config.SlotsX,
 		req.Config.SlotsY,
+		log,
 	)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")

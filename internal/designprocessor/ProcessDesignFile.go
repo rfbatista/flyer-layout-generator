@@ -1,15 +1,14 @@
 package designprocessor
 
 import (
+	"algvisual/internal/database"
+	"algvisual/internal/ports"
+	"algvisual/internal/shared"
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/ports"
-	"algvisual/internal/shared"
 )
 
 type ProcessDesignFileRequest struct {
@@ -76,6 +75,10 @@ func ProcessDesignFileUseCase(
 			Yi:             pgtype.Int4{Int32: int32(i.Yi), Valid: true},
 			Xii:            pgtype.Int4{Int32: int32(i.Xii), Valid: true},
 			Yii:            pgtype.Int4{Int32: int32(i.Yii), Valid: true},
+			InnerXi:        pgtype.Int4{Int32: int32(i.InnerXi), Valid: true},
+			InnerXii:       pgtype.Int4{Int32: int32(i.InnerXii), Valid: true},
+			InnerYi:        pgtype.Int4{Int32: int32(i.InnerYi), Valid: true},
+			InnerYii:       pgtype.Int4{Int32: int32(i.InnerYii), Valid: true},
 			Kind:           pgtype.Text{String: i.Kind, Valid: true},
 			IsGroup:        pgtype.Bool{Bool: i.IsGroup, Valid: true},
 			GroupID:        pgtype.Int4{Int32: int32(i.GroupId), Valid: true},

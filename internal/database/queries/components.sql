@@ -47,9 +47,13 @@ INSERT INTO design_components (
   bbox_xi,
   bbox_yi,
   bbox_xii,
-  bbox_yii
+  bbox_yii,
+  inner_xi,
+  inner_xii,
+  inner_yi,
+  inner_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
 )
 RETURNING *;
 

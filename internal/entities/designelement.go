@@ -5,11 +5,15 @@ import (
 )
 
 type DesignElementDTO struct {
-	ID             int32  `json:"id,omitempty"`
+	ID             int32  `json:"id"`
 	Xi             int32  `json:"xi"`
 	Xii            int32  `json:"xii"`
 	Yi             int32  `json:"yi"`
 	Yii            int32  `json:"yii"`
+	InnerXi        int32  `json:"inner_xi"`
+	InnerXii       int32  `json:"inner_xii"`
+	InnerYi        int32  `json:"inner_yi"`
+	InnerYii       int32  `json:"inner_yii"`
 	LayerID        string `json:"layer_id"`
 	Width          int32  `json:"width"`
 	Height         int32  `json:"height"`
@@ -19,9 +23,9 @@ type DesignElementDTO struct {
 	GroupId        int32  `json:"group_id"`
 	Level          int32  `json:"level"`
 	DesignID       int32  `json:"photoshop_id"`
-	ImageURL       string `json:"image,omitempty"`
-	Text           string `json:"text,omitempty"`
-	ImageExtension string `json:"image_extension,omitempty"`
+	ImageURL       string `json:"image"`
+	Text           string `json:"text"`
+	ImageExtension string `json:"image_extension"`
 	ComponentID    int32  `json:"component_id"`
 }
 
@@ -31,6 +35,10 @@ type DesignElement struct {
 	Xii            int32  `json:"xii"`
 	Yi             int32  `json:"yi"`
 	Yii            int32  `json:"yii"`
+	InnerXi        int32  `json:"inner_xi,omitempty"`
+	InnerXii       int32  `json:"inner_xii,omitempty"`
+	InnerYi        int32  `json:"inner_yi,omitempty"`
+	InnerYii       int32  `json:"inner_yii,omitempty"`
 	LayerID        string `json:"layer_id"`
 	FWidth         int32  `json:"width"`
 	FHeight        int32  `json:"height"`
@@ -74,8 +82,9 @@ func (d *DesignElement) Scale(s float64) {
 }
 
 func (d *DesignElement) MoveTo(p Point) {
-	d.InnerContainer.MoveTo(p)
-	d.OuterContainer.MoveTo(p)
+	distance := d.InnerContainer.DisplacementFrom(p)
+	d.InnerContainer.Move(distance)
+	d.OuterContainer.Move(distance)
 }
 
 func (d *DesignElement) Move(p Point) {

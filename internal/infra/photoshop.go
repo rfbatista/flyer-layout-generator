@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/ports"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,9 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
-
-	"algvisual/internal/ports"
 )
 
 func NewPhotoshpProcessor(l *zap.Logger, c *AppConfig) (*PhotoshopProcessor, error) {
@@ -67,8 +67,14 @@ func (p PhotoshopProcessor) ProcessFile(
 		p.log.Error(err.Error())
 		return nil, err
 	}
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("Failed to read response body: %s\n", err)
+		return nil, err
+	}
 	var result ports.ProcessFileResult
-	err = json.NewDecoder(res.Body).Decode(&result)
+	log.Info(fmt.Sprintf("response: %s", string(body)))
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		p.log.Warn("error ao desempacotar resultados do arquivo processado", zap.Error(err))
 		return nil, err

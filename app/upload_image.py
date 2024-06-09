@@ -7,7 +7,7 @@ endpoint_url = "http://localhost:8000/api/v1/images"
 # endpoint_url = "http://app-dev:8000/api/v1/images"
 
 
-def upload_image(img: Image, name: str):
+def upload_image(img: Image, name: str)->str:
     image_data = None
     with io.BytesIO() as output:
         img.save(output, format="PNG", quality=95)

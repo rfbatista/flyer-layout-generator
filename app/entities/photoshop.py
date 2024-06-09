@@ -42,6 +42,10 @@ class DesignElement(BaseModel):
     xii: int
     yi: int
     yii: int
+    inner_xi: int
+    inner_xii: int
+    inner_yi: int
+    inner_yii: int
     layer_id: str
     width: int
     height: int

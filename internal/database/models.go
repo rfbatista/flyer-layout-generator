@@ -134,6 +134,10 @@ type DesignComponent struct {
 	BboxYi    pgtype.Int4       `json:"bbox_yi"`
 	BboxYii   pgtype.Int4       `json:"bbox_yii"`
 	Priority  pgtype.Int4       `json:"priority"`
+	InnerXi   pgtype.Int4       `json:"inner_xi"`
+	InnerXii  pgtype.Int4       `json:"inner_xii"`
+	InnerYi   pgtype.Int4       `json:"inner_yi"`
+	InnerYii  pgtype.Int4       `json:"inner_yii"`
 	CreatedAt pgtype.Timestamp  `json:"created_at"`
 }
 
@@ -147,6 +151,10 @@ type DesignElement struct {
 	Xii            pgtype.Int4      `json:"xii"`
 	Yi             pgtype.Int4      `json:"yi"`
 	Yii            pgtype.Int4      `json:"yii"`
+	InnerXi        pgtype.Int4      `json:"inner_xi"`
+	InnerXii       pgtype.Int4      `json:"inner_xii"`
+	InnerYi        pgtype.Int4      `json:"inner_yi"`
+	InnerYii       pgtype.Int4      `json:"inner_yii"`
 	Width          pgtype.Int4      `json:"width"`
 	Height         pgtype.Int4      `json:"height"`
 	IsGroup        pgtype.Bool      `json:"is_group"`

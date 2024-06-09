@@ -41,6 +41,15 @@ func (r *GridCell) IsOcupied() bool {
 	return r.isOcupied
 }
 
+func (r *GridCell) IsOnlyOcupiedBy(id int32) bool {
+	for _, i := range r.whoIsIn {
+		if i != id {
+			return false
+		}
+	}
+	return true
+}
+
 func (r *GridCell) Ocupy(id int32) {
 	r.isOcupied = true
 	r.whoIsIn = append(r.whoIsIn, id)

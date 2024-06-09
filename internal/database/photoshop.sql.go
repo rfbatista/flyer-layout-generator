@@ -29,6 +29,10 @@ INSERT INTO design_element (
   kind,
   component_id,
   image_url,
+  inner_xi ,
+  inner_xii,
+  inner_yi ,
+  inner_yii,
   image_extension
 ) VALUES (
   $1,
@@ -47,9 +51,13 @@ INSERT INTO design_element (
   $14,
   $15,
   $16,
-  $17
+  $17,
+  $18,
+  $19,
+  $20,
+  $21
 )
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
 `
 
 type CreateElementParams struct {
@@ -69,6 +77,10 @@ type CreateElementParams struct {
 	Kind           pgtype.Text `json:"kind"`
 	ComponentID    pgtype.Int4 `json:"component_id"`
 	ImageUrl       pgtype.Text `json:"image_url"`
+	InnerXi        pgtype.Int4 `json:"inner_xi"`
+	InnerXii       pgtype.Int4 `json:"inner_xii"`
+	InnerYi        pgtype.Int4 `json:"inner_yi"`
+	InnerYii       pgtype.Int4 `json:"inner_yii"`
 	ImageExtension pgtype.Text `json:"image_extension"`
 }
 
@@ -90,6 +102,10 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (D
 		arg.Kind,
 		arg.ComponentID,
 		arg.ImageUrl,
+		arg.InnerXi,
+		arg.InnerXii,
+		arg.InnerYi,
+		arg.InnerYii,
 		arg.ImageExtension,
 	)
 	var i DesignElement
@@ -103,6 +119,10 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (D
 		&i.Xii,
 		&i.Yi,
 		&i.Yii,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.Width,
 		&i.Height,
 		&i.IsGroup,
@@ -143,7 +163,7 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 }
 
 const getdesignBackgroundComponent = `-- name: GetdesignBackgroundComponent :one
-SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at FROM design_components
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at FROM design_components
 WHERE design_id = $1 AND type = 'background' LIMIT 1
 `
 
@@ -166,13 +186,17 @@ func (q *Queries) GetdesignBackgroundComponent(ctx context.Context, designID int
 		&i.BboxYi,
 		&i.BboxYii,
 		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getdesignComponentByID = `-- name: GetdesignComponentByID :one
-SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, created_at FROM design_components
+SELECT id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at FROM design_components
 WHERE design_id = $1 LIMIT 1
 `
 
@@ -195,6 +219,10 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (D
 		&i.BboxYi,
 		&i.BboxYii,
 		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -243,7 +271,7 @@ func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Desig
 }
 
 const listdesignElements = `-- name: ListdesignElements :many
-SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
 WHERE design_id = $1
 LIMIT $2 OFFSET $3
 `
@@ -273,6 +301,10 @@ func (q *Queries) ListdesignElements(ctx context.Context, arg ListdesignElements
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,

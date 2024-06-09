@@ -32,6 +32,10 @@ INSERT INTO design_element (
   kind,
   component_id,
   image_url,
+  inner_xi ,
+  inner_xii,
+  inner_yi ,
+  inner_yii,
   image_extension
 ) VALUES (
   $1,
@@ -50,7 +54,11 @@ INSERT INTO design_element (
   $14,
   $15,
   $16,
-  $17
+  $17,
+  $18,
+  $19,
+  $20,
+  $21
 )
 RETURNING *;
 

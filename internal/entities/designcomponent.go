@@ -8,12 +8,28 @@ type Position struct {
 	X, Y int32
 }
 
+func (p *Position) MoveUp() {
+	p.Y -= 1
+}
+
+func (p *Position) MoveDown() {
+	p.Y += 1
+}
+
+func (p *Position) MoveLeft() {
+	p.X -= 1
+}
+
+func (p *Position) MoveRight() {
+	p.X += 1
+}
+
 type DesignComponentDTO struct {
 	ID       int32              `json:"id,omitempty"`
 	DesignID int32              `json:"design_id,omitempty"`
 	Elements []DesignElementDTO `json:"elements,omitempty"`
-	Width    int32              `json:"width,omitempty"`
-	Height   int32              `json:"height,omitempty"`
+	Width    int32              `json:"width"`
+	Height   int32              `json:"height"`
 	Color    string             `json:"color,omitempty"`
 	Type     string             `json:"type,omitempty"`
 	Xi       int32              `json:"xi"`
@@ -55,6 +71,8 @@ type DesignComponent struct {
 	InnerContainer Container
 	OuterContainer Container
 	Priority       int32
+	Positions      []Point
+	Pivot          Point
 }
 
 func (d *DesignComponent) Width() int32 {
@@ -91,13 +109,13 @@ func (d *DesignComponent) OrderPriority() int32 {
 		return d.Priority
 	}
 	switch d.Type {
-	case "produto":
+	case "logotipo_marca":
 		return 1
-	case "logo":
+	case "logotipo_produto":
 		return 2
-	case "oferta":
+	case "texto_cta":
 		return 4
-	case "modelo":
+	case "oferta":
 		return 5
 	case "texto":
 		return 6
@@ -131,6 +149,18 @@ func (d *DesignComponent) CenterInRegion(r GridCell) {
 	d.SetPosition(xi, yi)
 }
 
+func (d *DesignComponent) CenterInContainer(r Container) {
+	xi := r.UpperLeft.X
+	yi := r.UpperLeft.Y
+	if r.Width() > d.Width() {
+		xi = xi + ((r.Width() - d.Width()) / 2)
+	}
+	if r.Height() > d.FHeight {
+		yi = yi + ((r.Height() - d.Height()) / 2)
+	}
+	d.MoveTo(NewPoint(xi, yi))
+}
+
 func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
 	scaleFactor := calculateScaleFactor(
 		float64(d.InnerContainer.Width()),
@@ -138,18 +168,40 @@ func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
 		float64(w),
 		float64(h),
 	)
-	d.OuterContainer.Scale(scaleFactor)
+	origin := d.InnerContainer.UpperLeft
 	d.InnerContainer.Scale(scaleFactor)
-	upl := d.InnerContainer.UpperLeft
+	c := d.OuterContainer.UpperLeft
+	xdToOrigin := float64(c.X - origin.X)
+	p := NewPoint(
+		int32(xdToOrigin*float64(scaleFactor)),
+		int32(float64(c.Y-origin.Y)*float64(scaleFactor)),
+	)
+	d.OuterContainer.MoveTo(p)
+	d.OuterContainer.Scale(scaleFactor)
 	for i := range d.Elements {
-		c := d.Elements[i].UpLeft()
-		p := NewPoint(
-			int32(float64(c.X-upl.X)*scaleFactor+float64(upl.X)),
-			int32(float64(c.Y-upl.Y)*scaleFactor+float64(upl.Y)),
+		innerTo := newPosition(scaleFactor, origin, d.Elements[i].InnerContainer.UpperLeft)
+		d.Elements[i].InnerContainer.MoveTo(innerTo)
+		outerTo := newPosition(
+			scaleFactor,
+			d.Elements[i].InnerContainer.UpperLeft,
+			d.Elements[i].OuterContainer.UpperLeft,
 		)
-		d.Elements[i].MoveTo(p)
+		d.Elements[i].OuterContainer.MoveTo(outerTo)
 		d.Elements[i].Scale(scaleFactor)
 	}
+	d.FWidth = d.InnerContainer.Width()
+	d.FHeight = d.InnerContainer.Height()
+}
+
+func newPosition(scaleFactor float64, origin Point, destino Point) Point {
+	newDistance := NewPoint(
+		int32(float64(destino.X-origin.X)*float64(scaleFactor)),
+		int32(float64(destino.Y-origin.Y)*float64(scaleFactor)),
+	)
+	return NewPoint(
+		newDistance.X+origin.X,
+		newDistance.Y+origin.Y,
+	)
 }
 
 func calculateScaleFactor(

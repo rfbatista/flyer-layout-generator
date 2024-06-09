@@ -12,7 +12,7 @@ import (
 )
 
 const getDesignElementsByComponentID = `-- name: GetDesignElementsByComponentID :many
-select id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
+select id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
 where component_id = $1
 `
 
@@ -35,6 +35,10 @@ func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentI
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,
@@ -58,7 +62,7 @@ func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentI
 }
 
 const getElements = `-- name: GetElements :many
-SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
 WHERE design_id = $1
 `
 
@@ -81,6 +85,10 @@ func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElem
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,
@@ -104,7 +112,7 @@ func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElem
 }
 
 const getdesignElements = `-- name: GetdesignElements :many
-SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
 WHERE design_id = $1
 `
 
@@ -127,6 +135,10 @@ func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]Desi
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,
@@ -150,7 +162,7 @@ func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]Desi
 }
 
 const getdesignElementsByIDlist = `-- name: GetdesignElementsByIDlist :many
-select id, design_id, name, layer_id, text, xi, xii, yi, yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
+select id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
 where id = any ($1)
 `
 
@@ -173,6 +185,10 @@ func (q *Queries) GetdesignElementsByIDlist(ctx context.Context, ids []int32) ([
 			&i.Xii,
 			&i.Yi,
 			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.Width,
 			&i.Height,
 			&i.IsGroup,
