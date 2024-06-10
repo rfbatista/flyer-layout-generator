@@ -245,6 +245,10 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                     inner_xii = psd.width
                 if box[3] > psd.height:
                     inner_yii = psd.height
+                if box[0] < 0:
+                    inner_xi = 0
+                if box[1] < 0:
+                    inner_yi = 0
 
                 items.append(
                     DesignElement(

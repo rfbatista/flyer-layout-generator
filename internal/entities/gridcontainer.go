@@ -75,6 +75,17 @@ func (g *GridContainer) MoveRight() {
 	g.DownRight.MoveRight()
 }
 
+func (g *GridContainer) HavePosition(p Position) bool {
+	for x := g.UpLeft.X; x <= g.UpRight.X; x++ {
+		for y := g.UpLeft.Y; y <= g.DownLeft.Y; y++ {
+			if p.X == x && p.Y == y {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (g *GridContainer) HavePoint(p Point) bool {
 	for x := g.UpLeft.X; x <= g.UpRight.X; x++ {
 		for y := g.UpLeft.Y; y <= g.DownLeft.Y; y++ {

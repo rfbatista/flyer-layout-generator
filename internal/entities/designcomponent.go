@@ -72,7 +72,7 @@ type DesignComponent struct {
 	OuterContainer Container
 	Priority       int32
 	Positions      []Position
-	Pivot          Point
+	Pivot          Position
 }
 
 func (d *DesignComponent) Width() int32 {
@@ -193,6 +193,38 @@ func (d *DesignComponent) ScaleToFitInSize(w, h int32) {
 	d.FHeight = d.InnerContainer.Height()
 }
 
+func (d *DesignComponent) ScaleToFillInSize(w, h int32) {
+	scaleFactor := calculateGreaterScaleFactor(
+		float64(d.InnerContainer.Width()),
+		float64(d.InnerContainer.Height()),
+		float64(w),
+		float64(h),
+	)
+	origin := d.InnerContainer.UpperLeft
+	d.InnerContainer.Scale(scaleFactor)
+	c := d.OuterContainer.UpperLeft
+	xdToOrigin := float64(c.X - origin.X)
+	p := NewPoint(
+		int32(xdToOrigin*float64(scaleFactor)),
+		int32(float64(c.Y-origin.Y)*float64(scaleFactor)),
+	)
+	d.OuterContainer.MoveTo(p)
+	d.OuterContainer.Scale(scaleFactor)
+	for i := range d.Elements {
+		innerTo := newPosition(scaleFactor, origin, d.Elements[i].InnerContainer.UpperLeft)
+		d.Elements[i].InnerContainer.MoveTo(innerTo)
+		outerTo := newPosition(
+			scaleFactor,
+			d.Elements[i].InnerContainer.UpperLeft,
+			d.Elements[i].OuterContainer.UpperLeft,
+		)
+		d.Elements[i].OuterContainer.MoveTo(outerTo)
+		d.Elements[i].Scale(scaleFactor)
+	}
+	d.FWidth = d.InnerContainer.Width()
+	d.FHeight = d.InnerContainer.Height()
+}
+
 func newPosition(scaleFactor float64, origin Point, destino Point) Point {
 	newDistance := NewPoint(
 		int32(float64(destino.X-origin.X)*float64(scaleFactor)),
@@ -211,6 +243,18 @@ func calculateScaleFactor(
 	heightScaleFactor := containerHeight / elementHeight
 
 	if widthScaleFactor < heightScaleFactor {
+		return widthScaleFactor
+	}
+	return heightScaleFactor
+}
+
+func calculateGreaterScaleFactor(
+	elementWidth, elementHeight, containerWidth, containerHeight float64,
+) float64 {
+	widthScaleFactor := containerWidth / elementWidth
+	heightScaleFactor := containerHeight / elementHeight
+
+	if widthScaleFactor > heightScaleFactor {
 		return widthScaleFactor
 	}
 	return heightScaleFactor

@@ -104,7 +104,7 @@ type GridDTO struct {
 	SlotsY     int32
 }
 
-func (g *Grid) PrintGrid() {
+func (g *Grid) PrintGrid(id int32) {
 	// Determine the grid dimensions
 	fmt.Println()
 	gridWidth := len(g.position)
@@ -136,7 +136,11 @@ func (g *Grid) PrintGrid() {
 		for x := 0; x < gridWidth; x++ {
 			cell := g.position[x][y]
 			if cell.IsOcupied() {
-				fmt.Print(" X |")
+				if cell.IsIdIn(id) {
+					fmt.Print(" 0 |")
+				} else {
+					fmt.Print(" X |")
+				}
 			} else {
 				fmt.Print("   |")
 			}
@@ -346,7 +350,7 @@ func (g *Grid) PointsToContainer(points []Point) Container {
 }
 
 // Find positions that fit the provided container from the provided cell pivot
-func (g *Grid) FindPositionsToFitBasedOnPivot(p Point, c Container) ([]Point, error) {
+func (g *Grid) FindPositionsToFitBasedOnPivot(p Position, c Container) ([]Point, error) {
 	var cc *GridCell
 	var points []Point
 	if len(g.position) <= int(p.X) && p.X < 0 {
@@ -382,9 +386,9 @@ func (g *Grid) FindPositionsToFitBasedOnPivot(p Point, c Container) ([]Point, er
 }
 
 // Find free positions that fit the provided container from the provided cell pivot
-func (g *Grid) FindFreePositionsToFitBasedOnPivot(p Point, c Container) ([]Point, error) {
+func (g *Grid) FindFreePositionsToFitBasedOnPivot(p Position, c Container) ([]Position, error) {
 	var cc *GridCell
-	var points []Point
+	var points []Position
 	if len(g.position) <= int(p.X) && p.X < 0 {
 		return points, errors.New("x point provided is out of boundaries")
 	}
@@ -400,7 +404,7 @@ func (g *Grid) FindFreePositionsToFitBasedOnPivot(p Point, c Container) ([]Point
 		if ccc == nil {
 			return points, errors.New("celula ja ocupada e nenhuma vazio foi identificada")
 		}
-		x, y, found = g.FindSpace(ccc.UpLeft(), c)
+		x, y, found = g.FindSpace(NewPosition(ccc.UpLeft().X, ccc.UpLeft().Y), c)
 		if !found {
 			return points, errors.New("no position was found")
 		}
@@ -409,19 +413,19 @@ func (g *Grid) FindFreePositionsToFitBasedOnPivot(p Point, c Container) ([]Point
 	if cc == nil {
 		return points, errors.New("nenhuma celula definida com a posicicao especificada")
 	}
-	points = append(points, NewPoint(x, y))
+	points = append(points, NewPosition(x, y))
 	c.MoveTo(cc.UpLeft())
 	xcellsToMove := math.Ceil(float64(c.Width())/float64(g.slotWidth)) - 1
 	xPos := cc.Position().X
 	for x := int32(1); x <= int32(xcellsToMove); x++ {
 		xPos += x
-		points = append(points, NewPoint(xPos, cc.positionY))
+		points = append(points, NewPosition(xPos, cc.positionY))
 	}
 	cellsToMove := math.Ceil(float64(c.Height())/float64(g.slotHeight)) - 1
 	yPos := cc.Position().Y
 	for y := int32(1); y <= int32(cellsToMove); y++ {
 		yPos += y
-		points = append(points, NewPoint(cc.positionX, yPos))
+		points = append(points, NewPosition(cc.positionX, yPos))
 	}
 	return points, nil
 }
@@ -441,7 +445,7 @@ func (g *Grid) FindFreeCellByReadingOrder() *GridCell {
 }
 
 // FindSpace searches for a space in the grid to fit the container
-func (g *Grid) FindSpace(point Point, container Container) (int32, int32, bool) {
+func (g *Grid) FindSpace(point Position, container Container) (int32, int32, bool) {
 	pivotX := point.X
 	pivotY := point.Y
 
@@ -618,7 +622,7 @@ func (g *Grid) IsPositionOcupiedByID(p Position, id int32) bool {
 }
 
 // Check if the component have space to grow
-func (g *Grid) CantItGrow(p Point, c Container, id int32) bool {
+func (g *Grid) CantItGrow(p Position, c Container, id int32) bool {
 	var nCont *GridContainer
 	initCont := g.ContainerToGridContainer(c)
 	scale := float64(1.0)
@@ -646,7 +650,7 @@ func (g *Grid) CantItGrow(p Point, c Container, id int32) bool {
 }
 
 // Find how many space a component could grow
-func (g *Grid) FindSpaceToGrow(p Point, c Container, id int32) (*Container, error) {
+func (g *Grid) FindSpaceToGrow(p Position, c Container, id int32) (*Container, error) {
 	var nCont *GridContainer
 	var pos []Point
 	scale := float64(1.0)
@@ -692,11 +696,11 @@ func (g *Grid) FindPositionToFitGridContainerDontCheckColision(
 	goDown := true
 	c.ToOrigin()
 	for x := 0; x <= int(walkInX); x++ {
-		if !g.CheckGridContainerColision(c, id) && c.HavePoint(p) {
+		if !g.CheckGridContainerColision(c, id) && c.HavePosition(p) {
 			return c, true, nil
 		}
 		for y := 0; y <= int(walkInY); y++ {
-			if c.HavePoint(p) {
+			if c.HavePosition(p) {
 				return c, true, nil
 			}
 			if goDown && c.DownRight.Y < g.SlotsY-1 {
@@ -705,7 +709,7 @@ func (g *Grid) FindPositionToFitGridContainerDontCheckColision(
 			if !goDown && c.UpRight.Y > 0 {
 				c.MoveUp()
 			}
-			if c.HavePoint(p) {
+			if c.HavePosition(p) {
 				return c, true, nil
 			}
 		}
@@ -719,7 +723,7 @@ func (g *Grid) FindPositionToFitGridContainerDontCheckColision(
 }
 
 func (g *Grid) FindPositionToFitGridContainer(
-	p Point,
+	p Position,
 	c GridContainer,
 	id int32,
 ) (GridContainer, bool, error) {
@@ -738,11 +742,11 @@ func (g *Grid) FindPositionToFitGridContainer(
 	goDown := true
 	c.ToOrigin()
 	for x := 0; x <= int(walkInX); x++ {
-		if !g.CheckGridContainerColision(c, id) && c.HavePoint(p) {
+		if !g.CheckGridContainerColision(c, id) && c.HavePosition(p) {
 			return c, true, nil
 		}
 		for y := 0; y <= int(walkInY); y++ {
-			if !g.CheckGridContainerColision(c, id) && c.HavePoint(p) {
+			if !g.CheckGridContainerColision(c, id) && c.HavePosition(p) {
 				return c, true, nil
 			}
 			if goDown && c.DownRight.Y < g.SlotsY-1 {
@@ -751,7 +755,7 @@ func (g *Grid) FindPositionToFitGridContainer(
 			if !goDown && c.UpRight.Y > 0 {
 				c.MoveUp()
 			}
-			if !g.CheckGridContainerColision(c, id) && c.HavePoint(p) {
+			if !g.CheckGridContainerColision(c, id) && c.HavePosition(p) {
 				return c, true, nil
 			}
 		}
@@ -764,7 +768,7 @@ func (g *Grid) FindPositionToFitGridContainer(
 	return c, false, errors.New("position not found to fit container")
 }
 
-func (g *Grid) HaveColisionInList(points []Point, id int32) bool {
+func (g *Grid) HaveColisionInList(points []Position, id int32) bool {
 	for _, p := range points {
 		cell := g.position[p.X][p.Y]
 		if cell.IsOcupied() {
@@ -788,8 +792,10 @@ func (g *Grid) ContainerToPositions(c Container) []Position {
 	var points []Position
 	xcellsToMove := int32(math.Ceil(float64(c.Width())/float64(g.slotWidth))) - 1
 	ycellsToMove := int32(math.Ceil(float64(c.Height())/float64(g.slotHeight))) - 1
-	for dx := int32(0); dx <= xcellsToMove; dx++ {
-		for dy := int32(0); dy <= ycellsToMove; dy++ {
+	beginx := int32(math.Ceil(float64(c.UpperLeft.X) / float64(g.slotWidth)))
+	beginy := int32(math.Ceil(float64(c.UpperLeft.Y) / float64(g.slotHeight)))
+	for dx := beginx; dx <= beginx+xcellsToMove; dx++ {
+		for dy := beginy; dy <= beginy+ycellsToMove; dy++ {
 			points = append(points, NewPosition(dx, dy))
 		}
 	}

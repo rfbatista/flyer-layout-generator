@@ -86,7 +86,7 @@ func RemoveElementFromComponent(db *database.Queries) apitools.Handler {
 		}
 		c.Response().
 			Header().
-			Set("HX-Redirect", shared.PageRequestElements.Replace([]string{strconv.Itoa(int(req.DesignID))}))
+			Set("HX-Redirect", shared.PageDefineComponents.Replace([]string{strconv.Itoa(int(req.DesignID))}))
 		return c.NoContent(http.StatusOK)
 	})
 	return h

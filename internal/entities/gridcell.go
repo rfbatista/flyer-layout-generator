@@ -37,8 +37,8 @@ func (r *GridCell) SetPosition(x, y int32) {
 	r.positionY = y
 }
 
-func (r *GridCell) Position() Point {
-	return NewPoint(r.positionX, r.positionY)
+func (r *GridCell) Position() Position {
+	return NewPosition(r.positionX, r.positionY)
 }
 
 func (r *GridCell) IsOcupied() bool {

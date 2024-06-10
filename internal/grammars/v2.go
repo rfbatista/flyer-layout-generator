@@ -2,6 +2,7 @@ package grammars
 
 import (
 	"algvisual/internal/entities"
+	"fmt"
 	"sort"
 
 	"go.uber.org/zap"
@@ -24,31 +25,38 @@ func RunV2(
 		return original.Components[i].OrderPriority() > original.Components[j].OrderPriority()
 	})
 	// Find cells for each component in original design
-	layout1, _, err := Stage1(original, template, *grid)
+	layout1, stage1Grid, err := Stage1(original, template, *grid)
 	if err != nil {
 		return nil, err
 	}
 	// // Position elements in target template grid
-	// layout2, _, err := Stage2(original, *layout1, template, *stage1Grid)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	layout2, stage2Grid, err := Stage2(original, *layout1, template, *stage1Grid)
+	if err != nil {
+		return nil, err
+	}
 
 	// // Move elements that have colision
-	// sort.Slice(layout2.Components, func(i, j int) bool {
-	// 	return layout2.Components[i].OrderPriority() > layout2.Components[j].OrderPriority()
-	// })
-	// layout3, _, err := Stage3(original, layout2, template, stage2Grid)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	sort.Slice(layout2.Components, func(i, j int) bool {
+		return layout2.Components[i].OrderPriority() > layout2.Components[j].OrderPriority()
+	})
+	layout3, stage3Grid, err := Stage3(original, layout2, template, stage2Grid)
+	if err != nil {
+		return nil, err
+	}
 
 	// // expand elements
-	// layout4, _, err := Stage4(original, layout3, template, stage3Grid)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	return layout1, nil
+	layout4, _, err := Stage4(original, layout3, template, stage3Grid)
+	if err != nil {
+		return nil, err
+	}
+
+	if original.Background != nil {
+		original.Background.ScaleToFillInSize(template.Width, template.Height)
+		original.Background.MoveTo(entities.NewPoint(0, 0))
+	}
+
+	layout4.Background = original.Background
+	return layout4, nil
 }
 
 func Stage1(
@@ -66,11 +74,17 @@ func Stage1(
 		c.Pivot = cell.Position()
 		cell.Ocupy(c.ID)
 		c.MoveTo(cell.UpLeft())
-		gridcont, found, err := grid.FindPositionToFitGridContainerDontCheckColision(cell.Position(), c.InnerContainer)
+		gridcont, found, err := grid.FindPositionToFitGridContainerDontCheckColision(
+			cell.Position(),
+			grid.ContainerToGridContainer(c.InnerContainer),
+			c.ID,
+		)
 		if err != nil || !found {
 			continue
 		}
-		positions := grid.ContainerToPositions(gridcont.ToContainer(grid.CellWidth(), grid.CellHeight()))
+		positions := grid.ContainerToPositions(
+			gridcont.ToContainer(grid.CellWidth(), grid.CellHeight()),
+		)
 		grid.OcupyByPositionList(positions, c.ID)
 		c.Positions = positions
 		cont := grid.PositionsToContainer(positions)
@@ -137,11 +151,12 @@ func Stage3(
 			c.InnerContainer,
 		)
 		if err != nil {
+			prevGrid.RemoveFromAllCells(c.ID)
 			continue
 		}
-		cont := prevGrid.PointsToContainer(positions)
+		cont := prevGrid.PositionsToContainer(positions)
 		prevGrid.RemoveFromAllCells(c.ID)
-		prevGrid.OcupyByPointList(positions, c.ID)
+		prevGrid.OcupyByPositionList(positions, c.ID)
 		c.Positions = positions
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
@@ -170,11 +185,13 @@ func Stage4(
 		entities.WithCells(prevGrid.SlotsX, prevGrid.SlotsY),
 	)
 	for _, c := range prevLayout.Components {
-		if !prevGrid.CantItGrow(c.Pivot, c.InnerContainer, c.ID) {
+		fmt.Println(c.ID)
+		prevGrid.PrintGrid(c.ID)
+		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
 			stageComponents = append(stageComponents, c)
 			continue
 		}
-		cont, err := prevGrid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
+		cont, err := prevGrid.FindSpaceToGrow(c.Positions[0], c.InnerContainer, c.ID)
 		if err != nil || cont == nil {
 			continue
 		}
@@ -182,6 +199,7 @@ func Stage4(
 		c.MoveTo(cont.UpperLeft)
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.CenterInContainer(*cont)
+		prevGrid.PrintGrid(c.ID)
 		stageComponents = append(stageComponents, c)
 	}
 	out.Components = stageComponents
