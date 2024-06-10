@@ -7,9 +7,9 @@ RUN pip install poetry
 # Copy Application
 COPY . /home/ec2-user/alg_visual
 
-RUN poetry install --no-interaction --no-cache
+# RUN poetry install --no-interaction --no-cache
 
-RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+# RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 

@@ -7,9 +7,9 @@ RUN pip install poetry
 # Copy Application
 COPY . /app
 
-RUN poetry install --no-interaction --no-cache
+# RUN poetry install --no-interaction --no-cache
 
-RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+# RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
