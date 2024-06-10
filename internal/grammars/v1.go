@@ -55,9 +55,9 @@ func RunV1(
 		if err != nil {
 			continue
 		}
-		grid.OcupyByPositionList(positions, c.ID)
+		grid.OcupyByPointList(positions, c.ID)
 		c.Positions = positions
-		cont := grid.PositionsToContainer(positions)
+		cont := grid.PointsToContainer(positions)
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
 		stage2components = append(stage2components, c)
@@ -73,8 +73,8 @@ func RunV1(
 		if len(c.Positions) == 0 {
 			continue
 		}
-		cont := stage3grid.PositionsToContainer(c.Positions)
-		stage3grid.OcupyByPositionList(c.Positions, c.ID)
+		cont := stage3grid.PointsToContainer(c.Positions)
+		stage3grid.OcupyByPointList(c.Positions, c.ID)
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
 		c.CenterInContainer(cont)
@@ -90,15 +90,15 @@ func RunV1(
 		if c.Type == "oferta" {
 			fmt.Println("here")
 		}
-		// cont, err := stage3grid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
-		// grid.PrintGrid()
-		// if err != nil || cont == nil {
-		// 	stage4components = append(stage4components, c)
-		// 	continue
-		// }
-		// c.MoveTo(cont.UpperLeft)
-		// c.ScaleToFitInSize(cont.Width(), cont.Height())
-		// c.CenterInContainer(*cont)
+		cont, err := stage3grid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
+		grid.PrintGrid()
+		if err != nil || cont == nil {
+			stage4components = append(stage4components, c)
+			continue
+		}
+		c.MoveTo(cont.UpperLeft)
+		c.ScaleToFitInSize(cont.Width(), cont.Height())
+		c.CenterInContainer(*cont)
 		stage4components = append(stage4components, c)
 	}
 	log.Debug("stages finished")

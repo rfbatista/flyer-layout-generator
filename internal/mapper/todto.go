@@ -20,7 +20,13 @@ func LayoutToDto(e entities.Layout) entities.LayoutDTO {
 		Height:     e.Height,
 		Components: cc,
 		Template:   e.Template,
-		Grid:       e.Grid,
+		Grid:       GridToDto(e.Grid),
+	}
+}
+
+func GridToDto(g entities.Grid) entities.GridDTO {
+	return entities.GridDTO{
+		AllCells: g.Cells(),
 	}
 }
 

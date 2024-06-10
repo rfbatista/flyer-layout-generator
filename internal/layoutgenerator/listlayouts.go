@@ -30,15 +30,10 @@ func ListLayout(
 			comp := mapper.LayoutComponentToDomain(c)
 			lay.Components = append(lay.Components, comp)
 		}
-		regions, err := db.GetLayoutRegionByLayoutID(ctx, int32(l.ID))
 		if err != nil {
 			return e, err
 		}
 		grid := entities.Grid{}
-		for _, t := range regions {
-			region := mapper.LayoutRegionToDomain(t)
-			grid.Cells = append(grid.Cells, region)
-		}
 		lay.Grid = grid
 		e = append(e, lay)
 	}

@@ -71,7 +71,7 @@ type DesignComponent struct {
 	InnerContainer Container
 	OuterContainer Container
 	Priority       int32
-	Positions      []Point
+	Positions      []Position
 	Pivot          Point
 }
 

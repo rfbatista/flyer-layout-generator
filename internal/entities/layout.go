@@ -8,7 +8,7 @@ type LayoutDTO struct {
 	Height     int32                `json:"height,omitempty"`
 	Components []DesignComponentDTO `json:"components,omitempty"`
 	Template   Template             `json:"template,omitempty"`
-	Grid       Grid                 `json:"grid,omitempty"`
+	Grid       GridDTO              `json:"grid,omitempty"`
 }
 
 // Prancheta
@@ -21,4 +21,5 @@ type Layout struct {
 	Components []DesignComponent `json:"components,omitempty"`
 	Template   Template          `json:"template,omitempty"`
 	Grid       Grid              `json:"grid,omitempty"`
+	Stages     []Layout
 }

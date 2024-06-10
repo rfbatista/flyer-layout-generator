@@ -28,6 +28,10 @@ type GridCell struct {
 	positionY int32
 }
 
+func (r *GridCell) HowManyIn() int {
+	return len(r.whoIsIn)
+}
+
 func (r *GridCell) SetPosition(x, y int32) {
 	r.positionX = x
 	r.positionY = y
@@ -38,7 +42,17 @@ func (r *GridCell) Position() Point {
 }
 
 func (r *GridCell) IsOcupied() bool {
-	return r.isOcupied
+	return len(r.whoIsIn) > 0
+}
+
+func (r *GridCell) RemoveID(id int32) {
+	var ids []int32
+	for _, i := range r.whoIsIn {
+		if i != id {
+			ids = append(ids, i)
+		}
+	}
+	r.whoIsIn = ids
 }
 
 func (r *GridCell) IsOnlyOcupiedBy(id int32) bool {

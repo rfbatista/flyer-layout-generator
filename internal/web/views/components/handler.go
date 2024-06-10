@@ -60,7 +60,7 @@ func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) ap
 		}
 		c.Response().
 			Header().
-			Set("HX-Redirect", shared.PageRequestElements.Replace([]string{strconv.Itoa(int(req.DesignID))}))
+			Set("HX-Redirect", shared.PageDefineComponents.Replace([]string{strconv.Itoa(int(req.DesignID))}))
 		return c.NoContent(http.StatusOK)
 	})
 	return h

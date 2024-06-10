@@ -10,8 +10,8 @@ func TestNewGrid(t *testing.T) {
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		if len(t1.Cells) != 4 {
-			tt.Errorf("wrong number of regions: %d", len(t1.Cells))
+		if len(t1.Cells()) != 4 {
+			tt.Errorf("wrong number of regions: %d", len(t1.Cells()))
 		}
 	})
 
@@ -20,31 +20,31 @@ func TestNewGrid(t *testing.T) {
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		if len(t1.Cells) != 16 {
-			tt.Errorf("wrong number of regions: %d", len(t1.Cells))
+		if len(t1.Cells()) != 16 {
+			tt.Errorf("wrong number of regions: %d", len(t1.Cells()))
 		}
-		if t1.Cells[0].Width() != 50 {
-			tt.Errorf("wrong width: %d", t1.Cells[0].Width())
+		if t1.Cells()[0].Width() != 50 {
+			tt.Errorf("wrong width: %d", t1.Cells()[0].Width())
 		}
 		t2, err := NewGrid(WithDefault(200, 200), WithCells(1, 1))
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		if len(t2.Cells) != 1 {
-			tt.Errorf("wrong number of regions: %d", len(t1.Cells))
+		if len(t2.Cells()) != 1 {
+			tt.Errorf("wrong number of regions: %d", len(t1.Cells()))
 		}
-		if t2.Cells[0].Width() != 200 {
-			tt.Errorf("wrong width: %d", t2.Cells[0].Width())
+		if t2.Cells()[0].Width() != 200 {
+			tt.Errorf("wrong width: %d", t2.Cells()[0].Width())
 		}
 		t3, err := NewGrid(WithDefault(200, 200), WithCells(2, 2))
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		if len(t3.Cells) != 4 {
-			tt.Errorf("wrong number of regions: %d", len(t1.Cells))
+		if len(t3.Cells()) != 4 {
+			tt.Errorf("wrong number of regions: %d", len(t1.Cells()))
 		}
-		if t3.Cells[0].Width() != 100 {
-			tt.Errorf("wrong width: %d", t3.Cells[0].Width())
+		if t3.Cells()[0].Width() != 100 {
+			tt.Errorf("wrong width: %d", t3.Cells()[0].Width())
 		}
 	})
 
@@ -81,7 +81,7 @@ func TestNewGrid(t *testing.T) {
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		cont := t1.PositionsToContainer([]Point{NewPoint(0, 0), NewPoint(0, 1)})
+		cont := t1.PointsToContainer([]Point{NewPoint(0, 0), NewPoint(0, 1)})
 		if cont.Height() != 100 {
 			tt.Errorf("expected 100 but received %d", cont.Height())
 		}
@@ -147,43 +147,79 @@ func TestNewGrid(t *testing.T) {
 	})
 
 	t.Run("should find a position to fit the grid container", func(tt *testing.T) {
-		t1, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
-		if err != nil {
-			tt.Errorf("error creating grid: %v", err)
-		}
-		gridc := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
-		_, found, err := t1.FindPositionToFitGridContainer(
-			NewPoint(0, 2),
-			gridc,
-		)
-		if err != nil {
-			tt.Errorf("error finding position: %v", err)
-		}
-		if !found {
-			tt.Errorf("expected to fit container")
-		}
+		tt.Run("first case", func(tt *testing.T) {
+			t1, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
+			if err != nil {
+				tt.Errorf("error creating grid: %v", err)
+			}
+			gridc := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
+			_, found, err := t1.FindPositionToFitGridContainer(
+				NewPoint(0, 2),
+				gridc,
+				10,
+			)
+			if err != nil {
+				tt.Errorf("error finding position: %v", err)
+			}
+			if !found {
+				tt.Errorf("expected to fit container")
+			}
+		})
+		tt.Run("second case", func(tt *testing.T) {
+			t2, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
+			if err != nil {
+				tt.Errorf("error creating grid: %v", err)
+			}
+			t2.position[0][0].Ocupy(10)
+			t2.position[0][1].Ocupy(10)
+			t2.position[1][0].Ocupy(10)
+			gridc2 := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
+			gridcresult2, found2, err2 := t2.FindPositionToFitGridContainer(
+				NewPoint(0, 2),
+				gridc2,
+				11,
+			)
+			if err2 != nil {
+				tt.Errorf("error finding position: %s", err2.Error())
+			}
+			if !found2 {
+				tt.Errorf("expected to fit container")
+			}
+			if gridcresult2.UpLeft.Y != 1 && gridcresult2.UpLeft.X != 1 {
+				tt.Errorf("expected to be 1 received %d", gridcresult2.UpLeft.Y)
+			}
+		})
+	})
 
-		t2, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
-		if err != nil {
-			tt.Errorf("error creating grid: %v", err)
-		}
-		t2.position[0][0].Ocupy(10)
-		t2.position[0][1].Ocupy(10)
-		t2.position[1][0].Ocupy(10)
-		gridc2 := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
-		gridcresult2, found2, err2 := t2.FindPositionToFitGridContainer(
-			NewPoint(0, 2),
-			gridc2,
-		)
-		if err2 != nil {
-			tt.Errorf("error finding position: %v", err)
-		}
-		if !found2 {
-			tt.Errorf("expected to fit container")
-		}
-		if gridcresult2.UpLeft.Y != 1 && gridcresult2.UpLeft.X != 1 {
-			tt.Errorf("expected to be 1 received %d", gridcresult2.UpLeft.Y)
-		}
+	t.Run("should check if have a colision", func(ttt *testing.T) {
+		ttt.Run("case 1", func(t *testing.T) {
+			t2, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
+			if err != nil {
+				ttt.Errorf("error creating grid: %v", err)
+			}
+			t2.position[0][0].Ocupy(10)
+			t2.position[0][1].Ocupy(10)
+			t2.position[2][1].Ocupy(10)
+			gridc2 := NewGridContainer(NewPosition(1, 1), NewPosition(2, 2))
+			colision := t2.CheckGridContainerColision(gridc2, 11)
+			if !colision {
+				t.Errorf("should have got a colision")
+			}
+		})
+		ttt.Run("case 1", func(t *testing.T) {
+			t2, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
+			if err != nil {
+				ttt.Errorf("error creating grid: %v", err)
+			}
+			t2.position[0][0].Ocupy(10)
+			t2.position[0][1].Ocupy(10)
+			t2.position[1][0].Ocupy(10)
+			gridc2 := NewGridContainer(NewPosition(1, 1), NewPosition(2, 2))
+			colision := t2.CheckGridContainerColision(gridc2, 11)
+			if colision {
+				t.Errorf("should not have got a colision")
+			}
+		})
 	})
 
 	t.Run("should not find a position to fit the grid container", func(tt *testing.T) {
@@ -199,6 +235,7 @@ func TestNewGrid(t *testing.T) {
 		d, found, err3 := t3.FindPositionToFitGridContainer(
 			NewPoint(0, 2),
 			gridc3,
+			11,
 		)
 		if found {
 			tt.Errorf("expected to not found a position %+v\n", d)

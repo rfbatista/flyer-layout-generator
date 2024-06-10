@@ -241,9 +241,9 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                 inner_xii=box[2]
                 inner_yi=box[1]
                 inner_yii=box[3]
-                if box[2] + layer.left > psd.width:
+                if box[2] > psd.width:
                     inner_xii = psd.width
-                if box[3] + layer.top > psd.height:
+                if box[3] > psd.height:
                     inner_yii = psd.height
 
                 items.append(

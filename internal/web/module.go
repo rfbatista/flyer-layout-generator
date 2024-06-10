@@ -6,11 +6,6 @@ import (
 	"algvisual/internal/web/views/files"
 	"algvisual/internal/web/views/home"
 	"algvisual/internal/web/views/jobs"
-	"algvisual/internal/web/views/request/requestcreateimages"
-	"algvisual/internal/web/views/request/requestdefinecomponents"
-	"algvisual/internal/web/views/request/requestprocessdesign"
-	"algvisual/internal/web/views/request/requesttemplates"
-	"algvisual/internal/web/views/request/requestuploadfile"
 	"algvisual/internal/web/views/templates"
 	"fmt"
 
@@ -45,17 +40,6 @@ func AsController(f any) any {
 var Module = fx.Options(fx.Provide(
 	protected(home.NewPageHome),
 	protected(home.CreateImage),
-	protected(requestuploadfile.NewPageRequestUploadFile),
-	protected(requestuploadfile.NewUploadDesignAPI),
-	protected(requestprocessdesign.NewPageRequestProcessDesign),
-	protected(requestprocessdesign.NewWebProccessDesign),
-	protected(requestdefinecomponents.NewPage),
-	protected(requestdefinecomponents.CreateComponent),
-	protected(requestdefinecomponents.RemoveElementFromComponent),
-	protected(requesttemplates.NewPage),
-	protected(requesttemplates.NewPageTemplatesCreated),
-	protected(requesttemplates.NewUploadCSV),
-	protected(requestcreateimages.NewPage),
 	protected(files.NewPage),
 	protected(files.NewUploadDesignAPI),
 	protected(files.NewProcessDesignFile),

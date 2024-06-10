@@ -52,7 +52,7 @@ func HomePage(props PageProps) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"min-h-screen flex\"><div class=\"flex-1 ...\"><div class=\"my-auto\"><div id=\"layout-result\"></div></div></div><div class=\"flex-2 ...\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"min-h-screen flex\"><div class=\"flex-1 ...\"><div class=\"h-screen flex items-center justify-center p-10\"><div id=\"layout-result\"></div></div></div><div class=\"flex-2 ...\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

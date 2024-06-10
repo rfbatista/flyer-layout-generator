@@ -93,9 +93,20 @@ type Grid struct {
 	SlotsY     int32
 }
 
+type GridDTO struct {
+	AllCells   []GridCell `json:"regions"`
+	position   [][]GridCell
+	width      int32
+	height     int32
+	slotWidth  int32
+	slotHeight int32
+	SlotsX     int32
+	SlotsY     int32
+}
+
 func (g *Grid) PrintGrid() {
 	// Determine the grid dimensions
-	fmt.Println("\n")
+	fmt.Println()
 	gridWidth := len(g.position)
 	if gridWidth == 0 {
 		fmt.Println("Grid is empty")
@@ -137,8 +148,16 @@ func (g *Grid) PrintGrid() {
 		for x := 0; x < gridWidth; x++ {
 			fmt.Print("---+")
 		}
-		fmt.Println("\n")
+		fmt.Println()
 	}
+}
+
+func (g *Grid) CellWidth() int32 {
+	return g.slotWidth
+}
+
+func (g *Grid) CellHeight() int32 {
+	return g.slotHeight
 }
 
 func (g *Grid) Cells() []GridCell {
@@ -254,7 +273,43 @@ func (g *Grid) ContainerToFit(c Container) Container {
 }
 
 // Transform a list of positions in a container
-func (g *Grid) PositionsToContainer(points []Point) Container {
+func (g *Grid) PositionsToContainer(points []Position) Container {
+	var c Container
+	var cells []*GridCell
+	for _, p := range points {
+		if p.X < 0 || p.X >= g.SlotsX || p.Y < 0 || p.Y >= g.SlotsY {
+			continue
+		}
+		cells = append(cells, &g.position[p.X][p.Y])
+	}
+	if len(cells) == 0 {
+		return c
+	}
+	xi := cells[0].UpLeft().X
+	xii := cells[0].DownRigth().X
+	yi := cells[0].UpLeft().Y
+	yii := cells[0].DownRigth().Y
+
+	for _, cell := range cells {
+		if xi > cell.UpLeft().X {
+			xi = cell.UpLeft().X
+		}
+		if xii < cell.DownRigth().X {
+			xii = cell.DownRigth().X
+		}
+		if yi > cell.UpLeft().Y {
+			yi = cell.UpLeft().Y
+		}
+		if yii < cell.DownRigth().Y {
+			yii = cell.DownRigth().Y
+		}
+	}
+	c.UpperLeft = NewPoint(int32(xi), int32(yi))
+	c.DownRight = NewPoint(int32(xii), int32(yii))
+	return c
+}
+
+func (g *Grid) PointsToContainer(points []Point) Container {
 	var c Container
 	var cells []*GridCell
 	for _, p := range points {
@@ -456,8 +511,25 @@ func (g *Grid) OcupyCell(c GridCell, id int32) {
 	}
 }
 
+func (g *Grid) RemoveFromAllCells(id int32) {
+	for _, cell := range g.Cells() {
+		if cell.IsIdIn(id) {
+			g.position[cell.Position().X][cell.Position().Y].RemoveID(id)
+		}
+	}
+}
+
 // Occupy cells by container
-func (g *Grid) OcupyByPositionList(points []Point, id int32) []*GridCell {
+func (g *Grid) OcupyByPointList(points []Point, id int32) []*GridCell {
+	var cells []*GridCell
+	for _, p := range points {
+		cell := g.OcupyByPoint(p, id)
+		cells = append(cells, cell)
+	}
+	return cells
+}
+
+func (g *Grid) OcupyByPositionList(points []Position, id int32) []*GridCell {
 	var cells []*GridCell
 	for _, p := range points {
 		cell := g.OcupyByPosition(p, id)
@@ -467,7 +539,15 @@ func (g *Grid) OcupyByPositionList(points []Point, id int32) []*GridCell {
 }
 
 // Occupy cells by container
-func (g *Grid) OcupyByPosition(p Point, id int32) *GridCell {
+func (g *Grid) OcupyByPoint(p Point, id int32) *GridCell {
+	if len(g.position) > int(p.X) && len(g.position[p.X]) > int(p.Y) {
+		g.position[p.X][p.Y].Ocupy(id)
+		return nil
+	}
+	return nil
+}
+
+func (g *Grid) OcupyByPosition(p Position, id int32) *GridCell {
 	if len(g.position) > int(p.X) && len(g.position[p.X]) > int(p.Y) {
 		g.position[p.X][p.Y].Ocupy(id)
 		return nil
@@ -532,7 +612,40 @@ func (g *Grid) IsPositionOcupied(p Position) bool {
 	return g.position[p.X][p.X].IsOcupied()
 }
 
+// Check if the position is is ocupied by the id
+func (g *Grid) IsPositionOcupiedByID(p Position, id int32) bool {
+	return g.position[p.X][p.Y].IsIdIn(id)
+}
+
 // Check if the component have space to grow
+func (g *Grid) CantItGrow(p Point, c Container, id int32) bool {
+	var nCont *GridContainer
+	initCont := g.ContainerToGridContainer(c)
+	scale := float64(1.0)
+	for {
+		co := NewContainer(c.UpperLeft, c.DownRight)
+		co.Scale(scale)
+		nnCont := g.ContainerToGridContainer(co)
+		cont, found, err := g.FindPositionToFitGridContainer(
+			p,
+			nnCont,
+			id,
+		)
+		if err != nil || !found {
+			if nCont != nil {
+				if initCont.Width() == nCont.Width() && initCont.Height() == nCont.Height() {
+					return false
+				}
+				return true
+			}
+			return false
+		}
+		nCont = &cont
+		scale += float64(0.1)
+	}
+}
+
+// Find how many space a component could grow
 func (g *Grid) FindSpaceToGrow(p Point, c Container, id int32) (*Container, error) {
 	var nCont *GridContainer
 	var pos []Point
@@ -548,7 +661,7 @@ func (g *Grid) FindSpaceToGrow(p Point, c Container, id int32) (*Container, erro
 		)
 		if err != nil || !found {
 			if nCont != nil {
-				g.OcupyByPositionList(pos, id)
+				g.OcupyByPointList(pos, id)
 				c := nCont.ToContainer(g.slotWidth, g.slotHeight)
 				return &c, nil
 			}
@@ -557,6 +670,52 @@ func (g *Grid) FindSpaceToGrow(p Point, c Container, id int32) (*Container, erro
 		nCont = &cont
 		scale += float64(0.1)
 	}
+}
+
+func (g *Grid) FindPositionToFitGridContainerDontCheckColision(
+	p Position,
+	c GridContainer,
+	id int32,
+) (GridContainer, bool, error) {
+	// Boundary checks
+	if p.X < 0 || p.X >= int32(len(g.position)) {
+		return c, false, errors.New("x point provided is out of boundaries")
+	}
+	if p.Y < 0 || p.Y >= int32(len(g.position[0])) {
+		return c, false, errors.New("y point provided is out of boundaries")
+	}
+	walkInX := g.SlotsX - c.Width()
+	walkInY := g.SlotsY - c.Height()
+	if walkInX < 0 || walkInY < 0 {
+		return c, false, errors.New("grid container do not fit in this grid")
+	}
+	goDown := true
+	c.ToOrigin()
+	for x := 0; x <= int(walkInX); x++ {
+		if !g.CheckGridContainerColision(c, id) && c.HavePoint(p) {
+			return c, true, nil
+		}
+		for y := 0; y <= int(walkInY); y++ {
+			if c.HavePoint(p) {
+				return c, true, nil
+			}
+			if goDown && c.DownRight.Y < g.SlotsY-1 {
+				c.MoveDown()
+			}
+			if !goDown && c.UpRight.Y > 0 {
+				c.MoveUp()
+			}
+			if c.HavePoint(p) {
+				return c, true, nil
+			}
+		}
+		if c.UpRight.X == g.SlotsX-1 {
+			continue
+		}
+		c.MoveRight()
+		goDown = !goDown
+	}
+	return c, false, errors.New("position not found to fit container")
 }
 
 func (g *Grid) FindPositionToFitGridContainer(
@@ -571,7 +730,6 @@ func (g *Grid) FindPositionToFitGridContainer(
 	if p.Y < 0 || p.Y >= int32(len(g.position[0])) {
 		return c, false, errors.New("y point provided is out of boundaries")
 	}
-
 	walkInX := g.SlotsX - c.Width()
 	walkInY := g.SlotsY - c.Height()
 	if walkInX < 0 || walkInY < 0 {
@@ -606,9 +764,20 @@ func (g *Grid) FindPositionToFitGridContainer(
 	return c, false, errors.New("position not found to fit container")
 }
 
-func (g *Grid) HaveColisionInList(points []Position) bool {
+func (g *Grid) HaveColisionInList(points []Point, id int32) bool {
 	for _, p := range points {
-		if g.IsPositionOcupied(p) {
+		cell := g.position[p.X][p.Y]
+		if cell.IsOcupied() {
+			if cell.HowManyIn() == 1 {
+				if cell.IsIdIn(id) {
+					continue
+				} else {
+					return true
+				}
+			}
+			if cell.HowManyIn() == 0 {
+				continue
+			}
 			return true
 		}
 	}
@@ -641,8 +810,7 @@ func (g *Grid) CheckGridContainerColision(c GridContainer, id int32) bool {
 			if y < 0 || y > int32(g.SlotsY-1) {
 				return true
 			}
-			cellc := g.position[x][y]
-			if !cellc.IsOnlyOcupiedBy(id) {
+			if !g.position[x][y].IsOnlyOcupiedBy(id) {
 				return true
 			}
 		}
