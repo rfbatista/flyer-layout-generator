@@ -2,7 +2,6 @@ package home
 
 import (
 	"algvisual/internal/database"
-	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"context"
@@ -14,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewPageHome(
+func NewPage(
 	queries *database.Queries,
 	conn *pgxpool.Pool,
 	log *zap.Logger,
@@ -43,38 +42,28 @@ func NewPageHome(
 	return h
 }
 
-func CreateImage(
+func CreateRequest(
 	queries *database.Queries,
 	conn *pgxpool.Pool,
 	log *zap.Logger,
 	db *pgxpool.Pool,
-	config *infra.AppConfig,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath(shared.PageHomeCreateImage.String())
+	h.SetPath(shared.PageHomeCreateRequest.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req layoutgenerator.GenerateImage
+		var req layoutgenerator.CreateLayoutRequestInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.GenerateImageUseCase(
-			c.Request().Context(),
-			req,
-			queries,
-			db,
-			*config,
-			log,
-		)
+		out, err := layoutgenerator.CreateLayoutRequestUseCase(c.Request().Context(), queries, db, req)
 		if err != nil {
 			shared.Error(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
 		shared.Success(c, "sucesso")
-		return shared.RenderComponent(
-			shared.WithComponent(Image(out.Data.ImageURL, 100, 100), c),
-		)
+		return c.JSON(http.StatusOK, out)
 	})
 	return h
 }

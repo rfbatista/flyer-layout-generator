@@ -14,25 +14,33 @@ import (
 	"go.uber.org/zap"
 )
 
-type GenerateDesignRequestv3 struct {
-	PhotoshopID int32                        `form:"photoshop_id" json:"photoshop_id,omitempty"`
-	TemplateID  int32                        `form:"template_id"  json:"template_id,omitempty"`
-	Config      entities.LayoutRequestConfig `                    json:"config,omitempty"`
+type GenerateImage struct {
+	PhotoshopID           int32 `form:"design_id"   json:"photoshop_id,omitempty"`
+	TemplateID            int32 `form:"template_id" json:"template_id,omitempty"`
+	LimitSizerPerElement  bool  `                   json:"limit_sizer_per_element,omitempty"`
+	AnchorElements        bool  `                   json:"anchor_elements,omitempty"`
+	ShowGrid              bool  `                   json:"show_grid,omitempty"`
+	MinimiumComponentSize int32 `                   json:"minimium_component_size,omitempty"`
+	MinimiumTextSize      int32 `                   json:"minimium_text_size,omitempty"`
+	SlotsX                int32 `form:"grid_x"      json:"slots_x,omitempty"`
+	SlotsY                int32 `form:"grid_y"      json:"slots_y,omitempty"`
+	Padding               int32 `                   json:"padding,omitempty"`
+	KeepProportions       bool  `                   json:"keep_proportions,omitempty"`
 }
 
-type GenerateDesignResultv3 struct {
+type GenerateImageOutput struct {
 	Data       *GenerateImageResultV2 `json:"data,omitempty"`
 	TwistedURL string
 }
 
-func GenerateDesignUseCasev3(
+func GenerateImageUseCase(
 	ctx context.Context,
-	req GenerateDesignRequestv3,
+	req GenerateImage,
 	queries *database.Queries,
 	db *pgxpool.Pool,
 	config infra.AppConfig,
 	log *zap.Logger,
-) (*GenerateDesignResultv3, error) {
+) (*GenerateImageOutput, error) {
 	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
@@ -102,17 +110,7 @@ func GenerateDesignUseCasev3(
 		Background: bg,
 		Components: components,
 	}
-	nprancheta, err := grammars.RunV1(
-		prancheta,
-		mapper.TemplateToDomain(template.Template),
-		req.Config.SlotsX,
-		req.Config.SlotsY,
-		log,
-	)
-	if err != nil {
-		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
-		return nil, err
-	}
+	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
 	res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
 		DesignFile: designFile.FileUrl.String,
 		Prancheta:  mapper.LayoutToDto(*nprancheta),
@@ -126,7 +124,7 @@ func GenerateDesignUseCasev3(
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
-	return &GenerateDesignResultv3{
+	return &GenerateImageOutput{
 		Data: res,
 	}, nil
 }

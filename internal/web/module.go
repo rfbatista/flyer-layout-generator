@@ -44,6 +44,7 @@ func AsController(f any) any {
 
 var Module = fx.Options(fx.Provide(
 	protected(home.NewPageHome),
+	protected(home.CreateImage),
 	protected(requestuploadfile.NewPageRequestUploadFile),
 	protected(requestuploadfile.NewUploadDesignAPI),
 	protected(requestprocessdesign.NewPageRequestProcessDesign),
@@ -58,7 +59,6 @@ var Module = fx.Options(fx.Provide(
 	protected(files.NewPage),
 	protected(files.NewUploadDesignAPI),
 	protected(files.NewProcessDesignFile),
-	protected(home.CreateRequest),
 	protected(components.NewPage),
 	protected(components.RemoveElementFromComponent),
 	protected(components.CreateComponent),

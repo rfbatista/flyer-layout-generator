@@ -13,14 +13,14 @@ func RunV1(
 	template entities.Template,
 	gridX, gridY int32,
 	log *zap.Logger,
-) (entities.Layout, error) {
+) (*entities.Layout, error) {
 	var out entities.Layout
 	grid, err := entities.NewGrid(
 		entities.WithDefault(original.Width, original.Height),
 		entities.WithCells(gridX, gridY),
 	)
 	if err != nil {
-		return out, err
+		return nil, err
 	}
 	sort.Slice(original.Components, func(i, j int) bool {
 		return original.Components[i].OrderPriority() < original.Components[j].OrderPriority()
@@ -43,7 +43,7 @@ func RunV1(
 	log.Debug("starting stage 2")
 	var stage2components []entities.DesignComponent
 	if err != nil {
-		return out, err
+		return nil, err
 	}
 	for _, c := range stage1components {
 		cell := grid.WhereIsId(c.ID)
@@ -90,15 +90,15 @@ func RunV1(
 		if c.Type == "oferta" {
 			fmt.Println("here")
 		}
-		cont, err := stage3grid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
-		grid.PrintGrid()
-		if err != nil || cont == nil {
-			stage4components = append(stage4components, c)
-			continue
-		}
-		c.MoveTo(cont.UpperLeft)
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		c.CenterInContainer(*cont)
+		// cont, err := stage3grid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
+		// grid.PrintGrid()
+		// if err != nil || cont == nil {
+		// 	stage4components = append(stage4components, c)
+		// 	continue
+		// }
+		// c.MoveTo(cont.UpperLeft)
+		// c.ScaleToFitInSize(cont.Width(), cont.Height())
+		// c.CenterInContainer(*cont)
 		stage4components = append(stage4components, c)
 	}
 	log.Debug("stages finished")
@@ -108,5 +108,5 @@ func RunV1(
 	out.Width = template.Width
 	out.Height = template.Height
 	out.Grid = *stage3grid
-	return out, nil
+	return &out, nil
 }

@@ -25,7 +25,7 @@ func Form(props PageProps) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"generate-request-form\" class=\"form\" hx-encoding=\"multipart/form-data\" hx-post=\"/image/create\" hx-target=\"#layout-result\"><div class=\"form-block\"><label class=\"form-label\">Arquivo</label> <select id=\"file\" name=\"design_id\" class=\"form-select\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"generate-request-form\" class=\"form\" hx-encoding=\"multipart/form-data\" hx-post=\"/request/generation\" hx-swap=\"none\"><div class=\"form-block\"><label class=\"form-label\">Arquivo</label> <select id=\"file\" name=\"design_id\" class=\"form-select\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +37,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(t.SID())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 11, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 11, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -50,7 +50,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(t.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 11, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 11, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -63,7 +63,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(t.SWidth())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 11, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 11, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -76,7 +76,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(t.SHeigth())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 11, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 11, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -87,7 +87,7 @@ func Form(props PageProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"form-block\"><label class=\"form-label\">Formatos</label> <select class=\"form-select\" id=\"templates\" name=\"template_id\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"form-block\"><label class=\"form-label\">Formatos</label> <button type=\"button\" onclick=\"$(&#39;#templates&#39;).multiSelect(&#39;select_all&#39;)\">Selecionar todos</button> | <button type=\"button\" onclick=\"$(&#39;#templates&#39;).multiSelect(&#39;deselect_all&#39;);\">Deselecionar todos</button> <select class=\"form-select\" multiple=\"multiple\" id=\"templates\" name=\"templates[]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,7 +99,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(t.SID())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 19, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 22, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -112,7 +112,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(t.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 19, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 22, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(t.SWidth())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 19, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 22, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func Form(props PageProps) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(t.SHeigth())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/home/form.templ`, Line: 19, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/views/batch/form.templ`, Line: 22, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -149,7 +149,7 @@ func Form(props PageProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"grid md:grid-cols-2 md:gap-6\"><div class=\"relative z-0 w-full group\"><label for=\"base-input\" class=\"input-label\">Grid X</label> <input type=\"number\" class=\"input\" name=\"grid_x\" value=\"3\"></div><div class=\"relative z-0 w-full group\"><label for=\"base-input\" class=\"input-label\">Grid Y</label> <input type=\"number\" class=\"input\" name=\"grid_y\" value=\"3\"></div></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Margem</label> <input type=\"number\" class=\"input\" name=\"padding\" value=\"0\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos componentes</label> <input type=\"number\" class=\"input\" name=\"minimium_component_size\" value=\"50\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos textos</label> <input type=\"number\" class=\"input\" name=\"minimium_text_size\" value=\"12\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Margem</label> <input type=\"number\" class=\"input\" name=\"padding\" value=\"0\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos componentes</label> <input type=\"number\" class=\"input\" name=\"minimium_component_size\" value=\"50\"></div><div class=\"mb-5\"><label for=\"base-input\" class=\"input-label\">Tamanho minimo dos textos</label> <input type=\"number\" class=\"input\" name=\"minimium_text_size\" value=\"12\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -169,7 +169,7 @@ func Form(props PageProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><button type=\"submit\" class=\"btn\">Gerar</button></div></form><section id=\"toast-container\"></section><script type=\"text/javascript\">\n    const Toast = Swal.mixin({\n      toast: true,\n      position: 'center',\n      iconColor: 'white',\n      customClass: {\n        popup: 'colored-toast',\n      },\n      showConfirmButton: false,\n      timer: 1500,\n      timerProgressBar: true,\n    })\n    document.body.addEventListener(\"makeToast\", async function(evt){\n      if(evt.detail.level == \"success\"){\n        await Toast.fire({\n          icon: 'success',\n          title: 'Sucesso',\n        })\n      } else {\n        await Toast.fire({\n          icon: 'error',\n          title: evt.detail.message,\n        })\n      }\n    })\n  </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><button type=\"submit\" class=\"btn\">Gerar</button></div></form><section id=\"toast-container\"></section><script type=\"text/javascript\">\n    const Toast = Swal.mixin({\n      toast: true,\n      position: 'center',\n      iconColor: 'white',\n      customClass: {\n        popup: 'colored-toast',\n      },\n      showConfirmButton: false,\n      timer: 1500,\n      timerProgressBar: true,\n    })\n    document.body.addEventListener(\"makeToast\", async function(evt){\n      console.log(evt.detail)\n      if(evt.detail.level == \"success\"){\n        await Toast.fire({\n          icon: 'success',\n          title: 'Sucesso',\n        })\n      } else {\n        await Toast.fire({\n          icon: 'error',\n          title: evt.detail.message,\n        })\n      }\n    })\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

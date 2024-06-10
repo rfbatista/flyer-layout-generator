@@ -51,72 +51,40 @@ func NewGrid(opts ...GridOption) (*Grid, error) {
 			return nil, err
 		}
 	}
-	if in.CellsY > 0 && in.CellsX > 0 {
-		var grid Grid
-		grid.SlotsX = in.CellsX
-		grid.SlotsY = in.CellsY
-		sizeX := int32(float64(in.width) / float64(in.CellsX))
-		sizeY := int32(float64(in.height) / float64(in.CellsY))
-		var regions []GridCell
-		xi := int32(0)
-		xii := sizeX
-		grid.position = make([][]*GridCell, in.CellsX)
-		for x := int32(0); x < in.CellsX; x++ {
-			grid.position[x] = make([]*GridCell, in.CellsY)
-		}
-		for x := int32(0); x < in.CellsX; x++ {
-			yi := int32(0)
-			yii := sizeY
-			for y := int32(0); y < in.CellsY; y++ {
-				cell := NewCell(xi, yi, xii, yii)
-				cell.SetPosition(x, y)
-				regions = append(regions, *cell)
-				grid.position[x][y] = cell
-				yi = yi + sizeY
-				yii = yi + sizeY
-			}
-			xi = xi + sizeX
-			xii = xi + sizeX
-		}
-		grid.Cells = regions
-		grid.width = in.width
-		grid.height = in.height
-		grid.slotWidth = sizeX
-		grid.slotHeight = sizeY
-		return &grid, nil
-	}
-	restX := math.Mod(float64(in.width), float64(in.pivotX))
-	restY := math.Mod(float64(in.height), float64(in.pivotY))
-	slotsX := (in.width - int32(restX)) / in.pivotX
-	slotsY := (in.height - int32(restY)) / in.pivotY
-	if slotsX == 0 {
-		slotsX = 1
-	}
-	if slotsY == 0 {
-		slotsY = 1
-	}
 	var grid Grid
-	xi := int32(restX / 2)
-	xii := int32(xi + in.pivotX)
-	var regions []GridCell
-	for x := int32(0); x < slotsX; x++ {
-		yi := int32(restY / 2)
-		yii := yi + in.pivotY
-		for y := int32(0); y < slotsY; y++ {
-			regions = append(regions, *NewCell(xi, yi, xii-1, yii-1))
-			yi = yi + in.pivotY
-			yii = yii + in.pivotY
-		}
-		xi = xi + in.pivotX
-		xii = xi + in.pivotX
+	grid.SlotsX = in.CellsX
+	grid.SlotsY = in.CellsY
+	sizeX := int32(float64(in.width) / float64(in.CellsX))
+	sizeY := int32(float64(in.height) / float64(in.CellsY))
+	xi := int32(0)
+	xii := sizeX
+	grid.position = make([][]GridCell, in.CellsX)
+	for x := int32(0); x < in.CellsX; x++ {
+		grid.position[x] = make([]GridCell, in.CellsY)
 	}
-	grid.Cells = regions
+	for x := int32(0); x < in.CellsX; x++ {
+		yi := int32(0)
+		yii := sizeY
+		for y := int32(0); y < in.CellsY; y++ {
+			cell := NewCell(xi, yi, xii, yii)
+			cell.SetPosition(x, y)
+			grid.position[x][y] = *cell
+			yi = yi + sizeY
+			yii = yi + sizeY
+		}
+		xi = xi + sizeX
+		xii = xi + sizeX
+	}
+	grid.width = in.width
+	grid.height = in.height
+	grid.slotWidth = sizeX
+	grid.slotHeight = sizeY
 	return &grid, nil
 }
 
 type Grid struct {
-	Cells      []GridCell `json:"regions"`
-	position   [][]*GridCell
+	AllCells   []GridCell `json:"regions"`
+	position   [][]GridCell
 	width      int32
 	height     int32
 	slotWidth  int32
@@ -156,7 +124,7 @@ func (g *Grid) PrintGrid() {
 		fmt.Print("|")
 		for x := 0; x < gridWidth; x++ {
 			cell := g.position[x][y]
-			if cell != nil && cell.IsOcupied() {
+			if cell.IsOcupied() {
 				fmt.Print(" X |")
 			} else {
 				fmt.Print("   |")
@@ -171,6 +139,16 @@ func (g *Grid) PrintGrid() {
 		}
 		fmt.Println("\n")
 	}
+}
+
+func (g *Grid) Cells() []GridCell {
+	var cells []GridCell
+	for _, c := range g.position {
+		for _, c1 := range c {
+			cells = append(cells, c1)
+		}
+	}
+	return cells
 }
 
 func (g *Grid) Width() int32 {
@@ -210,7 +188,7 @@ func isOverlap(rect DesignComponent, region GridCell) (bool, int32) {
 }
 
 func (g *Grid) FindOverlappingRegions(e DesignComponent) []OverlapResult {
-	return findOverlappingRegions(e, g.Cells)
+	return findOverlappingRegions(e, g.Cells())
 }
 
 func (g *Grid) WhereToSnap(e DesignComponent) (GridCell, bool) {
@@ -220,8 +198,8 @@ func (g *Grid) WhereToSnap(e DesignComponent) (GridCell, bool) {
 	downleft := NewPointp(e.Xi, e.Yii)
 	downright := NewPointp(e.Xii, e.Yii)
 	smallerDistance := int32(999999)
-	nearestRegion := g.Cells[0]
-	for _, region := range g.Cells {
+	nearestRegion := g.Cells()[0]
+	for _, region := range g.Cells() {
 		if smallerDistance > region.DistanceToEdge(*upleft) {
 			smallerDistance = region.DistanceToEdge(*upleft)
 			snapToLeft = true
@@ -248,9 +226,9 @@ func (g *Grid) WhereToSnap(e DesignComponent) (GridCell, bool) {
 
 // Find in which cell the component is
 func (g *Grid) WhereIsPoint(p Point) *GridCell {
-	for idx := range g.Cells {
-		if g.Cells[idx].IsIn(p) {
-			return &g.Cells[idx]
+	for idx := range g.Cells() {
+		if g.Cells()[idx].IsIn(p) {
+			return &g.Cells()[idx]
 		}
 	}
 	return nil
@@ -258,9 +236,9 @@ func (g *Grid) WhereIsPoint(p Point) *GridCell {
 
 // Find in which cell the id is present
 func (g *Grid) WhereIsId(id int32) *GridCell {
-	for idx := range g.Cells {
-		if g.Cells[idx].IsIdIn(id) {
-			return &g.Cells[idx]
+	for idx := range g.Cells() {
+		if g.Cells()[idx].IsIdIn(id) {
+			return &g.Cells()[idx]
 		}
 	}
 	return nil
@@ -268,8 +246,8 @@ func (g *Grid) WhereIsId(id int32) *GridCell {
 
 // Calculate the space in cells number that a container need to fit in the grid
 func (g *Grid) ContainerToFit(c Container) Container {
-	w := g.Cells[0].Width()
-	h := g.Cells[0].Height()
+	w := g.Cells()[0].Width()
+	h := g.Cells()[0].Height()
 	x := math.Ceil(float64(c.Width()) / float64(w))
 	y := math.Ceil(float64(c.Height()) / float64(h))
 	return NewContainer(NewPoint(0, 0), NewPoint(int32(x)*w, int32(y)*h))
@@ -283,7 +261,7 @@ func (g *Grid) PositionsToContainer(points []Point) Container {
 		if p.X < 0 || p.X >= g.SlotsX || p.Y < 0 || p.Y >= g.SlotsY {
 			continue
 		}
-		cells = append(cells, g.position[p.X][p.Y])
+		cells = append(cells, &g.position[p.X][p.Y])
 	}
 	if len(cells) == 0 {
 		return c
@@ -326,7 +304,7 @@ func (g *Grid) FindPositionsToFitBasedOnPivot(p Point, c Container) ([]Point, er
 	if !found {
 		return points, errors.New("no position was found")
 	}
-	cc = g.position[x][y]
+	cc = &g.position[x][y]
 	if cc == nil {
 		return points, errors.New("nenhuma celula definida com a posicicao especificada")
 	}
@@ -360,7 +338,7 @@ func (g *Grid) FindFreePositionsToFitBasedOnPivot(p Point, c Container) ([]Point
 	}
 	x, y, found := g.FindSpace(p, c)
 	if x >= 0 && y >= 0 {
-		cc = g.position[x][y]
+		cc = &g.position[x][y]
 	}
 	if !found || cc.IsOcupied() || !g.Fits(cc.Position().X, cc.Position().Y, c) {
 		ccc := g.FindFreeCellByReadingOrder()
@@ -398,12 +376,10 @@ func (g *Grid) FindFreeCellByReadingOrder() *GridCell {
 	for y := int32(0); y < g.SlotsY; y++ {
 		for x := int32(0); x < g.SlotsX; x++ {
 			pos := g.position[x][y]
-			if pos != nil {
-				if pos.IsOcupied() {
-					continue
-				}
-				return pos
+			if pos.IsOcupied() {
+				continue
 			}
+			return &pos
 		}
 	}
 	return nil
@@ -475,10 +451,8 @@ func (g *Grid) IsSpaceOcupied(x, y int32, container Container) bool {
 
 // Occupy specified cell
 func (g *Grid) OcupyCell(c GridCell, id int32) {
-	for idx := range g.Cells {
-		if g.Cells[idx].ID.String() == c.ID.String() {
-			g.Cells[idx].Ocupy(id)
-		}
+	if len(g.position) > int(c.positionX) && len(g.position[c.positionX]) > int(c.positionY) {
+		g.position[c.positionX][c.positionY].Ocupy(id)
 	}
 }
 
@@ -494,18 +468,18 @@ func (g *Grid) OcupyByPositionList(points []Point, id int32) []*GridCell {
 
 // Occupy cells by container
 func (g *Grid) OcupyByPosition(p Point, id int32) *GridCell {
-	cell := g.position[p.X][p.Y]
-	if cell != nil {
-		cell.Ocupy(id)
+	if len(g.position) > int(p.X) && len(g.position[p.X]) > int(p.Y) {
+		g.position[p.X][p.Y].Ocupy(id)
+		return nil
 	}
-	return cell
+	return nil
 }
 
 // Occupy cells by container
 func (g *Grid) OcupyWithContainer(c Container, id int32) bool {
-	for idx := range g.Cells {
-		if g.Cells[idx].InstersectWithContainer(c) {
-			if !g.OcupyCellAndCheck(g.Cells[idx], id) {
+	for idx := range g.Cells() {
+		if g.Cells()[idx].InstersectWithContainer(c) {
+			if !g.OcupyCellAndCheck(g.Cells()[idx], id) {
 				return false
 			}
 		}
@@ -515,9 +489,9 @@ func (g *Grid) OcupyWithContainer(c Container, id int32) bool {
 
 // Occupy specified cell
 func (g *Grid) OcupyCellAndCheck(c GridCell, id int32) bool {
-	for idx := range g.Cells {
-		if g.Cells[idx].ID.String() == c.ID.String() {
-			g.Cells[idx].Ocupy(id)
+	for idx := range g.Cells() {
+		if g.Cells()[idx].ID.String() == c.ID.String() {
+			g.OcupyCell(c, id)
 			return true
 		}
 	}
@@ -525,7 +499,7 @@ func (g *Grid) OcupyCellAndCheck(c GridCell, id int32) bool {
 }
 
 func (g *Grid) RemoveAllRegionsInThisPosition(xi, yi, xii, yii int32) {
-	for _, region := range g.Cells {
+	for _, region := range g.Cells() {
 		if region.Xi > xii || region.Xii < xi {
 			continue
 		}
@@ -677,12 +651,6 @@ func (g *Grid) CheckGridContainerColision(c GridContainer, id int32) bool {
 }
 
 func (g *Grid) RemoveRegion(re GridCell) {
-	g.Cells = filterRegion(g.Cells, func(r GridCell) bool {
-		if r.ID == re.ID {
-			return false
-		}
-		return true
-	})
 }
 
 func filterRegion(ss []GridCell, test func(r GridCell) bool) (ret []GridCell) {
