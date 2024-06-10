@@ -24,7 +24,7 @@ type GenerateImage struct {
 	MinimiumTextSize      int32 `                   json:"minimium_text_size,omitempty"`
 	SlotsX                int32 `form:"grid_x"      json:"slots_x,omitempty"`
 	SlotsY                int32 `form:"grid_y"      json:"slots_y,omitempty"`
-	Padding               int32 `                   json:"padding,omitempty"`
+	Padding               int32 `form:"padding"                   json:"padding,omitempty"`
 	KeepProportions       bool  `                   json:"keep_proportions,omitempty"`
 }
 
@@ -109,8 +109,14 @@ func GenerateImageUseCase(
 		Template:   etemplate,
 		Background: bg,
 		Components: components,
+		Config: entities.LayoutRequestConfig{
+			Padding: req.Padding,
+		},
 	}
 	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
+	if !req.ShowGrid {
+		nprancheta.Grid = entities.Grid{}
+	}
 	res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
 		DesignFile: designFile.FileUrl.String,
 		Prancheta:  mapper.LayoutToDto(*nprancheta),

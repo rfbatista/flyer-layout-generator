@@ -33,6 +33,13 @@ func (c *Container) Move(p Point) {
 	c.DownRight.Move(p)
 }
 
+func (c *Container) Padding(p int32) {
+	c.UpperLeft.X += p
+	c.UpperLeft.Y += p
+	c.DownRight.X -= p
+	c.DownRight.Y -= p
+}
+
 func (c *Container) Width() int32 {
 	return c.UpperLeft.DisplacementFrom(c.DownRight).X
 }

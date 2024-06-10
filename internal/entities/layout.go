@@ -22,4 +22,5 @@ type Layout struct {
 	Template   Template          `json:"template,omitempty"`
 	Grid       Grid              `json:"grid,omitempty"`
 	Stages     []Layout
+	Config     LayoutRequestConfig
 }

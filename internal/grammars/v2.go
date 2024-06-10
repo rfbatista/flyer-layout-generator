@@ -35,7 +35,7 @@ func RunV2(
 		return nil, err
 	}
 
-	// // Move elements that have colision
+	// Move elements that have colision
 	sort.Slice(layout2.Components, func(i, j int) bool {
 		return layout2.Components[i].OrderPriority() > layout2.Components[j].OrderPriority()
 	})
@@ -44,7 +44,7 @@ func RunV2(
 		return nil, err
 	}
 
-	// // expand elements
+	// Expand elements
 	layout4, _, err := Stage4(original, layout3, template, stage3Grid)
 	if err != nil {
 		return nil, err
@@ -122,6 +122,7 @@ func Stage2(
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
 		c.CenterInContainer(cont)
+		c.GridContainer = cont
 		stagecomponents = append(stagecomponents, c)
 	}
 	out.Components = stagecomponents
@@ -161,6 +162,7 @@ func Stage3(
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
 		c.CenterInContainer(cont)
+		c.GridContainer = cont
 		stageComponents = append(stageComponents, c)
 	}
 	out.Components = stageComponents
@@ -188,6 +190,7 @@ func Stage4(
 		fmt.Println(c.ID)
 		prevGrid.PrintGrid(c.ID)
 		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
+			c.ApplyPadding(original.Config.Padding)
 			stageComponents = append(stageComponents, c)
 			continue
 		}
@@ -195,11 +198,13 @@ func Stage4(
 		if err != nil || cont == nil {
 			continue
 		}
-		prevGrid.OcupyWithContainer(*cont, c.ID)
+		gcrid := prevGrid.ContainerToPositions(*cont)
+		prevGrid.OcupyByPositionList(gcrid, c.ID)
 		c.MoveTo(cont.UpperLeft)
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.CenterInContainer(*cont)
 		prevGrid.PrintGrid(c.ID)
+		c.ApplyPadding(original.Config.Padding)
 		stageComponents = append(stageComponents, c)
 	}
 	out.Components = stageComponents

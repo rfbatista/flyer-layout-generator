@@ -70,6 +70,7 @@ type DesignComponent struct {
 	DownGap        Position        `json:"down_gap,omitempty"`
 	InnerContainer Container
 	OuterContainer Container
+	GridContainer  Container
 	Priority       int32
 	Positions      []Position
 	Pivot          Position
@@ -159,6 +160,15 @@ func (d *DesignComponent) CenterInContainer(r Container) {
 		yi = yi + ((r.Height() - d.Height()) / 2)
 	}
 	d.MoveTo(NewPoint(xi, yi))
+}
+
+func (d *DesignComponent) ApplyPadding(p int32) {
+	d.InnerContainer.Padding(p)
+	d.OuterContainer.Padding(p)
+	for i := range d.Elements {
+		d.Elements[i].InnerContainer.Padding(p)
+		d.Elements[i].OuterContainer.Padding(p)
+	}
 }
 
 func (d *DesignComponent) ScaleToFitInSize(w, h int32) {

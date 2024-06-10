@@ -561,11 +561,9 @@ func (g *Grid) OcupyByPosition(p Position, id int32) *GridCell {
 
 // Occupy cells by container
 func (g *Grid) OcupyWithContainer(c Container, id int32) bool {
-	for idx := range g.Cells() {
-		if g.Cells()[idx].InstersectWithContainer(c) {
-			if !g.OcupyCellAndCheck(g.Cells()[idx], id) {
-				return false
-			}
+	for _, cell := range g.Cells() {
+		if cell.InstersectWithContainer(c) {
+			g.OcupyCell(cell, id)
 		}
 	}
 	return true
