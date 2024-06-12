@@ -1,0 +1,16 @@
+package layout
+
+import (
+	"algvisual/web/components/sidebar"
+)
+
+templ Layout() {
+	<div class="min-h-screen flex">
+		<nav class="w-56 flex-none ...">
+      @sidebar.Sidebar("home")
+		</nav>
+		<main class="flex-1 min-w-0 overflow-auto ...">
+			{ children... }
+		</main>
+	</div>
+}

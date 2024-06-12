@@ -19,7 +19,7 @@ type GenerateImage struct {
 	TemplateID            int32 `form:"template_id" json:"template_id,omitempty"`
 	LimitSizerPerElement  bool  `                   json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool  `                   json:"anchor_elements,omitempty"`
-	ShowGrid              bool  `                   json:"show_grid,omitempty"`
+	ShowGrid              bool  `form:"show_grid"                   json:"show_grid,omitempty"`
 	MinimiumComponentSize int32 `                   json:"minimium_component_size,omitempty"`
 	MinimiumTextSize      int32 `                   json:"minimium_text_size,omitempty"`
 	SlotsX                int32 `form:"grid_x"      json:"slots_x,omitempty"`

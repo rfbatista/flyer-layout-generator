@@ -1,0 +1,26 @@
+package home
+
+import (
+	"algvisual/web/views"
+	"algvisual/web/components/layout"
+	"algvisual/internal/entities"
+)
+
+type PageProps struct {
+	files    []entities.DesignFile
+	template []entities.Template
+}
+
+templ HomePage(props PageProps) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				@Form(props)
+			}
+			<script src="/web/js/jquery.multi-select.js" type="text/javascript"></script>
+		</body>
+	</html>
+}

@@ -6,7 +6,7 @@ tmp_dir = "tmp"
   args_bin = []
   pre_cmd = [
   "templ generate",
-  "npx tailwindcss --input ./internal/web/static/input.css --output ./internal/web/static/css/output.css",
+  "npx tailwindcss --input ./web/static/input.css --output ./web/static/css/output.css",
   ]
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server/main.go"

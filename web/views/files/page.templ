@@ -1,0 +1,129 @@
+package files
+
+import (
+	"algvisual/web/views"
+	"algvisual/internal/shared"
+	"algvisual/web/components/layout"
+	"algvisual/web/components/table"
+	"strconv"
+	"algvisual/internal/entities"
+)
+
+func IsProcessed(d entities.DesignFile) string {
+	if d.IsProcessed == true {
+		return "Sim"
+	}
+	return "Não"
+}
+
+type PageProps struct {
+	files []entities.DesignFile
+}
+
+templ Page(props PageProps) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				<div class="container column is-10">
+					<div class="my-2">
+						<div class="card is-hidden1">
+							<div class="card-header"><p class="card-header-title">Cadastrar arquivo</p></div>
+							<div class="card-content">
+								<div class="content">
+									<div class="field">
+										<label class="label">Nome</label>
+										<div class="control">
+											<input form="form" class="input" type="text" name="filename" placeholder=""/>
+										</div>
+									</div>
+									<div class="field">
+										<input form="form" type="file" name="file"/>
+									</div>
+								</div>
+								<form id="form" hx-encoding="multipart/form-data" hx-post={ shared.PageUploadDesignFile.String() } hx-swap="none">
+									<div class="field">
+										<div class="control">
+											<button class="button">Cadastrar</button>
+										</div>
+									</div>
+									<progress class="w-full" id="progress" value="0" max="100"></progress>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="container">
+					@table.Table() {
+						@table.THead() {
+							@table.THeadRow() {
+								@table.THeadCol("")
+								@table.THeadCol("Nome")
+								@table.THeadCol("Processado")
+								@table.THeadCol("Largura")
+								@table.THeadCol("Altura")
+								@table.THeadCol("Criado em")
+								@table.THeadCol("")
+								@table.THeadCol("")
+							}
+						}
+						@table.TBody() {
+							for _, d := range props.files {
+								@table.TBodyRow() {
+									<td class="p-4">
+                  if d.ImageURL != "" {
+										<img src={ d.ImageURL } class="w-16 md:w-32 max-w-full max-h-full" alt="Apple Watch"/>
+                  }
+									</td>
+									@table.TBodyCol(d.Name)
+									@table.TBodyCol(IsProcessed(d))
+									@table.TBodyCol(strconv.FormatInt(int64(d.Width), 10))
+									@table.TBodyCol(strconv.FormatInt(int64(d.Height), 10))
+									@table.TBodyCol(d.CreatedAt.Format("2006-03-03"))
+									<td>
+										<a href={ templ.SafeURL(shared.PageDefineComponents.Replace([]string{strconv.FormatInt(int64(d.ID), 10)})) }>Definir Componentes</a>
+									</td>
+									<td>
+										<button class="btn" hx-post={ shared.PageUploadDesignFileProcess.Replace([]string{strconv.FormatInt(int64(d.ID), 10)}) } hx-swap="none">Processar</button>
+									</td>
+								}
+							}
+						}
+					}
+				</div>
+			}
+			<script type="text/javascript">
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'center',
+          iconColor: 'white',
+          customClass: {
+            popup: 'colored-toast',
+          },
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+        })
+        document.body.addEventListener("makeToast", async function(evt){
+          console.log(evt.detail)
+          if(evt.detail.level == "success"){
+            await Toast.fire({
+              icon: 'success',
+              title: 'Sucesso',
+            })
+          } else {
+            await Toast.fire({
+              icon: 'error',
+              title: evt.detail.message,
+            })
+          }
+        })
+        </script>
+		</body>
+	</html>
+}

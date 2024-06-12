@@ -3,8 +3,8 @@ package main
 import (
 	"algvisual/internal/api"
 	"algvisual/internal/infra"
-	"algvisual/internal/web"
 	"algvisual/internal/worker"
+	"algvisual/web"
 
 	"go.uber.org/fx"
 )

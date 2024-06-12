@@ -1,0 +1,80 @@
+package home
+
+import "algvisual/web/components/toggle"
+
+templ Form(props PageProps) {
+	<form id="generate-request-form" class="form" hx-encoding="multipart/form-data" hx-post="/image/create" hx-target="#layout-result">
+		<div class="form-block">
+			<label class="form-label">Arquivo</label>
+			<select id="file" name="design_id" class="form-select">
+				for _, t := range props.files {
+					<option value={ t.SID() }>{ t.Name } <i class="text-slate-300">{ t.SWidth() } { t.SHeigth() }</i></option>
+				}
+			</select>
+		</div>
+		<div class="form-block">
+			<label class="form-label">Formatos</label>
+			<select class="form-select" id="templates" name="template_id">
+				for _, t := range props.template {
+					<option value={ t.SID() }>{ t.Name } <i class="text-slate-300">{ t.SWidth() }x{ t.SHeigth() }</i></option>
+				}
+			</select>
+		</div>
+		<div class="grid md:grid-cols-2 md:gap-6">
+			<div class="relative z-0 w-full group">
+				<label for="base-input" class="input-label">Grid X</label>
+				<input type="number" class="input" name="grid_x" value="3"/>
+			</div>
+			<div class="relative z-0 w-full group">
+				<label for="base-input" class="input-label">Grid Y</label>
+				<input type="number" class="input" name="grid_y" value="3"/>
+			</div>
+		</div>
+		<div class="mb-5">
+			<label for="base-input" class="input-label">Margem</label>
+			<input type="number" class="input" name="padding" value="5"/>
+		</div>
+		<div class="mb-5">
+			<label for="base-input" class="input-label">Tamanho minimo dos componentes</label>
+			<input type="number" class="input" name="minimium_component_size" value="50"/>
+		</div>
+		<div class="mb-5">
+			<label for="base-input" class="input-label">Tamanho minimo dos textos</label>
+			<input type="number" class="input" name="minimium_text_size" value="12"/>
+		</div>
+		@toggle.Toggle("Manter proporções", "true", "keep_proportions")
+		@toggle.Toggle("Ancorar elementos", "true", "anchor_elements")
+		@toggle.Toggle("Definir tamanhos limite por tipo de componente", "true", "limit_sizer_per_element")
+		@toggle.Toggle("Mostrar grid", "true", "show_grid")
+		<div>
+			<button type="submit" class="btn">Gerar</button>
+		</div>
+	</form>
+	<section id="toast-container"></section>
+	<script type="text/javascript">
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'center',
+      iconColor: 'white',
+      customClass: {
+        popup: 'colored-toast',
+      },
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+    })
+    document.body.addEventListener("makeToast", async function(evt){
+      if(evt.detail.level == "success"){
+        await Toast.fire({
+          icon: 'success',
+          title: 'Sucesso',
+        })
+      } else {
+        await Toast.fire({
+          icon: 'error',
+          title: evt.detail.message,
+        })
+      }
+    })
+  </script>
+}

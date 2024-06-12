@@ -111,7 +111,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	// 	IgnoreBase: false,
 	// 	Filesystem: nil,
 	// }))
-	webStaticPath := fmt.Sprintf("%s/internal/web/static", FindProjectRoot())
+	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
 	e.GET("/sse", p.Sse.HandleConnection)
 	webgroup := e.Group("/web")
 	webgroup.Use(
