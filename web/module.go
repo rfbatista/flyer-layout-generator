@@ -53,6 +53,7 @@ var Module = fx.Options(fx.Provide(
 	protected(templates.NewPage),
 	protected(batch.NewPage),
 	protected(batchlist.NewPage),
+	protected(batchlist.NewTable),
 	protected(batch.CreateRequest),
 	protected(batchresults.NewPage),
 ))

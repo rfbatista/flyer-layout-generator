@@ -48,7 +48,7 @@ func Page(props PageProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body><div x-data=\"{ imgModal : false, imgModalSrc : &#39;&#39;, imgModalDesc : &#39;&#39; }\"><template @img-modal.window=\"imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;\" x-if=\"imgModal\"><div x-transition:enter=\"transition ease-out duration-300\" x-transition:enter-start=\"opacity-0 transform scale-90\" x-transition:enter-end=\"opacity-100 transform scale-100\" x-transition:leave=\"transition ease-in duration-300\" x-transition:leave-start=\"opacity-100 transform scale-100\" x-transition:leave-end=\"opacity-0 transform scale-90\" x-on:click.away=\"imgModalSrc = &#39;&#39;\" class=\"p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75\"><div @click.away=\"imgModal = &#39;&#39;\" class=\"flex flex-col max-w-3xl max-h-full overflow-auto\"><div class=\"z-50\"><button @click=\"imgModal = &#39;&#39;\" class=\"float-right pt-2 pr-2 outline-none focus:outline-none\"><svg class=\"fill-current text-white \" xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 18 18\"><path d=\"M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z\"></path></svg></button></div><div class=\"p-2\"><img :alt=\"imgModalSrc\" class=\"object-contain h-1/2-screen\" :src=\"imgModalSrc\"><p x-text=\"imgModalDesc\" class=\"text-center text-white\"></p></div></div></div></template></div><div x-data=\"{}\" class=\"px-2\"><div class=\"flex -mx-2\"><div class=\"w-1/6 px-2\"><div class=\"bg-gray-400\"><a @click=\"$dispatch(&#39;img-modal&#39;, {  imgModalSrc: &#39;https://picsum.photos/640/480&#39;, imgModalDesc: &#39;Random Image One Description&#39; })\" class=\"cursor-pointer\"><img alt=\"Placeholder\" class=\"object-fit w-full\" src=\"https://picsum.photos/640/480\"></a></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,19 +58,19 @@ func Page(props PageProps) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"min-h-screen flex p-2 flex-col\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"min-h-screen flex p-2 flex-col gap-4\" x-data=\"{ imgModal : false, imgModalSrc : &#39;&#39;, imgModalDesc : &#39;&#39; }\"><template @img-modal.window=\"imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;\" x-if=\"imgModal\"><div x-transition:enter=\"transition ease-out duration-300\" x-transition:enter-start=\"opacity-0 transform scale-90\" x-transition:enter-end=\"opacity-100 transform scale-100\" x-transition:leave=\"transition ease-in duration-300\" x-transition:leave-start=\"opacity-100 transform scale-100\" x-transition:leave-end=\"opacity-0 transform scale-90\" x-on:click.away=\"imgModalSrc = &#39;&#39;\" class=\"p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75\"><div @click.away=\"imgModal = &#39;&#39;\" class=\"flex flex-col max-w-3xl max-h-full overflow-auto\"><div class=\"z-50\"><button @click=\"imgModal = &#39;&#39;\" class=\"float-right pt-2 pr-2 outline-none focus:outline-none\"><svg class=\"fill-current text-white \" xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 18 18\"><path d=\"M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z\"></path></svg></button></div><div class=\"p-2\"><img :alt=\"imgModalSrc\" class=\"object-contain h-1/2-screen\" :src=\"imgModalSrc\"><p x-text=\"imgModalDesc\" class=\"text-center text-white\"></p></div></div></div></template><div x-data=\"{}\" class=\"px-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, r := range props.Collections {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col w-full\"><span>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col w-full mb-2\"><h4 class=\"text-2xl font-bold dark:text-white mb-1\"><span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(r.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 30, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -83,7 +83,7 @@ func Page(props PageProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(r.Created)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 30, Col: 35}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -96,57 +96,40 @@ func Page(props PageProps) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(r.Total)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 30, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><div class=\"owl-carousel owl-theme\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></h4><div class=\"owl-carousel\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, i := range r.Jobs {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div style=\"width:300px;height:300px\" class=\"flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700\"><img class=\"rounded-lg m-auto\" style=\"display: block;max-width:250px;max-height:250px;width: auto;height: auto;\" src=\"")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div style=\"width:300px;height:320px\" class=\"flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700\"><div class=\"w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700\"><ul class=\"text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400 rtl:divide-x-reverse\" id=\"fullWidthTab\" data-tabs-toggle=\"#fullWidthTabContent\" role=\"tablist\"><li class=\"w-full\"><a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var6 string
-					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(i.ImageURL)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 34, Col: 139}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+					var templ_7745c5c3_Var6 templ.SafeURL = templ.SafeURL(i.ImageURL)
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\"><div class=\"h-[50px]\"><span class=\"\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><button id=\"stats-tab\" data-tabs-target=\"#stats\" type=\"button\" role=\"tab\" aria-controls=\"stats\" aria-selected=\"true\" class=\"inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Baixar</button></a></li><li class=\"w-full\"><button id=\"about-tab\" data-tabs-target=\"#about\" type=\"button\" role=\"tab\" aria-controls=\"about\" aria-selected=\"false\" class=\"inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Modificar</button></li></ul></div><a @click=\"$dispatch(&#39;img-modal&#39;, {  imgModalSrc: &#39;https://picsum.photos/640/480&#39;, imgModalDesc: &#39;Random Image One Description&#39; })\" class=\"cursor-pointer\"><img class=\"rounded-lg m-auto\" style=\"display: block;max-width:250px;max-height:250px;width: auto;height: auto;\" src=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 string
-					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i.StartedAtTimeText())
+					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i.ImageURL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 36, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 101, Col: 141}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" - ")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var8 string
-					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i.FinishedAtTimeText())
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 36, Col: 78}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\"></a></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -156,7 +139,7 @@ func Page(props PageProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,7 +152,7 @@ func Page(props PageProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script src=\"/web/js/jquery.multi-select.js\" type=\"text/javascript\"></script><script>\n\n        var owl = $('.owl-carousel');\n        owl.owlCarousel({\n            loop:true,\n            margin:10,\n            nav:true,\n            responsive:{\n                0:{\n                    items:1\n                },\n                600:{\n                    items:3\n                },\n                1000:{\n                    items:5\n                }\n            }\n        })\n      </script></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script src=\"/web/js/jquery.multi-select.js\" type=\"text/javascript\"></script><script>\n        var owl = $('.owl-carousel');\n        owl.owlCarousel({\n            loop:true,\n            margin:10,\n            nav:false,\n            responsive:{\n                0:{\n                    items:1\n                },\n                600:{\n                    items:3\n                },\n                1000:{\n                    items:5\n                }\n            }\n        })\n      </script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

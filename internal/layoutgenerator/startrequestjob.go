@@ -61,6 +61,33 @@ func StartRequestJobUseCase(
 		jobReq.SlotsY = job.Config.SlotsY
 		jobReq.Padding = job.Config.Padding
 	}
+	defer func() {
+		log.Debug("closing worker")
+		if r := recover(); r != nil {
+			errp, ok := r.(error)
+			if ok {
+				log.Error("panic error in worker", zap.Error(errp))
+			} else {
+				log.Error("unknown panic error in worker")
+			}
+			_, erru := queries.UpdateLayoutRequestJob(ctx, database.UpdateLayoutRequestJobParams{
+				DoAddLog:           true,
+				Log:                pgtype.Text{String: errp.Error(), Valid: true},
+				DoAddErrorAt:       true,
+				ErrorAt:            pgtype.Timestamp{Time: time.Now(), Valid: true},
+				LayoutRequestJobID: layoutJobReq.ID,
+				DoAddStatus:        true,
+				Status:             pgtype.Text{String: entities.RequestStatusError.String()},
+			})
+			if erru != nil {
+				log.Warn(
+					"failed to update layout request status to error after a panic",
+					zap.Int("job id", int(layoutJobReq.ID)),
+					zap.Error(erru),
+				)
+			}
+		}
+	}()
 	out, err := GenerateImageUseCase(
 		ctx,
 		jobReq,

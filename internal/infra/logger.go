@@ -11,6 +11,7 @@ func NewLogger() *zap.Logger {
 	config := zap.NewDevelopmentConfig()
 	// fullpath := filepath.Join(FindProjectRoot(), "proxy.log")
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	// config.Level = zap.NewAtomicLevel()
 	// config.OutputPaths = []string{
 	// 	fullpath,
 	// }

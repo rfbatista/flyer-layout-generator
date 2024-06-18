@@ -23,33 +23,98 @@ templ Page(props PageProps) {
 			@views.Header()
 		</head>
 		<body>
-			@layout.Layout() {
-				<div class="min-h-screen flex p-2 flex-col">
-					for _, r := range props.Collections {
-						<div class="flex flex-col w-full">
-							<span>{ r.Name } { r.Created }/{ r.Total } </span>
-							<div class="owl-carousel owl-theme">
-								for _, i := range r.Jobs {
-									<div style="width:300px;height:300px" class="flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-										<img class="rounded-lg m-auto" style="display: block;max-width:250px;max-height:250px;width: auto;height: auto;" src={ i.ImageURL } alt=""/>
-										<div class="h-[50px]">
-											<span class="">{ i.StartedAtTimeText() } - { i.FinishedAtTimeText() }</span>
-										</div>
-									</div>
-								}
+			<div x-data="{ imgModal : false, imgModalSrc : '', imgModalDesc : '' }">
+				<template @img-modal.window="imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;" x-if="imgModal">
+					<div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-90" x-on:click.away="imgModalSrc = ''" class="p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75">
+						<div @click.away="imgModal = ''" class="flex flex-col max-w-3xl max-h-full overflow-auto">
+							<div class="z-50">
+								<button @click="imgModal = ''" class="float-right pt-2 pr-2 outline-none focus:outline-none">
+									<svg class="fill-current text-white " xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+										<path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+									</svg>
+								</button>
+							</div>
+							<div class="p-2">
+								<img :alt="imgModalSrc" class="object-contain h-1/2-screen" :src="imgModalSrc"/>
+								<p x-text="imgModalDesc" class="text-center text-white"></p>
 							</div>
 						</div>
-					}
+					</div>
+				</template>
+			</div>
+			<div x-data="{}" class="px-2">
+				<div class="flex -mx-2">
+					<div class="w-1/6 px-2">
+						<div class="bg-gray-400">
+							<a @click="$dispatch('img-modal', {  imgModalSrc: 'https://picsum.photos/640/480', imgModalDesc: 'Random Image One Description' })" class="cursor-pointer">
+								<img alt="Placeholder" class="object-fit w-full" src="https://picsum.photos/640/480"/>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			@layout.Layout() {
+				<div class="min-h-screen flex p-2 flex-col gap-4" x-data="{ imgModal : false, imgModalSrc : '', imgModalDesc : '' }">
+					<template @img-modal.window="imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;" x-if="imgModal">
+						<div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-90" x-on:click.away="imgModalSrc = ''" class="p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75">
+							<div @click.away="imgModal = ''" class="flex flex-col max-w-3xl max-h-full overflow-auto">
+								<div class="z-50">
+									<button @click="imgModal = ''" class="float-right pt-2 pr-2 outline-none focus:outline-none">
+										<svg class="fill-current text-white " xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+											<path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+										</svg>
+									</button>
+								</div>
+								<div class="p-2">
+									<img :alt="imgModalSrc" class="object-contain h-1/2-screen" :src="imgModalSrc"/>
+									<p x-text="imgModalDesc" class="text-center text-white"></p>
+								</div>
+							</div>
+						</div>
+					</template>
+					<div x-data="{}" class="px-2">
+						for _, r := range props.Collections {
+							<div class="flex flex-col w-full mb-2">
+								<h4 class="text-2xl font-bold dark:text-white mb-1">
+									<span>{ r.Name } { r.Created }/{ r.Total } </span>
+								</h4>
+								<div class="owl-carousel">
+									for _, i := range r.Jobs {
+										<div style="width:300px;height:320px" class="flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+											<div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+												<ul class="text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400 rtl:divide-x-reverse" id="fullWidthTab" data-tabs-toggle="#fullWidthTabContent" role="tablist">
+													<li class="w-full">
+														<a href={ templ.SafeURL(i.ImageURL) } download>
+															<button id="stats-tab" data-tabs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true" class="inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
+																Baixar
+															</button>
+														</a>
+													</li>
+													<li class="w-full">
+														<button id="about-tab" data-tabs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false" class="inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
+															Modificar
+														</button>
+													</li>
+												</ul>
+											</div>
+											<a @click="$dispatch('img-modal', {  imgModalSrc: 'https://picsum.photos/640/480', imgModalDesc: 'Random Image One Description' })" class="cursor-pointer">
+												<img class="rounded-lg m-auto" style="display: block;max-width:250px;max-height:250px;width: auto;height: auto;" src={ i.ImageURL } alt=""/>
+											</a>
+										</div>
+									}
+								</div>
+							</div>
+						}
+					</div>
 				</div>
 			}
 			<script src="/web/js/jquery.multi-select.js" type="text/javascript"></script>
 			<script>
-
         var owl = $('.owl-carousel');
         owl.owlCarousel({
             loop:true,
             margin:10,
-            nav:true,
+            nav:false,
             responsive:{
                 0:{
                     items:1

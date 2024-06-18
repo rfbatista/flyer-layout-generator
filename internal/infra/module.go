@@ -31,6 +31,7 @@ type RegisterHooksParams struct {
 	Logger *zap.Logger
 	Config *AppConfig
 	Conn   *pgxpool.Pool
+	SSE    *ServerSideEventManager
 }
 
 func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
@@ -52,6 +53,9 @@ func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 					)
 					return
 				}
+			}()
+			go func() {
+				params.SSE.Listen()
 			}()
 			return nil
 		},

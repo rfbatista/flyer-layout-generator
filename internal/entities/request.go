@@ -108,6 +108,9 @@ func (l *LayoutRequest) ErrorAtText() string {
 }
 
 func (l *LayoutRequest) FinishedAtText() string {
+	if !l.IsCompleted() {
+		return ""
+	}
 	var isRunning bool
 	var finishedAt *time.Time
 	for _, j := range l.Jobs {
@@ -138,6 +141,9 @@ func (l *LayoutRequest) IsFailure() bool {
 }
 
 func (l *LayoutRequest) IsCompleted() bool {
+	if l.IsRunning() {
+		return false
+	}
 	var isRunning bool
 	var isFinished bool
 	for _, j := range l.Jobs {
@@ -157,12 +163,25 @@ func (l *LayoutRequest) IsRunning() bool {
 		if j.IsRunning() {
 			isRunning = true
 		}
+		if j.NotStarted() {
+			isRunning = true
+		}
 	}
 	return isRunning
 }
 
 func (l *LayoutRequest) TotalJobsText() string {
 	return fmt.Sprintf("%d", len(l.Jobs))
+}
+
+func (l *LayoutRequest) TotalFinishedJobsText() string {
+	finished := 0
+	for _, j := range l.Jobs {
+		if j.IsCompleted() {
+			finished += 1
+		}
+	}
+	return fmt.Sprintf("%d", finished)
 }
 
 func (l *LayoutRequest) DurationText() string {
@@ -193,7 +212,10 @@ func (l *LayoutRequest) DurationText() string {
 		}
 	}
 	if isRunning {
-		return ""
+		if finishedAt != nil || startedAt != nil {
+			t := time.Time{}.Add(finishedAt.Sub(*startedAt))
+			return fmt.Sprintf("%dm%d", t.Minute(), t.Second())
+		}
 	}
 	if finishedAt != nil {
 		return time.Time{}.Add(finishedAt.Sub(*startedAt)).Format("5.000s")
@@ -306,6 +328,10 @@ func (l *LayoutRequestJob) IsCompleted() bool {
 
 func (l *LayoutRequestJob) IsRunning() bool {
 	return l.FinishedAt == nil && l.StartedAt != nil && l.ErrorAt == nil
+}
+
+func (l *LayoutRequestJob) NotStarted() bool {
+	return l.StartedAt != nil
 }
 
 func (l *LayoutRequestJob) DurationText() string {
