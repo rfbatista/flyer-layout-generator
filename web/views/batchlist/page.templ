@@ -9,11 +9,11 @@ import (
 )
 
 func renderStatus(d entities.LayoutRequest) string {
-	if d.IsCompleted() {
-		return "flex w-3 h-3 me-3 bg-green-500 rounded-full"
-	}
 	if d.IsRunning() {
 		return "flex w-3 h-3 me-3 bg-yellow-300 rounded-full"
+	}
+	if d.IsCompleted() {
+		return "flex w-3 h-3 me-3 bg-green-500 rounded-full"
 	}
 	return "flex w-3 h-3 me-3 bg-gray-200 rounded-full"
 }

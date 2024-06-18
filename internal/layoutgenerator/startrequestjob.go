@@ -28,13 +28,11 @@ func StartRequestJobUseCase(
 	req StartRequestJobInput,
 ) error {
 	ctx := context.TODO()
-	log.Info("starting layout request")
 	layoutJobReq, err := queries.StartLayoutRequest(ctx, int64(req.ID))
 	if err != nil {
 		log.Error("failed to start layout request", zap.Error(err))
 		return err
 	}
-	log.Info("getting layout request by id")
 	layoutReq, err := queries.GetLayoutRequestByID(ctx, int64(layoutJobReq.RequestID.Int32))
 	if err != nil {
 		log.Error("não foi possivel encontrar a requisição para gerar o layout", zap.Error(err))
@@ -53,16 +51,17 @@ func StartRequestJobUseCase(
 		return err
 	}
 	job := mapper.LayoutRequestJobToDomain(layoutJobReq)
-	jobReq := GenerateDesignRequestv3{
+	jobReq := GenerateImage{
 		PhotoshopID: layoutReq.DesignID.Int32,
 		TemplateID:  layoutJobReq.TemplateID.Int32,
 	}
 	if job.Config != nil {
-		jobReq.Config = *job.Config
+		jobReq.ShowGrid = job.Config.ShowGrid
+		jobReq.SlotsX = job.Config.SlotsX
+		jobReq.SlotsY = job.Config.SlotsY
+		jobReq.Padding = job.Config.Padding
 	}
-
-	log.Info("generating design in v3")
-	out, err := GenerateDesignUseCasev3(
+	out, err := GenerateImageUseCase(
 		ctx,
 		jobReq,
 		queries,

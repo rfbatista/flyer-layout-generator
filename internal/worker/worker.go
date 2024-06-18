@@ -6,7 +6,10 @@ import (
 	"algvisual/internal/layoutgenerator"
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,7 +18,10 @@ import (
 
 var ticker = time.NewTicker(5 * time.Second)
 
-var quit = make(chan struct{})
+var (
+	quit         = make(chan struct{})
+	gracefulStop = make(chan os.Signal, 1)
+)
 
 func NewWorkerPool(
 	client *infra.ImageGeneratorClient,
@@ -46,12 +52,21 @@ type WorkerPool struct {
 
 func (w WorkerPool) Start() {
 	w.log.Info("starting worker pool")
+	signal.Notify(gracefulStop, syscall.SIGTERM)
 	go func() {
+		defer func() {
+			w.log.Warn("closing worker thread")
+		}()
 		for {
 			select {
 			case <-ticker.C:
 				createWorkerPool(w.client, w.queries, w.db, w.config, w.log, w.sse)
 			case <-quit:
+				ticker.Stop()
+				w.log.Info("closing worker pool")
+				return
+			case <-gracefulStop:
+				w.log.Info("closing worker pool")
 				ticker.Stop()
 				return
 			}
@@ -59,7 +74,12 @@ func (w WorkerPool) Start() {
 	}()
 }
 
+func (w WorkerPool) Close() {
+	quit <- struct{}{}
+}
+
 func worker(
+	wid int,
 	wg *sync.WaitGroup,
 	id int32,
 	client *infra.ImageGeneratorClient,
@@ -70,6 +90,8 @@ func worker(
 	sse *infra.ServerSideEventManager,
 ) {
 	defer func() {
+		log.Debug("closing worker")
+		wg.Done()
 		if r := recover(); r != nil {
 			err, ok := r.(error)
 			if ok {
@@ -83,7 +105,7 @@ func worker(
 	if err != nil {
 		log.Error("falha ao enviar evento sse", zap.Error(err))
 	}
-	log.Info("starting request job")
+	log.Debug(fmt.Sprintf("starting request job %d", wid))
 	err = layoutgenerator.StartRequestJobUseCase(
 		client,
 		queries,
@@ -99,7 +121,7 @@ func worker(
 	if err != nil {
 		log.Error("falha ao enviar evento sse", zap.Error(err))
 	}
-	wg.Done()
+	log.Debug(fmt.Sprintf("finishing request job %d", wid))
 }
 
 func createWorkerPool(
@@ -110,22 +132,25 @@ func createWorkerPool(
 	log *zap.Logger,
 	sse *infra.ServerSideEventManager,
 ) error {
-	log.Info("buscando novo bactch de jobs")
+	log.Debug("buscando novo bactch de jobs")
 	out, err := layoutgenerator.ListLayoutRequestJobsNotStartedUseCase(context.TODO(), queries)
 	if err != nil {
 		log.Error("Falha na listagem de jobs não inicializados", zap.Error(err))
 		return err
 	}
 	if len(out.Data) == 0 {
-		log.Info("nenhum job para ser processado")
+		log.Debug("nenhum job para ser processado")
 		return nil
 	}
-	log.Info(fmt.Sprintf("iniciando processamento de %d jobs", len(out.Data)))
+	log.Debug(fmt.Sprintf("iniciando processamento de %d jobs", len(out.Data)))
 	var wg sync.WaitGroup
-	wg.Add(len(out.Data))
-	for _, l := range out.Data {
-		go worker(&wg, l.ID, client, queries, db, config, log, sse)
+	for idx, l := range out.Data {
+		log.Debug("spawning request workers")
+		wg.Add(1)
+		go worker(idx, &wg, l.ID, client, queries, db, config, log, sse)
 	}
+	log.Debug("waiting request workers")
 	wg.Wait()
+	log.Debug("request workers finished")
 	return nil
 }

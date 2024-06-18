@@ -56,6 +56,7 @@ func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
+			params.Logger.Info("closing server")
 			params.Conn.Close()
 			return params.Server.Shutdown(ctx)
 		},

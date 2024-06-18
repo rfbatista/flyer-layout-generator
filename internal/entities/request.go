@@ -256,6 +256,22 @@ func (l *LayoutRequestJob) StartedAtText() string {
 	return l.StartedAt.Format(timeformat)
 }
 
+func (l *LayoutRequestJob) StartedAtTimeText() string {
+	if l.StartedAt == nil {
+		return ""
+	}
+	d := l.StartedAt
+	return fmt.Sprintf("%d:%d:%d", d.Hour(), d.Minute(), d.Second())
+}
+
+func (l *LayoutRequestJob) FinishedAtTimeText() string {
+	if l.FinishedAt == nil {
+		return ""
+	}
+	d := l.FinishedAt
+	return fmt.Sprintf("%d:%d:%d", d.Hour(), d.Minute(), d.Second())
+}
+
 func (l *LayoutRequestJob) StoppedAtText() string {
 	if l.StoppedAt == nil {
 		return ""

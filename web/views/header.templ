@@ -14,6 +14,8 @@ templ Header() {
 	<link href={ fmt.Sprintf("/web/css/style.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/multi-select.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/output.css?time=%s", time.Now().String()) } rel="stylesheet"/>
+	<link href={ fmt.Sprintf("/web/css/owl.carousel.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
+	<link href={ fmt.Sprintf("/web/css/owl.theme.default.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"/>
 	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 	<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
@@ -24,5 +26,7 @@ templ Header() {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
 	<!-- Alpine Core -->
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.0/dist/cdn.min.js"></script>
+	<script src="/web/js/jquery-3.7.1.min.js"></script>
 	<script src="/web/js/toast.js"></script>
+	<script src="/web/js/owl.carousel.min.js"></script>
 }

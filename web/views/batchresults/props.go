@@ -5,6 +5,8 @@ import (
 	"algvisual/internal/entities"
 	"algvisual/internal/layoutgenerator"
 	"context"
+	"fmt"
+	"sort"
 
 	"go.uber.org/zap"
 )
@@ -37,15 +39,23 @@ func Props(
 		list[temp.Name] = append(list[temp.Name], j)
 	}
 	for idx, c := range list {
-		var images []string
+		var jobs []entities.LayoutRequestJob
 		for _, i := range c {
-			images = append(images, i.ImageURL)
+			if i.ImageURL == "" {
+				continue
+			}
+			jobs = append(jobs, i)
 		}
 		props.Collections = append(props.Collections, ResultCollection{
-			Name:   idx,
-			Images: images,
+			Name:    idx,
+			Total:   fmt.Sprintf("%d", len(c)),
+			Created: fmt.Sprintf("%d", len(jobs)),
+			Jobs:    jobs,
 		})
 	}
+	sort.Slice(props.Collections, func(i, j int) bool {
+		return len(props.Collections[i].Jobs) > len(props.Collections[j].Jobs)
+	})
 	if err != nil {
 		return props, err
 	}

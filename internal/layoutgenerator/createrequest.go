@@ -15,7 +15,6 @@ type CreateLayoutRequestInput struct {
 	DesignID              int32    `form:"design_id"               json:"design_id,omitempty"`
 	LimitSizerPerElement  bool     `form:"limit_sizer_per_element" json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool     `form:"anchor_elements"         json:"anchor_elements,omitempty"`
-	ShowGrid              bool     `form:"show_grid"               json:"show_grid,omitempty"`
 	MinimiumComponentSize int32    `form:"minimium_component_size" json:"minimium_component_size,omitempty"`
 	MinimiumTextSize      int32    `form:"minimium_text_size"      json:"minimium_text_size,omitempty"`
 	Templates             []int32  `form:"templates[]"             json:"templates,omitempty"`
@@ -61,11 +60,11 @@ func CreateLayoutRequestUseCase(
 			c, unmarshErr := json.Marshal(entities.LayoutRequestConfig{
 				LimitSizerPerElement:  req.LimitSizerPerElement,
 				AnchorElements:        req.AnchorElements,
-				ShowGrid:              req.ShowGrid,
+				ShowGrid:              false,
 				MinimiumComponentSize: req.MinimiumComponentSize,
 				MinimiumTextSize:      req.MinimiumComponentSize,
 				Grid:                  grid,
-				Padding:               req.Padding,
+				Padding:               10,
 				KeepProportions:       req.KeepProportions,
 				SlotsX:                grid.SlotsX,
 				SlotsY:                grid.SlotsY,

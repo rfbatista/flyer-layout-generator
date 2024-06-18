@@ -50,14 +50,6 @@ const (
 
 func (t *Template) Grids() []Grid {
 	var g []Grid
-	if true {
-		grid, _ := NewGrid(
-			WithDefault(t.Width, t.Height),
-			WithCells(int32(3), int32(3)),
-		)
-		g = append(g, *grid)
-		return g
-	}
 	maxXSlots := t.Width / minSlotSize
 	if maxXSlots > maxSlots {
 		maxXSlots = maxSlots
@@ -80,6 +72,7 @@ func (t *Template) Grids() []Grid {
 			}
 			grid, _ := NewGrid(
 				WithDefault(t.Width, t.Height),
+				WithPivot(int32(slotWidth), int32(slotHeight)),
 				WithCells(int32(x), int32(y)),
 			)
 			if grid != nil {

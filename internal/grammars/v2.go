@@ -2,7 +2,6 @@ package grammars
 
 import (
 	"algvisual/internal/entities"
-	"fmt"
 	"sort"
 
 	"go.uber.org/zap"
@@ -187,8 +186,7 @@ func Stage4(
 		entities.WithCells(prevGrid.SlotsX, prevGrid.SlotsY),
 	)
 	for _, c := range prevLayout.Components {
-		fmt.Println(c.ID)
-		prevGrid.PrintGrid(c.ID)
+		// prevGrid.PrintGrid(c.ID)
 		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
 			c.ApplyPadding(original.Config.Padding)
 			stageComponents = append(stageComponents, c)
@@ -203,7 +201,7 @@ func Stage4(
 		c.MoveTo(cont.UpperLeft)
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.CenterInContainer(*cont)
-		prevGrid.PrintGrid(c.ID)
+		// prevGrid.PrintGrid(c.ID)
 		c.ApplyPadding(original.Config.Padding)
 		stageComponents = append(stageComponents, c)
 	}

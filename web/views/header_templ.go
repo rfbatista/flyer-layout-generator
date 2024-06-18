@@ -65,7 +65,33 @@ func Header() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css\"><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js\"></script><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script><!-- Alpine Plugins --><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js\"></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js\"></script><!-- Alpine Core --><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.14.0/dist/cdn.min.js\"></script><script src=\"/web/js/toast.js\"></script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" rel=\"stylesheet\"><link href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/web/css/owl.carousel.min.css?time=%s", time.Now().String()))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/header.templ`, Line: 17, Col: 87}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" rel=\"stylesheet\"><link href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/web/css/owl.theme.default.min.css?time=%s", time.Now().String()))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/header.templ`, Line: 18, Col: 92}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css\"><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js\"></script><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script><!-- Alpine Plugins --><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js\"></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js\"></script><!-- Alpine Core --><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.14.0/dist/cdn.min.js\"></script><script src=\"/web/js/jquery-3.7.1.min.js\"></script><script src=\"/web/js/toast.js\"></script><script src=\"/web/js/owl.carousel.min.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

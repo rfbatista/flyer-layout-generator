@@ -73,5 +73,6 @@ func SaveLayout(
 	if err != nil {
 		return err
 	}
+	tx.Commit(ctx)
 	return nil
 }
