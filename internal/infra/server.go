@@ -2,7 +2,6 @@ package infra
 
 import (
 	"algvisual/internal/ports"
-	"algvisual/internal/shared"
 	"fmt"
 	"net/http"
 	"time"
@@ -40,40 +39,9 @@ type HTTPErrorResult struct {
 	Error       HTTPError `json:"error,omitempty"`
 }
 
-func customHTTPErrorHandler(err error, c echo.Context) {
-	var result HTTPErrorResult
-	var errorDetails HTTPError
-	he, ok := err.(*shared.AppError)
-	result.Status = "error"
-	if ok {
-		result.StatusCode = he.StatusCode
-		errorDetails.Message = he.Message
-		errorDetails.Timestamp = he.Timestamp
-		errorDetails.Details = he.Detail
-		result.Error = errorDetails
-	} else {
-		result.StatusCode = 500
-		errorDetails.Message = err.Error()
-		errorDetails.Timestamp = time.Now()
-	}
-	result.Error = errorDetails
-
-	if !c.Response().Committed {
-		if c.Request().Method == http.MethodHead {
-			err = c.NoContent(result.StatusCode)
-		} else {
-			err = c.JSON(result.StatusCode, result)
-		}
-		if err != nil {
-			c.Echo().Logger.Error(err)
-		}
-	}
-}
-
 func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e := echo.New()
-	e.HTTPErrorHandler = customHTTPErrorHandler
-	// e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+	e.HTTPErrorHandler = HTTPErrorHandler
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(

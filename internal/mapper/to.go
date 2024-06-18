@@ -5,17 +5,24 @@ import (
 	"algvisual/internal/entities"
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 func LayoutRequestToDomain(raw database.LayoutRequest) entities.LayoutRequest {
+	var createdAt *time.Time
+	var startedAt *time.Time
+	var stoppedAt *time.Time
+	var errorAt *time.Time
+	if raw.CreatedAt.Valid {
+		createdAt = &raw.CreatedAt.Time
+	}
 	return entities.LayoutRequest{
 		ID:        int32(raw.ID),
 		DesignID:  raw.DesignID.Int32,
-		CreatedAt: raw.CreatedAt.Time,
-		StartedAt: raw.StartedAt.Time,
-		StoppedAt: raw.StartedAt.Time,
-		ErrorAt:   raw.ErrorAt.Time,
-		Status:    raw.Status.String,
+		CreatedAt: createdAt,
+		StartedAt: startedAt,
+		StoppedAt: stoppedAt,
+		ErrorAt:   errorAt,
 	}
 }
 

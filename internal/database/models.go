@@ -220,18 +220,12 @@ type LayoutRegion struct {
 }
 
 type LayoutRequest struct {
-	ID         int64            `json:"id"`
-	DesignID   pgtype.Int4      `json:"design_id"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
-	StartedAt  pgtype.Timestamp `json:"started_at"`
-	Status     pgtype.Text      `json:"status"`
-	Log        pgtype.Text      `json:"log"`
-	Config     pgtype.Text      `json:"config"`
-	FinishedAt pgtype.Timestamp `json:"finished_at"`
-	ErrorAt    pgtype.Timestamp `json:"error_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
-	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+	ID        int64            `json:"id"`
+	DesignID  pgtype.Int4      `json:"design_id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	Log       pgtype.Text      `json:"log"`
+	Config    pgtype.Text      `json:"config"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
 type LayoutRequestsJob struct {

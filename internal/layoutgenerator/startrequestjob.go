@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/internal/database"
+	"algvisual/internal/entities"
 	"algvisual/internal/infra"
 	"algvisual/internal/mapper"
 	"context"
@@ -43,6 +44,8 @@ func StartRequestJobUseCase(
 			DoAddErrorAt:       true,
 			ErrorAt:            pgtype.Timestamp{Time: time.Now(), Valid: true},
 			LayoutRequestJobID: layoutJobReq.ID,
+			DoAddStatus:        true,
+			Status:             pgtype.Text{String: entities.RequestStatusRunning.String()},
 		})
 		if uerr != nil {
 			return uerr
@@ -75,6 +78,8 @@ func StartRequestJobUseCase(
 			DoAddErrorAt:       true,
 			ErrorAt:            pgtype.Timestamp{Time: time.Now(), Valid: true},
 			LayoutRequestJobID: layoutJobReq.ID,
+			DoAddStatus:        true,
+			Status:             pgtype.Text{String: entities.RequestStatusError.String()},
 		})
 		if uerr != nil {
 			return uerr
@@ -88,6 +93,8 @@ func StartRequestJobUseCase(
 		LayoutRequestJobID: layoutJobReq.ID,
 		DoAddImageUrl:      true,
 		ImageUrl:           pgtype.Text{String: out.Data.ImageURL, Valid: true},
+		DoAddStatus:        true,
+		Status:             pgtype.Text{String: entities.RequestStatusFinished.String()},
 	})
 	if uerr != nil {
 		return uerr

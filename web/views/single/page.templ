@@ -1,4 +1,4 @@
-package batch
+package single
 
 import (
 	"algvisual/web/views"
@@ -9,10 +9,9 @@ import (
 type PageProps struct {
 	files    []entities.DesignFile
 	template []entities.Template
-	types    []string
 }
 
-templ Page(props PageProps) {
+templ HomePage(props PageProps) {
 	<html>
 		<head>
 			@views.Header()
@@ -20,8 +19,13 @@ templ Page(props PageProps) {
 		<body>
 			@layout.Layout() {
 				<div class="min-h-screen flex">
-					<div class="flex-2 p-3 mx-auto mt-10">
+					<div class="flex-2 p-3 border border-r-neutral-200/80">
 						@Form(props)
+					</div>
+					<div class="flex-1 ...">
+						<div class="h-screen flex items-center justify-center p-10">
+							<div id="layout-result"></div>
+						</div>
 					</div>
 				</div>
 			}

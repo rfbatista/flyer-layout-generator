@@ -29,6 +29,7 @@ const (
 	PageHomeCreateRequest RoutePath = "/request/generation"
 	PageHomeCreateImage   RoutePath = "/image/create"
 	PageJobs              RoutePath = "/jobs"
+	PageSingleJob         RoutePath = "/single"
 	PageProccessDesing    RoutePath = "/process"
 	PageGenerateImage     RoutePath = "/generate"
 

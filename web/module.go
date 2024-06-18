@@ -2,10 +2,13 @@ package web
 
 import (
 	"algvisual/internal/ports"
+	"algvisual/web/views/batch"
+	"algvisual/web/views/batchlist"
+	"algvisual/web/views/batchresults"
 	"algvisual/web/views/components"
 	"algvisual/web/views/files"
-	"algvisual/web/views/home"
 	"algvisual/web/views/jobs"
+	"algvisual/web/views/single"
 	"algvisual/web/views/templates"
 	"fmt"
 
@@ -38,8 +41,8 @@ func AsController(f any) any {
 }
 
 var Module = fx.Options(fx.Provide(
-	protected(home.NewPageHome),
-	protected(home.CreateImage),
+	protected(single.NewPageHome),
+	protected(single.CreateImage),
 	protected(files.NewPage),
 	protected(files.NewUploadDesignAPI),
 	protected(files.NewProcessDesignFile),
@@ -48,4 +51,8 @@ var Module = fx.Options(fx.Provide(
 	protected(components.CreateComponent),
 	protected(jobs.NewPage),
 	protected(templates.NewPage),
+	protected(batch.NewPage),
+	protected(batchlist.NewPage),
+	protected(batch.CreateRequest),
+	protected(batchresults.NewPage),
 ))

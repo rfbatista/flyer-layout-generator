@@ -1,9 +1,8 @@
-package batch
+package single
 
 import (
 	"algvisual/internal/database"
 	"algvisual/internal/designprocessor"
-	"algvisual/internal/entities"
 	"algvisual/internal/templates"
 	"context"
 
@@ -22,12 +21,5 @@ func Props(ctx context.Context, db *database.Queries, log *zap.Logger) (PageProp
 	}
 	props.files = out.Data
 	props.template = templateOut.Data
-	props.types = []string{
-		entities.ComponentTypeGrafismo.ToString(),
-		entities.ComponentTypeMarca.ToString(),
-		entities.ComponentTypeModelo.ToString(),
-		entities.ComponentTypeOferta.ToString(),
-		entities.ComponentTypeCelebridade.ToString(),
-	}
 	return props, nil
 }

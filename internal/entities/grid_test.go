@@ -115,7 +115,7 @@ func TestNewGrid(t *testing.T) {
 			tt.Errorf("error creating grid: %v", err)
 		}
 		x, y, found := t1.FindSpace(
-			NewPoint(0, 2),
+			NewPosition(0, 2),
 			NewContainer(NewPoint(0, 0), NewPoint(100, 150)),
 		)
 		if !found {
@@ -135,7 +135,7 @@ func TestNewGrid(t *testing.T) {
 			tt.Errorf("error creating grid: %v", err)
 		}
 		c, err := t1.FindPositionsToFitBasedOnPivot(
-			NewPoint(0, 2),
+			NewPosition(0, 2),
 			NewContainer(NewPoint(0, 0), NewPoint(100, 150)),
 		)
 		if err != nil {
@@ -154,7 +154,7 @@ func TestNewGrid(t *testing.T) {
 			}
 			gridc := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
 			_, found, err := t1.FindPositionToFitGridContainer(
-				NewPoint(0, 2),
+				NewPosition(0, 2),
 				gridc,
 				10,
 			)
@@ -175,7 +175,7 @@ func TestNewGrid(t *testing.T) {
 			t2.position[1][0].Ocupy(10)
 			gridc2 := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
 			gridcresult2, found2, err2 := t2.FindPositionToFitGridContainer(
-				NewPoint(0, 2),
+				NewPosition(0, 2),
 				gridc2,
 				11,
 			)
@@ -233,7 +233,7 @@ func TestNewGrid(t *testing.T) {
 		t3.position[1][1].Ocupy(10)
 		gridc3 := NewGridContainer(NewPosition(0, 0), NewPosition(1, 1))
 		d, found, err3 := t3.FindPositionToFitGridContainer(
-			NewPoint(0, 2),
+			NewPosition(0, 2),
 			gridc3,
 			11,
 		)

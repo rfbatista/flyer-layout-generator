@@ -16,7 +16,7 @@ type RegisterHooksParams struct {
 func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			// params.WorkerPool.Start()
+			params.WorkerPool.Start()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {

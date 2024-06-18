@@ -33,7 +33,7 @@ def build_image(req: BuildImageRequest):
     created_at = datetime.now(timezone.utc)
     draw = ImageDraw.Draw(img)
     if req.prancheta.grid is not None:
-        if req.prancheta.grid.regions is not None and len(req.prancheta.grid.rectangle) > 0:
+        if req.prancheta.grid.regions is not None and len(req.prancheta.grid.regions) > 0:
             for i in req.prancheta.grid.regions:
                 draw.rectangle([(i.xi,i.yi),(i.xii,i.yii)], outline ="red")
 

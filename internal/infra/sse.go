@@ -100,12 +100,10 @@ func (s ServerSideEventManager) BroadCastEvent(e Event) error {
 
 func (s ServerSideEventManager) HandleConnection(c echo.Context) error {
 	s.log.Info("SSE client connected, ip: %v", zap.String("ip", c.RealIP()))
-
 	w := c.Response()
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
-
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	for {

@@ -204,14 +204,8 @@ CREATE TABLE layout_requests (
   id   BIGSERIAL PRIMARY KEY,
   design_id INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  stopped_at TIMESTAMP,
-  started_at TIMESTAMP,
-  status TEXT,
   log TEXT,
   config TEXT,
-  finished_at TIMESTAMP,
-  error_at TIMESTAMP,
-  updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
   FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -12,15 +12,16 @@ import (
 )
 
 type CreateLayoutRequestInput struct {
-	DesignID              int32   `form:"design_id"               json:"design_id,omitempty"`
-	LimitSizerPerElement  bool    `form:"limit_sizer_per_element" json:"limit_sizer_per_element,omitempty"`
-	AnchorElements        bool    `form:"anchor_elements"         json:"anchor_elements,omitempty"`
-	ShowGrid              bool    `form:"show_grid"               json:"show_grid,omitempty"`
-	MinimiumComponentSize int32   `form:"minimium_component_size" json:"minimium_component_size,omitempty"`
-	MinimiumTextSize      int32   `form:"minimium_text_size"      json:"minimium_text_size,omitempty"`
-	Templates             []int32 `form:"templates[]"             json:"templates,omitempty"`
-	Padding               int32   `form:"padding"                 json:"padding,omitempty"`
-	KeepProportions       bool    `form:"keep_proportions"        json:"keep_proportions,omitempty"`
+	DesignID              int32    `form:"design_id"               json:"design_id,omitempty"`
+	LimitSizerPerElement  bool     `form:"limit_sizer_per_element" json:"limit_sizer_per_element,omitempty"`
+	AnchorElements        bool     `form:"anchor_elements"         json:"anchor_elements,omitempty"`
+	ShowGrid              bool     `form:"show_grid"               json:"show_grid,omitempty"`
+	MinimiumComponentSize int32    `form:"minimium_component_size" json:"minimium_component_size,omitempty"`
+	MinimiumTextSize      int32    `form:"minimium_text_size"      json:"minimium_text_size,omitempty"`
+	Templates             []int32  `form:"templates[]"             json:"templates,omitempty"`
+	Padding               int32    `form:"padding"                 json:"padding,omitempty"`
+	Priority              []string `form:"priority[]"              json:"priority,omitempty"`
+	KeepProportions       bool     `form:"keep_proportions"        json:"keep_proportions,omitempty"`
 }
 
 type CreateLayoutRequestOutput struct {
@@ -68,6 +69,7 @@ func CreateLayoutRequestUseCase(
 				KeepProportions:       req.KeepProportions,
 				SlotsX:                grid.SlotsX,
 				SlotsY:                grid.SlotsY,
+				Priorities:            entities.NewLayoutRequestConfigPriority(req.Priority),
 			})
 			if unmarshErr != nil {
 				return nil, unmarshErr

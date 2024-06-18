@@ -13,3 +13,4 @@ proxy.log
 .idea
 /data
 venv
+.null-ls*

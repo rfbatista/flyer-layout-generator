@@ -1,4 +1,4 @@
-package batch
+package batchresults
 
 import (
 	"algvisual/internal/database"
@@ -20,9 +20,14 @@ func NewPage(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath("/")
+	h.SetPath("/batch/:request_id/results")
 	h.SetHandle(func(c echo.Context) error {
-		props, err := Props(c.Request().Context(), queries, log)
+		var req request
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		props, err := Props(c.Request().Context(), queries, log, req)
 		if err != nil {
 			log.Error("failed to render home page", zap.Error(err))
 			return err
@@ -40,14 +45,19 @@ func CreateRequest(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath("/request/batch")
+	h.SetPath(shared.PageHomeCreateRequest.String())
 	h.SetHandle(func(c echo.Context) error {
 		var req layoutgenerator.CreateLayoutRequestInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.CreateLayoutRequestUseCase(c.Request().Context(), queries, db, req)
+		out, err := layoutgenerator.CreateLayoutRequestUseCase(
+			c.Request().Context(),
+			queries,
+			db,
+			req,
+		)
 		if err != nil {
 			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)

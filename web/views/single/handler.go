@@ -1,7 +1,8 @@
-package batch
+package single
 
 import (
 	"algvisual/internal/database"
+	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"algvisual/web/render"
@@ -13,47 +14,57 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewPage(
+func NewPageHome(
 	queries *database.Queries,
 	conn *pgxpool.Pool,
 	log *zap.Logger,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath("/")
+	h.SetPath(shared.PageSingleJob.String())
 	h.SetHandle(func(c echo.Context) error {
 		props, err := Props(c.Request().Context(), queries, log)
 		if err != nil {
 			log.Error("failed to render home page", zap.Error(err))
 			return err
 		}
-		return render.Render(c, http.StatusOK, Page(props))
+		return render.Render(c, http.StatusOK, HomePage(props))
 	})
 	return h
 }
 
-func CreateRequest(
+func CreateImage(
 	queries *database.Queries,
 	conn *pgxpool.Pool,
 	log *zap.Logger,
 	db *pgxpool.Pool,
+	config *infra.AppConfig,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath("/request/batch")
+	h.SetPath(shared.PageHomeCreateImage.String())
 	h.SetHandle(func(c echo.Context) error {
-		var req layoutgenerator.CreateLayoutRequestInput
+		var req layoutgenerator.GenerateImage
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.CreateLayoutRequestUseCase(c.Request().Context(), queries, db, req)
+		out, err := layoutgenerator.GenerateImageUseCase(
+			c.Request().Context(),
+			req,
+			queries,
+			db,
+			*config,
+			log,
+		)
 		if err != nil {
 			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
 		shared.SuccessNotification(c, "sucesso")
-		return c.JSON(http.StatusOK, out)
+		return shared.RenderComponent(
+			shared.WithComponent(Image(out.Data.ImageURL, 100, 100), c),
+		)
 	})
 	return h
 }

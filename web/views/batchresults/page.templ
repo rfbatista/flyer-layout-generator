@@ -1,0 +1,42 @@
+package batchresults
+
+import (
+	"algvisual/web/views"
+	"algvisual/web/components/layout"
+)
+
+type ResultCollection struct {
+	Name   string
+	Images []string
+}
+
+type PageProps struct {
+	Collections []ResultCollection
+}
+
+templ Page(props PageProps) {
+	<html>
+		<head>
+			@views.Header()
+		</head>
+		<body>
+			@layout.Layout() {
+				<div class="min-h-screen flex p-2">
+					for _, r := range props.Collections {
+						<div class="flex flex-col">
+							<span>{ r.Name }</span>
+							<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+								for _, i := range r.Images {
+									<div style="width:250px;height:250px" class="flex">
+										<img class="rounded-lg m-auto" style="display: block;max-width:250px;max-height:250px;width: auto;height: auto;" src={ i } alt=""/>
+									</div>
+								}
+							</div>
+						</div>
+					}
+				</div>
+			}
+			<script src="/web/js/jquery.multi-select.js" type="text/javascript"></script>
+		</body>
+	</html>
+}

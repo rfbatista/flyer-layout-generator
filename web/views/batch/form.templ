@@ -1,9 +1,7 @@
-package home
-
-import "algvisual/web/components/toggle"
+package batch
 
 templ Form(props PageProps) {
-	<form id="generate-request-form" class="form" hx-encoding="multipart/form-data" hx-post="/request/generation" hx-swap="none">
+	<form id="generate-request-form" class="form" hx-encoding="multipart/form-data" hx-post="/request/batch" hx-swap="none">
 		<div class="form-block">
 			<label class="form-label">Arquivo</label>
 			<select id="file" name="design_id" class="form-select">
@@ -17,34 +15,52 @@ templ Form(props PageProps) {
 			<button type="button" onclick="$('#templates').multiSelect('select_all')">Selecionar todos</button>
 			|
 			<button type="button" onclick="$('#templates').multiSelect('deselect_all');">Deselecionar todos</button>
-			<select class="form-select" multiple="multiple" id="templates" name="templates[]">
+			<select class="form-select" multiple="multiple" id="templates" name="templates[]" required>
 				for _, t := range props.template {
 					<option value={ t.SID() }>{ t.Name } <i class="text-slate-300">{ t.SWidth() }x{ t.SHeigth() }</i></option>
 				}
 			</select>
 		</div>
-		<div class="mb-5">
-			<label for="base-input" class="input-label">Margem</label>
-			<input type="number" class="input" name="padding" value="0"/>
+		<div class="form-block">
+			<label class="form-label">Prioridades</label>
+			<div class="container w-full" x-data="sort()" x-init="init()">
+				<ul class="" x-ref="items" id="items">
+					for _, t := range props.types {
+						<li class="priority-item flex items-center border rounded shadow bg-white p-4 my-4">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"></path>
+							</svg>
+							<input type="hidden" id="hiddenInput" name="priority[]"/>
+							<span class="text-sm font-bold text-gray-600" id="priority">{ t }</span>
+						</li>
+					}
+				</ul>
+			</div>
 		</div>
-		<div class="mb-5">
-			<label for="base-input" class="input-label">Tamanho minimo dos componentes</label>
-			<input type="number" class="input" name="minimium_component_size" value="50"/>
-		</div>
-		<div class="mb-5">
-			<label for="base-input" class="input-label">Tamanho minimo dos textos</label>
-			<input type="number" class="input" name="minimium_text_size" value="12"/>
-		</div>
-		@toggle.Toggle("Manter proporções", "true", "keep_proportions")
-		@toggle.Toggle("Ancorar elementos", "true", "anchor_elements")
-		@toggle.Toggle("Definir tamanhos limite por tipo de componente", "true", "limit_sizer_per_element")
-		@toggle.Toggle("Mostrar grid", "true", "show_grid")
 		<div>
 			<button type="submit" class="btn">Gerar</button>
 		</div>
 	</form>
 	<section id="toast-container"></section>
 	<script type="text/javascript">
+    document.getElementById('generate-request-form').addEventListener('submit', function(event) {
+        Array.from(document.getElementsByClassName('priority-item')).forEach((i) => {
+         const text = i.querySelector('#priority').textContent;
+          i.querySelector('#hiddenInput').value = text;
+        })
+    });
+    function sort() {
+        return {
+            config: {
+                animation: 150,
+                ghostClass: 'opacity-20',
+                dragClass: 'bg-blue-50',
+            },
+            init() {
+                Sortable.create(this.$refs.items, this.config);
+            }
+        }
+    }
     const Toast = Swal.mixin({
       toast: true,
       position: 'center',
@@ -57,7 +73,6 @@ templ Form(props PageProps) {
       timerProgressBar: true,
     })
     document.body.addEventListener("makeToast", async function(evt){
-      console.log(evt.detail)
       if(evt.detail.level == "success"){
         await Toast.fire({
           icon: 'success',

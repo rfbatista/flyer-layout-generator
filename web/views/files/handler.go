@@ -64,7 +64,7 @@ func NewUploadDesignAPI(
 		}
 		src, err := file.Open()
 		if err != nil {
-			shared.Error(c, err.Error())
+			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
 		defer src.Close()
@@ -80,10 +80,10 @@ func NewUploadDesignAPI(
 			log,
 		)
 		if err != nil {
-			shared.Error(c, err.Error())
+			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
-		shared.Success(c, "sucesso")
+		shared.SuccessNotification(c, "sucesso")
 		return c.JSON(http.StatusOK, out)
 	})
 	return h
@@ -103,7 +103,7 @@ func NewProcessDesignFile(
 		var req designprocessor.ProcessDesignFileRequestv2
 		err := c.Bind(&req)
 		if err != nil {
-			shared.Error(c, err.Error())
+			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
 		out, err := designprocessor.ProcessDesignFileUseCasev2(
@@ -115,10 +115,10 @@ func NewProcessDesignFile(
 			pool,
 		)
 		if err != nil {
-			shared.Error(c, err.Error())
+			shared.ErrorNotification(c, err.Error())
 			return c.NoContent(http.StatusBadRequest)
 		}
-		shared.Success(c, "sucesso")
+		shared.SuccessNotification(c, "sucesso")
 		return c.JSON(http.StatusOK, out)
 	})
 	return h

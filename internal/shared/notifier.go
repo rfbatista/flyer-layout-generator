@@ -27,7 +27,7 @@ func Info(message string) Toast {
 	return New(INFO, message)
 }
 
-func Success(c echo.Context, message string) {
+func SuccessNotification(c echo.Context, message string) {
 	New(SUCCESS, message).SetHXTriggerHeader(c)
 }
 
@@ -35,7 +35,7 @@ func Warning(message string) Toast {
 	return New(WARNING, message)
 }
 
-func Error(c echo.Context, message string) {
+func ErrorNotification(c echo.Context, message string) {
 	New(DANGER, message).SetHXTriggerHeader(c)
 }
 
