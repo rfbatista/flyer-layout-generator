@@ -14,6 +14,7 @@ import (
 	"algvisual/internal/entities"
 	"algvisual/web/components/layout"
 	"algvisual/web/views"
+	"fmt"
 )
 
 type ResultCollection struct {
@@ -48,7 +49,7 @@ func Page(props PageProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body><div x-data=\"{ imgModal : false, imgModalSrc : &#39;&#39;, imgModalDesc : &#39;&#39; }\"><template @img-modal.window=\"imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;\" x-if=\"imgModal\"><div x-transition:enter=\"transition ease-out duration-300\" x-transition:enter-start=\"opacity-0 transform scale-90\" x-transition:enter-end=\"opacity-100 transform scale-100\" x-transition:leave=\"transition ease-in duration-300\" x-transition:leave-start=\"opacity-100 transform scale-100\" x-transition:leave-end=\"opacity-0 transform scale-90\" x-on:click.away=\"imgModalSrc = &#39;&#39;\" class=\"p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75\"><div @click.away=\"imgModal = &#39;&#39;\" class=\"flex flex-col max-w-3xl max-h-full overflow-auto\"><div class=\"z-50\"><button @click=\"imgModal = &#39;&#39;\" class=\"float-right pt-2 pr-2 outline-none focus:outline-none\"><svg class=\"fill-current text-white \" xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 18 18\"><path d=\"M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z\"></path></svg></button></div><div class=\"p-2\"><img :alt=\"imgModalSrc\" class=\"object-contain h-1/2-screen\" :src=\"imgModalSrc\"><p x-text=\"imgModalDesc\" class=\"text-center text-white\"></p></div></div></div></template></div><div x-data=\"{}\" class=\"px-2\"><div class=\"flex -mx-2\"><div class=\"w-1/6 px-2\"><div class=\"bg-gray-400\"><a @click=\"$dispatch(&#39;img-modal&#39;, {  imgModalSrc: &#39;https://picsum.photos/640/480&#39;, imgModalDesc: &#39;Random Image One Description&#39; })\" class=\"cursor-pointer\"><img alt=\"Placeholder\" class=\"object-fit w-full\" src=\"https://picsum.photos/640/480\"></a></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,7 +71,7 @@ func Page(props PageProps) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(r.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 50, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -83,7 +84,7 @@ func Page(props PageProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(r.Created)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 50, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -96,7 +97,7 @@ func Page(props PageProps) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(r.Total)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 79, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 50, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -116,20 +117,42 @@ func Page(props PageProps) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><button id=\"stats-tab\" data-tabs-target=\"#stats\" type=\"button\" role=\"tab\" aria-controls=\"stats\" aria-selected=\"true\" class=\"inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Baixar</button></a></li><li class=\"w-full\"><button id=\"about-tab\" data-tabs-target=\"#about\" type=\"button\" role=\"tab\" aria-controls=\"about\" aria-selected=\"false\" class=\"inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Modificar</button></li></ul></div><a @click=\"$dispatch(&#39;img-modal&#39;, {  imgModalSrc: &#39;https://picsum.photos/640/480&#39;, imgModalDesc: &#39;Random Image One Description&#39; })\" class=\"cursor-pointer\"><img class=\"rounded-lg m-auto\" style=\"display: block;max-width:250px;max-height:250px;width: auto;height: auto;\" src=\"")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><button id=\"stats-tab\" data-tabs-target=\"#stats\" type=\"button\" role=\"tab\" aria-controls=\"stats\" aria-selected=\"true\" class=\"inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Baixar</button></a></li><li class=\"w-full\"><a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var7 string
-					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i.ImageURL)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 101, Col: 141}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+					var templ_7745c5c3_Var7 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/batch/result/%d", i.LayoutID))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\"></a></div>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><button id=\"about-tab\" data-tabs-target=\"#about\" type=\"button\" role=\"tab\" aria-controls=\"about\" aria-selected=\"false\" class=\"inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600\">Modificar</button></a></li></ul></div><div class=\"flex h-[270px] items-center justify-center\"><a @click=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var8 string
+					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$dispatch('img-modal', {  imgModalSrc: '%s', imgModalDesc: '' })", i.ImageURL))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 74, Col: 115}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"cursor-pointer\"><img class=\"rounded-lg m-auto\" style=\"display: block;max-width:250px;max-height:250px;width: auto;height: auto;\" src=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var9 string
+					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(i.ImageURL)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/batchresults/page.templ`, Line: 75, Col: 142}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\"></a></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

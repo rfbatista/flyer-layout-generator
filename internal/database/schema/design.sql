@@ -90,20 +90,16 @@ CREATE TABLE design_components
     xii        INT,
     yi         INT,
     yii        INT,
-
     bbox_xi         INT,
     bbox_xii        INT,
     bbox_yi         INT,
     bbox_yii        INT,
     priority        INT,
-
     inner_xi              INT,
     inner_xii             INT,
     inner_yi              INT,
     inner_yii             INT,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -142,6 +138,7 @@ CREATE TABLE layout (
   design_id INT,
   width INT,
   height INT,
+  data TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,

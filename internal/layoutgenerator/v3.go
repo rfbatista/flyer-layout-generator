@@ -23,6 +23,7 @@ type GenerateDesignRequestv3 struct {
 type GenerateDesignResultv3 struct {
 	Data       *GenerateImageResultV2 `json:"data,omitempty"`
 	TwistedURL string
+	Layout     *entities.Layout
 }
 
 func GenerateDesignUseCasev3(
@@ -121,12 +122,13 @@ func GenerateDesignUseCasev3(
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err
 	}
-	err = SaveLayout(ctx, *nprancheta, queries, db)
+	layoutCreated, err := SaveLayout(ctx, *nprancheta, queries, db)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
 	return &GenerateDesignResultv3{
-		Data: res,
+		Data:   res,
+		Layout: layoutCreated,
 	}, nil
 }

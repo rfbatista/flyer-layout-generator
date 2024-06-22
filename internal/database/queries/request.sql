@@ -51,6 +51,8 @@ SET
                         THEN sqlc.narg(status) ELSE status END,
     image_url = CASE WHEN @do_add_image_url::boolean
                         THEN sqlc.narg(image_url) ELSE image_url END,
+    layout_id = CASE WHEN @do_add_layout_id::boolean
+                        THEN sqlc.narg(layout_id) ELSE layout_id END,
     updated_at = now()
 WHERE id = @layout_request_job_id
 RETURNING *;

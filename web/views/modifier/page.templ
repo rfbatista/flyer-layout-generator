@@ -1,0 +1,58 @@
+package modifier
+
+import "algvisual/web/views"
+import "algvisual/internal/entities"
+import "algvisual/web/components/layout"
+import "fmt"
+import "time"
+
+type PageProps struct {
+	Layout     entities.Layout
+	LayoutJson string
+}
+
+templ Page(p PageProps, js []string, css []string) {
+	<html>
+		<head>
+			@views.Header()
+			for _, item := range css {
+				<link href={ fmt.Sprintf("/dist/%s?time=%s", item, time.Now().String()) } rel="stylesheet"/>
+			}
+		</head>
+		<body>
+			@layout.Layout() {
+				<div class="min-h-screen flex items-center justify-center">
+					<div id="canvas-container" class="flex-2 mx-auto border border-slate-200">
+						<canvas id="c" class="" layout-data={ p.LayoutJson }></canvas>
+					</div>
+				</div>
+			}
+			for _, item := range js {
+				<script type="module" src={ fmt.Sprintf("/dist/%s?time=%s", item, time.Now().String()) }></script>
+			}
+			<script>
+      const data = JSON.parse($("#c").attr('layout-data'))
+        $("#canvas-container").css("width", `${data.width}px`);
+        $("#canvas-container").css("height", `${data.height}px`);
+        $("#c").css("width", `${data.width}px`);
+        $("#c").css("height", `${data.height}px`);
+      var canvas = new fabric.Canvas('c', {
+          preserveObjectStacking: true
+        });
+      canvas.setHeight(data.height);
+      canvas.setWidth(data.width);
+        console.log(data)
+      for (const c of data.components){
+        var rec = new fabric.Rect({
+          width: c.xii - c.xi, height: c.yii - c.yi, fill: 'blue', left: c.xi, top:c.yi, 
+      objectCaching: false
+        });
+        console.log(c)
+        canvas.add(rec)
+      }
+      console.log(canvas.getObjects())
+    canvas.renderAll();
+      </script>
+		</body>
+	</html>
+}

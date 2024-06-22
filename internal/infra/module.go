@@ -21,27 +21,33 @@ var Module = fx.Options(
 		NewPhotoshpProcessor,
 		NewImageGenerator,
 		NewServerSideEventManager,
+		NewBundler,
 	),
 	fx.Invoke(RegisterHooks),
 )
 
 type RegisterHooksParams struct {
 	fx.In
-	Server *echo.Echo
-	Logger *zap.Logger
-	Config *AppConfig
-	Conn   *pgxpool.Pool
-	SSE    *ServerSideEventManager
+	Server  *echo.Echo
+	Logger  *zap.Logger
+	Config  *AppConfig
+	Conn    *pgxpool.Pool
+	SSE     *ServerSideEventManager
+	Bundler *Bundler
 }
 
 func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
+			err := params.Bundler.Build()
+			if err != nil {
+				return err
+			}
 			params.Logger.Info(
 				"starting http server",
 				zap.String("port", params.Config.HTTPServer.Port),
 			)
-			err := params.Conn.Ping(ctx)
+			err = params.Conn.Ping(ctx)
 			if err != nil {
 				return err
 			}

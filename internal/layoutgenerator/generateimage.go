@@ -19,18 +19,19 @@ type GenerateImage struct {
 	TemplateID            int32 `form:"template_id" json:"template_id,omitempty"`
 	LimitSizerPerElement  bool  `                   json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool  `                   json:"anchor_elements,omitempty"`
-	ShowGrid              bool  `form:"show_grid"                   json:"show_grid,omitempty"`
+	ShowGrid              bool  `form:"show_grid"   json:"show_grid,omitempty"`
 	MinimiumComponentSize int32 `                   json:"minimium_component_size,omitempty"`
 	MinimiumTextSize      int32 `                   json:"minimium_text_size,omitempty"`
 	SlotsX                int32 `form:"grid_x"      json:"slots_x,omitempty"`
 	SlotsY                int32 `form:"grid_y"      json:"slots_y,omitempty"`
-	Padding               int32 `form:"padding"                   json:"padding,omitempty"`
+	Padding               int32 `form:"padding"     json:"padding,omitempty"`
 	KeepProportions       bool  `                   json:"keep_proportions,omitempty"`
 }
 
 type GenerateImageOutput struct {
 	Data       *GenerateImageResultV2 `json:"data,omitempty"`
 	TwistedURL string
+	Layout     *entities.Layout
 }
 
 func GenerateImageUseCase(
@@ -110,7 +111,8 @@ func GenerateImageUseCase(
 		Background: bg,
 		Components: components,
 		Config: entities.LayoutRequestConfig{
-			Padding: req.Padding,
+			Padding:  req.Padding,
+			ShowGrid: true,
 		},
 	}
 	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
@@ -125,12 +127,13 @@ func GenerateImageUseCase(
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err
 	}
-	err = SaveLayout(ctx, *nprancheta, queries, db)
+	layoutCreated, err := SaveLayout(ctx, *nprancheta, queries, db)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
 	return &GenerateImageOutput{
-		Data: res,
+		Data:   res,
+		Layout: layoutCreated,
 	}, nil
 }

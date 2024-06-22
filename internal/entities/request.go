@@ -164,7 +164,7 @@ func (l *LayoutRequest) IsRunning() bool {
 			isRunning = true
 		}
 		if j.NotStarted() {
-			isRunning = true
+			isRunning = false
 		}
 	}
 	return isRunning
@@ -212,7 +212,7 @@ func (l *LayoutRequest) DurationText() string {
 		}
 	}
 	if isRunning {
-		if finishedAt != nil || startedAt != nil {
+		if finishedAt != nil && startedAt != nil {
 			t := time.Time{}.Add(finishedAt.Sub(*startedAt))
 			return fmt.Sprintf("%dm%d", t.Minute(), t.Second())
 		}
@@ -248,6 +248,7 @@ type LayoutRequestConfig struct {
 type LayoutRequestJob struct {
 	ID         int32                `json:"id,omitempty"`
 	RequestID  int32                `json:"request_id,omitempty"`
+	LayoutID   int32                `json:"layout_id,omitempty"`
 	TemplateID int32                `json:"template_id,omitempty"`
 	CreatedAt  *time.Time           `json:"created_at,omitempty"`
 	StartedAt  *time.Time           `json:"started_at,omitempty"`
@@ -327,11 +328,11 @@ func (l *LayoutRequestJob) IsCompleted() bool {
 }
 
 func (l *LayoutRequestJob) IsRunning() bool {
-	return l.FinishedAt == nil && l.StartedAt != nil && l.ErrorAt == nil
+	return l.FinishedAt == nil
 }
 
 func (l *LayoutRequestJob) NotStarted() bool {
-	return l.StartedAt != nil
+	return l.StartedAt == nil
 }
 
 func (l *LayoutRequestJob) DurationText() string {

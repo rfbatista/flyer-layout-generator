@@ -113,6 +113,11 @@ func StartRequestJobUseCase(
 		return err
 	}
 
+	var layoutId int32
+	if out.Layout != nil {
+		layoutId = out.Layout.ID
+	}
+
 	_, uerr := queries.UpdateLayoutRequestJob(ctx, database.UpdateLayoutRequestJobParams{
 		DoAddFinishedAt:    true,
 		FinishedAt:         pgtype.Timestamp{Time: time.Now(), Valid: true},
@@ -121,6 +126,8 @@ func StartRequestJobUseCase(
 		ImageUrl:           pgtype.Text{String: out.Data.ImageURL, Valid: true},
 		DoAddStatus:        true,
 		Status:             pgtype.Text{String: entities.RequestStatusFinished.String()},
+		DoAddLayoutID:      true,
+		LayoutID:           pgtype.Int4{Int32: layoutId, Valid: true},
 	})
 	if uerr != nil {
 		return uerr

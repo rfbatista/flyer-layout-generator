@@ -15,10 +15,10 @@ func SaveLayout(
 	l entities.Layout,
 	queries *database.Queries,
 	db *pgxpool.Pool,
-) error {
+) (*entities.Layout, error) {
 	tx, err := db.Begin(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
@@ -28,7 +28,7 @@ func SaveLayout(
 		DesignID: pgtype.Int4{Int32: l.DesignID, Valid: true},
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for _, c := range l.Components {
 		comp := mapper.LayoutComponentFromDomain(c)
@@ -47,7 +47,7 @@ func SaveLayout(
 			BboxXii:  comp.BboxXii,
 		})
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 	for _, region := range l.Grid.Cells() {
@@ -60,7 +60,7 @@ func SaveLayout(
 			Yii:      e.Yii,
 		})
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 	temp := mapper.LayoutTemplateFromDomain(l.Template)
@@ -71,8 +71,9 @@ func SaveLayout(
 		Height:   temp.Height,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	tx.Commit(ctx)
-	return nil
+	ld := mapper.LayoutToDomain(layoutCreated)
+	return &ld, nil
 }

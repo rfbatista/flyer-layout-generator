@@ -8,6 +8,7 @@ import (
 	"algvisual/web/views/components"
 	"algvisual/web/views/files"
 	"algvisual/web/views/jobs"
+	"algvisual/web/views/modifier"
 	"algvisual/web/views/single"
 	"algvisual/web/views/templates"
 	"fmt"
@@ -56,4 +57,5 @@ var Module = fx.Options(fx.Provide(
 	protected(batchlist.NewTable),
 	protected(batch.CreateRequest),
 	protected(batchresults.NewPage),
+	protected(modifier.NewPage),
 ))

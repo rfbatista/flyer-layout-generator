@@ -71,23 +71,9 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 			return next(c)
 		}
 	})
-	// e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-	// 	Root:       p.Config.AssetsFolderPath,
-	// 	Index:      "index.html",
-	// 	Browse:     false,
-	// 	HTML5:      true,
-	// 	IgnoreBase: false,
-	// 	Filesystem: nil,
-	// }))
-	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
-	e.GET("/sse", p.Sse.HandleConnection)
-	webgroup := e.Group("/web")
-	webgroup.Use(
-		middleware.StaticWithConfig(middleware.StaticConfig{
-			Root:   webStaticPath,
-			Browse: true,
-		}),
-	)
+
+	SetupStaticServer(p, e)
+
 	e.GET("/api/health", func(c echo.Context) error {
 		err := p.Pool.Ping(c.Request().Context())
 		if err != nil {

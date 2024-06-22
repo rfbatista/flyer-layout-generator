@@ -3,6 +3,12 @@ SELECT * FROM layout
 ORDER BY created_at desc
 LIMIT $1 OFFSET $2;
 
+-- name: GetLayoutByID :one
+SELECT * FROM layout 
+WHERE id = $1
+LIMIT 1;
+
+
 -- name: GetLayoutComponentsByLayoutID :many
 SELECT * FROM layout_components 
 WHERE layout_id = $1

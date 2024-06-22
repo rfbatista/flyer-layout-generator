@@ -376,8 +376,10 @@ SET
                         THEN $12 ELSE status END,
     image_url = CASE WHEN $13::boolean
                         THEN $14 ELSE image_url END,
+    layout_id = CASE WHEN $15::boolean
+                        THEN $16 ELSE layout_id END,
     updated_at = now()
-WHERE id = $15
+WHERE id = $17
 RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
@@ -396,6 +398,8 @@ type UpdateLayoutRequestJobParams struct {
 	Status             pgtype.Text      `json:"status"`
 	DoAddImageUrl      bool             `json:"do_add_image_url"`
 	ImageUrl           pgtype.Text      `json:"image_url"`
+	DoAddLayoutID      bool             `json:"do_add_layout_id"`
+	LayoutID           pgtype.Int4      `json:"layout_id"`
 	LayoutRequestJobID int64            `json:"layout_request_job_id"`
 }
 
@@ -415,6 +419,8 @@ func (q *Queries) UpdateLayoutRequestJob(ctx context.Context, arg UpdateLayoutRe
 		arg.Status,
 		arg.DoAddImageUrl,
 		arg.ImageUrl,
+		arg.DoAddLayoutID,
+		arg.LayoutID,
 		arg.LayoutRequestJobID,
 	)
 	var i LayoutRequestsJob

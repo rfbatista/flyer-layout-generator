@@ -222,6 +222,27 @@ func (q *Queries) CreateLayoutTemplate(ctx context.Context, arg CreateLayoutTemp
 	return i, err
 }
 
+const getLayoutByID = `-- name: GetLayoutByID :one
+SELECT id, design_id, width, height, created_at, updated_at, deleted_at FROM layout 
+WHERE id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetLayoutByID(ctx context.Context, id int64) (Layout, error) {
+	row := q.db.QueryRow(ctx, getLayoutByID, id)
+	var i Layout
+	err := row.Scan(
+		&i.ID,
+		&i.DesignID,
+		&i.Width,
+		&i.Height,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const getLayoutComponentsByLayoutID = `-- name: GetLayoutComponentsByLayoutID :many
 SELECT id, design_id, layout_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at, updated_at, deleted_at FROM layout_components 
 WHERE layout_id = $1
