@@ -2,63 +2,30 @@ package templates
 
 import (
 	"algvisual/web/views"
-	"algvisual/internal/shared"
-	"algvisual/web/components/layout"
-	"algvisual/web/components/table"
 	"algvisual/internal/entities"
+	"algvisual/web/components/topbar"
+	"fmt"
+	"time"
 )
 
 type PageProps struct {
 	templates []entities.Template
 }
 
-templ Page(props PageProps) {
+templ Page(props PageProps, css string, js string) {
 	<html>
 		<head>
 			@views.Header()
+			<link href={ fmt.Sprintf("/dist/%s?time=%s", css, time.Now().String()) } rel="stylesheet"/>
 		</head>
 		<body>
-			@layout.Layout() {
-				<div class="container column is-10">
-					<div class="my-2">
-						<div class="card is-hidden1">
-							<form id="form" hx-encoding="multipart/form-data" hx-post={ shared.PageUploadDesignFile.String() } hx-swap="none">
-								<div class="field">
-									<div class="control">
-										<button class="button">Cadastrar</button>
-									</div>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-				<div class="container">
-					@table.Table() {
-						@table.THead() {
-							@table.THeadRow() {
-								@table.THeadCol("Nome")
-								@table.THeadCol("Largura")
-								@table.THeadCol("Altura")
-								@table.THeadCol("Limite de regioes em x")
-								@table.THeadCol("Limite de regioes em y")
-								@table.THeadCol("Criado em")
-							}
-						}
-						@table.TBody() {
-							for _ , d := range props.templates {
-								@table.TBodyRow() {
-									@table.TBodyCol(d.Name)
-									@table.TBodyCol(d.WidthS())
-									@table.TBodyCol(d.HeightS())
-									@table.TBodyCol(d.MaxSlotsXText())
-									@table.TBodyCol(d.MaxSlotsYText())
-									@table.TBodyCol(d.CreatedAtText())
-								}
-							}
-						}
-					}
-				</div>
-			}
+			@topbar.HomeBar()
+			@Form()
+			<div class="container">
+				for _ , d := range props.templates {
+					@TemplateCard(d)
+				}
+			</div>
 			<script type="text/javascript">
         htmx.on('#form', 'htmx:xhr:progress', function(evt) {
           htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
@@ -89,6 +56,7 @@ templ Page(props PageProps) {
           }
         })
         </script>
+			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
 		</body>
 	</html>
 }

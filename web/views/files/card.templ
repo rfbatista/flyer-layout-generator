@@ -1,0 +1,17 @@
+package files
+
+import "algvisual/internal/entities"
+
+templ DesignCard(d entities.DesignFile) {
+	<div class="box">
+		<sl-card class="design-card" padding="0">
+			<img
+				slot="image"
+				src={ d.ImageURL }
+			/>
+			<div class="design-card__body">
+				<strong>{ d.Name }</strong>
+			</div>
+		</sl-card>
+	</div>
+}

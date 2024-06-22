@@ -1,13 +1,12 @@
 package components
 
 import (
+	"algvisual/internal/database"
 	"algvisual/internal/designs"
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"
 	"context"
 	"fmt"
-
-	"algvisual/internal/database"
 )
 
 type pageRequest struct {
@@ -42,7 +41,7 @@ func Props(
 			}
 		}
 	}
-	var background entities.DesignComponent
+	var background entities.LayoutComponent
 	n := 0
 	for _, c := range comps.Components {
 		if c.Type == string(database.ComponentTypeBackground) {
@@ -60,12 +59,12 @@ func Props(
 }
 
 func RemoveDesignComponentIndex(
-	s []entities.DesignComponent,
+	s []entities.LayoutComponent,
 	index int,
-) []entities.DesignComponent {
+) []entities.LayoutComponent {
 	return append(s[:index], s[index+1:]...)
 }
 
-func RemoveIndex(s []database.DesignElement, index int) []database.DesignElement {
+func RemoveIndex(s []database.LayoutElement, index int) []database.LayoutElement {
 	return append(s[:index], s[index+1:]...)
 }

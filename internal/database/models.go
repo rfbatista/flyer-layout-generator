@@ -118,32 +118,55 @@ type Design struct {
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
-type DesignComponent struct {
-	ID        int32             `json:"id"`
-	DesignID  int32             `json:"design_id"`
-	Width     pgtype.Int4       `json:"width"`
-	Height    pgtype.Int4       `json:"height"`
-	Color     pgtype.Text       `json:"color"`
-	Type      NullComponentType `json:"type"`
-	Xi        pgtype.Int4       `json:"xi"`
-	Xii       pgtype.Int4       `json:"xii"`
-	Yi        pgtype.Int4       `json:"yi"`
-	Yii       pgtype.Int4       `json:"yii"`
-	BboxXi    pgtype.Int4       `json:"bbox_xi"`
-	BboxXii   pgtype.Int4       `json:"bbox_xii"`
-	BboxYi    pgtype.Int4       `json:"bbox_yi"`
-	BboxYii   pgtype.Int4       `json:"bbox_yii"`
-	Priority  pgtype.Int4       `json:"priority"`
-	InnerXi   pgtype.Int4       `json:"inner_xi"`
-	InnerXii  pgtype.Int4       `json:"inner_xii"`
-	InnerYi   pgtype.Int4       `json:"inner_yi"`
-	InnerYii  pgtype.Int4       `json:"inner_yii"`
-	CreatedAt pgtype.Timestamp  `json:"created_at"`
+type Image struct {
+	ID          int64            `json:"id"`
+	Url         string           `json:"url"`
+	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
+	TemplateID  pgtype.Int4      `json:"template_id"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
-type DesignElement struct {
+type Layout struct {
+	ID        int64            `json:"id"`
+	DesignID  pgtype.Int4      `json:"design_id"`
+	Width     pgtype.Int4      `json:"width"`
+	Height    pgtype.Int4      `json:"height"`
+	Data      pgtype.Text      `json:"data"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
+type LayoutComponent struct {
+	ID         int32             `json:"id"`
+	LayoutID   int32             `json:"layout_id"`
+	DesignID   int32             `json:"design_id"`
+	Width      pgtype.Int4       `json:"width"`
+	Height     pgtype.Int4       `json:"height"`
+	IsOriginal pgtype.Bool       `json:"is_original"`
+	Color      pgtype.Text       `json:"color"`
+	Type       NullComponentType `json:"type"`
+	Xi         pgtype.Int4       `json:"xi"`
+	Xii        pgtype.Int4       `json:"xii"`
+	Yi         pgtype.Int4       `json:"yi"`
+	Yii        pgtype.Int4       `json:"yii"`
+	BboxXi     pgtype.Int4       `json:"bbox_xi"`
+	BboxXii    pgtype.Int4       `json:"bbox_xii"`
+	BboxYi     pgtype.Int4       `json:"bbox_yi"`
+	BboxYii    pgtype.Int4       `json:"bbox_yii"`
+	Priority   pgtype.Int4       `json:"priority"`
+	InnerXi    pgtype.Int4       `json:"inner_xi"`
+	InnerXii   pgtype.Int4       `json:"inner_xii"`
+	InnerYi    pgtype.Int4       `json:"inner_yi"`
+	InnerYii   pgtype.Int4       `json:"inner_yii"`
+	CreatedAt  pgtype.Timestamp  `json:"created_at"`
+}
+
+type LayoutElement struct {
 	ID             int32            `json:"id"`
 	DesignID       int32            `json:"design_id"`
+	LayoutID       int32            `json:"layout_id"`
+	ComponentID    pgtype.Int4      `json:"component_id"`
 	Name           pgtype.Text      `json:"name"`
 	LayerID        pgtype.Text      `json:"layer_id"`
 	Text           pgtype.Text      `json:"text"`
@@ -161,62 +184,10 @@ type DesignElement struct {
 	GroupID        pgtype.Int4      `json:"group_id"`
 	Level          pgtype.Int4      `json:"level"`
 	Kind           pgtype.Text      `json:"kind"`
-	ComponentID    pgtype.Int4      `json:"component_id"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
-}
-
-type Image struct {
-	ID          int64            `json:"id"`
-	Url         string           `json:"url"`
-	PhotoshopID pgtype.Int4      `json:"photoshop_id"`
-	TemplateID  pgtype.Int4      `json:"template_id"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-}
-
-type Layout struct {
-	ID        int64            `json:"id"`
-	DesignID  pgtype.Int4      `json:"design_id"`
-	Width     pgtype.Int4      `json:"width"`
-	Height    pgtype.Int4      `json:"height"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	DeletedAt pgtype.Timestamp `json:"deleted_at"`
-}
-
-type LayoutComponent struct {
-	ID        int64            `json:"id"`
-	DesignID  int32            `json:"design_id"`
-	LayoutID  int32            `json:"layout_id"`
-	Width     pgtype.Int4      `json:"width"`
-	Height    pgtype.Int4      `json:"height"`
-	Color     pgtype.Text      `json:"color"`
-	Type      pgtype.Text      `json:"type"`
-	Xi        pgtype.Int4      `json:"xi"`
-	Xii       pgtype.Int4      `json:"xii"`
-	Yi        pgtype.Int4      `json:"yi"`
-	Yii       pgtype.Int4      `json:"yii"`
-	BboxXi    pgtype.Int4      `json:"bbox_xi"`
-	BboxXii   pgtype.Int4      `json:"bbox_xii"`
-	BboxYi    pgtype.Int4      `json:"bbox_yi"`
-	BboxYii   pgtype.Int4      `json:"bbox_yii"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	DeletedAt pgtype.Timestamp `json:"deleted_at"`
-}
-
-type LayoutRegion struct {
-	ID        int64            `json:"id"`
-	LayoutID  int32            `json:"layout_id"`
-	Xi        pgtype.Int4      `json:"xi"`
-	Xii       pgtype.Int4      `json:"xii"`
-	Yi        pgtype.Int4      `json:"yi"`
-	Yii       pgtype.Int4      `json:"yii"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
 type LayoutRequest struct {
@@ -243,19 +214,6 @@ type LayoutRequestsJob struct {
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	Config     pgtype.Text      `json:"config"`
 	Log        pgtype.Text      `json:"log"`
-}
-
-type LayoutTemplate struct {
-	ID        int64            `json:"id"`
-	LayoutID  int32            `json:"layout_id"`
-	Type      pgtype.Text      `json:"type"`
-	Width     pgtype.Int4      `json:"width"`
-	Height    pgtype.Int4      `json:"height"`
-	SlotsX    pgtype.Int4      `json:"slots_x"`
-	SlotsY    pgtype.Int4      `json:"slots_y"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }
 
 type Template struct {

@@ -1,18 +1,18 @@
 -- name: GetComponentByID :one
-select pc.* from design_components pc
+select pc.* from layout_components pc
 where pc.id = $1 LIMIT 1;
 
 -- name: HaveElementsIn :many
-select pc.* from design_components pc
-inner join design_element as pe on pe.component_id = pc.id 
+select pc.* from layout_components pc
+inner join layout_elements as pe on pe.component_id = pc.id 
 where pc.id = $1;
 
 -- name: GetComponentsByDesignID :many
-select pc.* from design_components pc
+select pc.* from layout_components pc
 where pc.design_id = $1;
 
 -- name: UpdateManydesignElement :many
-UPDATE design_element
+UPDATE layout_elements
 SET 
 -- You can use sqlc.arg() and @ to identify named parameters
     component_id = CASE WHEN @component_id_do_update::boolean
@@ -26,7 +26,7 @@ RETURNING *;
 
 
 -- name: RemoveComponentFromElements :many
-UPDATE design_element
+UPDATE layout_elements
 SET 
     component_id = NULL
 WHERE
@@ -34,8 +34,9 @@ WHERE
 RETURNING *;
 
 -- name: CreateComponent :one
-INSERT INTO design_components (
+INSERT INTO layout_components (
   design_id,
+  layout_id,
   width,
   height,
   xi,
@@ -53,14 +54,14 @@ INSERT INTO design_components (
   inner_yi,
   inner_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
 )
 RETURNING *;
 
 -- name: ClearEmptyComponents :exec
-DELETE FROM design_components
+DELETE FROM layout_components
 WHERE NOT EXISTS (
     SELECT 1
-    FROM design_element
-    WHERE design_element.component_id = design_components.id
+    FROM layout_elements
+    WHERE layout_elements.component_id = layout_components.id
 );

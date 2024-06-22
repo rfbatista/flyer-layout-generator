@@ -12,22 +12,24 @@ import (
 )
 
 const getDesignElementsByComponentID = `-- name: GetDesignElementsByComponentID :many
-select id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
+select id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at from layout_elements 
 where component_id = $1
 `
 
-func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentID pgtype.Int4) ([]DesignElement, error) {
+func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentID pgtype.Int4) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, getDesignElementsByComponentID, componentID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -45,7 +47,6 @@ func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentI
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,
@@ -62,22 +63,24 @@ func (q *Queries) GetDesignElementsByComponentID(ctx context.Context, componentI
 }
 
 const getElements = `-- name: GetElements :many
-SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements 
 WHERE design_id = $1
 `
 
-func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElement, error) {
+func (q *Queries) GetElements(ctx context.Context, designID int32) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, getElements, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -95,7 +98,6 @@ func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElem
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,
@@ -112,22 +114,24 @@ func (q *Queries) GetElements(ctx context.Context, designID int32) ([]DesignElem
 }
 
 const getdesignElements = `-- name: GetdesignElements :many
-SELECT id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at FROM design_element 
+SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements 
 WHERE design_id = $1
 `
 
-func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]DesignElement, error) {
+func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, getdesignElements, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -145,7 +149,6 @@ func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]Desi
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,
@@ -162,22 +165,24 @@ func (q *Queries) GetdesignElements(ctx context.Context, designID int32) ([]Desi
 }
 
 const getdesignElementsByIDlist = `-- name: GetdesignElementsByIDlist :many
-select id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at from design_element 
+select id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at from layout_elements 
 where id = any ($1)
 `
 
-func (q *Queries) GetdesignElementsByIDlist(ctx context.Context, ids []int32) ([]DesignElement, error) {
+func (q *Queries) GetdesignElementsByIDlist(ctx context.Context, ids []int32) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, getdesignElementsByIDlist, ids)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -195,7 +200,6 @@ func (q *Queries) GetdesignElementsByIDlist(ctx context.Context, ids []int32) ([
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,

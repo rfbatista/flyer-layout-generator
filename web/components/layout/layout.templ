@@ -1,13 +1,8 @@
 package layout
 
-import "algvisual/web/components/menubar"
-
 templ Layout() {
-	<div class="min-h-screen">
-		<header class="top-0 h-10">
-			@menubar.MenuBar()
-		</header>
-		<main class="min-w-0">
+	<div class="">
+		<main class="">
 			{ children... }
 		</main>
 	</div>

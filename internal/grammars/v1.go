@@ -26,7 +26,7 @@ func RunV1(
 		return original.Components[i].OrderPriority() < original.Components[j].OrderPriority()
 	})
 	log.Debug("starting stage 1")
-	var stage1components []entities.DesignComponent
+	var stage1components []entities.LayoutComponent
 	for _, c := range original.Components {
 		cell := grid.WhereIsPoint(c.Center())
 		if cell == nil {
@@ -41,7 +41,7 @@ func RunV1(
 	})
 
 	log.Debug("starting stage 2")
-	var stage2components []entities.DesignComponent
+	var stage2components []entities.LayoutComponent
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func RunV1(
 	}
 
 	log.Debug("starting stage 3")
-	var stage3components []entities.DesignComponent
+	var stage3components []entities.LayoutComponent
 	stage3grid, _ := entities.NewGrid(
 		entities.WithDefault(template.Width, template.Height),
 		entities.WithCells(gridX, gridY),
@@ -82,7 +82,7 @@ func RunV1(
 	}
 
 	log.Debug("starting stage 4")
-	var stage4components []entities.DesignComponent
+	var stage4components []entities.LayoutComponent
 	for _, c := range stage3components {
 		if len(c.Positions) == 0 {
 			continue

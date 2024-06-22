@@ -1,0 +1,35 @@
+#generate-request-form {
+  background-color: var(--top-bar-bg-color);
+  border-radius: var(--sl-border-radius-x-large);
+}
+
+.switcher.generation-form__formatos__button {
+  --threshold: 1rem;
+}
+
+.stack.generation-form__priorities {
+  padding-left: var(--s0);
+  padding-right: var(--s0);
+}
+
+.generation-form__priority-list__item {
+  border-radius: var(--sl-input-border-radius-medium);
+  border: 1px solid var(--sl-color-neutral-200);
+  padding: var(--s-2);
+  color: var(--sl-color-neutral-700);
+}
+
+.generation-form__formatos {
+  padding-left: var(--s0);
+  padding-right: var(--s0);
+}
+
+.generation-form__files {
+  padding-left: var(--s0);
+  padding-right: var(--s0);
+  padding-top: var(--s0);
+}
+
+.generation-form__submit {
+  padding: var(--s0);
+}

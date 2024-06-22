@@ -8,13 +8,13 @@ type DesignTemplateRegion struct {
 }
 
 type ComponentStatus struct {
-	C        DesignComponent
+	C        LayoutComponent
 	PixelCnt int
 }
 
 func defineComponentsPerRegion(
 	regions []DesignTemplateRegion,
-	components []DesignComponent,
+	components []LayoutComponent,
 ) []DesignTemplateRegion {
 	componentsIn := make(map[int32]bool)
 	for _, reg := range regions {

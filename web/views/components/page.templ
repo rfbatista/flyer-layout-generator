@@ -6,12 +6,13 @@ import "algvisual/web/components/elementtree"
 import "strconv"
 import "algvisual/internal/entities"
 import "algvisual/internal/shared"
+import "fmt"
 
 type PageProps struct {
 	DesignID   int32
-	Elements   []entities.DesignElement
-	Components []entities.DesignComponent
-	Background entities.DesignComponent
+	Elements   []entities.LayoutElement
+	Components []entities.LayoutComponent
+	Background entities.LayoutComponent
 }
 
 templ Page(id int32, props PageProps) {
@@ -23,7 +24,7 @@ templ Page(id int32, props PageProps) {
 			@layout.Layout() {
 				<div class="mx-auto max-w-[900px]">
 					<div class="mx-auto max-w-[900px]">
-						<button type="button" class="btn" hx-post={ shared.PageDefineComponentsCreate.Replace([]string{strconv.FormatInt(int64(id), 10)}) } hx-vals='js:{"elements": activeItems,"type":type}'>Criar componente</button>
+						<button type="button" class="btn" hx-post={ fmt.Sprintf("/design/:design_id/layout/:layout_id/component", strconv.FormatInt(int64(id), 10)) } hx-vals='js:{"elements": activeItems,"type":type}'>Criar componente</button>
 						<select id="tipo_componente">
 							<option value="background">Planto de fundo</option>
 							<option value="logotipo_marca">Marca</option>

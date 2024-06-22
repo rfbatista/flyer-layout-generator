@@ -1,15 +1,15 @@
 package ports
 
 import (
-	entities2 "algvisual/internal/entities"
+	"algvisual/internal/entities"
 )
 
 type ProcessFileResult struct {
-	Photoshop entities2.DesignFile      `json:"photoshop,omitempty"`
-	ImageUrl  string                    `json:"image_url,omitempty"`
-	Elements  []entities2.DesignElement `json:"elements,omitempty"`
-	Error     string                    `json:"error,omitempty"`
-	Detail    string                    `json:"detail,omitempty"`
+	Photoshop entities.DesignFile      `json:"photoshop,omitempty"`
+	ImageUrl  string                   `json:"image_url,omitempty"`
+	Elements  []entities.LayoutElement `json:"elements,omitempty"`
+	Error     string                   `json:"error,omitempty"`
+	Detail    string                   `json:"detail,omitempty"`
 }
 
 type ProcessFileInput struct {

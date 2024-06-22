@@ -187,7 +187,7 @@ type OverlapResult struct {
 	Overlap int32    `json:"overlap"`
 }
 
-func findOverlappingRegions(rect DesignComponent, regions []GridCell) []OverlapResult {
+func findOverlappingRegions(rect LayoutComponent, regions []GridCell) []OverlapResult {
 	var overlappingRegions []OverlapResult
 	for _, region := range regions {
 		if overlap, area := isOverlap(rect, region); overlap {
@@ -200,7 +200,7 @@ func findOverlappingRegions(rect DesignComponent, regions []GridCell) []OverlapR
 	return overlappingRegions
 }
 
-func isOverlap(rect DesignComponent, region GridCell) (bool, int32) {
+func isOverlap(rect LayoutComponent, region GridCell) (bool, int32) {
 	// Calculate the overlapping area if the rectangle overlaps with the region
 	xOverlap := min(rect.Xii, region.Xii) - max(rect.Xi, region.Xi)
 	yOverlap := min(rect.Yii, region.Yii) - max(rect.Yi, region.Yi)
@@ -210,11 +210,11 @@ func isOverlap(rect DesignComponent, region GridCell) (bool, int32) {
 	return false, 0
 }
 
-func (g *Grid) FindOverlappingRegions(e DesignComponent) []OverlapResult {
+func (g *Grid) FindOverlappingRegions(e LayoutComponent) []OverlapResult {
 	return findOverlappingRegions(e, g.Cells())
 }
 
-func (g *Grid) WhereToSnap(e DesignComponent) (GridCell, bool) {
+func (g *Grid) WhereToSnap(e LayoutComponent) (GridCell, bool) {
 	snapToLeft := true
 	upleft := NewPointp(e.Xi, e.Yi)
 	upright := NewPointp(e.Xii, e.Yi)

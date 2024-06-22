@@ -1,0 +1,66 @@
+package files
+
+import (
+	"algvisual/internal/shared"
+)
+
+templ UploadDesignForm() {
+	<div class="">
+		<div class="my-2">
+			<div class="card is-hidden1">
+				<div class="card-header"><p class="card-header-title">Cadastrar arquivo</p></div>
+				<div class="card-content">
+					<div class="content">
+						<div class="field">
+							<label class="label">Nome</label>
+							<div class="control">
+								<input form="form" class="input" type="text" name="filename" placeholder=""/>
+							</div>
+						</div>
+						<div class="field">
+							<input form="form" type="file" name="file"/>
+						</div>
+					</div>
+					<form id="form" hx-encoding="multipart/form-data" hx-post={ shared.PageUploadDesignFile.String() } hx-swap="none">
+						<div class="field">
+							<div class="control">
+								<button class="button">Cadastrar</button>
+							</div>
+						</div>
+						<progress class="w-full" id="progress" value="0" max="100"></progress>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'center',
+          iconColor: 'white',
+          customClass: {
+            popup: 'colored-toast',
+          },
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+        })
+        document.body.addEventListener("makeToast", async function(evt){
+          console.log(evt.detail)
+          if(evt.detail.level == "success"){
+            await Toast.fire({
+              icon: 'success',
+              title: 'Sucesso',
+            })
+          } else {
+            await Toast.fire({
+              icon: 'error',
+              title: evt.detail.message,
+            })
+          }
+        })
+        </script>
+}

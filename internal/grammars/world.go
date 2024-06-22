@@ -6,8 +6,8 @@ import (
 
 type World struct {
 	OriginalDesign entities.DesignFile
-	Components     []entities.DesignComponent
-	Elements       []entities.DesignElement
+	Components     []entities.LayoutComponent
+	Elements       []entities.LayoutElement
 	PivotWidth     int32
 	PivotHeight    int32
 	TwistedDesign  entities.Layout

@@ -1,0 +1,17 @@
+.navbar__item {
+  color: white;
+}
+
+.navbar {
+  background-color: var(--top-bar-bg-color);
+}
+
+.box.navbar {
+  padding: var(--s-3);
+}
+
+.back {
+  width: 24px;
+  height: 24px;
+  stroke: #fff;
+}

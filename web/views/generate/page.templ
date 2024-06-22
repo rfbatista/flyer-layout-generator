@@ -1,0 +1,39 @@
+package generate
+
+import (
+	"algvisual/web/views"
+	"algvisual/internal/entities"
+	"fmt"
+	"time"
+	"algvisual/web/components/topbar"
+)
+
+type PageProps struct {
+	files    []entities.DesignFile
+	template []entities.Template
+	types    []string
+}
+
+templ Page(props PageProps, css string, js string) {
+	<html class="sl-theme-dark">
+		<head>
+			@views.Header()
+			<link href={ fmt.Sprintf("/dist/%s?time=%s", css, time.Now().String()) } rel="stylesheet"/>
+		</head>
+		<body>
+			@topbar.EditorTopBar()
+			<main class="with-sidebar">
+				<div>
+					<div class="box">
+						@Form(props)
+					</div>
+					<div class="box">
+						teste
+					</div>
+				</div>
+			</main>
+			<script src="/web/js/jquery.multi-select.js" type="text/javascript"></script>
+			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
+		</body>
+	</html>
+}

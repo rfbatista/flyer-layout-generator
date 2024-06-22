@@ -3,6 +3,7 @@ package shared
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -53,4 +54,19 @@ func InfoNotificationMessage(message string) string {
 		"{\"request-notification\": {\"level\":\"info\",\"message\":\"%s\"}}",
 		message,
 	)
+}
+
+func ReplaceRoutePath(s string, p []string) string {
+	regex := regexp.MustCompile(`:[a-zA-Z0-9\_]+`)
+	matches := regex.FindAllString(s, -1)
+	replacements := make([]string, len(matches))
+	for i := range matches {
+		replacements[i] = p[i]
+	}
+	result := regex.ReplaceAllStringFunc(s, func(match string) string {
+		fmt.Println("ids", p)
+		return replacements[findIndex(matches, match)]
+	})
+	fmt.Println(result)
+	return result
 }

@@ -1,0 +1,13 @@
+package templates
+
+import "algvisual/internal/entities"
+
+templ TemplateCard(d entities.Template) {
+	<div class="box">
+		<sl-card class="design-card" padding="0">
+			<div class="design-card__body">
+				<strong>{ d.Name }</strong>
+			</div>
+		</sl-card>
+	</div>
+}

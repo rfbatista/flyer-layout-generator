@@ -1,0 +1,24 @@
+package templates
+
+import (
+	"algvisual/internal/shared"
+)
+
+templ Form() {
+	<div class="box cluster">
+		<form id="form" hx-encoding="multipart/form-data" hx-post={ shared.PageUploadDesignFile.String() } hx-swap="none">
+			<div class="box">
+				<sl-input class="template-form__input" label="Nome" name="name" required></sl-input>
+			</div>
+			<div class="box">
+				<sl-input class="template-form__input" name="width" type="number" label="Largura" required></sl-input>
+			</div>
+			<div class="box">
+				<sl-input class="template-form__input" name="height" type="number" label="Altura" required></sl-input>
+			</div>
+			<div class="box">
+				<sl-button class="button">Cadastrar</sl-button>
+			</div>
+		</form>
+	</div>
+}

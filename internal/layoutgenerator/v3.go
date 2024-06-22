@@ -58,18 +58,18 @@ func GenerateDesignUseCasev3(
 		)
 		return nil, err
 	}
-	var eelements []entities.DesignElement
+	var eelements []entities.LayoutElement
 	for _, el := range elements {
 		eelements = append(eelements, mapper.ToDesignElementEntitie(el))
 	}
-	compHash := make(map[int32][]entities.DesignElement)
+	compHash := make(map[int32][]entities.LayoutElement)
 	for _, c := range eelements {
 		if c.ComponentID != 0 {
 			compHash[c.ComponentID] = append(compHash[c.ComponentID], c)
 		}
 	}
-	var components []entities.DesignComponent
-	var bg *entities.DesignComponent
+	var components []entities.LayoutComponent
+	var bg *entities.LayoutComponent
 	for k := range compHash {
 		data, compErr := queries.GetComponentByID(ctx, k)
 		if compErr != nil {

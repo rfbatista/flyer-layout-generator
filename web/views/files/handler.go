@@ -6,7 +6,8 @@ import (
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/web/components/notification"
-	"context"
+	"algvisual/web/render"
+	"fmt"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,27 +20,27 @@ func NewPage(
 	queries *database.Queries,
 	conn *pgxpool.Pool,
 	log *zap.Logger,
+	bundler *infra.Bundler,
 ) apitools.Handler {
+	static, err := bundler.AddPage(infra.BundlerPageParams{
+		EntryPoints: []string{
+			fmt.Sprintf("%s/web/views/files/index.js", infra.FindProjectRoot()),
+		},
+		Name: "files/editor",
+	})
+	if err != nil {
+		panic(shared.WrapWithAppError(err, "failed to build editor new doc page", ""))
+	}
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath(shared.PageUploadDesign.String())
+	h.SetPath("/")
 	h.SetHandle(func(c echo.Context) error {
 		props, err := Props(c.Request().Context(), queries, log)
 		if err != nil {
 			log.Error("failed to render home page", zap.Error(err))
 			return err
 		}
-		component := Page(props)
-		w := c.Response().Writer
-		err = component.Render(
-			context.WithValue(c.Request().Context(), "page", shared.PageHome.String()),
-			w,
-		)
-		if err != nil {
-			log.Error("failed to render home page", zap.Error(err))
-			return err
-		}
-		return nil
+		return render.Render(c, http.StatusOK, Page(props, static.CSSName, static.JSName))
 	})
 	return h
 }

@@ -38,3 +38,24 @@ INSERT INTO design (
 )
 RETURNING *;
 
+-- name: Getdesign :one
+SELECT * FROM design
+WHERE id = $1 LIMIT 1;
+
+-- name: GetdesignComponentByID :one
+SELECT * FROM layout_components
+WHERE design_id = $1 LIMIT 1;
+
+-- name: GetdesignBackgroundComponent :one
+SELECT * FROM layout_components
+WHERE design_id = $1 AND type = 'background' LIMIT 1;
+
+-- name: Listdesign :many
+SELECT * FROM design
+OFFSET $1 LIMIT $2;
+
+
+-- name: ListdesignElements :many
+SELECT * FROM layout_elements 
+WHERE design_id = $1
+LIMIT $2 OFFSET $3;

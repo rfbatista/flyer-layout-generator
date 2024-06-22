@@ -1,0 +1,109 @@
+package generate
+
+templ Form(props PageProps) {
+	<form id="generate-request-form" class="form" hx-encoding="multipart/form-data" hx-post="/request/batch" hx-swap="none">
+		<div class="stack">
+			<div class="generation-form__files">
+				<sl-select label="Arquivo" id="file" name="design_id" class="form-select" required>
+					for _, t := range props.files {
+						<sl-option value={ t.SID() }>{ t.Name } <i class="text-slate-300">{ t.SWidth() } { t.SHeigth() }</i></sl-option>
+					}
+				</sl-select>
+			</div>
+			<div class="stack generation-form__formatos">
+				<sl-select label="Formatos" class="" multiple="multiple" id="templates" name="templates[]" required>
+					for _, t := range props.template {
+						<sl-option type="checkbox" value={ t.SID() }>
+							{ t.Name } <i class="text-slate-300">{ t.SWidth() }x{ t.SHeigth() }</i>
+						</sl-option>
+					}
+				</sl-select>
+				<div class="switcher generation-form__formatos__button">
+					<div>
+						<sl-button size="small" type="button" onclick="$('#templates').multiSelect('select_all')">Selecionar todos</sl-button>
+						<sl-button size="small" type="button" onclick="$('#templates').multiSelect('deselect_all');">Deselecionar todos</sl-button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<sl-divider></sl-divider>
+		<div class="stack generation-form__priorities">
+			<label class="form-label">Prioridades</label>
+			<div class="" x-data="sort()" x-init="init()">
+				<div class="stack" x-ref="items" id="items">
+					for _, t := range props.types {
+						<div class="with-icon generation-form__priority-list__item">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="icon lucide lucide-grip-vertical"
+							><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+							<input type="hidden" id="hiddenInput" name="priority[]"/>
+							<span class="" id="priority">{ t }</span>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div class="generation-form__submit">
+			<sl-button variant="primary" type="submit" class="btn">Gerar</sl-button>
+		</div>
+	</form>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/dropdown/dropdown.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/menu/menu.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/menu-item/menu-item.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/menu-label/menu-label.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/divider/divider.js"></script>
+	<section id="toast-container"></section>
+	<script type="text/javascript">
+    document.getElementById('generate-request-form').addEventListener('submit', function(event) {
+        Array.from(document.getElementsByClassName('priority-item')).forEach((i) => {
+         const text = i.querySelector('#priority').textContent;
+          i.querySelector('#hiddenInput').value = text;
+        })
+    });
+    function sort() {
+        return {
+            config: {
+                animation: 150,
+                ghostClass: 'opacity-20',
+                dragClass: 'bg-blue-50',
+            },
+            init() {
+                Sortable.create(this.$refs.items, this.config);
+            }
+        }
+    }
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'center',
+      iconColor: 'white',
+      customClass: {
+        popup: 'colored-toast',
+      },
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+    })
+    document.body.addEventListener("makeToast", async function(evt){
+      if(evt.detail.level == "success"){
+        await Toast.fire({
+          icon: 'success',
+          title: 'Sucesso',
+        })
+      } else {
+        await Toast.fire({
+          icon: 'error',
+          title: evt.detail.message,
+        })
+      }
+    })
+  </script>
+}

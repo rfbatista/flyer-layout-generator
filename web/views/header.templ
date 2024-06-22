@@ -10,13 +10,9 @@ templ Header() {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous"/>
-	<link href={ fmt.Sprintf("/web/css/style.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/multi-select.css?time=%s", time.Now().String()) } rel="stylesheet"/>
-	<link href={ fmt.Sprintf("/web/css/output.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/owl.carousel.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/owl.theme.default.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"/>
 	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 	<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -30,4 +26,16 @@ templ Header() {
 	<script src="/web/js/toast.js"></script>
 	<script src="/web/js/owl.carousel.min.js"></script>
 	<script src="/web/js/fabric.min.js"></script>
+
+	<!-- Tingle -->
+	<script src="/web/js/tingle.min.js"></script>
+	<link rel="stylesheet" href="/web/css/tingle.min.css"/>
+
+	<!-- Shoelace -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/themes/light.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/themes/dark.css"/>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
 }

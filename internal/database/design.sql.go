@@ -46,6 +46,200 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 	return i, err
 }
 
+const getdesign = `-- name: Getdesign :one
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
+	row := q.db.QueryRow(ctx, getdesign, id)
+	var i Design
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.ImageUrl,
+		&i.ImageExtension,
+		&i.FileUrl,
+		&i.FileExtension,
+		&i.Width,
+		&i.Height,
+		&i.IsProccessed,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getdesignBackgroundComponent = `-- name: GetdesignBackgroundComponent :one
+SELECT id, layout_id, design_id, width, height, is_original, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at FROM layout_components
+WHERE design_id = $1 AND type = 'background' LIMIT 1
+`
+
+func (q *Queries) GetdesignBackgroundComponent(ctx context.Context, designID int32) (LayoutComponent, error) {
+	row := q.db.QueryRow(ctx, getdesignBackgroundComponent, designID)
+	var i LayoutComponent
+	err := row.Scan(
+		&i.ID,
+		&i.LayoutID,
+		&i.DesignID,
+		&i.Width,
+		&i.Height,
+		&i.IsOriginal,
+		&i.Color,
+		&i.Type,
+		&i.Xi,
+		&i.Xii,
+		&i.Yi,
+		&i.Yii,
+		&i.BboxXi,
+		&i.BboxXii,
+		&i.BboxYi,
+		&i.BboxYii,
+		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getdesignComponentByID = `-- name: GetdesignComponentByID :one
+SELECT id, layout_id, design_id, width, height, is_original, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at FROM layout_components
+WHERE design_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (LayoutComponent, error) {
+	row := q.db.QueryRow(ctx, getdesignComponentByID, designID)
+	var i LayoutComponent
+	err := row.Scan(
+		&i.ID,
+		&i.LayoutID,
+		&i.DesignID,
+		&i.Width,
+		&i.Height,
+		&i.IsOriginal,
+		&i.Color,
+		&i.Type,
+		&i.Xi,
+		&i.Xii,
+		&i.Yi,
+		&i.Yii,
+		&i.BboxXi,
+		&i.BboxXii,
+		&i.BboxYi,
+		&i.BboxYii,
+		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listdesign = `-- name: Listdesign :many
+SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+OFFSET $1 LIMIT $2
+`
+
+type ListdesignParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Design, error) {
+	rows, err := q.db.Query(ctx, listdesign, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Design
+	for rows.Next() {
+		var i Design
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.FileUrl,
+			&i.FileExtension,
+			&i.Width,
+			&i.Height,
+			&i.IsProccessed,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listdesignElements = `-- name: ListdesignElements :many
+SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements 
+WHERE design_id = $1
+LIMIT $2 OFFSET $3
+`
+
+type ListdesignElementsParams struct {
+	DesignID int32 `json:"design_id"`
+	Limit    int32 `json:"limit"`
+	Offset   int32 `json:"offset"`
+}
+
+func (q *Queries) ListdesignElements(ctx context.Context, arg ListdesignElementsParams) ([]LayoutElement, error) {
+	rows, err := q.db.Query(ctx, listdesignElements, arg.DesignID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LayoutElement
+	for rows.Next() {
+		var i LayoutElement
+		if err := rows.Scan(
+			&i.ID,
+			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
+			&i.Name,
+			&i.LayerID,
+			&i.Text,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
+			&i.Width,
+			&i.Height,
+			&i.IsGroup,
+			&i.GroupID,
+			&i.Level,
+			&i.Kind,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const setDesignAsProccessed = `-- name: SetDesignAsProccessed :one
 UPDATE design
 SET

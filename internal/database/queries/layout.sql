@@ -8,19 +8,8 @@ SELECT * FROM layout
 WHERE id = $1
 LIMIT 1;
 
-
 -- name: GetLayoutComponentsByLayoutID :many
 SELECT * FROM layout_components 
-WHERE layout_id = $1
-ORDER BY created_at desc;
-
--- name: GetLayoutTemplateByLayoutID :many
-SELECT * FROM layout_template 
-WHERE layout_id = $1
-ORDER BY created_at desc;
-
--- name: GetLayoutRegionByLayoutID :many
-SELECT * FROM layout_region
 WHERE layout_id = $1
 ORDER BY created_at desc;
 
@@ -61,32 +50,53 @@ INSERT INTO layout_components (
 )
 RETURNING *;
 
--- name: CreateLayoutTemplate :one
-INSERT INTO layout_template (
-  layout_id,
-  type, 
-  width, 
-  height 
-) VALUES (
-  $1,         
-  $2,           
-  $3,             
-  $4
-)
-RETURNING *;
 
--- name: CreateLayoutRegion :one
-INSERT INTO layout_region (
+-- name: CreateElement :one
+INSERT INTO layout_elements (
   layout_id,
-  xi, 
-  xii, 
-  yi, 
-  yii 
+  layer_id,
+  design_id,
+  name,
+  text,
+  xi,
+  xii,
+  yi,
+  yii,
+  width,
+  height,
+  is_group,
+  group_id,
+  level,
+  kind,
+  component_id,
+  image_url,
+  inner_xi ,
+  inner_xii,
+  inner_yi ,
+  inner_yii,
+  image_extension
 ) VALUES (
-  $1,  -- url
-  $2,                             -- photoshop_id
-  $3,                             -- template_id
-  $4,           -- created_at
-  $5
-) 
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6,
+  $7,
+  $8,
+  $9,
+  $10,
+  $11,
+  $12,
+  $13,
+  $14,
+  $15,
+  $16,
+  $17,
+  $18,
+  $19,
+  $20,
+  $21,
+  $22
+)
 RETURNING *;

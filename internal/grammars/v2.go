@@ -64,7 +64,7 @@ func Stage1(
 	grid entities.Grid,
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
-	var stage1components []entities.DesignComponent
+	var stage1components []entities.LayoutComponent
 	for _, c := range original.Components {
 		cell := grid.WhereIsPoint(c.Center())
 		if cell == nil {
@@ -107,7 +107,7 @@ func Stage2(
 	grid entities.Grid,
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
-	var stagecomponents []entities.DesignComponent
+	var stagecomponents []entities.LayoutComponent
 	stagegrid, _ := entities.NewGrid(
 		entities.WithDefault(template.Width, template.Height),
 		entities.WithCells(grid.SlotsX, grid.SlotsY),
@@ -140,7 +140,7 @@ func Stage3(
 	prevGrid *entities.Grid,
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
-	var stageComponents []entities.DesignComponent
+	var stageComponents []entities.LayoutComponent
 	for _, c := range prevLayout.Components {
 		if !prevGrid.HaveColisionInList(c.Positions, c.ID) {
 			stageComponents = append(stageComponents, c)
@@ -180,7 +180,7 @@ func Stage4(
 	prevGrid *entities.Grid,
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
-	var stageComponents []entities.DesignComponent
+	var stageComponents []entities.LayoutComponent
 	stageGrid, _ := entities.NewGrid(
 		entities.WithDefault(template.Width, template.Height),
 		entities.WithCells(prevGrid.SlotsX, prevGrid.SlotsY),

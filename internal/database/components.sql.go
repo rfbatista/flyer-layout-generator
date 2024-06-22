@@ -12,11 +12,11 @@ import (
 )
 
 const clearEmptyComponents = `-- name: ClearEmptyComponents :exec
-DELETE FROM design_components
+DELETE FROM layout_components
 WHERE NOT EXISTS (
     SELECT 1
-    FROM design_element
-    WHERE design_element.component_id = design_components.id
+    FROM layout_elements
+    WHERE layout_elements.component_id = layout_components.id
 )
 `
 
@@ -26,8 +26,9 @@ func (q *Queries) ClearEmptyComponents(ctx context.Context) error {
 }
 
 const createComponent = `-- name: CreateComponent :one
-INSERT INTO design_components (
+INSERT INTO layout_components (
   design_id,
+  layout_id,
   width,
   height,
   xi,
@@ -45,13 +46,14 @@ INSERT INTO design_components (
   inner_yi,
   inner_yii
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
 )
-RETURNING id, design_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at
+RETURNING id, layout_id, design_id, width, height, is_original, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at
 `
 
 type CreateComponentParams struct {
 	DesignID int32             `json:"design_id"`
+	LayoutID int32             `json:"layout_id"`
 	Width    pgtype.Int4       `json:"width"`
 	Height   pgtype.Int4       `json:"height"`
 	Xi       pgtype.Int4       `json:"xi"`
@@ -70,9 +72,10 @@ type CreateComponentParams struct {
 	InnerYii pgtype.Int4       `json:"inner_yii"`
 }
 
-func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (DesignComponent, error) {
+func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams) (LayoutComponent, error) {
 	row := q.db.QueryRow(ctx, createComponent,
 		arg.DesignID,
+		arg.LayoutID,
 		arg.Width,
 		arg.Height,
 		arg.Xi,
@@ -90,12 +93,14 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 		arg.InnerYi,
 		arg.InnerYii,
 	)
-	var i DesignComponent
+	var i LayoutComponent
 	err := row.Scan(
 		&i.ID,
+		&i.LayoutID,
 		&i.DesignID,
 		&i.Width,
 		&i.Height,
+		&i.IsOriginal,
 		&i.Color,
 		&i.Type,
 		&i.Xi,
@@ -117,18 +122,20 @@ func (q *Queries) CreateComponent(ctx context.Context, arg CreateComponentParams
 }
 
 const getComponentByID = `-- name: GetComponentByID :one
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
+select pc.id, pc.layout_id, pc.design_id, pc.width, pc.height, pc.is_original, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from layout_components pc
 where pc.id = $1 LIMIT 1
 `
 
-func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignComponent, error) {
+func (q *Queries) GetComponentByID(ctx context.Context, id int32) (LayoutComponent, error) {
 	row := q.db.QueryRow(ctx, getComponentByID, id)
-	var i DesignComponent
+	var i LayoutComponent
 	err := row.Scan(
 		&i.ID,
+		&i.LayoutID,
 		&i.DesignID,
 		&i.Width,
 		&i.Height,
+		&i.IsOriginal,
 		&i.Color,
 		&i.Type,
 		&i.Xi,
@@ -150,24 +157,26 @@ func (q *Queries) GetComponentByID(ctx context.Context, id int32) (DesignCompone
 }
 
 const getComponentsByDesignID = `-- name: GetComponentsByDesignID :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
+select pc.id, pc.layout_id, pc.design_id, pc.width, pc.height, pc.is_original, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from layout_components pc
 where pc.design_id = $1
 `
 
-func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) ([]DesignComponent, error) {
+func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) ([]LayoutComponent, error) {
 	rows, err := q.db.Query(ctx, getComponentsByDesignID, designID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignComponent
+	var items []LayoutComponent
 	for rows.Next() {
-		var i DesignComponent
+		var i LayoutComponent
 		if err := rows.Scan(
 			&i.ID,
+			&i.LayoutID,
 			&i.DesignID,
 			&i.Width,
 			&i.Height,
+			&i.IsOriginal,
 			&i.Color,
 			&i.Type,
 			&i.Xi,
@@ -196,25 +205,27 @@ func (q *Queries) GetComponentsByDesignID(ctx context.Context, designID int32) (
 }
 
 const haveElementsIn = `-- name: HaveElementsIn :many
-select pc.id, pc.design_id, pc.width, pc.height, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from design_components pc
-inner join design_element as pe on pe.component_id = pc.id 
+select pc.id, pc.layout_id, pc.design_id, pc.width, pc.height, pc.is_original, pc.color, pc.type, pc.xi, pc.xii, pc.yi, pc.yii, pc.bbox_xi, pc.bbox_xii, pc.bbox_yi, pc.bbox_yii, pc.priority, pc.inner_xi, pc.inner_xii, pc.inner_yi, pc.inner_yii, pc.created_at from layout_components pc
+inner join layout_elements as pe on pe.component_id = pc.id 
 where pc.id = $1
 `
 
-func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignComponent, error) {
+func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]LayoutComponent, error) {
 	rows, err := q.db.Query(ctx, haveElementsIn, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignComponent
+	var items []LayoutComponent
 	for rows.Next() {
-		var i DesignComponent
+		var i LayoutComponent
 		if err := rows.Scan(
 			&i.ID,
+			&i.LayoutID,
 			&i.DesignID,
 			&i.Width,
 			&i.Height,
+			&i.IsOriginal,
 			&i.Color,
 			&i.Type,
 			&i.Xi,
@@ -243,12 +254,12 @@ func (q *Queries) HaveElementsIn(ctx context.Context, id int32) ([]DesignCompone
 }
 
 const removeComponentFromElements = `-- name: RemoveComponentFromElements :many
-UPDATE design_element
+UPDATE layout_elements
 SET 
     component_id = NULL
 WHERE
     id = ANY ($1) and design_id = $2
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
 `
 
 type RemoveComponentFromElementsParams struct {
@@ -256,18 +267,20 @@ type RemoveComponentFromElementsParams struct {
 	DesignID int32   `json:"design_id"`
 }
 
-func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveComponentFromElementsParams) ([]DesignElement, error) {
+func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveComponentFromElementsParams) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, removeComponentFromElements, arg.Ids, arg.DesignID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -285,7 +298,6 @@ func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveCom
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,
@@ -302,7 +314,7 @@ func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveCom
 }
 
 const updateManydesignElement = `-- name: UpdateManydesignElement :many
-UPDATE design_element
+UPDATE layout_elements
 SET 
     component_id = CASE WHEN $1::boolean
         THEN $2::int ELSE component_id END,
@@ -311,7 +323,7 @@ SET
         THEN $4 ELSE name END
 WHERE
     id = ANY ($5) and design_id = $6
-RETURNING id, design_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, component_id, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
 `
 
 type UpdateManydesignElementParams struct {
@@ -324,7 +336,7 @@ type UpdateManydesignElementParams struct {
 }
 
 // You can use sqlc.arg() and @ to identify named parameters
-func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydesignElementParams) ([]DesignElement, error) {
+func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydesignElementParams) ([]LayoutElement, error) {
 	rows, err := q.db.Query(ctx, updateManydesignElement,
 		arg.ComponentIDDoUpdate,
 		arg.ComponentID,
@@ -337,12 +349,14 @@ func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydes
 		return nil, err
 	}
 	defer rows.Close()
-	var items []DesignElement
+	var items []LayoutElement
 	for rows.Next() {
-		var i DesignElement
+		var i LayoutElement
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -360,7 +374,6 @@ func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydes
 			&i.GroupID,
 			&i.Level,
 			&i.Kind,
-			&i.ComponentID,
 			&i.ImageUrl,
 			&i.ImageExtension,
 			&i.CreatedAt,

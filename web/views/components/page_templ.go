@@ -16,12 +16,13 @@ import "algvisual/web/components/elementtree"
 import "strconv"
 import "algvisual/internal/entities"
 import "algvisual/internal/shared"
+import "fmt"
 
 type PageProps struct {
 	DesignID   int32
-	Elements   []entities.DesignElement
-	Components []entities.DesignComponent
-	Background entities.DesignComponent
+	Elements   []entities.LayoutElement
+	Components []entities.LayoutComponent
+	Background entities.LayoutComponent
 }
 
 func Page(id int32, props PageProps) templ.Component {
@@ -60,9 +61,9 @@ func Page(id int32, props PageProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(shared.PageDefineComponentsCreate.Replace([]string{strconv.FormatInt(int64(id), 10)}))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/design/:design_id/layout/:layout_id/component", strconv.FormatInt(int64(id), 10)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 26, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 27, Col: 145}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -75,7 +76,7 @@ func Page(id int32, props PageProps) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(shared.PageDefineComponentsRemove.Replace([]string{strconv.FormatInt(int64(id), 10)}))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 40, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 41, Col: 135}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -143,7 +144,7 @@ func Page(id int32, props PageProps) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(int64(idx), 10))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 55, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/components/page.templ`, Line: 56, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {

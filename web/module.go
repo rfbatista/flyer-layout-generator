@@ -2,11 +2,11 @@ package web
 
 import (
 	"algvisual/internal/ports"
-	"algvisual/web/views/batch"
 	"algvisual/web/views/batchlist"
 	"algvisual/web/views/batchresults"
 	"algvisual/web/views/components"
 	"algvisual/web/views/files"
+	"algvisual/web/views/generate"
 	"algvisual/web/views/jobs"
 	"algvisual/web/views/modifier"
 	"algvisual/web/views/single"
@@ -52,10 +52,10 @@ var Module = fx.Options(fx.Provide(
 	protected(components.CreateComponent),
 	protected(jobs.NewPage),
 	protected(templates.NewPage),
-	protected(batch.NewPage),
+	protected(generate.NewPage),
+	protected(generate.CreateRequest),
 	protected(batchlist.NewPage),
 	protected(batchlist.NewTable),
-	protected(batch.CreateRequest),
 	protected(batchresults.NewPage),
 	protected(modifier.NewPage),
 ))

@@ -11,8 +11,140 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createElement = `-- name: CreateElement :one
+INSERT INTO layout_elements (
+  layout_id,
+  layer_id,
+  design_id,
+  name,
+  text,
+  xi,
+  xii,
+  yi,
+  yii,
+  width,
+  height,
+  is_group,
+  group_id,
+  level,
+  kind,
+  component_id,
+  image_url,
+  inner_xi ,
+  inner_xii,
+  inner_yi ,
+  inner_yii,
+  image_extension
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6,
+  $7,
+  $8,
+  $9,
+  $10,
+  $11,
+  $12,
+  $13,
+  $14,
+  $15,
+  $16,
+  $17,
+  $18,
+  $19,
+  $20,
+  $21,
+  $22
+)
+RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
+`
+
+type CreateElementParams struct {
+	LayoutID       int32       `json:"layout_id"`
+	LayerID        pgtype.Text `json:"layer_id"`
+	DesignID       int32       `json:"design_id"`
+	Name           pgtype.Text `json:"name"`
+	Text           pgtype.Text `json:"text"`
+	Xi             pgtype.Int4 `json:"xi"`
+	Xii            pgtype.Int4 `json:"xii"`
+	Yi             pgtype.Int4 `json:"yi"`
+	Yii            pgtype.Int4 `json:"yii"`
+	Width          pgtype.Int4 `json:"width"`
+	Height         pgtype.Int4 `json:"height"`
+	IsGroup        pgtype.Bool `json:"is_group"`
+	GroupID        pgtype.Int4 `json:"group_id"`
+	Level          pgtype.Int4 `json:"level"`
+	Kind           pgtype.Text `json:"kind"`
+	ComponentID    pgtype.Int4 `json:"component_id"`
+	ImageUrl       pgtype.Text `json:"image_url"`
+	InnerXi        pgtype.Int4 `json:"inner_xi"`
+	InnerXii       pgtype.Int4 `json:"inner_xii"`
+	InnerYi        pgtype.Int4 `json:"inner_yi"`
+	InnerYii       pgtype.Int4 `json:"inner_yii"`
+	ImageExtension pgtype.Text `json:"image_extension"`
+}
+
+func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (LayoutElement, error) {
+	row := q.db.QueryRow(ctx, createElement,
+		arg.LayoutID,
+		arg.LayerID,
+		arg.DesignID,
+		arg.Name,
+		arg.Text,
+		arg.Xi,
+		arg.Xii,
+		arg.Yi,
+		arg.Yii,
+		arg.Width,
+		arg.Height,
+		arg.IsGroup,
+		arg.GroupID,
+		arg.Level,
+		arg.Kind,
+		arg.ComponentID,
+		arg.ImageUrl,
+		arg.InnerXi,
+		arg.InnerXii,
+		arg.InnerYi,
+		arg.InnerYii,
+		arg.ImageExtension,
+	)
+	var i LayoutElement
+	err := row.Scan(
+		&i.ID,
+		&i.DesignID,
+		&i.LayoutID,
+		&i.ComponentID,
+		&i.Name,
+		&i.LayerID,
+		&i.Text,
+		&i.Xi,
+		&i.Xii,
+		&i.Yi,
+		&i.Yii,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
+		&i.Width,
+		&i.Height,
+		&i.IsGroup,
+		&i.GroupID,
+		&i.Level,
+		&i.Kind,
+		&i.ImageUrl,
+		&i.ImageExtension,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createLayout = `-- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id) VALUES ($1, $2, $3) RETURNING id, design_id, width, height, created_at, updated_at, deleted_at
+INSERT INTO layout (width, height, design_id) VALUES ($1, $2, $3) RETURNING id, design_id, width, height, data, created_at, updated_at, deleted_at
 `
 
 type CreateLayoutParams struct {
@@ -29,6 +161,7 @@ func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Lay
 		&i.DesignID,
 		&i.Width,
 		&i.Height,
+		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -68,24 +201,24 @@ INSERT INTO layout_components (
   $13,         -- bbox_yii
   $14
 )
-RETURNING id, design_id, layout_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at, updated_at, deleted_at
+RETURNING id, layout_id, design_id, width, height, is_original, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at
 `
 
 type CreateLayoutComponentParams struct {
-	LayoutID int32       `json:"layout_id"`
-	DesignID int32       `json:"design_id"`
-	Width    pgtype.Int4 `json:"width"`
-	Height   pgtype.Int4 `json:"height"`
-	Color    pgtype.Text `json:"color"`
-	Type     pgtype.Text `json:"type"`
-	Xi       pgtype.Int4 `json:"xi"`
-	Xii      pgtype.Int4 `json:"xii"`
-	Yi       pgtype.Int4 `json:"yi"`
-	Yii      pgtype.Int4 `json:"yii"`
-	BboxXi   pgtype.Int4 `json:"bbox_xi"`
-	BboxXii  pgtype.Int4 `json:"bbox_xii"`
-	BboxYi   pgtype.Int4 `json:"bbox_yi"`
-	BboxYii  pgtype.Int4 `json:"bbox_yii"`
+	LayoutID int32             `json:"layout_id"`
+	DesignID int32             `json:"design_id"`
+	Width    pgtype.Int4       `json:"width"`
+	Height   pgtype.Int4       `json:"height"`
+	Color    pgtype.Text       `json:"color"`
+	Type     NullComponentType `json:"type"`
+	Xi       pgtype.Int4       `json:"xi"`
+	Xii      pgtype.Int4       `json:"xii"`
+	Yi       pgtype.Int4       `json:"yi"`
+	Yii      pgtype.Int4       `json:"yii"`
+	BboxXi   pgtype.Int4       `json:"bbox_xi"`
+	BboxXii  pgtype.Int4       `json:"bbox_xii"`
+	BboxYi   pgtype.Int4       `json:"bbox_yi"`
+	BboxYii  pgtype.Int4       `json:"bbox_yii"`
 }
 
 func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutComponentParams) (LayoutComponent, error) {
@@ -108,10 +241,11 @@ func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutCom
 	var i LayoutComponent
 	err := row.Scan(
 		&i.ID,
-		&i.DesignID,
 		&i.LayoutID,
+		&i.DesignID,
 		&i.Width,
 		&i.Height,
+		&i.IsOriginal,
 		&i.Color,
 		&i.Type,
 		&i.Xi,
@@ -122,108 +256,18 @@ func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutCom
 		&i.BboxXii,
 		&i.BboxYi,
 		&i.BboxYii,
+		&i.Priority,
+		&i.InnerXi,
+		&i.InnerXii,
+		&i.InnerYi,
+		&i.InnerYii,
 		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
-const createLayoutRegion = `-- name: CreateLayoutRegion :one
-INSERT INTO layout_region (
-  layout_id,
-  xi, 
-  xii, 
-  yi, 
-  yii 
-) VALUES (
-  $1,  -- url
-  $2,                             -- photoshop_id
-  $3,                             -- template_id
-  $4,           -- created_at
-  $5
-) 
-RETURNING id, layout_id, xi, xii, yi, yii, created_at, updated_at, deleted_at
-`
-
-type CreateLayoutRegionParams struct {
-	LayoutID int32       `json:"layout_id"`
-	Xi       pgtype.Int4 `json:"xi"`
-	Xii      pgtype.Int4 `json:"xii"`
-	Yi       pgtype.Int4 `json:"yi"`
-	Yii      pgtype.Int4 `json:"yii"`
-}
-
-func (q *Queries) CreateLayoutRegion(ctx context.Context, arg CreateLayoutRegionParams) (LayoutRegion, error) {
-	row := q.db.QueryRow(ctx, createLayoutRegion,
-		arg.LayoutID,
-		arg.Xi,
-		arg.Xii,
-		arg.Yi,
-		arg.Yii,
-	)
-	var i LayoutRegion
-	err := row.Scan(
-		&i.ID,
-		&i.LayoutID,
-		&i.Xi,
-		&i.Xii,
-		&i.Yi,
-		&i.Yii,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
-const createLayoutTemplate = `-- name: CreateLayoutTemplate :one
-INSERT INTO layout_template (
-  layout_id,
-  type, 
-  width, 
-  height 
-) VALUES (
-  $1,         
-  $2,           
-  $3,             
-  $4
-)
-RETURNING id, layout_id, type, width, height, slots_x, slots_y, created_at, updated_at, deleted_at
-`
-
-type CreateLayoutTemplateParams struct {
-	LayoutID int32       `json:"layout_id"`
-	Type     pgtype.Text `json:"type"`
-	Width    pgtype.Int4 `json:"width"`
-	Height   pgtype.Int4 `json:"height"`
-}
-
-func (q *Queries) CreateLayoutTemplate(ctx context.Context, arg CreateLayoutTemplateParams) (LayoutTemplate, error) {
-	row := q.db.QueryRow(ctx, createLayoutTemplate,
-		arg.LayoutID,
-		arg.Type,
-		arg.Width,
-		arg.Height,
-	)
-	var i LayoutTemplate
-	err := row.Scan(
-		&i.ID,
-		&i.LayoutID,
-		&i.Type,
-		&i.Width,
-		&i.Height,
-		&i.SlotsX,
-		&i.SlotsY,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getLayoutByID = `-- name: GetLayoutByID :one
-SELECT id, design_id, width, height, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, width, height, data, created_at, updated_at, deleted_at FROM layout 
 WHERE id = $1
 LIMIT 1
 `
@@ -236,6 +280,7 @@ func (q *Queries) GetLayoutByID(ctx context.Context, id int64) (Layout, error) {
 		&i.DesignID,
 		&i.Width,
 		&i.Height,
+		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -244,7 +289,7 @@ func (q *Queries) GetLayoutByID(ctx context.Context, id int64) (Layout, error) {
 }
 
 const getLayoutComponentsByLayoutID = `-- name: GetLayoutComponentsByLayoutID :many
-SELECT id, design_id, layout_id, width, height, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, created_at, updated_at, deleted_at FROM layout_components 
+SELECT id, layout_id, design_id, width, height, is_original, color, type, xi, xii, yi, yii, bbox_xi, bbox_xii, bbox_yi, bbox_yii, priority, inner_xi, inner_xii, inner_yi, inner_yii, created_at FROM layout_components 
 WHERE layout_id = $1
 ORDER BY created_at desc
 `
@@ -260,10 +305,11 @@ func (q *Queries) GetLayoutComponentsByLayoutID(ctx context.Context, layoutID in
 		var i LayoutComponent
 		if err := rows.Scan(
 			&i.ID,
-			&i.DesignID,
 			&i.LayoutID,
+			&i.DesignID,
 			&i.Width,
 			&i.Height,
+			&i.IsOriginal,
 			&i.Color,
 			&i.Type,
 			&i.Xi,
@@ -274,82 +320,12 @@ func (q *Queries) GetLayoutComponentsByLayoutID(ctx context.Context, layoutID in
 			&i.BboxXii,
 			&i.BboxYi,
 			&i.BboxYii,
+			&i.Priority,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
 			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getLayoutRegionByLayoutID = `-- name: GetLayoutRegionByLayoutID :many
-SELECT id, layout_id, xi, xii, yi, yii, created_at, updated_at, deleted_at FROM layout_region
-WHERE layout_id = $1
-ORDER BY created_at desc
-`
-
-func (q *Queries) GetLayoutRegionByLayoutID(ctx context.Context, layoutID int32) ([]LayoutRegion, error) {
-	rows, err := q.db.Query(ctx, getLayoutRegionByLayoutID, layoutID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []LayoutRegion
-	for rows.Next() {
-		var i LayoutRegion
-		if err := rows.Scan(
-			&i.ID,
-			&i.LayoutID,
-			&i.Xi,
-			&i.Xii,
-			&i.Yi,
-			&i.Yii,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getLayoutTemplateByLayoutID = `-- name: GetLayoutTemplateByLayoutID :many
-SELECT id, layout_id, type, width, height, slots_x, slots_y, created_at, updated_at, deleted_at FROM layout_template 
-WHERE layout_id = $1
-ORDER BY created_at desc
-`
-
-func (q *Queries) GetLayoutTemplateByLayoutID(ctx context.Context, layoutID int32) ([]LayoutTemplate, error) {
-	rows, err := q.db.Query(ctx, getLayoutTemplateByLayoutID, layoutID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []LayoutTemplate
-	for rows.Next() {
-		var i LayoutTemplate
-		if err := rows.Scan(
-			&i.ID,
-			&i.LayoutID,
-			&i.Type,
-			&i.Width,
-			&i.Height,
-			&i.SlotsX,
-			&i.SlotsY,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -362,7 +338,7 @@ func (q *Queries) GetLayoutTemplateByLayoutID(ctx context.Context, layoutID int3
 }
 
 const listLayouts = `-- name: ListLayouts :many
-SELECT id, design_id, width, height, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, width, height, data, created_at, updated_at, deleted_at FROM layout 
 ORDER BY created_at desc
 LIMIT $1 OFFSET $2
 `
@@ -386,6 +362,7 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 			&i.DesignID,
 			&i.Width,
 			&i.Height,
+			&i.Data,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,

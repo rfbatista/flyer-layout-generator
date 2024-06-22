@@ -22,8 +22,8 @@ func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, er
 type GeneratorRequest struct {
 	Template   entities2.Template          `json:"templates"`
 	Photoshop  entities2.DesignFile        `json:"photoshop"`
-	Components []entities2.DesignComponent `json:"components"`
-	Elements   []entities2.DesignElement   `json:"elements"`
+	Components []entities2.LayoutComponent `json:"components"`
+	Elements   []entities2.LayoutElement   `json:"elements"`
 }
 
 type GeneratorResult struct {
