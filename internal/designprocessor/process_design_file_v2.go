@@ -70,9 +70,10 @@ func ProcessDesignFileUseCasev2(
 		return nil, err
 	}
 	layout, err := qtx.CreateLayout(ctx, database.CreateLayoutParams{
-		Width:    photoshop.Width,
-		Height:   photoshop.Height,
-		DesignID: pgtype.Int4{Int32: photoshop.ID, Valid: true},
+		Width:      photoshop.Width,
+		Height:     photoshop.Height,
+		IsOriginal: pgtype.Bool{Bool: true, Valid: true},
+		DesignID:   pgtype.Int4{Int32: photoshop.ID, Valid: true},
 	})
 	if err != nil {
 		log.Error("failed to create layout", zap.Error(err))

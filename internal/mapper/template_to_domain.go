@@ -11,7 +11,6 @@ func TemplateToDomain(raw database.Template) entities.Template {
 		Name:      raw.Name,
 		Width:     raw.Width.Int32,
 		Height:    raw.Height.Int32,
-		Type:      entities.NewTemplateType(string(raw.Type.TemplateType)),
 		MaxSlotsX: raw.MaxSlotsX.Int32,
 		MaxSlotsY: raw.MaxSlotsY.Int32,
 		CreatedAt: raw.CreatedAt.Time,

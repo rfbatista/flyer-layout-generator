@@ -12,6 +12,7 @@ import "bytes"
 
 import (
 	"algvisual/internal/entities"
+	"algvisual/web/components/toast"
 	"algvisual/web/components/topbar"
 	"algvisual/web/views"
 	"fmt"
@@ -50,7 +51,7 @@ func Page(props PageProps, css string, js string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/dist/%s?time=%s", css, time.Now().String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/page.templ`, Line: 19, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/page.templ`, Line: 20, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -68,7 +69,7 @@ func Page(props PageProps, css string, js string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"grid\" data-min=\"15rem\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,14 +79,22 @@ func Page(props PageProps, css string, js string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><script type=\"text/javascript\">\n        htmx.on('#form', 'htmx:xhr:progress', function(evt) {\n          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)\n        });\n        const Toast = Swal.mixin({\n          toast: true,\n          position: 'center',\n          iconColor: 'white',\n          customClass: {\n            popup: 'colored-toast',\n          },\n          showConfirmButton: false,\n          timer: 1500,\n          timerProgressBar: true,\n        })\n        document.body.addEventListener(\"makeToast\", async function(evt){\n          console.log(evt.detail)\n          if(evt.detail.level == \"success\"){\n            await Toast.fire({\n              icon: 'success',\n              title: 'Sucesso',\n            })\n          } else {\n            await Toast.fire({\n              icon: 'error',\n              title: evt.detail.message,\n            })\n          }\n        })\n        </script><script src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = toast.RequestToast().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"text/javascript\">\n        htmx.on('#form', 'htmx:xhr:progress', function(evt) {\n          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)\n        });\n        const Toast = Swal.mixin({\n          toast: true,\n          position: 'center',\n          iconColor: 'white',\n          customClass: {\n            popup: 'colored-toast',\n          },\n          showConfirmButton: false,\n          timer: 1500,\n          timerProgressBar: true,\n        })\n        document.body.addEventListener(\"makeToast\", async function(evt){\n          console.log(evt.detail)\n          if(evt.detail.level == \"success\"){\n            await Toast.fire({\n              icon: 'success',\n              title: 'Sucesso',\n            })\n          } else {\n            await Toast.fire({\n              icon: 'error',\n              title: evt.detail.message,\n            })\n          }\n        })\n        </script><script src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/page.templ`, Line: 59, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/page.templ`, Line: 61, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

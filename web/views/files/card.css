@@ -6,6 +6,8 @@ sl-card.design-card {
   background-color: transparent;
   border: 1px solid var(--sl-color-neutral-200);
   border-radius: var(--sl-border-radius-large);
+  object-fit: cover;
+  /* Ensures the image covers the entire container */
 }
 
 .design-card::part(image):hover {
@@ -30,6 +32,13 @@ sl-card.design-card {
 
 .design-card {
   max-width: 300px;
+  position: relative;
+  display: inline-block;
+}
+
+.design-card__body.cluster {
+  display: flex;
+  justify-content: space-between;
 }
 
 .design-card__body {
@@ -37,4 +46,22 @@ sl-card.design-card {
   padding-right: var(--s-2);
   font-size: var(--s0);
   margin: var(--s-2);
+}
+
+.design-card__edit-link {
+  position: absolute;
+  top: 10px;
+  /* Adjust this value to position the icon from the top */
+  right: 10px;
+  /* Adjust this value to position the icon from the right */
+  font-size: 24px;
+  /* Adjust the size of the icon */
+  color: white;
+  /* Change the color of the icon */
+  background: rgba(0, 0, 0, 0.5);
+  /* Optional: Add a background color with transparency */
+  padding: 5px;
+  /* Optional: Add some padding */
+  border-radius: var(--sl-border-radius-large);
+  /* Optional: Make the icon circular */
 }

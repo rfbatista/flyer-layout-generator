@@ -6,6 +6,8 @@ import (
 	"time"
 	"fmt"
 	"algvisual/web/components/topbar"
+	"algvisual/web/components/progress"
+	"algvisual/web/components/toast"
 )
 
 func IsProcessed(d entities.DesignFile) string {
@@ -27,13 +29,22 @@ templ Page(props PageProps, css string, js string) {
 		</head>
 		<body>
 			@topbar.HomeBar()
+			<div>
+				@UploadDesignForm()
+			</div>
 			<div class="box">
-				<div class="grid" data-min="15rem">
+				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/icon/icon.js"></script>
+				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/tag/tag.js"></script>
+				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/icon-button/icon-button.js"></script>
+				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/button/button.js"></script>
+				<div class="cluster" data-min="15rem">
 					for _, d := range props.files {
 						@DesignCard(d)
 					}
 				</div>
 			</div>
+			@toast.RequestToast()
+			@progress.ProgressRing("upload-progress")
 			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
 			<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/card/card.js"></script>
 		</body>

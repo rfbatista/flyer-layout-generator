@@ -14,7 +14,6 @@ import (
 const createTemplate = `-- name: CreateTemplate :one
 INSERT INTO templates (
   name,
-  type,
   width,
   height,
   request_id
@@ -22,24 +21,21 @@ INSERT INTO templates (
   $1,
   $2,
   $3,
-  $4,
-  $5
+  $4
 )
-RETURNING id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+RETURNING id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 `
 
 type CreateTemplateParams struct {
-	Name      string           `json:"name"`
-	Type      NullTemplateType `json:"type"`
-	Width     pgtype.Int4      `json:"width"`
-	Height    pgtype.Int4      `json:"height"`
-	RequestID pgtype.Text      `json:"request_id"`
+	Name      string      `json:"name"`
+	Width     pgtype.Int4 `json:"width"`
+	Height    pgtype.Int4 `json:"height"`
+	RequestID pgtype.Text `json:"request_id"`
 }
 
 func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) (Template, error) {
 	row := q.db.QueryRow(ctx, createTemplate,
 		arg.Name,
-		arg.Type,
 		arg.Width,
 		arg.Height,
 		arg.RequestID,
@@ -48,7 +44,6 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Type,
 		&i.RequestID,
 		&i.Width,
 		&i.Height,
@@ -146,7 +141,7 @@ func (q *Queries) CreateTemplateSlot(ctx context.Context, arg CreateTemplateSlot
 }
 
 const getTemplate = `-- name: GetTemplate :one
-SELECT templates.id, templates.name, templates.type, templates.request_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
+SELECT templates.id, templates.name, templates.request_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
 FROM templates
 WHERE templates.id = $1 LIMIT 1
 `
@@ -161,7 +156,6 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 	err := row.Scan(
 		&i.Template.ID,
 		&i.Template.Name,
-		&i.Template.Type,
 		&i.Template.RequestID,
 		&i.Template.Width,
 		&i.Template.Height,
@@ -177,7 +171,7 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 }
 
 const getTemplateByID = `-- name: GetTemplateByID :one
-SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 WHERE id = $1 LIMIT 1
 `
@@ -188,7 +182,6 @@ func (q *Queries) GetTemplateByID(ctx context.Context, id int32) (Template, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Type,
 		&i.RequestID,
 		&i.Width,
 		&i.Height,
@@ -269,7 +262,7 @@ func (q *Queries) GetTemplateSlots(ctx context.Context, templateID int32) ([]Get
 }
 
 const getTemplatesByRequestID = `-- name: GetTemplatesByRequestID :many
-SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 WHERE request_id = $1
 `
@@ -286,7 +279,6 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Type,
 			&i.RequestID,
 			&i.Width,
 			&i.Height,
@@ -309,7 +301,7 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT id, name, type, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 LIMIT $1 OFFSET $2
 `
@@ -331,7 +323,6 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Type,
 			&i.RequestID,
 			&i.Width,
 			&i.Height,

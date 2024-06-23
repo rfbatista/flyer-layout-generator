@@ -1,7 +1,8 @@
 package templates
 
 import (
-	"algvisual/internal/entities"
+	"algvisual/internal/database"
+	"algvisual/internal/shared"
 	"context"
 	"fmt"
 	"mime/multipart"
@@ -10,9 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/shared"
 )
 
 type TemplatesCsvUploadRequest struct {
@@ -56,7 +54,6 @@ func TemplatesCsvUploadUseCase(
 			Height:    int(t.Height),
 			X:         int(t.SlotsX),
 			Y:         int(t.SlostsY),
-			Type:      entities.TemplateDistortionType,
 			RequestID: uniqid.String(),
 		}, log)
 		if err != nil {

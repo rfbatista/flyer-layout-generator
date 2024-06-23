@@ -6,6 +6,7 @@ import (
 	"algvisual/web/components/topbar"
 	"fmt"
 	"time"
+	"algvisual/web/components/toast"
 )
 
 type PageProps struct {
@@ -21,11 +22,12 @@ templ Page(props PageProps, css string, js string) {
 		<body>
 			@topbar.HomeBar()
 			@Form()
-			<div class="container">
+			<div class="grid" data-min="15rem">
 				for _ , d := range props.templates {
 					@TemplateCard(d)
 				}
 			</div>
+			@toast.RequestToast()
 			<script type="text/javascript">
         htmx.on('#form', 'htmx:xhr:progress', function(evt) {
           htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)

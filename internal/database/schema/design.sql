@@ -6,7 +6,6 @@ CREATE TYPE TEMPLATE_TYPE AS ENUM (
 CREATE TABLE templates (
   id   SERIAL PRIMARY KEY,
   name text      NOT NULL,
-  type TEMPLATE_TYPE,
   request_id TEXT,
   width INT,
   height INT,
@@ -81,6 +80,7 @@ CREATE TYPE COMPONENT_TYPE AS ENUM (
 CREATE TABLE layout (
   id   BIGSERIAL PRIMARY KEY,
   design_id INT,
+  is_original BOOL DEFAULT FALSE,
   width INT,
   height INT,
   data TEXT,

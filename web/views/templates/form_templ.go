@@ -10,10 +10,6 @@ import "context"
 import "io"
 import "bytes"
 
-import (
-	"algvisual/internal/shared"
-)
-
 func Form() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -27,20 +23,20 @@ func Form() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"box cluster\"><form id=\"form\" hx-encoding=\"multipart/form-data\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"box cluster\"><form id=\"create-template-form\" hx-encoding=\"multipart/form-data\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(shared.PageUploadDesignFile.String())
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("/template")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/form.templ`, Line: 9, Col: 98}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/templates/form.templ`, Line: 5, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><div class=\"box\"><sl-input class=\"template-form__input\" label=\"Nome\" name=\"name\" required></sl-input></div><div class=\"box\"><sl-input class=\"template-form__input\" name=\"width\" type=\"number\" label=\"Largura\" required></sl-input></div><div class=\"box\"><sl-input class=\"template-form__input\" name=\"height\" type=\"number\" label=\"Altura\" required></sl-input></div><div class=\"box\"><sl-button class=\"button\">Cadastrar</sl-button></div></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><div class=\"box\"><input class=\"template-form__input input-style\" form=\"create-template-form\" placeholder=\"Nome\" name=\"name\" required></div><div class=\"box\"><input class=\"template-form__input input-style\" name=\"width\" type=\"number\" placeholder=\"Largura\" required></div><div class=\"box\"><input class=\"template-form__input input-style\" name=\"height\" type=\"number\" placeholder=\"Altura\" required></div><div class=\"box\"><sl-button type=\"submit\">Cadastrar</sl-button></div></form></div><script type=\"module\" src=\"https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/input/input.js\"></script><script>\n    document.getElementById('create-template-form').addEventListener('submit', function(event) {\n      const form = $('#create-template-form');\n      console.log(form)\n      const data = new FormData(form);\n      console.log(data)\n    });\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

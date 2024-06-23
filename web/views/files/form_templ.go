@@ -27,20 +27,20 @@ func UploadDesignForm() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"\"><div class=\"my-2\"><div class=\"card is-hidden1\"><div class=\"card-header\"><p class=\"card-header-title\">Cadastrar arquivo</p></div><div class=\"card-content\"><div class=\"content\"><div class=\"field\"><label class=\"label\">Nome</label><div class=\"control\"><input form=\"form\" class=\"input\" type=\"text\" name=\"filename\" placeholder=\"\"></div></div><div class=\"field\"><input form=\"form\" type=\"file\" name=\"file\"></div></div><form id=\"form\" hx-encoding=\"multipart/form-data\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"module\" src=\"https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/button/button.js\"></script><div class=\"cluster\"><form id=\"form\" hx-encoding=\"multipart/form-data\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(shared.PageUploadDesignFile.String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/files/form.templ`, Line: 24, Col: 101}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/files/form.templ`, Line: 10, Col: 98}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><div class=\"field\"><div class=\"control\"><button class=\"button\">Cadastrar</button></div></div><progress class=\"w-full\" id=\"progress\" value=\"0\" max=\"100\"></progress></form></div></div></div></div><script type=\"text/javascript\">\n        htmx.on('#form', 'htmx:xhr:progress', function(evt) {\n          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)\n        });\n        const Toast = Swal.mixin({\n          toast: true,\n          position: 'center',\n          iconColor: 'white',\n          customClass: {\n            popup: 'colored-toast',\n          },\n          showConfirmButton: false,\n          timer: 1500,\n          timerProgressBar: true,\n        })\n        document.body.addEventListener(\"makeToast\", async function(evt){\n          console.log(evt.detail)\n          if(evt.detail.level == \"success\"){\n            await Toast.fire({\n              icon: 'success',\n              title: 'Sucesso',\n            })\n          } else {\n            await Toast.fire({\n              icon: 'error',\n              title: evt.detail.message,\n            })\n          }\n        })\n        </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><div class=\"box\"><input form=\"form\" class=\"uk-input\" placeholder=\"Nome\" type=\"text\" name=\"filename\" placeholder=\"\" required></div><div class=\"box\"><div uk-form-custom=\"target: true\"><input type=\"file\" name=\"file\" aria-label=\"Custom controls\" required> <input class=\"uk-input uk-form-width-medium\" type=\"text\" placeholder=\"Selecionar arquivo\" aria-label=\"Custom controls\" disabled></div><button class=\"uk-button uk-button-default\">Salvar</button></div></form></div><script type=\"text/javascript\">\n        htmx.on('#form', 'htmx:xhr:progress', function(evt) {\n          $(\"#upload-progress\").show()\n          htmx.find('#upload-progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)\n        });\n        const Toast = Swal.mixin({\n          toast: true,\n          position: 'center',\n          iconColor: 'white',\n          customClass: {\n            popup: 'colored-toast',\n          },\n          showConfirmButton: false,\n          timer: 1500,\n          timerProgressBar: true,\n        })\n        document.body.addEventListener(\"makeToast\", async function(evt){\n          console.log(evt.detail)\n          if(evt.detail.level == \"success\"){\n            await Toast.fire({\n              icon: 'success',\n              title: 'Sucesso',\n            })\n          } else {\n            await Toast.fire({\n              icon: 'error',\n              title: evt.detail.message,\n            })\n          }\n        })\n        </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

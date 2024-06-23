@@ -1,25 +1,22 @@
 package templates
 
 import (
-	"algvisual/internal/entities"
+	"algvisual/internal/database"
+	"algvisual/internal/shared"
 	"context"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/shared"
 )
 
 type CreateTemplateUseCaseRequest struct {
-	Name      string                `form:"name"   json:"name,omitempty"`
-	Width     int                   `form:"width"  json:"width,omitempty"`
-	Height    int                   `form:"height" json:"height,omitempty"`
-	Type      entities.TemplateType `form:"type"   json:"type,omitempty"`
-	X         int                   `              json:"x,omitempty"`
-	Y         int                   `              json:"y,omitempty"`
+	Name      string `form:"name"   json:"name,omitempty"`
+	Width     int    `form:"width"  json:"width,omitempty"`
+	Height    int    `form:"height" json:"height,omitempty"`
+	X         int    `              json:"x,omitempty"`
+	Y         int    `              json:"y,omitempty"`
 	RequestID string
 }
 
@@ -45,13 +42,6 @@ func CreateTemplateUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
-	tempType := &database.NullTemplateType{}
-	err = tempType.Scan(req.Type.String())
-	if err != nil {
-		err = shared.WrapWithAppError(err, "invalid templates type provided", "")
-		log.Error(err.Error())
-		return nil, err
-	}
 	var id string
 	if req.RequestID == "" {
 		uniqid, _ := uuid.NewRandom()
@@ -61,7 +51,6 @@ func CreateTemplateUseCase(
 	}
 	temp, err := qtx.CreateTemplate(ctx, database.CreateTemplateParams{
 		Name:      req.Name,
-		Type:      *tempType,
 		Width:     pgtype.Int4{Int32: int32(req.Width), Valid: true},
 		Height:    pgtype.Int4{Int32: int32(req.Height), Valid: true},
 		RequestID: pgtype.Text{String: id, Valid: true},

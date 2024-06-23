@@ -32,7 +32,7 @@ func NewPage(
 	}
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath("/editor")
+	h.SetPath("/editor/:design_id")
 	h.SetHandle(func(c echo.Context) error {
 		props, err := Props(c.Request().Context(), queries, log)
 		if err != nil {

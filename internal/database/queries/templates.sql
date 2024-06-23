@@ -33,7 +33,6 @@ WHERE template_id = $1 LIMIT 1;
 -- name: CreateTemplate :one
 INSERT INTO templates (
   name,
-  type,
   width,
   height,
   request_id
@@ -41,8 +40,7 @@ INSERT INTO templates (
   $1,
   $2,
   $3,
-  $4,
-  $5
+  $4
 )
 RETURNING *;
 

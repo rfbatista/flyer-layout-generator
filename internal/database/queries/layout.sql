@@ -8,13 +8,19 @@ SELECT * FROM layout
 WHERE id = $1
 LIMIT 1;
 
+
+-- name: GetOriginalLayoutByDesignID :one
+SELECT * FROM layout 
+WHERE design_id = $1 AND is_original = true
+LIMIT 1;
+
 -- name: GetLayoutComponentsByLayoutID :many
 SELECT * FROM layout_components 
 WHERE layout_id = $1
 ORDER BY created_at desc;
 
 -- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id) VALUES ($1, $2, $3) RETURNING *;
+INSERT INTO layout (width, height, design_id, is_original) VALUES ($1, $2, $3, $4) RETURNING *;
 
 -- name: CreateLayoutComponent :one
 INSERT INTO layout_components (

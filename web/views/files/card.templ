@@ -1,16 +1,38 @@
 package files
 
 import "algvisual/internal/entities"
+import "fmt"
+
+func getImage(d entities.DesignFile) string {
+	if d.ImageURL != "" {
+		return d.ImageURL
+	}
+	return fmt.Sprintf("https://placehold.co/250x150?text=")
+}
 
 templ DesignCard(d entities.DesignFile) {
-	<div class="box">
+	<div class="box design-card">
 		<sl-card class="design-card" padding="0">
+			if d.ImageURL != "" {
+				<sl-icon-button href={ fmt.Sprintf("/editor/%d", d.ID) } class="design-card__edit-link" name="box-arrow-up-right" label="Edit" style="font-size: 1.5rem;"></sl-icon-button>
+			}
 			<img
 				slot="image"
-				src={ d.ImageURL }
+				src={ getImage(d) }
 			/>
-			<div class="design-card__body">
-				<strong>{ d.Name }</strong>
+			<div class="design-card__body cluster">
+				<div>
+					<div class="box">
+						<strong>{ d.Name }</strong>
+					</div>
+					<div class="box">
+						if d.IsProcessed {
+							<sl-tag variant="success">Processado</sl-tag>
+						} else {
+							<sl-button variant="primary" hx-post={ fmt.Sprintf("/upload/design/%d/process", d.ID) }>Processar</sl-button>
+						}
+					</div>
+				</div>
 			</div>
 		</sl-card>
 	</div>

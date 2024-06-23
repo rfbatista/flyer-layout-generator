@@ -1,5 +1,12 @@
 .navbar__item {
   color: white;
+  text-decoration: none; /* no underline */
+}
+
+
+.navbar__item>a {
+  color: white;
+  text-decoration: none; /* no underline */
 }
 
 .navbar {

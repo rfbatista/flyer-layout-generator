@@ -4,6 +4,7 @@ import (
 	"algvisual/internal/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
+	"algvisual/internal/templates"
 	"algvisual/web/render"
 	"fmt"
 	"net/http"
@@ -45,6 +46,34 @@ func NewPage(
 			return err
 		}
 		return render.Render(c, http.StatusOK, Page(props, static.CSSName, static.JSName))
+	})
+	return h
+}
+
+func CreateTemplate(
+	queries *database.Queries,
+	conn *pgxpool.Pool,
+	log *zap.Logger,
+	bundler *infra.Bundler,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath("/template")
+	h.SetHandle(func(c echo.Context) error {
+		var req templates.CreateTemplateUseCaseRequest
+		err := c.Bind(&req)
+		if err != nil {
+			log.Error("failed to render home page", zap.Error(err))
+			return err
+		}
+		_, err = templates.CreateTemplateUseCase(c.Request().Context(), conn, queries, req, log)
+		if err != nil {
+			log.Error("failed to create template", zap.Error(err))
+			render.ErrorNotification(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
+		}
+		render.SuccessNotification(c, "Template criado com sucesso")
+		return c.NoContent(http.StatusOK)
 	})
 	return h
 }

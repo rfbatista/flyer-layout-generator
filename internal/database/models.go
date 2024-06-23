@@ -127,14 +127,15 @@ type Image struct {
 }
 
 type Layout struct {
-	ID        int64            `json:"id"`
-	DesignID  pgtype.Int4      `json:"design_id"`
-	Width     pgtype.Int4      `json:"width"`
-	Height    pgtype.Int4      `json:"height"`
-	Data      pgtype.Text      `json:"data"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	ID         int64            `json:"id"`
+	DesignID   pgtype.Int4      `json:"design_id"`
+	IsOriginal pgtype.Bool      `json:"is_original"`
+	Width      pgtype.Int4      `json:"width"`
+	Height     pgtype.Int4      `json:"height"`
+	Data       pgtype.Text      `json:"data"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
 }
 
 type LayoutComponent struct {
@@ -219,7 +220,6 @@ type LayoutRequestsJob struct {
 type Template struct {
 	ID        int32            `json:"id"`
 	Name      string           `json:"name"`
-	Type      NullTemplateType `json:"type"`
 	RequestID pgtype.Text      `json:"request_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`

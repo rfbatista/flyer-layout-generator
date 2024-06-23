@@ -99,7 +99,7 @@ func NewProcessDesignFile(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath(shared.PageUploadDesignFileProcess.String())
+	h.SetPath("/upload/design/:design_id/process")
 	h.SetHandle(func(c echo.Context) error {
 		var req designprocessor.ProcessDesignFileRequestv2
 		err := c.Bind(&req)
