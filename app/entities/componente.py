@@ -131,11 +131,15 @@ class Componente(BaseModel):
     def index_elements(self, layer, pre=""):
         if not isinstance(layer, Iterable):
             return
-        elements_ids = [e.layer_id for e in self.elements]
-        for _, layer in enumerate(layer):
-            if str(layer.layer_id) in elements_ids:
-                self._items.append(Elemento(layer))
-            self.index_elements(layer, pre + "\t")
+        # elements_ids = [e.layer_id for e in self.elements]
+        for _, layer_n in enumerate(layer):
+            for element in self.elements:
+                if element.layer_id == str(layer_n.layer_id):
+                    self._items.append(Elemento(layer_n, element.id or 0))
+                    break
+            # if str(layer.layer_id) in elements_ids:
+            #     self._items.append(Elemento(layer))
+            self.index_elements(layer_n, pre + "\t")
 
     def size(self):
         return (self.width, self.height)

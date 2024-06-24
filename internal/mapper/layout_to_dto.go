@@ -15,6 +15,7 @@ func LayoutToDto(e entities.Layout) entities.LayoutDTO {
 	return entities.LayoutDTO{
 		ID:         e.ID,
 		Background: bg,
+		ImageURL:   e.ImageURL,
 		DesignID:   e.DesignID,
 		Width:      e.Width,
 		Height:     e.Height,

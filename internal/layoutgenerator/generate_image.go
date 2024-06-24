@@ -15,17 +15,19 @@ import (
 )
 
 type GenerateImage struct {
-	PhotoshopID           int32 `form:"design_id"   json:"photoshop_id,omitempty"`
-	TemplateID            int32 `form:"template_id" json:"template_id,omitempty"`
-	LimitSizerPerElement  bool  `                   json:"limit_sizer_per_element,omitempty"`
-	AnchorElements        bool  `                   json:"anchor_elements,omitempty"`
-	ShowGrid              bool  `form:"show_grid"   json:"show_grid,omitempty"`
-	MinimiumComponentSize int32 `                   json:"minimium_component_size,omitempty"`
-	MinimiumTextSize      int32 `                   json:"minimium_text_size,omitempty"`
-	SlotsX                int32 `form:"grid_x"      json:"slots_x,omitempty"`
-	SlotsY                int32 `form:"grid_y"      json:"slots_y,omitempty"`
-	Padding               int32 `form:"padding"     json:"padding,omitempty"`
-	KeepProportions       bool  `                   json:"keep_proportions,omitempty"`
+	PhotoshopID           int32    `form:"design_id"   json:"photoshop_id,omitempty"`
+	LayoutID              int32    `form:"layout_id"   json:"layout_id,omitempty"`
+	TemplateID            int32    `form:"template_id" json:"template_id,omitempty"`
+	LimitSizerPerElement  bool     `                   json:"limit_sizer_per_element,omitempty"`
+	AnchorElements        bool     `                   json:"anchor_elements,omitempty"`
+	ShowGrid              bool     `form:"show_grid"   json:"show_grid,omitempty"`
+	MinimiumComponentSize int32    `                   json:"minimium_component_size,omitempty"`
+	MinimiumTextSize      int32    `                   json:"minimium_text_size,omitempty"`
+	SlotsX                int32    `form:"grid_x"      json:"slots_x,omitempty"`
+	SlotsY                int32    `form:"grid_y"      json:"slots_y,omitempty"`
+	Padding               int32    `form:"padding"     json:"padding,omitempty"`
+	KeepProportions       bool     `                   json:"keep_proportions,omitempty"`
+	Priorities            []string `form:"priority[]"  json:"priorities,omitempty"`
 }
 
 type GenerateImageOutput struct {
@@ -57,7 +59,7 @@ func GenerateImageUseCase(
 		return nil, err
 	}
 	etemplate := mapper.TemplateToDomain(template.Template)
-	elements, err := queries.GetElements(ctx, designFile.ID)
+	elements, err := queries.GetElementsByLayoutID(ctx, req.LayoutID)
 	if err != nil {
 		err = shared.WrapWithAppError(
 			err,
@@ -111,8 +113,9 @@ func GenerateImageUseCase(
 		Background: bg,
 		Components: components,
 		Config: entities.LayoutRequestConfig{
-			Padding:  req.Padding,
-			ShowGrid: true,
+			Padding:    req.Padding,
+			ShowGrid:   true,
+			Priorities: entities.ListToPrioritiesMap(req.Priorities),
 		},
 	}
 	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
@@ -127,7 +130,19 @@ func GenerateImageUseCase(
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err
 	}
-	layoutCreated, err := SaveLayout(ctx, *nprancheta, queries, db)
+	for cidx := range nprancheta.Components {
+		for eidx := range nprancheta.Components[cidx].Elements {
+			id := nprancheta.Components[cidx].Elements[eidx].ID
+			for _, resultElements := range res.Elements {
+				if resultElements.ElementID == id {
+					nprancheta.Components[cidx].Elements[eidx].ImageURL = resultElements.ImageURL
+				}
+			}
+		}
+	}
+	gerated := *nprancheta
+	gerated.ImageURL = res.ImageURL
+	layoutCreated, err := SaveLayout(ctx, gerated, queries, db)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err

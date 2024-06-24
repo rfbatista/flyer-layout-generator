@@ -73,6 +73,7 @@ func ProcessDesignFileUseCasev2(
 		Width:      photoshop.Width,
 		Height:     photoshop.Height,
 		IsOriginal: pgtype.Bool{Bool: true, Valid: true},
+		ImageUrl:   pgtype.Text{String: res.ImageUrl, Valid: true},
 		DesignID:   pgtype.Int4{Int32: photoshop.ID, Valid: true},
 	})
 	if err != nil {
@@ -110,7 +111,16 @@ func ProcessDesignFileUseCasev2(
 	}
 	_, err = qtx.SetDesignAsProccessed(ctx, req.ID)
 	if err != nil {
-		log.Error("failed to set design as proccessed")
+		log.Error("failed to set design as proccessed", zap.Error(err))
+		return nil, err
+	}
+	_, err = qtx.UpdateDesignByID(ctx, database.UpdateDesignByIDParams{
+		LayoutDoUpdate: true,
+		LayoutID:       pgtype.Int4{Int32: int32(layout.ID), Valid: true},
+		DesignID:       req.ID,
+	})
+	if err != nil {
+		log.Error("failed update layout id in design", zap.Error(err))
 		return nil, err
 	}
 	err = tx.Commit(ctx)

@@ -5,8 +5,10 @@ from PIL.Image import Image
 
 
 class Elemento:
-    def __init__(self, layer):
+    id: int = 0
+    def __init__(self, layer, id = 0):
         self.layer = layer
+        self.id = id
 
     def box(self):
         return self.layer.bbox

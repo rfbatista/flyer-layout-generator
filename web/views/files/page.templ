@@ -38,13 +38,16 @@ templ Page(props PageProps, css string, js string) {
 				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/icon-button/icon-button.js"></script>
 				<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/button/button.js"></script>
 				<div class="cluster" data-min="15rem">
-					for _, d := range props.files {
-						@DesignCard(d)
-					}
+					<div>
+						for _, d := range props.files {
+							@DesignCard(d)
+						}
+					</div>
 				</div>
 			</div>
 			@toast.RequestToast()
 			@progress.ProgressRing("upload-progress")
+			@progress.ProgressSpinner("request-progress")
 			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
 			<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/card/card.js"></script>
 		</body>

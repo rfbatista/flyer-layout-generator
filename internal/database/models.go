@@ -108,6 +108,7 @@ type Design struct {
 	ID             int32            `json:"id"`
 	Name           string           `json:"name"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
+	LayoutID       pgtype.Int4      `json:"layout_id"`
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	FileUrl        pgtype.Text      `json:"file_url"`
 	FileExtension  pgtype.Text      `json:"file_extension"`
@@ -130,6 +131,7 @@ type Layout struct {
 	ID         int64            `json:"id"`
 	DesignID   pgtype.Int4      `json:"design_id"`
 	IsOriginal pgtype.Bool      `json:"is_original"`
+	ImageUrl   pgtype.Text      `json:"image_url"`
 	Width      pgtype.Int4      `json:"width"`
 	Height     pgtype.Int4      `json:"height"`
 	Data       pgtype.Text      `json:"data"`
@@ -194,6 +196,7 @@ type LayoutElement struct {
 type LayoutRequest struct {
 	ID        int64            `json:"id"`
 	DesignID  pgtype.Int4      `json:"design_id"`
+	LayoutID  pgtype.Int4      `json:"layout_id"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	Log       pgtype.Text      `json:"log"`
 	Config    pgtype.Text      `json:"config"`

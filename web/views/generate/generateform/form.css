@@ -1,6 +1,6 @@
 #generate-request-form {
-  background-color: var(--top-bar-bg-color);
   border-radius: var(--sl-border-radius-x-large);
+  background-color: var(--sl-color-neutral-0);
 }
 
 .switcher.generation-form__formatos__button {
@@ -21,6 +21,7 @@
 
 .generation-form__formatos {
   padding-left: var(--s0);
+  padding-top: var(--s0);
   padding-right: var(--s0);
 }
 

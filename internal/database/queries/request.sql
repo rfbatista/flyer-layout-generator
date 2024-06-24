@@ -1,6 +1,6 @@
 -- name: CreateLayoutRequest :one
-INSERT INTO layout_requests (design_id, config)
-VALUES ($1, $2)
+INSERT INTO layout_requests (design_id, layout_id, config)
+VALUES ($1, $2, $3)
 RETURNING *;
 
 -- name: StartLayoutRequest :one

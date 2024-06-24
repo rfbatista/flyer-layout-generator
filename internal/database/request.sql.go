@@ -12,22 +12,24 @@ import (
 )
 
 const createLayoutRequest = `-- name: CreateLayoutRequest :one
-INSERT INTO layout_requests (design_id, config)
-VALUES ($1, $2)
-RETURNING id, design_id, created_at, log, config, deleted_at
+INSERT INTO layout_requests (design_id, layout_id, config)
+VALUES ($1, $2, $3)
+RETURNING id, design_id, layout_id, created_at, log, config, deleted_at
 `
 
 type CreateLayoutRequestParams struct {
 	DesignID pgtype.Int4 `json:"design_id"`
+	LayoutID pgtype.Int4 `json:"layout_id"`
 	Config   pgtype.Text `json:"config"`
 }
 
 func (q *Queries) CreateLayoutRequest(ctx context.Context, arg CreateLayoutRequestParams) (LayoutRequest, error) {
-	row := q.db.QueryRow(ctx, createLayoutRequest, arg.DesignID, arg.Config)
+	row := q.db.QueryRow(ctx, createLayoutRequest, arg.DesignID, arg.LayoutID, arg.Config)
 	var i LayoutRequest
 	err := row.Scan(
 		&i.ID,
 		&i.DesignID,
+		&i.LayoutID,
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,
@@ -108,7 +110,7 @@ func (q *Queries) FinishLayoutRequest(ctx context.Context, arg FinishLayoutReque
 }
 
 const getLayoutRequestByID = `-- name: GetLayoutRequestByID :one
-SELECT id, design_id, created_at, log, config, deleted_at
+SELECT id, design_id, layout_id, created_at, log, config, deleted_at
 FROM layout_requests
 WHERE id = $1
 LIMIT 1
@@ -120,6 +122,7 @@ func (q *Queries) GetLayoutRequestByID(ctx context.Context, id int64) (LayoutReq
 	err := row.Scan(
 		&i.ID,
 		&i.DesignID,
+		&i.LayoutID,
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,
@@ -260,7 +263,7 @@ func (q *Queries) ListLayoutRequestJobsNotStarted(ctx context.Context, limit int
 }
 
 const listLayoutRequests = `-- name: ListLayoutRequests :many
-SELECT id, design_id, created_at, log, config, deleted_at
+SELECT id, design_id, layout_id, created_at, log, config, deleted_at
 FROM layout_requests
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
@@ -283,6 +286,7 @@ func (q *Queries) ListLayoutRequests(ctx context.Context, arg ListLayoutRequests
 		if err := rows.Scan(
 			&i.ID,
 			&i.DesignID,
+			&i.LayoutID,
 			&i.CreatedAt,
 			&i.Log,
 			&i.Config,
@@ -336,7 +340,7 @@ SET
                     THEN $2 ELSE log END,
     updated_at = now()
 WHERE id = $3
-RETURNING id, design_id, created_at, log, config, deleted_at
+RETURNING id, design_id, layout_id, created_at, log, config, deleted_at
 `
 
 type UpdateLayoutRequestParams struct {
@@ -351,6 +355,7 @@ func (q *Queries) UpdateLayoutRequest(ctx context.Context, arg UpdateLayoutReque
 	err := row.Scan(
 		&i.ID,
 		&i.DesignID,
+		&i.LayoutID,
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,

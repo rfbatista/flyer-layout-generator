@@ -13,6 +13,7 @@ import (
 
 type CreateLayoutRequestInput struct {
 	DesignID              int32    `form:"design_id"               json:"design_id,omitempty"`
+	LayoutID              int32    `form:"layout_id"               json:"layout_id,omitempty"`
 	LimitSizerPerElement  bool     `form:"limit_sizer_per_element" json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool     `form:"anchor_elements"         json:"anchor_elements,omitempty"`
 	MinimiumComponentSize int32    `form:"minimium_component_size" json:"minimium_component_size,omitempty"`
@@ -44,6 +45,7 @@ func CreateLayoutRequestUseCase(
 		ctx,
 		database.CreateLayoutRequestParams{
 			DesignID: pgtype.Int4{Int32: req.DesignID, Valid: true},
+			LayoutID: pgtype.Int4{Int32: req.LayoutID, Valid: true},
 		},
 	)
 	if err != nil {

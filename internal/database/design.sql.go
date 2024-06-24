@@ -19,7 +19,7 @@ INSERT INTO design (
   $1,
   $2
 )
-RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type CreatedesignParams struct {
@@ -34,6 +34,7 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.LayoutID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -47,7 +48,7 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 }
 
 const getdesign = `-- name: Getdesign :one
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 WHERE id = $1 LIMIT 1
 `
 
@@ -58,6 +59,7 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.LayoutID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -141,7 +143,7 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (L
 }
 
 const listdesign = `-- name: Listdesign :many
-SELECT id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 OFFSET $1 LIMIT $2
 `
 
@@ -163,6 +165,7 @@ func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Desig
 			&i.ID,
 			&i.Name,
 			&i.ImageUrl,
+			&i.LayoutID,
 			&i.ImageExtension,
 			&i.FileUrl,
 			&i.FileExtension,
@@ -246,7 +249,7 @@ SET
     is_proccessed = true
 WHERE
     id = $1
-RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (Design, error) {
@@ -256,6 +259,7 @@ func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (De
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.LayoutID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -275,17 +279,20 @@ SET
         THEN $2 ELSE name END,
 
     image_url = CASE WHEN $3::boolean
-        THEN $4 ELSE name END,
+        THEN $4 ELSE image_url END,
 
     width = CASE WHEN $5::boolean
         THEN $6 ELSE width END,
 
     height = CASE WHEN $7::boolean
-        THEN $8 ELSE height END
+        THEN $8 ELSE height END,
+
+    layout_id = CASE WHEN $9::boolean
+        THEN $10 ELSE layout_id END
 
 WHERE
-    id = $9
-RETURNING id, name, image_url, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+    id = $11
+RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type UpdateDesignByIDParams struct {
@@ -297,6 +304,8 @@ type UpdateDesignByIDParams struct {
 	Width            pgtype.Int4 `json:"width"`
 	HeightDoUpdate   bool        `json:"height_do_update"`
 	Height           pgtype.Int4 `json:"height"`
+	LayoutDoUpdate   bool        `json:"layout_do_update"`
+	LayoutID         pgtype.Int4 `json:"layout_id"`
 	DesignID         int32       `json:"design_id"`
 }
 
@@ -311,6 +320,8 @@ func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDPara
 		arg.Width,
 		arg.HeightDoUpdate,
 		arg.Height,
+		arg.LayoutDoUpdate,
+		arg.LayoutID,
 		arg.DesignID,
 	)
 	var i Design
@@ -318,6 +329,7 @@ func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDPara
 		&i.ID,
 		&i.Name,
 		&i.ImageUrl,
+		&i.LayoutID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,

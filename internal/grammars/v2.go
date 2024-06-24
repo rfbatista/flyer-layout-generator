@@ -21,7 +21,9 @@ func RunV2(
 		return nil, err
 	}
 	sort.Slice(original.Components, func(i, j int) bool {
-		return original.Components[i].OrderPriority() > original.Components[j].OrderPriority()
+		it := original.Components[i].Type
+		jt := original.Components[j].Type
+		return original.Config.Priorities[it] > original.Config.Priorities[jt]
 	})
 	// Find cells for each component in original design
 	layout1, stage1Grid, err := Stage1(original, template, *grid)
@@ -36,7 +38,9 @@ func RunV2(
 
 	// Move elements that have colision
 	sort.Slice(layout2.Components, func(i, j int) bool {
-		return layout2.Components[i].OrderPriority() > layout2.Components[j].OrderPriority()
+		it := original.Components[i].Type
+		jt := original.Components[j].Type
+		return original.Config.Priorities[it] > original.Config.Priorities[jt]
 	})
 	layout3, stage3Grid, err := Stage3(original, layout2, template, stage2Grid)
 	if err != nil {

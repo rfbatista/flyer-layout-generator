@@ -1,0 +1,18 @@
+package editor
+
+import "algvisual/internal/entities"
+
+type EditorProps struct {
+	Layout     entities.Layout
+	Layoutjson string
+}
+
+templ Editor(props EditorProps) {
+	<div id="canvas-container" json={ props.Layoutjson } class="center" style="">
+		<img id="layout-image" src={ props.Layout.ImageURL } width="500" height="600"/>
+		<div id="canvas-editor-container" class="canvas-editor hide">
+			<canvas id="c" class=""></canvas>
+		</div>
+	</div>
+	<script src="/web/js/fabric.min.js"></script>
+}

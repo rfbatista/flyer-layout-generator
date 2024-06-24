@@ -52,6 +52,7 @@ CREATE TABLE design
     id              SERIAL PRIMARY KEY,
     name            TEXT NOT NULL,
     image_url       text,
+    layout_id       int,
     image_extension text,
     file_url        text,
     file_extension  text,
@@ -81,6 +82,7 @@ CREATE TABLE layout (
   id   BIGSERIAL PRIMARY KEY,
   design_id INT,
   is_original BOOL DEFAULT FALSE,
+  image_url TEXT,
   width INT,
   height INT,
   data TEXT,
@@ -155,6 +157,7 @@ CREATE TABLE layout_elements
 CREATE TABLE layout_requests (
   id   BIGSERIAL PRIMARY KEY,
   design_id INT,
+  layout_id INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   log TEXT,
   config TEXT,

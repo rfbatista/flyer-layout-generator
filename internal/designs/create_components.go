@@ -13,11 +13,11 @@ import (
 )
 
 type CreateComponentRequest struct {
-	Type       string  `form:"type"     json:"type,omitempty"`
-	ElementsID []int32 `form:"elements" json:"elements_id,omitempty"`
-	Color      string  `                json:"color,omitempty"`
-	DesignID   int     `                json:"photoshop_id,omitempty" param:"design_id"`
-	LayoutID   int32   `                json:"layout_id,omitempty"    param:"layout_id"`
+	Type       string  `form:"type"       json:"type,omitempty"`
+	ElementsID []int32 `form:"elements[]" json:"elements_id,omitempty"`
+	Color      string  `                  json:"color,omitempty"`
+	DesignID   int     `                  json:"photoshop_id,omitempty" param:"design_id"`
+	LayoutID   int32   `                  json:"layout_id,omitempty"    param:"layout_id"`
 }
 
 type CreateComponentResult struct {
@@ -55,6 +55,12 @@ func CreateComponentUseCase(
 		return nil, err
 	}
 	outer, inner := calculateContainersForComponent(elements)
+	ctype := entities.StringToComponentType(req.Type)
+	dtype, err := entities.ComponentTypeToDatabaseComponentType(ctype)
+	if err != nil {
+		log.Error("tipo de component invalido", zap.Error(err))
+		return nil, err
+	}
 	comp, err := qtx.CreateComponent(ctx, database.CreateComponentParams{
 		DesignID: int32(req.DesignID),
 		LayoutID: req.LayoutID,
@@ -74,7 +80,7 @@ func CreateComponentUseCase(
 		BboxYii:  pgtype.Int4{Int32: des.Height.Int32, Valid: true},
 		Color:    pgtype.Text{String: req.Color, Valid: req.Color != ""},
 		Type: database.NullComponentType{
-			ComponentType: database.ComponentType(req.Type),
+			ComponentType: database.ComponentType(dtype),
 			Valid:         true,
 		},
 	})

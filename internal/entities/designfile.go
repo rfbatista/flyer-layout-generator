@@ -9,6 +9,7 @@ type DesignFile struct {
 	ID             int32     `json:"id,omitempty"`
 	Name           string    `json:"name,omitempty"`
 	Filepath       string    `json:"filepath,omitempty"`
+	LayoutID       int32     `json:"layout_id,omitempty"`
 	FileExtension  string    `json:"file_extension,omitempty"`
 	ImagePath      string    `json:"image_path,omitempty"`
 	ImageURL       string    `json:"image_url,omitempty"`

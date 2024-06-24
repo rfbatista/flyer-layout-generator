@@ -21,8 +21,14 @@ type GenerateImageRequestV2 struct {
 	Prancheta  entities2.LayoutDTO `json:"prancheta,omitempty"`
 }
 
+type GenerateImageResultV2Elements struct {
+	ElementID int32  `json:"element_id,omitempty"`
+	ImageURL  string `json:"image_url,omitempty"`
+}
+
 type GenerateImageResultV2 struct {
-	ImageURL string `json:"image_url,omitempty"`
+	ImageURL string                          `json:"image_url,omitempty"`
+	Elements []GenerateImageResultV2Elements `json:"elements,omitempty"`
 }
 
 func GenerateImageFromPranchetaV2(
@@ -70,5 +76,7 @@ func GenerateImageFromPranchetaV2(
 	}
 	var result GenerateImageResultV2
 	json.NewDecoder(res.Body).Decode(&result)
+	res2B, _ := json.Marshal(result)
+	fmt.Println(string(res2B))
 	return &result, nil
 }

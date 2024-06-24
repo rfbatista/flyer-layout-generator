@@ -219,8 +219,8 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                 # filename = "%s.png" % (uuid.uuid4())
                 # filepath = "%s/%s" % (app_config.dist_path, filename)
                 img1 = layer.composite()
+                image_url = upload_image(img1, layer.name)
                 img, img_bbox = autocrop_image(remove_bg(img1))
-                image_url = upload_image(img, layer.name)
                 # if img:
                 #     img.save(filepath)
                 text = ""

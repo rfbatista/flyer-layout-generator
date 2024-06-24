@@ -17,6 +17,9 @@ const (
 	ComponentTypeGrafismo
 	ComponentTypeOferta
 	ComponentTypeUnknown
+	ComponentTypePackshot
+	ComponentTypeIllustration
+	ComponentTypeTextoLegal
 )
 
 func (c ComponentType) ToString() string {
@@ -27,6 +30,8 @@ func (c ComponentType) ToString() string {
 		return "cta"
 	case ComponentTypeMarca:
 		return "marca"
+	case ComponentTypePlanoDeFundo:
+		return "plano-de-fundo"
 	case ComponentTypeModelo:
 		return "modelo"
 	case ComponentTypeGrafismo:
@@ -35,6 +40,12 @@ func (c ComponentType) ToString() string {
 		return "celebridade"
 	case ComponentTypeOferta:
 		return "oferta"
+	case ComponentTypePackshot:
+		return "packshot"
+	case ComponentTypeIllustration:
+		return "ilustracao"
+	case ComponentTypeTextoLegal:
+		return "texto-legal"
 	}
 
 	return "desconhecido"
@@ -45,13 +56,25 @@ func StringToComponentType(s string) ComponentType {
 	case "produto":
 		return ComponentTypeProduto
 	case "cta":
-		return ComponentTypeProduto
+		return ComponentTypeCallToAction
 	case "marca":
-		return ComponentTypeProduto
+		return ComponentTypeMarca
 	case "modelo":
-		return ComponentTypeProduto
+		return ComponentTypeModelo
 	case "grafismo":
-		return ComponentTypeProduto
+		return ComponentTypeGrafismo
+	case "celebridade":
+		return ComponentTypeCelebridade
+	case "oferta":
+		return ComponentTypeOferta
+	case "packshot":
+		return ComponentTypePackshot
+	case "ilustracao":
+		return ComponentTypeIllustration
+	case "texto-legal":
+		return ComponentTypeTextoLegal
+	case "plano-de-fundo":
+		return ComponentTypePlanoDeFundo
 	}
 	return ComponentTypeUnknown
 }
@@ -79,6 +102,35 @@ func StringToDatabaseComponentType(s string) (database.ComponentType, error) {
 	case string(database.ComponentTypeGrafismo):
 		return database.ComponentTypeGrafismo, nil
 	case string(database.ComponentTypeTextoCta):
+		return database.ComponentTypeTextoCta, nil
+	default:
+		return "", errors.New("invalid ComponentType")
+	}
+}
+
+func ComponentTypeToDatabaseComponentType(s ComponentType) (database.ComponentType, error) {
+	switch s {
+	case ComponentTypePlanoDeFundo:
+		return database.ComponentTypeBackground, nil
+	case ComponentTypeMarca:
+		return database.ComponentTypeLogotipoMarca, nil
+	case ComponentTypeProduto:
+		return database.ComponentTypeLogotipoProduto, nil
+	case ComponentTypePackshot:
+		return database.ComponentTypePackshot, nil
+	case ComponentTypeCelebridade:
+		return database.ComponentTypeCelebridade, nil
+	case ComponentTypeModelo:
+		return database.ComponentTypeModelo, nil
+	case ComponentTypeIllustration:
+		return database.ComponentTypeIlustracao, nil
+	case ComponentTypeOferta:
+		return database.ComponentTypeOferta, nil
+	case ComponentTypeTextoLegal:
+		return database.ComponentTypeTextoLegal, nil
+	case ComponentTypeGrafismo:
+		return database.ComponentTypeGrafismo, nil
+	case ComponentTypeCallToAction:
 		return database.ComponentTypeTextoCta, nil
 	default:
 		return "", errors.New("invalid ComponentType")

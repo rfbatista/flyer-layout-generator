@@ -54,6 +54,7 @@ func StartRequestJobUseCase(
 	jobReq := GenerateImage{
 		PhotoshopID: layoutReq.DesignID.Int32,
 		TemplateID:  layoutJobReq.TemplateID.Int32,
+		LayoutID:    layoutReq.LayoutID.Int32,
 	}
 	if job.Config != nil {
 		jobReq.ShowGrid = job.Config.ShowGrid

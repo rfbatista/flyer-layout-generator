@@ -7,13 +7,16 @@ SET
         THEN sqlc.narg(name) ELSE name END,
 
     image_url = CASE WHEN @image_url_do_update::boolean
-        THEN sqlc.narg(image_url) ELSE name END,
+        THEN sqlc.narg(image_url) ELSE image_url END,
 
     width = CASE WHEN @width_do_update::boolean
         THEN sqlc.narg(width) ELSE width END,
 
     height = CASE WHEN @height_do_update::boolean
-        THEN sqlc.narg(height) ELSE height END
+        THEN sqlc.narg(height) ELSE height END,
+
+    layout_id = CASE WHEN @layout_do_update::boolean
+        THEN sqlc.narg(layout_id) ELSE layout_id END
 
 WHERE
     id = @design_id

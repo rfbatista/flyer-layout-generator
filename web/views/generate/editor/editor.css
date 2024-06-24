@@ -1,0 +1,26 @@
+#canvas-container {
+  width: calc(100vw - 20px);
+  /* Change this to any size you want */
+  height: 700px;
+  /* Change this to any size you want */
+  /* border: 1px solid black; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas-editor {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+
+.editor-layer-item {
+  border-radius: var(--sl-input-border-radius-medium);
+  border: 1px solid var(--sl-color-neutral-200);
+  padding: var(--s-2);
+  color: var(--sl-color-neutral-700);
+  font-size: var(--s-2);
+}

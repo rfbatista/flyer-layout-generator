@@ -113,6 +113,57 @@ func (q *Queries) GetElements(ctx context.Context, designID int32) ([]LayoutElem
 	return items, nil
 }
 
+const getElementsByLayoutID = `-- name: GetElementsByLayoutID :many
+SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements 
+WHERE layout_id = $1
+`
+
+func (q *Queries) GetElementsByLayoutID(ctx context.Context, layoutID int32) ([]LayoutElement, error) {
+	rows, err := q.db.Query(ctx, getElementsByLayoutID, layoutID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LayoutElement
+	for rows.Next() {
+		var i LayoutElement
+		if err := rows.Scan(
+			&i.ID,
+			&i.DesignID,
+			&i.LayoutID,
+			&i.ComponentID,
+			&i.Name,
+			&i.LayerID,
+			&i.Text,
+			&i.Xi,
+			&i.Xii,
+			&i.Yi,
+			&i.Yii,
+			&i.InnerXi,
+			&i.InnerXii,
+			&i.InnerYi,
+			&i.InnerYii,
+			&i.Width,
+			&i.Height,
+			&i.IsGroup,
+			&i.GroupID,
+			&i.Level,
+			&i.Kind,
+			&i.ImageUrl,
+			&i.ImageExtension,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getdesignElements = `-- name: GetdesignElements :many
 SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements 
 WHERE design_id = $1

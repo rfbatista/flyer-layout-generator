@@ -13,8 +13,8 @@ func getImage(d entities.DesignFile) string {
 templ DesignCard(d entities.DesignFile) {
 	<div class="box design-card">
 		<sl-card class="design-card" padding="0">
-			if d.ImageURL != "" {
-				<sl-icon-button href={ fmt.Sprintf("/editor/%d", d.ID) } class="design-card__edit-link" name="box-arrow-up-right" label="Edit" style="font-size: 1.5rem;"></sl-icon-button>
+			if d.IsProcessed {
+				<sl-icon-button href={ fmt.Sprintf("/editor/%d/%d", d.ID, d.LayoutID) } class="design-card__edit-link" name="box-arrow-up-right" label="Edit" style="font-size: 1.5rem;"></sl-icon-button>
 			}
 			<img
 				slot="image"
@@ -29,7 +29,12 @@ templ DesignCard(d entities.DesignFile) {
 						if d.IsProcessed {
 							<sl-tag variant="success">Processado</sl-tag>
 						} else {
-							<sl-button variant="primary" hx-post={ fmt.Sprintf("/upload/design/%d/process", d.ID) }>Processar</sl-button>
+							<sl-button
+								id={ fmt.Sprintf("%d", d.ID) }
+								class="process-design-btn"
+								variant="primary"
+								data-design-id={ fmt.Sprintf("%d", d.ID) }
+							>Processar</sl-button>
 						}
 					</div>
 				</div>

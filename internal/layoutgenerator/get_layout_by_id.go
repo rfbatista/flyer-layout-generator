@@ -34,6 +34,14 @@ func GetLayoutByIDUseCase(
 		comp := mapper.LayoutComponentToDomain(c)
 		lay.Components = append(lay.Components, comp)
 	}
+	elements, err := db.GetLayoutElementsByLayoutID(ctx, req.LayoutID)
+	if err != nil {
+		return out, err
+	}
+	for _, e := range elements {
+		delement := mapper.ToDesignElementEntitie(e)
+		lay.Elements = append(lay.Elements, delement)
+	}
 	grid := entities.Grid{}
 	lay.Grid = grid
 	out.Layout = lay
