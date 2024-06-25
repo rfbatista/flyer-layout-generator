@@ -25,12 +25,12 @@ func NewPage(
 ) apitools.Handler {
   static, err := bundler.AddPage(infra.BundlerPageParams{
     EntryPoints: []string{
-      fmt.Sprintf("%s/web/view/<%= h.changeCase.snake(name) %>/index.js", infra.FindProjectRoot()),
+      fmt.Sprintf("%s/web/views/<%= h.changeCase.snake(name) %>/index.js", infra.FindProjectRoot()),
     },
     Name: "<%= h.changeCase.snake(name) %>",
   })
   if err != nil {
-    panic(shared.WrapWithAppError(err, "failed to build web/view/<%= h.changeCase.snake(name) %> page", ""))
+    panic(shared.WrapWithAppError(err, "failed to build web/views/<%= h.changeCase.snake(name) %> page", ""))
   }
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
