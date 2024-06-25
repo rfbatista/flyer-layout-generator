@@ -21,8 +21,8 @@ RETURNING *;
 
 -- name: CreateLayoutRequestJob :one
 INSERT INTO layout_requests_jobs
-(request_id, template_id, config)
-VALUES ($1,$2, $3)
+(request_id, template_id, design_id, config)
+VALUES ($1,$2, $3, $4)
 RETURNING *;
 
 -- name: UpdateLayoutRequest :one

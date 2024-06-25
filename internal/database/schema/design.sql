@@ -168,6 +168,7 @@ CREATE TABLE layout_requests (
 CREATE TABLE layout_requests_jobs (
   id   BIGSERIAL PRIMARY KEY,
   layout_id INT,
+  design_id INT,
   request_id INT,
   template_id INT,
   status TEXT,
@@ -182,6 +183,7 @@ CREATE TABLE layout_requests_jobs (
   log TEXT,
   FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (request_id) REFERENCES layout_requests (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

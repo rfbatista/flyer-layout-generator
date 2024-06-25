@@ -40,23 +40,30 @@ func (q *Queries) CreateLayoutRequest(ctx context.Context, arg CreateLayoutReque
 
 const createLayoutRequestJob = `-- name: CreateLayoutRequestJob :one
 INSERT INTO layout_requests_jobs
-(request_id, template_id, config)
-VALUES ($1,$2, $3)
-RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+(request_id, template_id, design_id, config)
+VALUES ($1,$2, $3, $4)
+RETURNING id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type CreateLayoutRequestJobParams struct {
 	RequestID  pgtype.Int4 `json:"request_id"`
 	TemplateID pgtype.Int4 `json:"template_id"`
+	DesignID   pgtype.Int4 `json:"design_id"`
 	Config     pgtype.Text `json:"config"`
 }
 
 func (q *Queries) CreateLayoutRequestJob(ctx context.Context, arg CreateLayoutRequestJobParams) (LayoutRequestsJob, error) {
-	row := q.db.QueryRow(ctx, createLayoutRequestJob, arg.RequestID, arg.TemplateID, arg.Config)
+	row := q.db.QueryRow(ctx, createLayoutRequestJob,
+		arg.RequestID,
+		arg.TemplateID,
+		arg.DesignID,
+		arg.Config,
+	)
 	var i LayoutRequestsJob
 	err := row.Scan(
 		&i.ID,
 		&i.LayoutID,
+		&i.DesignID,
 		&i.RequestID,
 		&i.TemplateID,
 		&i.Status,
@@ -79,7 +86,7 @@ SET
     finished_at = $2,
     updated_at = now()
 WHERE id = $1
-RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type FinishLayoutRequestParams struct {
@@ -93,6 +100,7 @@ func (q *Queries) FinishLayoutRequest(ctx context.Context, arg FinishLayoutReque
 	err := row.Scan(
 		&i.ID,
 		&i.LayoutID,
+		&i.DesignID,
 		&i.RequestID,
 		&i.TemplateID,
 		&i.Status,
@@ -132,7 +140,7 @@ func (q *Queries) GetLayoutRequestByID(ctx context.Context, id int64) (LayoutReq
 }
 
 const getRequestJobsByRequestID = `-- name: GetRequestJobsByRequestID :many
-SELECT id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+SELECT id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 FROM layout_requests_jobs AS lrj 
 WHERE lrj.request_id = $1
 `
@@ -149,6 +157,7 @@ func (q *Queries) GetRequestJobsByRequestID(ctx context.Context, requestID pgtyp
 		if err := rows.Scan(
 			&i.ID,
 			&i.LayoutID,
+			&i.DesignID,
 			&i.RequestID,
 			&i.TemplateID,
 			&i.Status,
@@ -173,7 +182,7 @@ func (q *Queries) GetRequestJobsByRequestID(ctx context.Context, requestID pgtyp
 }
 
 const listLayoutRequestJobs = `-- name: ListLayoutRequestJobs :many
-SELECT id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+SELECT id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 FROM layout_requests_jobs
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
@@ -196,6 +205,7 @@ func (q *Queries) ListLayoutRequestJobs(ctx context.Context, arg ListLayoutReque
 		if err := rows.Scan(
 			&i.ID,
 			&i.LayoutID,
+			&i.DesignID,
 			&i.RequestID,
 			&i.TemplateID,
 			&i.Status,
@@ -220,7 +230,7 @@ func (q *Queries) ListLayoutRequestJobs(ctx context.Context, arg ListLayoutReque
 }
 
 const listLayoutRequestJobsNotStarted = `-- name: ListLayoutRequestJobsNotStarted :many
-SELECT id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+SELECT id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 FROM layout_requests_jobs
 WHERE started_at is NULL
 ORDER BY created_at DESC
@@ -239,6 +249,7 @@ func (q *Queries) ListLayoutRequestJobsNotStarted(ctx context.Context, limit int
 		if err := rows.Scan(
 			&i.ID,
 			&i.LayoutID,
+			&i.DesignID,
 			&i.RequestID,
 			&i.TemplateID,
 			&i.Status,
@@ -308,7 +319,7 @@ SET
     started_at = now(),
     updated_at = now()
 WHERE id = $1
-RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 func (q *Queries) StartLayoutRequest(ctx context.Context, id int64) (LayoutRequestsJob, error) {
@@ -317,6 +328,7 @@ func (q *Queries) StartLayoutRequest(ctx context.Context, id int64) (LayoutReque
 	err := row.Scan(
 		&i.ID,
 		&i.LayoutID,
+		&i.DesignID,
 		&i.RequestID,
 		&i.TemplateID,
 		&i.Status,
@@ -385,7 +397,7 @@ SET
                         THEN $16 ELSE layout_id END,
     updated_at = now()
 WHERE id = $17
-RETURNING id, layout_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, template_id, status, image_url, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type UpdateLayoutRequestJobParams struct {
@@ -432,6 +444,7 @@ func (q *Queries) UpdateLayoutRequestJob(ctx context.Context, arg UpdateLayoutRe
 	err := row.Scan(
 		&i.ID,
 		&i.LayoutID,
+		&i.DesignID,
 		&i.RequestID,
 		&i.TemplateID,
 		&i.Status,

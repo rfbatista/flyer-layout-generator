@@ -206,6 +206,7 @@ type LayoutRequest struct {
 type LayoutRequestsJob struct {
 	ID         int64            `json:"id"`
 	LayoutID   pgtype.Int4      `json:"layout_id"`
+	DesignID   pgtype.Int4      `json:"design_id"`
 	RequestID  pgtype.Int4      `json:"request_id"`
 	TemplateID pgtype.Int4      `json:"template_id"`
 	Status     pgtype.Text      `json:"status"`
