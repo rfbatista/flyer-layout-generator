@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -54,6 +55,16 @@ type LayoutElement struct {
 	ComponentID    int32  `json:"component_id"`
 	InnerContainer Container
 	OuterContainer Container
+}
+
+func (d *LayoutElement) PositionText() string {
+	return fmt.Sprintf(
+		"{xi:%d,yi:%d,xii:%d,yii:%d}",
+		d.InnerContainer.UpperLeft.X,
+		d.InnerContainer.UpperLeft.Y,
+		d.InnerContainer.DownRight.X,
+		d.InnerContainer.DownRight.Y,
+	)
 }
 
 func (d *LayoutElement) Width() int32 {

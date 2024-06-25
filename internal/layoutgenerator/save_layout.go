@@ -55,31 +55,15 @@ func SaveLayout(
 			return nil, err
 		}
 		for _, i := range c.Elements {
-			dbelem := mapper.DesignElementToDb(i)
-			ele, err := qtx.CreateElement(ctx, database.CreateElementParams{
-				DesignID:       l.DesignID,
-				LayoutID:       int32(layoutCreated.ID),
-				ComponentID:    pgtype.Int4{Int32: componentCreated.ID, Valid: true},
-				LayerID:        dbelem.LayerID,
-				Name:           dbelem.Name,
-				Text:           dbelem.Text,
-				Xi:             dbelem.Xi,
-				Yi:             dbelem.Yi,
-				Xii:            dbelem.Xii,
-				Yii:            dbelem.Yii,
-				InnerXi:        dbelem.InnerXi,
-				InnerXii:       dbelem.InnerXii,
-				InnerYi:        dbelem.InnerYi,
-				InnerYii:       dbelem.InnerYii,
-				Kind:           dbelem.Kind,
-				IsGroup:        dbelem.IsGroup,
-				GroupID:        dbelem.GroupID,
-				Level:          dbelem.Level,
-				ImageUrl:       dbelem.ImageUrl,
-				Width:          dbelem.Width,
-				Height:         dbelem.Height,
-				ImageExtension: dbelem.ImageExtension,
-			})
+			ele, err := qtx.CreateElement(
+				ctx,
+				mapper.LayoutElementToCreateElement(
+					i,
+					int32(layoutCreated.ID),
+					l.DesignID,
+					componentCreated.ID,
+				),
+			)
 			if err != nil {
 				return nil, err
 			}

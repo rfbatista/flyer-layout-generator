@@ -20,8 +20,8 @@ templ GenerateForm(props GenerateFormProps) {
 		hx-swap="none"
 	>
 		<input name="layout_id" value={ fmt.Sprintf("%d", props.Layout.ID) } style="display:none;"/>
-		<input name="grid_x" value={ "15" } style="display:none;"/>
-		<input name="grid_y" value={ "15" } style="display:none;"/>
+		<input name="grid_x" value={ "3" } style="display:none;"/>
+		<input name="grid_y" value={ "3" } style="display:none;"/>
 		<div class="stack">
 			<div class="stack generation-form__files">
 				<input name="design_id" class="input-style" value={ fmt.Sprintf("%d", props.DesignID) } placeholder={ fmt.Sprintf("%d", props.DesignID) }/>
@@ -36,8 +36,8 @@ templ GenerateForm(props GenerateFormProps) {
 				</select>
 				<div class="switcher generation-form__formatos__button">
 					<div>
-						<sl-button size="small" type="button" onclick="$('#templates').multiSelect('select_all')">Selecionar todos</sl-button>
-						<sl-button size="small" type="button" onclick="$('#templates').multiSelect('deselect_all');">Deselecionar todos</sl-button>
+						<button size="small" type="button" onclick="$('#templates').multiSelect('select_all')">Selecionar todos</button>
+						<button size="small" type="button" class="btn" onclick="$('#templates').multiSelect('deselect_all');">Deselecionar todos</button>
 					</div>
 				</div>
 			</div>
@@ -69,8 +69,8 @@ templ GenerateForm(props GenerateFormProps) {
 			</div>
 		</div>
 		<div class="generation-form__submit">
-			<sl-button id="gen-btn" variant="primary" type="button" class="btn">Gerar</sl-button>
-			<sl-button id="batch-btn" variant="default" type="button" class="btn">Gerar Lote</sl-button>
+			<button id="gen-btn" variant="primary" type="button" class="btn">Gerar</button>
+			<button id="batch-btn" variant="default" type="button" class="btn">Gerar Lote</button>
 		</div>
 	</form>
 	<section id="toast-container"></section>

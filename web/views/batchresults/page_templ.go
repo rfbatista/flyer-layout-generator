@@ -121,7 +121,7 @@ func Page(props PageProps) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var7 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/batch/result/%d", i.LayoutID))
+					var templ_7745c5c3_Var7 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/editor/%d/%d", i.DesignID, i.LayoutID))
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

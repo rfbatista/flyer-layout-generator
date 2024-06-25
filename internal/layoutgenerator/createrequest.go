@@ -78,6 +78,7 @@ func CreateLayoutRequestUseCase(
 			job, jerr := qtx.CreateLayoutRequestJob(ctx, database.CreateLayoutRequestJobParams{
 				RequestID:  pgtype.Int4{Int32: int32(layoutRes.ID), Valid: true},
 				TemplateID: pgtype.Int4{Int32: tid, Valid: true},
+				DesignID:   pgtype.Int4{Int32: req.DesignID, Valid: true},
 				Config:     pgtype.Text{String: string(c), Valid: true},
 			})
 			if jerr != nil {

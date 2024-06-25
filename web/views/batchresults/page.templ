@@ -62,7 +62,7 @@ templ Page(props PageProps) {
 														</a>
 													</li>
 													<li class="w-full">
-														<a href={ templ.SafeURL(fmt.Sprintf("/batch/result/%d", i.LayoutID)) }>
+														<a href={ templ.SafeURL(fmt.Sprintf("/editor/%d/%d", i.DesignID, i.LayoutID)) }>
 															<button id="about-tab" data-tabs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false" class="inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
 																Modificar
 															</button>

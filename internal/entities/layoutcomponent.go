@@ -1,5 +1,7 @@
 package entities
 
+import "fmt"
+
 func NewPosition(x, y int32) Position {
 	return Position{X: x, Y: y}
 }
@@ -336,4 +338,14 @@ func (d *LayoutComponent) ScaleElementsPositions(wscale, hscale float64) {
 		el.Xii = int32(float64(el.Xii) * wscale)
 		el.Yii = int32(float64(el.Yii) * hscale)
 	}
+}
+
+func (d *LayoutComponent) PositionText() string {
+	return fmt.Sprintf(
+		"{xi:%d,yi:%d,xii:%d,yii:%d}",
+		d.InnerContainer.UpperLeft.X,
+		d.InnerContainer.UpperLeft.Y,
+		d.InnerContainer.DownRight.X,
+		d.InnerContainer.DownRight.Y,
+	)
 }

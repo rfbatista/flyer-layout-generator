@@ -5,6 +5,7 @@ import (
 	"algvisual/web/views/batchlist"
 	"algvisual/web/views/batchresults"
 	"algvisual/web/views/components"
+	"algvisual/web/views/debug"
 	"algvisual/web/views/files"
 	"algvisual/web/views/generate"
 	"algvisual/web/views/jobs"
@@ -61,4 +62,5 @@ var Module = fx.Options(fx.Provide(
 	protected(batchlist.NewTable),
 	protected(batchresults.NewPage),
 	protected(modifier.NewPage),
+	protected(debug.NewPage),
 ))

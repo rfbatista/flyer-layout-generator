@@ -11,6 +11,7 @@ func LayoutRequestJobToDomain(raw database.LayoutRequestsJob) entities.LayoutReq
 	l := entities.LayoutRequestJob{
 		ID:         int32(raw.ID),
 		RequestID:  raw.RequestID.Int32,
+		DesignID:   raw.DesignID.Int32,
 		LayoutID:   raw.LayoutID.Int32,
 		TemplateID: raw.TemplateID.Int32,
 		Status:     raw.Status.String,

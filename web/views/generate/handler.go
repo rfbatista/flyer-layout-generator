@@ -109,7 +109,7 @@ func CreateImage(
 			SlotsY:      req.SlotsY,
 			Priorities:  req.Priorities,
 			Padding:     10,
-			ShowGrid:    true,
+			ShowGrid:    false,
 		}
 		out, err := layoutgenerator.GenerateImageUseCase(
 			c.Request().Context(),

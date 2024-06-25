@@ -10,6 +10,9 @@ templ Header() {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+
+	<!-- Styles -->
+	<link href={ fmt.Sprintf("/web/css/output.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/multi-select.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/owl.carousel.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
 	<link href={ fmt.Sprintf("/web/css/owl.theme.default.min.css?time=%s", time.Now().String()) } rel="stylesheet"/>
@@ -18,6 +21,7 @@ templ Header() {
 	<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 	<!-- Alpine Plugins -->
 	<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
@@ -26,12 +30,13 @@ templ Header() {
 	<script src="/web/js/jquery-3.7.1.min.js"></script>
 	<script src="/web/js/toast.js"></script>
 	<script src="/web/js/owl.carousel.min.js"></script>
+
 	<!-- Tingle -->
 	<script src="/web/js/tingle.min.js"></script>
 	<link rel="stylesheet" href="/web/css/tingle.min.css"/>
-
 	<link rel="stylesheet" href="/web/css/uikit.min.css"/>
 	<script src="/web/js/uikit.min.js"></script>
+
 	<!-- Shoelace -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/themes/light.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/themes/dark.css"/>

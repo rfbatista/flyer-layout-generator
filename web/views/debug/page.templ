@@ -1,0 +1,51 @@
+package debug
+
+import (
+	"algvisual/web/views"
+	"time"
+	"fmt"
+	"algvisual/internal/entities"
+)
+
+type PageProps struct {
+	Layout     entities.Layout
+	LayoutJson string
+}
+
+templ Page(props PageProps, css string, js string) {
+	<html>
+		<head>
+			@views.Header()
+			<link href={ fmt.Sprintf("/dist/%s?time=%s", css, time.Now().String()) } rel="stylesheet"/>
+		</head>
+		<body>
+			<div class="container">
+				<div>
+					<div class="center">
+						<div>
+							for _, co := range props.Layout.Components {
+								<div>
+									{ co.PositionText() }
+                  Total elementos: { fmt.Sprintf("%d", len(co.Elements)) }
+									<div class="container">
+										for _, el := range co.Elements {
+											<div>
+												{ el.Name }{  el.PositionText() }
+											</div>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="box w-screen">
+				<div class="center wrapper" style="height:450px;width:450px;">
+					<img src={ props.Layout.ImageURL } class="img"/>
+				</div>
+			</div>
+			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
+		</body>
+	</html>
+}
