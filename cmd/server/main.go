@@ -1,7 +1,7 @@
 package main
 
 import (
-	"algvisual/internal/api"
+	"algvisual/api"
 	"algvisual/internal/infra"
 	"algvisual/internal/worker"
 	"algvisual/web"
