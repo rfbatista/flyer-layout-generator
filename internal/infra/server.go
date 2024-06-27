@@ -72,6 +72,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		}
 	})
 
+	e.GET("/sse", p.Sse.HandleConnection)
 	SetupStaticServer(p, e)
 
 	e.GET("/api/health", func(c echo.Context) error {

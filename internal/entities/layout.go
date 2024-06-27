@@ -24,7 +24,7 @@ type Layout struct {
 	Elements   []LayoutElement     `json:"elements,omitempty"`
 	Template   Template            `json:"template,omitempty"`
 	Grid       Grid                `json:"grid,omitempty"`
-	Stages     []Layout            `json:"stages,omitempty"`
+	Stages     []string            `json:"stages,omitempty"`
 	Config     LayoutRequestConfig `json:"config,omitempty"`
 }
 
@@ -40,7 +40,6 @@ type LayoutRequestConfig struct {
 	Padding               int32          `json:"padding,omitempty"`
 	KeepProportions       bool           `json:"keep_proportions,omitempty"`
 	Priorities            map[string]int `json:"priorities,omitempty"`
-	NPriorities           []string       `json:"priorities,omitempty"              form:"priority[]"`
 }
 
 func ListToPrioritiesMap(list []string) map[string]int {

@@ -104,11 +104,28 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 	return string(ns.TemplateType), nil
 }
 
+type Advertiser struct {
+	ID        int64            `json:"id"`
+	Name      string           `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
+type Client struct {
+	ID        int64            `json:"id"`
+	Name      string           `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
 type Design struct {
 	ID             int32            `json:"id"`
 	Name           string           `json:"name"`
 	ImageUrl       pgtype.Text      `json:"image_url"`
 	LayoutID       pgtype.Int4      `json:"layout_id"`
+	ProjectID      pgtype.Int4      `json:"project_id"`
 	ImageExtension pgtype.Text      `json:"image_extension"`
 	FileUrl        pgtype.Text      `json:"file_url"`
 	FileExtension  pgtype.Text      `json:"file_extension"`
@@ -135,6 +152,7 @@ type Layout struct {
 	Width      pgtype.Int4      `json:"width"`
 	Height     pgtype.Int4      `json:"height"`
 	Data       pgtype.Text      `json:"data"`
+	Stages     []string         `json:"stages"`
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
@@ -219,6 +237,16 @@ type LayoutRequestsJob struct {
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	Config     pgtype.Text      `json:"config"`
 	Log        pgtype.Text      `json:"log"`
+}
+
+type Project struct {
+	ID           int64            `json:"id"`
+	ClientID     pgtype.Int4      `json:"client_id"`
+	AdvertiserID pgtype.Int4      `json:"advertiser_id"`
+	Name         string           `json:"name"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	DeletedAt    pgtype.Timestamp `json:"deleted_at"`
 }
 
 type Template struct {

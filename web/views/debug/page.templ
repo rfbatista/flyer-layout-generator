@@ -12,6 +12,21 @@ type PageProps struct {
 	LayoutJson string
 }
 
+script genImage(data string) {
+$( document ).ready(function() {
+    $.ajax({
+        method: "POST",
+        url:
+            "/editor/create/image/debug",
+        data: data,
+        contentType: "application/json",
+    }).done(function(msg) {
+        $("#stages-img-container").empty().append(msg);
+    })
+
+});
+}
+
 templ Page(props PageProps, css string, js string) {
 	<html>
 		<head>
@@ -20,13 +35,18 @@ templ Page(props PageProps, css string, js string) {
 		</head>
 		<body>
 			<div class="container">
+				<div class="box w-screen">
+					<div class="center wrapper" style="height:450px;width:450px;">
+						<img src={ props.Layout.ImageURL } class="img"/>
+					</div>
+				</div>
 				<div>
 					<div class="center">
 						<div>
 							for _, co := range props.Layout.Components {
 								<div>
 									{ co.PositionText() }
-                  Total elementos: { fmt.Sprintf("%d", len(co.Elements)) }
+									Total elementos: { fmt.Sprintf("%d", len(co.Elements)) }
 									<div class="container">
 										for _, el := range co.Elements {
 											<div>
@@ -36,15 +56,20 @@ templ Page(props PageProps, css string, js string) {
 									</div>
 								</div>
 							}
+							for idx, stg := range props.Layout.Stages {
+								<div class="box">
+                  <h3>Estágio { fmt.Sprintf("%d", idx) }:</h3>
+									<button
+										class="btn"
+										onclick={ genImage(stg) }
+									>Gerar image</button>
+								</div>
+							}
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="box w-screen">
-				<div class="center wrapper" style="height:450px;width:450px;">
-					<img src={ props.Layout.ImageURL } class="img"/>
-				</div>
-			</div>
+			<div class="box w-screen" id="stages-img-container"></div>
 			<script src={ fmt.Sprintf("/dist/%s?time=%s", js, time.Now().String()) } type="text/javascript"></script>
 		</body>
 	</html>

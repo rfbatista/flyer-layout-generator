@@ -6,7 +6,9 @@ tmp_dir = "tmp"
   args_bin = []
   pre_cmd = [
   "templ generate",
-  "npx tailwindcss --input ./web/static/input.css --output ./web/static/css/output.css",
+  # "npx tailwindcss --input ./web/static/components.css --output ./web/static/css/components.css",
+  "yarn css",
+	"yarn dev:build",
   ]
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server/main.go"
@@ -18,7 +20,7 @@ tmp_dir = "tmp"
   follow_symlink = false
   full_bin = ""
   include_dir = []
-  include_ext = ["go", "tpl", "templ", "html", "css", "js", "ts"]
+  include_ext = ["go", "tpl", "templ", "html", "css", "js", "ts", "tsx"]
   kill_delay = "0s"
   log = "build-errors.log"
   send_interrupt = false

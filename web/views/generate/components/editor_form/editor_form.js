@@ -1,5 +1,5 @@
 var isVisible = false;
-$("#editor-switch").on("sl-change", function () {
+$("#editor-switch").on("change", function () {
   isVisible = !isVisible;
   if (isVisible) {
     $("#editor-form-container").show();

@@ -144,7 +144,7 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (L
 }
 
 const createLayout = `-- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id, is_original, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING id, design_id, is_original, image_url, width, height, data, created_at, updated_at, deleted_at
+INSERT INTO layout (width, height, design_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, design_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at
 `
 
 type CreateLayoutParams struct {
@@ -153,6 +153,7 @@ type CreateLayoutParams struct {
 	DesignID   pgtype.Int4 `json:"design_id"`
 	IsOriginal pgtype.Bool `json:"is_original"`
 	ImageUrl   pgtype.Text `json:"image_url"`
+	Stages     []string    `json:"stages"`
 }
 
 func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Layout, error) {
@@ -162,6 +163,7 @@ func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Lay
 		arg.DesignID,
 		arg.IsOriginal,
 		arg.ImageUrl,
+		arg.Stages,
 	)
 	var i Layout
 	err := row.Scan(
@@ -172,6 +174,7 @@ func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Lay
 		&i.Width,
 		&i.Height,
 		&i.Data,
+		&i.Stages,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -277,7 +280,7 @@ func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutCom
 }
 
 const getLayoutByID = `-- name: GetLayoutByID :one
-SELECT id, design_id, is_original, image_url, width, height, data, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
 WHERE id = $1
 LIMIT 1
 `
@@ -293,6 +296,7 @@ func (q *Queries) GetLayoutByID(ctx context.Context, id int64) (Layout, error) {
 		&i.Width,
 		&i.Height,
 		&i.Data,
+		&i.Stages,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -402,7 +406,7 @@ func (q *Queries) GetLayoutElementsByLayoutID(ctx context.Context, layoutID int3
 }
 
 const getOriginalLayoutByDesignID = `-- name: GetOriginalLayoutByDesignID :one
-SELECT id, design_id, is_original, image_url, width, height, data, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
 WHERE design_id = $1 AND is_original = true
 LIMIT 1
 `
@@ -418,6 +422,7 @@ func (q *Queries) GetOriginalLayoutByDesignID(ctx context.Context, designID pgty
 		&i.Width,
 		&i.Height,
 		&i.Data,
+		&i.Stages,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -426,7 +431,7 @@ func (q *Queries) GetOriginalLayoutByDesignID(ctx context.Context, designID pgty
 }
 
 const listLayouts = `-- name: ListLayouts :many
-SELECT id, design_id, is_original, image_url, width, height, data, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
 ORDER BY created_at desc
 LIMIT $1 OFFSET $2
 `
@@ -453,6 +458,7 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 			&i.Width,
 			&i.Height,
 			&i.Data,
+			&i.Stages,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,

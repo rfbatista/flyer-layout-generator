@@ -609,6 +609,16 @@ func (g *Grid) GetSurroundFreeCells(p Point) []Point {
 	return points
 }
 
+// Check if the position is is ocupied by the id
+func (g *Grid) IsPositionListOcupiedByOtherThanThisId(p []Position, id int32) bool {
+	for _, p := range p {
+		if len(g.position[p.X][p.Y].whoIsIn) > 1 || (len(g.position[p.X][p.Y].whoIsIn) == 1 && !g.position[p.X][p.Y].IsIdIn(id)) {
+			return true
+		}
+	}
+	return false
+}
+
 // Check if the position is is ocupied
 func (g *Grid) IsPositionOcupied(p Position) bool {
 	return g.position[p.X][p.X].IsOcupied()

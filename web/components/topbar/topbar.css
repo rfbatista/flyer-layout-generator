@@ -1,0 +1,11 @@
+.topbar {
+	@apply flex items-center justify-between px-6 py-4 w-full;
+}
+
+.topbar__list {
+	@apply items-center gap-4 sm:flex;
+}
+
+.topbar__list__item {
+	@apply font-bold text-blue-700 underline-offset-2 hover:text-blue-700 focus:outline-none focus:underline dark:text-blue-600 dark:hover:text-blue-600;
+}

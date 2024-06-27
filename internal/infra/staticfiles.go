@@ -9,7 +9,6 @@ import (
 
 func SetupStaticServer(p HTTPServerParams, e *echo.Echo) {
 	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
-	e.GET("/sse", p.Sse.HandleConnection)
 	webgroup := e.Group("/web")
 	webgroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{
@@ -17,12 +16,20 @@ func SetupStaticServer(p HTTPServerParams, e *echo.Echo) {
 			Browse: true,
 		}),
 	)
-
 	webDistPath := fmt.Sprintf("%s/dist/web", FindProjectRoot())
 	distGroup := e.Group("/dist")
 	distGroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   webDistPath,
+			Browse: true,
+		}),
+	)
+
+	viteDistPath := fmt.Sprintf("%s/dist/vite", FindProjectRoot())
+	viteDistGroup := e.Group("/dist/vite")
+	viteDistGroup.Use(
+		middleware.StaticWithConfig(middleware.StaticConfig{
+			Root:   viteDistPath,
 			Browse: true,
 		}),
 	)

@@ -25,7 +25,7 @@ WHERE layout_id = $1
 ORDER BY created_at desc;
 
 -- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id, is_original, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;
+INSERT INTO layout (width, height, design_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: CreateLayoutComponent :one
 INSERT INTO layout_components (

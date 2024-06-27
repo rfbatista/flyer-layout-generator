@@ -11,6 +11,7 @@ func LayoutToDomain(raw database.Layout) entities.Layout {
 		Width:    raw.Width.Int32,
 		Height:   raw.Height.Int32,
 		ImageURL: raw.ImageUrl.String,
+		Stages:   raw.Stages,
 		DesignID: raw.DesignID.Int32,
 	}
 }

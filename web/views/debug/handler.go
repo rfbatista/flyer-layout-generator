@@ -2,7 +2,9 @@ package debug
 
 import (
 	"algvisual/internal/database"
+	"algvisual/internal/entities"
 	"algvisual/internal/infra"
+	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"algvisual/web/render"
 	"fmt"
@@ -45,6 +47,40 @@ func NewPage(
 			return err
 		}
 		return render.Render(c, http.StatusOK, Page(props, static.CSSName, static.JSName))
+	})
+	return h
+}
+
+func CreateImage(
+	queries *database.Queries,
+	conn *pgxpool.Pool,
+	log *zap.Logger,
+	db *pgxpool.Pool,
+	config *infra.AppConfig,
+) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath("/editor/create/image/debug")
+	h.SetHandle(func(c echo.Context) error {
+		var req entities.Layout
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := layoutgenerator.GenerateImageFromLayoutUseCase(log, *config, layoutgenerator.GenerateImageFromLayoutInput{
+			Layout:        req,
+			DesignFileURL: "/home/renan/projetos/algvisual/banner/dist/files/Natura",
+		})
+		if err != nil {
+			shared.ErrorNotification(c, err.Error())
+			return c.NoContent(http.StatusBadRequest)
+		}
+		shared.SuccessNotification(c, "sucesso")
+		return c.String(http.StatusOK, fmt.Sprintf(`
+				<div class="center wrapper" style="height:450px;width:450px;">
+					<img src="%s" class="img"/>
+				</div>
+		`, out.ImageURL))
 	})
 	return h
 }

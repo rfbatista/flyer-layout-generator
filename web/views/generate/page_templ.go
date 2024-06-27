@@ -15,9 +15,9 @@ import (
 	"algvisual/web/components/progress"
 	"algvisual/web/components/topbar"
 	"algvisual/web/views"
-	"algvisual/web/views/generate/editor"
-	"algvisual/web/views/generate/editorform"
-	"algvisual/web/views/generate/generateform"
+	"algvisual/web/views/generate/components/editor"
+	"algvisual/web/views/generate/components/editor_form"
+	"algvisual/web/views/generate/components/generate_form"
 	"fmt"
 	"time"
 )

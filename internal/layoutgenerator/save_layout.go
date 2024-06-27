@@ -23,10 +23,12 @@ func SaveLayout(
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
 	layoutCreated, err := qtx.CreateLayout(ctx, database.CreateLayoutParams{
-		Width:    pgtype.Int4{Int32: l.Width, Valid: true},
-		Height:   pgtype.Int4{Int32: l.Height, Valid: true},
-		DesignID: pgtype.Int4{Int32: l.DesignID, Valid: true},
-		ImageUrl: pgtype.Text{String: l.ImageURL, Valid: true},
+		Width:      pgtype.Int4{Int32: l.Width, Valid: true},
+		Height:     pgtype.Int4{Int32: l.Height, Valid: true},
+		DesignID:   pgtype.Int4{Int32: l.DesignID, Valid: true},
+		IsOriginal: pgtype.Bool{},
+		ImageUrl:   pgtype.Text{String: l.ImageURL, Valid: true},
+		Stages:     l.Stages,
 	})
 	if err != nil {
 		return nil, err

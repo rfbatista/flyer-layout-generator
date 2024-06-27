@@ -1,8 +1,8 @@
-import "../../css/global.css";
 import "./index.css";
-import "./editorform/editor_form.css";
 import "../../components/topbar/editorbar.css";
-import "./editor/editor.js"
-import "./editor/editor.css"
-import "./generateform/form.css"
-import "./editorform/editor_form.js"
+import "./components/editor/editor.js";
+import "./components/editor/editor.css";
+import "./components/generate_form/form.css";
+import "./components/generate_form/generate_form.js";
+import "./components/editor_form/editor_form.js";
+import "./components/editor_form/editor_form.css";

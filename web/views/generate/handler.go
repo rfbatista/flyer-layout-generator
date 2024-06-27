@@ -8,7 +8,7 @@ import (
 	"algvisual/internal/shared"
 	"algvisual/web/components/notification"
 	"algvisual/web/render"
-	"algvisual/web/views/generate/editor"
+	"algvisual/web/views/generate/components/editor"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -105,11 +105,11 @@ func CreateImage(
 			PhotoshopID: req.PhotoshopID,
 			TemplateID:  req.TemplateID[0],
 			LayoutID:    req.LayoutID,
-			SlotsX:      req.SlotsY,
+			SlotsX:      req.SlotsX,
 			SlotsY:      req.SlotsY,
 			Priorities:  req.Priorities,
 			Padding:     10,
-			ShowGrid:    false,
+			ShowGrid:    true,
 		}
 		out, err := layoutgenerator.GenerateImageUseCase(
 			c.Request().Context(),

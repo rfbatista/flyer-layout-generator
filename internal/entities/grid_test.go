@@ -256,4 +256,27 @@ func TestNewGrid(t *testing.T) {
 			tt.Errorf("expected to be 2 but received %d", gridc.Width())
 		}
 	})
+
+	t.Run("should check if in the list of positions have a different element", func(tt *testing.T) {
+		t3, err := NewGrid(WithDefault(300, 300), WithCells(3, 3))
+		if err != nil {
+			tt.Errorf("error creating grid: %v", err)
+		}
+		t3.position[0][0].Ocupy(10)
+		t3.position[0][1].Ocupy(10)
+		t3.position[1][0].Ocupy(10)
+		t3.position[1][1].Ocupy(10)
+		if !t3.IsPositionListOcupiedByOtherThanThisId([]Position{NewPosition(0, 0)}, 3) {
+			tt.Error("should have found other item in this position")
+		}
+		if !t3.IsPositionListOcupiedByOtherThanThisId([]Position{NewPosition(0, 0), NewPosition(1, 0)}, 3) {
+			tt.Error("should have found other item in this position")
+		}
+		if !t3.IsPositionListOcupiedByOtherThanThisId([]Position{NewPosition(2, 2), NewPosition(1, 1)}, 3) {
+			tt.Error("should have found other item in this position")
+		}
+		if t3.IsPositionListOcupiedByOtherThanThisId([]Position{NewPosition(2, 2), NewPosition(2, 1)}, 3) {
+			tt.Error("should have found other item in this position")
+		}
+	})
 }

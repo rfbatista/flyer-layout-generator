@@ -1,3 +1,32 @@
+CREATE TABLE advertisers (
+  id   BIGSERIAL PRIMARY KEY,
+  name text      NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP
+);
+
+CREATE TABLE clients (
+  id   BIGSERIAL PRIMARY KEY,
+  name text      NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP
+);
+
+CREATE TABLE projects (
+  id   BIGSERIAL PRIMARY KEY,
+  client_id int,
+  advertiser_id int,
+  name text      NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP,
+  
+  FOREIGN KEY (client_id) REFERENCES clients (id) ON UPDATE CASCADE,
+  FOREIGN KEY (advertiser_id) REFERENCES advertisers (id) ON UPDATE CASCADE
+);
+
 CREATE TYPE TEMPLATE_TYPE AS ENUM (
   'slots',
   'distortion'
@@ -53,6 +82,7 @@ CREATE TABLE design
     name            TEXT NOT NULL,
     image_url       text,
     layout_id       int,
+    project_id       int,
     image_extension text,
     file_url        text,
     file_extension  text,
@@ -60,7 +90,9 @@ CREATE TABLE design
     height          int,
     is_proccessed   bool DEFAULT false,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP
+    updated_at      TIMESTAMP,
+
+    FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE
 );
 
 CREATE TYPE COMPONENT_TYPE AS ENUM (
@@ -86,6 +118,7 @@ CREATE TABLE layout (
   width INT,
   height INT,
   data TEXT,
+  stages TEXT[],
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
@@ -195,3 +228,4 @@ CREATE TABLE images (
   template_id INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+

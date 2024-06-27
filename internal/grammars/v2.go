@@ -2,6 +2,7 @@ package grammars
 
 import (
 	"algvisual/internal/entities"
+	"encoding/json"
 	"sort"
 
 	"go.uber.org/zap"
@@ -13,6 +14,7 @@ func RunV2(
 	gridX, gridY int32,
 	log *zap.Logger,
 ) (*entities.Layout, error) {
+	var stages []string
 	grid, err := entities.NewGrid(
 		entities.WithDefault(original.Width, original.Height),
 		entities.WithCells(gridX, gridY),
@@ -20,200 +22,105 @@ func RunV2(
 	if err != nil {
 		return nil, err
 	}
+
+	// *************************************************
+	// STAGE 1
+	// Find cells for each component in original design
+	// *************************************************
 	sort.Slice(original.Components, func(i, j int) bool {
 		it := original.Components[i].Type
 		jt := original.Components[j].Type
-		return original.Config.Priorities[it] > original.Config.Priorities[jt]
+		return original.Config.Priorities[it] < original.Config.Priorities[jt]
 	})
-	// Find cells for each component in original design
-	layout1, stage1Grid, err := Stage1(original, template, *grid)
+	layout1, stage1Grid, err := StageFindCells(original, template, *grid)
 	if err != nil {
 		return nil, err
 	}
-	// // Position elements in target template grid
-	layout2, stage2Grid, err := Stage2(original, *layout1, template, *stage1Grid)
+	layout1.Grid = *stage1Grid
+	jstage1, err := json.Marshal(layout1)
 	if err != nil {
 		return nil, err
 	}
+	stages = append(stages, string(jstage1))
 
+	// *************************************************
+	// STAGE 2
+	// Position elements in target template grid
+	// *************************************************
+	layout2, stage2Grid, err := PositionElementsInGrid(original, *layout1, template, *stage1Grid)
+	if err != nil {
+		return nil, err
+	}
+	layout2.Grid = *stage2Grid
+	jstage2, err := json.Marshal(layout2)
+	if err != nil {
+		return nil, err
+	}
+	stages = append(stages, string(jstage2))
+
+	// *************************************************
+	// STAGE 3
 	// Move elements that have colision
+	// *************************************************
 	sort.Slice(layout2.Components, func(i, j int) bool {
 		it := original.Components[i].Type
 		jt := original.Components[j].Type
 		return original.Config.Priorities[it] > original.Config.Priorities[jt]
 	})
-	layout3, stage3Grid, err := Stage3(original, layout2, template, stage2Grid)
+	layout3, stage3Grid, err := StageFindColision(original, *layout2, template, *stage2Grid)
 	if err != nil {
 		return nil, err
 	}
+	layout2.Grid = *stage3Grid
+	jstage3, err := json.Marshal(layout3)
+	if err != nil {
+		return nil, err
+	}
+	stages = append(stages, string(jstage3))
 
+	// *************************************************
+	// STAGE 4
 	// Expand elements
-	layout4, _, err := Stage4(original, layout3, template, stage3Grid)
+	// *************************************************
+	layout4, stage4Grid, err := Stage4(original, layout3, template, stage3Grid)
 	if err != nil {
 		return nil, err
 	}
+	layout4.Grid = *stage4Grid
+	jstage4, err := json.Marshal(layout4)
+	if err != nil {
+		return nil, err
+	}
+	stages = append(stages, string(jstage4))
+
+	// *************************************************
+	// STAGE 5
+	// Remove colission
+	// *************************************************
+	sort.Slice(layout4.Components, func(i, j int) bool {
+		it := original.Components[i].Type
+		jt := original.Components[j].Type
+		// Put the one with less priorities to first
+		return original.Config.Priorities[it] < original.Config.Priorities[jt]
+	})
+	layout5, stage5Grid, err := StageRemoveColisions(original, *layout4, template, *stage4Grid)
+	if err != nil {
+		return nil, err
+	}
+	layout5.Grid = *stage5Grid
+	jstage5, err := json.Marshal(layout5)
+	if err != nil {
+		return nil, err
+	}
+	stages = append(stages, string(jstage5))
+	// *************************************************
 
 	if original.Background != nil {
 		original.Background.ScaleToFillInSize(template.Width, template.Height)
 		original.Background.MoveTo(entities.NewPoint(0, 0))
 	}
 
-	layout4.Background = original.Background
-	return layout4, nil
-}
-
-func Stage1(
-	original entities.Layout,
-	template entities.Template,
-	grid entities.Grid,
-) (*entities.Layout, *entities.Grid, error) {
-	var out entities.Layout
-	var stage1components []entities.LayoutComponent
-	for _, c := range original.Components {
-		cell := grid.WhereIsPoint(c.Center())
-		if cell == nil {
-			continue
-		}
-		c.Pivot = cell.Position()
-		cell.Ocupy(c.ID)
-		c.MoveTo(cell.UpLeft())
-		gridcont, found, err := grid.FindPositionToFitGridContainerDontCheckColision(
-			cell.Position(),
-			grid.ContainerToGridContainer(c.InnerContainer),
-			c.ID,
-		)
-		if err != nil || !found {
-			continue
-		}
-		positions := grid.ContainerToPositions(
-			gridcont.ToContainer(grid.CellWidth(), grid.CellHeight()),
-		)
-		grid.OcupyByPositionList(positions, c.ID)
-		c.Positions = positions
-		cont := grid.PositionsToContainer(positions)
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		c.MoveTo(cont.UpperLeft)
-		stage1components = append(stage1components, c)
-	}
-	out.Components = stage1components
-	out.Template = template
-	out.DesignID = original.DesignID
-	out.Width = original.Width
-	out.Height = original.Height
-	out.Grid = grid
-	return &out, &grid, nil
-}
-
-func Stage2(
-	original entities.Layout,
-	prevLayout entities.Layout,
-	template entities.Template,
-	grid entities.Grid,
-) (*entities.Layout, *entities.Grid, error) {
-	var out entities.Layout
-	var stagecomponents []entities.LayoutComponent
-	stagegrid, _ := entities.NewGrid(
-		entities.WithDefault(template.Width, template.Height),
-		entities.WithCells(grid.SlotsX, grid.SlotsY),
-	)
-	for _, c := range prevLayout.Components {
-		if len(c.Positions) == 0 {
-			continue
-		}
-		cont := stagegrid.PositionsToContainer(c.Positions)
-		stagegrid.OcupyByPositionList(c.Positions, c.ID)
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		c.MoveTo(cont.UpperLeft)
-		c.CenterInContainer(cont)
-		c.GridContainer = cont
-		stagecomponents = append(stagecomponents, c)
-	}
-	out.Components = stagecomponents
-	out.Template = template
-	out.DesignID = original.DesignID
-	out.Width = template.Width
-	out.Height = template.Height
-	out.Grid = *stagegrid
-	return &out, stagegrid, nil
-}
-
-func Stage3(
-	original entities.Layout,
-	prevLayout *entities.Layout,
-	template entities.Template,
-	prevGrid *entities.Grid,
-) (*entities.Layout, *entities.Grid, error) {
-	var out entities.Layout
-	var stageComponents []entities.LayoutComponent
-	for _, c := range prevLayout.Components {
-		if !prevGrid.HaveColisionInList(c.Positions, c.ID) {
-			stageComponents = append(stageComponents, c)
-			continue
-		}
-		positions, err := prevGrid.FindFreePositionsToFitBasedOnPivot(
-			c.Pivot,
-			c.InnerContainer,
-		)
-		if err != nil {
-			prevGrid.RemoveFromAllCells(c.ID)
-			continue
-		}
-		cont := prevGrid.PositionsToContainer(positions)
-		prevGrid.RemoveFromAllCells(c.ID)
-		prevGrid.OcupyByPositionList(positions, c.ID)
-		c.Positions = positions
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		c.MoveTo(cont.UpperLeft)
-		c.CenterInContainer(cont)
-		c.GridContainer = cont
-		stageComponents = append(stageComponents, c)
-	}
-	out.Components = stageComponents
-	out.Template = template
-	out.DesignID = original.DesignID
-	out.Width = template.Width
-	out.Height = template.Height
-	out.Grid = *prevGrid
-	return &out, prevGrid, nil
-}
-
-func Stage4(
-	original entities.Layout,
-	prevLayout *entities.Layout,
-	template entities.Template,
-	prevGrid *entities.Grid,
-) (*entities.Layout, *entities.Grid, error) {
-	var out entities.Layout
-	var stageComponents []entities.LayoutComponent
-	stageGrid, _ := entities.NewGrid(
-		entities.WithDefault(template.Width, template.Height),
-		entities.WithCells(prevGrid.SlotsX, prevGrid.SlotsY),
-	)
-	for _, c := range prevLayout.Components {
-		// prevGrid.PrintGrid(c.ID)
-		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
-			c.ApplyPadding(original.Config.Padding)
-			stageComponents = append(stageComponents, c)
-			continue
-		}
-		cont, err := prevGrid.FindSpaceToGrow(c.Positions[0], c.InnerContainer, c.ID)
-		if err != nil || cont == nil {
-			continue
-		}
-		gcrid := prevGrid.ContainerToPositions(*cont)
-		prevGrid.OcupyByPositionList(gcrid, c.ID)
-		c.MoveTo(cont.UpperLeft)
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		c.CenterInContainer(*cont)
-		// prevGrid.PrintGrid(c.ID)
-		c.ApplyPadding(original.Config.Padding)
-		stageComponents = append(stageComponents, c)
-	}
-	out.Components = stageComponents
-	out.Template = template
-	out.DesignID = original.DesignID
-	out.Width = template.Width
-	out.Height = template.Height
-	out.Grid = *stageGrid
-	return &out, stageGrid, nil
+	layout5.Background = original.Background
+	layout5.Stages = stages
+	return layout5, nil
 }

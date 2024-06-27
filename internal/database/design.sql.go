@@ -19,7 +19,7 @@ INSERT INTO design (
   $1,
   $2
 )
-RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type CreatedesignParams struct {
@@ -35,6 +35,7 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 		&i.Name,
 		&i.ImageUrl,
 		&i.LayoutID,
+		&i.ProjectID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -48,7 +49,7 @@ func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Des
 }
 
 const getdesign = `-- name: Getdesign :one
-SELECT id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 WHERE id = $1 LIMIT 1
 `
 
@@ -60,6 +61,7 @@ func (q *Queries) Getdesign(ctx context.Context, id int32) (Design, error) {
 		&i.Name,
 		&i.ImageUrl,
 		&i.LayoutID,
+		&i.ProjectID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -143,7 +145,7 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (L
 }
 
 const listdesign = `-- name: Listdesign :many
-SELECT id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+SELECT id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
 OFFSET $1 LIMIT $2
 `
 
@@ -166,6 +168,7 @@ func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Desig
 			&i.Name,
 			&i.ImageUrl,
 			&i.LayoutID,
+			&i.ProjectID,
 			&i.ImageExtension,
 			&i.FileUrl,
 			&i.FileExtension,
@@ -249,7 +252,7 @@ SET
     is_proccessed = true
 WHERE
     id = $1
-RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (Design, error) {
@@ -260,6 +263,7 @@ func (q *Queries) SetDesignAsProccessed(ctx context.Context, designID int32) (De
 		&i.Name,
 		&i.ImageUrl,
 		&i.LayoutID,
+		&i.ProjectID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
@@ -292,7 +296,7 @@ SET
 
 WHERE
     id = $11
-RETURNING id, name, image_url, layout_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
+RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type UpdateDesignByIDParams struct {
@@ -330,6 +334,7 @@ func (q *Queries) UpdateDesignByID(ctx context.Context, arg UpdateDesignByIDPara
 		&i.Name,
 		&i.ImageUrl,
 		&i.LayoutID,
+		&i.ProjectID,
 		&i.ImageExtension,
 		&i.FileUrl,
 		&i.FileExtension,
