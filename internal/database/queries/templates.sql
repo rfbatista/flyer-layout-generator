@@ -71,3 +71,27 @@ INSERT INTO templates_distortions (
   $3
 )
 RETURNING *;
+
+-- name: ListTemplatesByProjectID :many
+SELECT *
+FROM templates
+WHERE project_id = $1
+OFFSET $2 LIMIT $3
+;
+
+
+-- name: CreateTemplateByProject :one
+INSERT INTO templates (
+  name,
+  width,
+  height,
+  request_id,
+  project_id
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5
+)
+RETURNING *;

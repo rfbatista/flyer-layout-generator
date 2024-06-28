@@ -7,6 +7,7 @@ import (
 
 type DesignFile struct {
 	ID             int32     `json:"id,omitempty"`
+	ProjectID      int32     `json:"project_id,omitempty"`
 	Name           string    `json:"name,omitempty"`
 	Filepath       string    `json:"filepath,omitempty"`
 	LayoutID       int32     `json:"layout_id,omitempty"`

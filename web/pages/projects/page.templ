@@ -14,6 +14,7 @@ templ Page(props PageProps) {
 		<head>
 			@views.Header()
 			<link href={ fmt.Sprintf("/dist/vite/assets/%s?time=%s", "main.css", time.Now().String()) } rel="stylesheet"/>
+			<link href={ fmt.Sprintf("/dist/vite/assets/%s?time=%s", "style.css", time.Now().String()) } rel="stylesheet"/>
 		</head>
 		<body>
 			<div id="root"></div>

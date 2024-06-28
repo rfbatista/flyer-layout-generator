@@ -14,21 +14,24 @@ import (
 const createdesign = `-- name: Createdesign :one
 INSERT INTO design (
   name,
-  file_url
+  file_url,
+  project_id
 ) VALUES (
   $1,
-  $2
+  $2,
+  $3
 )
 RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at
 `
 
 type CreatedesignParams struct {
-	Name    string      `json:"name"`
-	FileUrl pgtype.Text `json:"file_url"`
+	Name      string      `json:"name"`
+	FileUrl   pgtype.Text `json:"file_url"`
+	ProjectID pgtype.Int4 `json:"project_id"`
 }
 
 func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Design, error) {
-	row := q.db.QueryRow(ctx, createdesign, arg.Name, arg.FileUrl)
+	row := q.db.QueryRow(ctx, createdesign, arg.Name, arg.FileUrl, arg.ProjectID)
 	var i Design
 	err := row.Scan(
 		&i.ID,
@@ -142,6 +145,45 @@ func (q *Queries) GetdesignComponentByID(ctx context.Context, designID int32) (L
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const listDesignsByProjectID = `-- name: ListDesignsByProjectID :many
+SELECT id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at FROM design
+WHERE project_id = $1
+`
+
+func (q *Queries) ListDesignsByProjectID(ctx context.Context, projectID pgtype.Int4) ([]Design, error) {
+	rows, err := q.db.Query(ctx, listDesignsByProjectID, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Design
+	for rows.Next() {
+		var i Design
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ImageUrl,
+			&i.LayoutID,
+			&i.ProjectID,
+			&i.ImageExtension,
+			&i.FileUrl,
+			&i.FileExtension,
+			&i.Width,
+			&i.Height,
+			&i.IsProccessed,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listdesign = `-- name: Listdesign :many

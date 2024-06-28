@@ -2,6 +2,7 @@ package web
 
 import (
 	"algvisual/internal/ports"
+	"algvisual/web/pages/project"
 	"algvisual/web/pages/projects"
 	"algvisual/web/views/batchlist"
 	"algvisual/web/views/batchresults"
@@ -66,4 +67,5 @@ var Module = fx.Options(fx.Provide(
 	protected(debug.NewPage),
 	protected(debug.CreateImage),
 	protected(projects.NewPage),
+	protected(project.NewPage),
 ))

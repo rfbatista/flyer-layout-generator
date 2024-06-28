@@ -20,7 +20,7 @@ func NewPage(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath("/page")
+	h.SetPath("/")
 	h.SetHandle(func(c echo.Context) error {
 		var req PageRequest
 		err := c.Bind(&req)

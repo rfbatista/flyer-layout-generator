@@ -1,18 +1,18 @@
 ---
-to: internal/usecases/<%= h.changeCase.pascal(name) %>.go
+to: internal/<%= h.changeCase.snake(module) %>/<%= h.changeCase.snake(name) %>.go
 ---
-package usecases
+package <%= h.changeCase.snake(module) %>
 
 import (
 	"context"
 )
 
-type <%= h.changeCase.pascal(name) %>Request struct {
+type <%= h.changeCase.pascal(name) %>Input struct {
 }
 
-type <%= h.changeCase.pascal(name) %>Result struct {
+type <%= h.changeCase.pascal(name) %>Output struct {
 }
 
-func  <%= h.changeCase.pascal(name) %>UseCase(ctx context.Context, req <%= h.changeCase.pascal(name) %>Request) (*<%= h.changeCase.pascal(name) %>Result, error) {
-  return &<%= h.changeCase.pascal(name) %>Result{}, nil
+func  <%= h.changeCase.pascal(name) %>UseCase(ctx context.Context, req <%= h.changeCase.pascal(name) %>Input) (*<%= h.changeCase.pascal(name) %>Output, error) {
+  return &<%= h.changeCase.pascal(name) %>Output{}, nil
 } 

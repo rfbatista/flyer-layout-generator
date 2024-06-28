@@ -33,7 +33,7 @@ func NewPage(
 	}
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
-	h.SetPath("/")
+	h.SetPath("/files")
 	h.SetHandle(func(c echo.Context) error {
 		props, err := Props(c.Request().Context(), queries, log)
 		if err != nil {
@@ -99,7 +99,7 @@ func NewProcessDesignFile(
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
-	h.SetPath("/upload/design/:design_id/process")
+	h.SetPath(shared.PageUploadDesignFileProcess.String())
 	h.SetHandle(func(c echo.Context) error {
 		var req designprocessor.ProcessDesignFileRequestv2
 		err := c.Bind(&req)

@@ -34,10 +34,12 @@ RETURNING *;
 -- name: Createdesign :one
 INSERT INTO design (
   name,
-  file_url
+  file_url,
+  project_id
 ) VALUES (
   $1,
-  $2
+  $2,
+  $3
 )
 RETURNING *;
 
@@ -62,3 +64,8 @@ OFFSET $1 LIMIT $2;
 SELECT * FROM layout_elements 
 WHERE design_id = $1
 LIMIT $2 OFFSET $3;
+
+-- name: ListDesignsByProjectID :many
+SELECT * FROM design
+WHERE project_id = $1;
+

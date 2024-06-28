@@ -18,6 +18,7 @@ type CreateTemplateUseCaseRequest struct {
 	X         int    `              json:"x,omitempty"`
 	Y         int    `              json:"y,omitempty"`
 	RequestID string
+	ProjectID int32
 }
 
 type CreateTemplateUseCaseResult struct {
@@ -49,9 +50,10 @@ func CreateTemplateUseCase(
 	} else {
 		id = req.RequestID
 	}
-	temp, err := qtx.CreateTemplate(ctx, database.CreateTemplateParams{
+	temp, err := qtx.CreateTemplateByProject(ctx, database.CreateTemplateByProjectParams{
 		Name:      req.Name,
 		Width:     pgtype.Int4{Int32: int32(req.Width), Valid: true},
+		ProjectID: pgtype.Int4{Int32: int32(req.ProjectID), Valid: true},
 		Height:    pgtype.Int4{Int32: int32(req.Height), Valid: true},
 		RequestID: pgtype.Text{String: id, Valid: true},
 	})

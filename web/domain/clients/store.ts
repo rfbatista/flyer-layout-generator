@@ -4,6 +4,7 @@ import { apiClient } from "../../infrastructure/api";
 
 type Store = {
   clients: Client[];
+  getClients: (page?: number, limit?: number) => Promise<Client[]>;
 };
 
 const useClientsStore = create<Store>((set) => ({
@@ -12,7 +13,7 @@ const useClientsStore = create<Store>((set) => ({
     return apiClient
       .get(`/v1/clients?page=${page}&limit=${limit}`)
       .then((r) => {
-        const items = r.data;
+        const items = r.data.clients;
         const clients: Client[] = [];
         for (const item of items) {
           clients.push(new Client(item));

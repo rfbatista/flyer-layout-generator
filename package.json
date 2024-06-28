@@ -39,6 +39,7 @@
   },
   "scripts": {
     "page": "hygen page new",
+    "usecase": "hygen usecase new",
     "css": "postcss ./web/css/global.css -o ./web/static/css/global.css",
     "dev": "vite",
     "dev:build": "tsc -b && vite build --mode development",

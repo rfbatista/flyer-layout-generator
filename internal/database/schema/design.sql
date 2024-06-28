@@ -18,6 +18,7 @@ CREATE TABLE projects (
   id   BIGSERIAL PRIMARY KEY,
   client_id int,
   advertiser_id int,
+  briefing text,
   name text      NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
@@ -36,6 +37,7 @@ CREATE TABLE templates (
   id   SERIAL PRIMARY KEY,
   name text      NOT NULL,
   request_id TEXT,
+  project_id INT,
   width INT,
   height INT,
   slots_x INT,
@@ -44,7 +46,9 @@ CREATE TABLE templates (
   max_slots_y INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP,
+
+  FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

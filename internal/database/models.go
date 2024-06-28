@@ -243,6 +243,7 @@ type Project struct {
 	ID           int64            `json:"id"`
 	ClientID     pgtype.Int4      `json:"client_id"`
 	AdvertiserID pgtype.Int4      `json:"advertiser_id"`
+	Briefing     pgtype.Text      `json:"briefing"`
 	Name         string           `json:"name"`
 	CreatedAt    pgtype.Timestamp `json:"created_at"`
 	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
@@ -253,6 +254,7 @@ type Template struct {
 	ID        int32            `json:"id"`
 	Name      string           `json:"name"`
 	RequestID pgtype.Text      `json:"request_id"`
+	ProjectID pgtype.Int4      `json:"project_id"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`

@@ -1,12 +1,11 @@
 package api
 
 import (
+	"algvisual/internal/ports"
 	"fmt"
 
 	"github.com/rfbatista/apitools"
 	"go.uber.org/fx"
-
-	"algvisual/internal/ports"
 )
 
 func protected(f any) any {
@@ -36,17 +35,15 @@ func AsController(f any) any {
 var Module = fx.Options(fx.Provide(
 	AsController(NewWebController),
 	AsController(NewProjectsController),
-	protected(NewUploadDesignAPI),
-	protected(NewListDesignElementsAPI),
+	AsController(NewClientsController),
+	AsController(NewAdvertiserController),
+	AsController(NewDesignController),
+	AsController(NewAssetsController),
 	public(NewLoginAPI),
 	protected(NewListTemplatesAPI),
 	protected(NewCreateTemplateAPI),
 	protected(NewSetPhotoshopBackgroundAPI),
-	protected(NewListDesignFilesAPI),
 	protected(NewListGeneratedImagesAPI),
-	protected(NewCreateComponentAPI),
-	protected(NewGetDesignByIDAPI),
-	protected(NewGenerateDesignAPI),
 	protected(NewRemoveComponentAPI),
 	protected(NewListComponentsByFileIDAPI),
 	protected(NewUploadImage),

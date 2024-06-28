@@ -1,56 +1,37 @@
 package api
 
 import (
+	"algvisual/internal/database"
 	"algvisual/internal/templates"
 	"net/http"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
-	"github.com/rfbatista/apitools"
-	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/shared"
 )
 
-func NewCreateTemplateAPI(db *database.Queries, conn *pgxpool.Pool, log *zap.Logger) apitools.Handler {
-	h := apitools.NewHandler()
-	h.SetMethod(apitools.POST)
-	h.SetPath(shared.EndpointCreateTemplate.String())
-	h.SetHandle(func(c echo.Context) error {
-		var req templates.CreateTemplateUseCaseRequest
-		err := c.Bind(&req)
-		if err != nil {
-			return c.String(http.StatusBadRequest, err.Error())
-		}
-		result, err := templates.CreateTemplateUseCase(c.Request().Context(), conn, db, req, log)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, result)
-	})
-	return h
+func NewTemplatesController(db *database.Queries) TemplatesController {
+	return TemplatesController{db: db}
 }
 
-func NewListTemplatesAPI(
-	queries *database.Queries,
-	conn *pgxpool.Pool,
-	log *zap.Logger,
-) apitools.Handler {
-	h := apitools.NewHandler()
-	h.SetMethod(apitools.GET)
-	h.SetPath(shared.EndpointListTemplate.String())
-	h.SetHandle(func(c echo.Context) error {
-		var req templates.ListTemplatesUseCaseRequest
+type TemplatesController struct {
+	db *database.Queries
+}
+
+func (s TemplatesController) Load(e *echo.Echo) error {
+	e.GET("/api/v1/project/:project_id/templates", s.ListTemplates())
+	return nil
+}
+
+func (s TemplatesController) ListTemplates() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req templates.ListTemplatesByProjectIdInput
 		err := c.Bind(&req)
-		if err != nil {
-			return c.String(http.StatusBadRequest, "bad request")
-		}
-		result, err := templates.ListTemplatesUseCase(c.Request().Context(), req, queries, log)
 		if err != nil {
 			return err
 		}
-		return c.JSON(http.StatusOK, result)
-	})
-	return h
+		out, err := templates.ListTemplatesByProjectIdUseCase(c.Request().Context(), req, s.db)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
 }

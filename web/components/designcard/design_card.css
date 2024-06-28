@@ -1,0 +1,13 @@
+.design-card {
+  @apply overflow-hidden text-slate-700 dark:text-slate-300;
+  width: 240px;
+  padding-bottom: var(--s1);
+}
+
+.design-card__image-container {
+  @apply w-60 overflow-hidden;
+}
+
+.design-card__image-container>img {
+  @apply object-cover transition duration-700 ease-out group-hover:scale-105;
+}

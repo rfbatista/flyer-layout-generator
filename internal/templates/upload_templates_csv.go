@@ -14,8 +14,9 @@ import (
 )
 
 type TemplatesCsvUploadRequest struct {
-	Filename string          `form:"filename" json:"filename,omitempty"`
-	File     *multipart.File `form:"file"     json:"file,omitempty"`
+	Filename  string          `form:"filename"   json:"filename,omitempty"`
+	File      *multipart.File `form:"file"       json:"file,omitempty"`
+	ProjectID int32           `form:"project_id" json:"project_id,omitempty"`
 }
 
 type templateCsvData struct {
@@ -55,6 +56,7 @@ func TemplatesCsvUploadUseCase(
 			X:         int(t.SlotsX),
 			Y:         int(t.SlostsY),
 			RequestID: uniqid.String(),
+			ProjectID: req.ProjectID,
 		}, log)
 		if err != nil {
 			err = shared.WrapWithAppError(

@@ -10,6 +10,7 @@ func DesignFileToDomain(raw database.Design) entities.DesignFile {
 		ID:             raw.ID,
 		Name:           raw.Name,
 		LayoutID:       raw.LayoutID.Int32,
+		ProjectID:      raw.ProjectID.Int32,
 		Filepath:       raw.FileUrl.String,
 		FileExtension:  raw.FileExtension.String,
 		ImagePath:      raw.ImageUrl.String,
@@ -25,6 +26,7 @@ func DesignFileToDomain(raw database.Design) entities.DesignFile {
 func TodesignEntitie(raw database.Design) entities.DesignFile {
 	return entities.DesignFile{
 		ID:             raw.ID,
+		ProjectID:      raw.ProjectID.Int32,
 		Width:          raw.Width.Int32,
 		LayoutID:       raw.LayoutID.Int32,
 		Height:         raw.Height.Int32,
@@ -33,5 +35,6 @@ func TodesignEntitie(raw database.Design) entities.DesignFile {
 		ImageExtension: raw.ImageExtension.String,
 		ImagePath:      raw.ImageUrl.String,
 		CreatedAt:      raw.CreatedAt.Time,
+		IsProcessed:    raw.IsProccessed.Bool,
 	}
 }

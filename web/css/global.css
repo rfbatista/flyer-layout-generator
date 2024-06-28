@@ -121,6 +121,35 @@ img {
   min-width: calc(var(--content-min) - var(--space));
 }
 
+
+.right-sidebar {
+  overflow: hidden;
+  --space: 1em;
+  --side-width: 350px;
+  --content-min: 50%;
+}
+
+.right-sidebar > * {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc((var(--space) / 2) * -1);
+}
+
+.right-sidebar > * > * {
+  flex-basis: var(--side-width);
+  flex-grow: 1;
+  /* ↓ applies to both elements */
+  margin: calc((var(--space) / 2));
+}
+
+/* ↓ if is a right sidebar (side: right) -> :first-child */
+.right-sidebar > * > :first-child {
+  /* ↓ grow from nothing */
+  flex-basis: 0;
+  flex-grow: 999;
+  min-width: calc(var(--content-min) - var(--space));
+}
+
 /*-----------------------------------------------------------------------*/
 /* Box
 /*-----------------------------------------------------------------------*/

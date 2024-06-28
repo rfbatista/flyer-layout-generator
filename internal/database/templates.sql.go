@@ -23,7 +23,7 @@ INSERT INTO templates (
   $3,
   $4
 )
-RETURNING id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 `
 
 type CreateTemplateParams struct {
@@ -45,6 +45,59 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		&i.ID,
 		&i.Name,
 		&i.RequestID,
+		&i.ProjectID,
+		&i.Width,
+		&i.Height,
+		&i.SlotsX,
+		&i.SlotsY,
+		&i.MaxSlotsX,
+		&i.MaxSlotsY,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const createTemplateByProject = `-- name: CreateTemplateByProject :one
+INSERT INTO templates (
+  name,
+  width,
+  height,
+  request_id,
+  project_id
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5
+)
+RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+`
+
+type CreateTemplateByProjectParams struct {
+	Name      string      `json:"name"`
+	Width     pgtype.Int4 `json:"width"`
+	Height    pgtype.Int4 `json:"height"`
+	RequestID pgtype.Text `json:"request_id"`
+	ProjectID pgtype.Int4 `json:"project_id"`
+}
+
+func (q *Queries) CreateTemplateByProject(ctx context.Context, arg CreateTemplateByProjectParams) (Template, error) {
+	row := q.db.QueryRow(ctx, createTemplateByProject,
+		arg.Name,
+		arg.Width,
+		arg.Height,
+		arg.RequestID,
+		arg.ProjectID,
+	)
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.RequestID,
+		&i.ProjectID,
 		&i.Width,
 		&i.Height,
 		&i.SlotsX,
@@ -141,7 +194,7 @@ func (q *Queries) CreateTemplateSlot(ctx context.Context, arg CreateTemplateSlot
 }
 
 const getTemplate = `-- name: GetTemplate :one
-SELECT templates.id, templates.name, templates.request_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
+SELECT templates.id, templates.name, templates.request_id, templates.project_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
 FROM templates
 WHERE templates.id = $1 LIMIT 1
 `
@@ -157,6 +210,7 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 		&i.Template.ID,
 		&i.Template.Name,
 		&i.Template.RequestID,
+		&i.Template.ProjectID,
 		&i.Template.Width,
 		&i.Template.Height,
 		&i.Template.SlotsX,
@@ -171,7 +225,7 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 }
 
 const getTemplateByID = `-- name: GetTemplateByID :one
-SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 WHERE id = $1 LIMIT 1
 `
@@ -183,6 +237,7 @@ func (q *Queries) GetTemplateByID(ctx context.Context, id int32) (Template, erro
 		&i.ID,
 		&i.Name,
 		&i.RequestID,
+		&i.ProjectID,
 		&i.Width,
 		&i.Height,
 		&i.SlotsX,
@@ -262,7 +317,7 @@ func (q *Queries) GetTemplateSlots(ctx context.Context, templateID int32) ([]Get
 }
 
 const getTemplatesByRequestID = `-- name: GetTemplatesByRequestID :many
-SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 WHERE request_id = $1
 `
@@ -280,6 +335,7 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 			&i.ID,
 			&i.Name,
 			&i.RequestID,
+			&i.ProjectID,
 			&i.Width,
 			&i.Height,
 			&i.SlotsX,
@@ -301,7 +357,7 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT id, name, request_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
 FROM templates
 LIMIT $1 OFFSET $2
 `
@@ -324,6 +380,54 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 			&i.ID,
 			&i.Name,
 			&i.RequestID,
+			&i.ProjectID,
+			&i.Width,
+			&i.Height,
+			&i.SlotsX,
+			&i.SlotsY,
+			&i.MaxSlotsX,
+			&i.MaxSlotsY,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTemplatesByProjectID = `-- name: ListTemplatesByProjectID :many
+SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at
+FROM templates
+WHERE project_id = $1
+OFFSET $2 LIMIT $3
+`
+
+type ListTemplatesByProjectIDParams struct {
+	ProjectID pgtype.Int4 `json:"project_id"`
+	Offset    int32       `json:"offset"`
+	Limit     int32       `json:"limit"`
+}
+
+func (q *Queries) ListTemplatesByProjectID(ctx context.Context, arg ListTemplatesByProjectIDParams) ([]Template, error) {
+	rows, err := q.db.Query(ctx, listTemplatesByProjectID, arg.ProjectID, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Template
+	for rows.Next() {
+		var i Template
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.RequestID,
+			&i.ProjectID,
 			&i.Width,
 			&i.Height,
 			&i.SlotsX,

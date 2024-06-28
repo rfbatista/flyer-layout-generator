@@ -1,21 +1,21 @@
 package designprocessor
 
 import (
+	"algvisual/internal/database"
+	"algvisual/internal/ports"
+	"algvisual/internal/shared"
 	"context"
 	"io"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"go.uber.org/zap"
-
-	"algvisual/internal/database"
-	"algvisual/internal/ports"
-	"algvisual/internal/shared"
 )
 
 type UploadDesignFileUseCaseRequest struct {
-	Filename string    `form:"filename" json:"filename,omitempty"`
-	File     io.Reader `form:"file"     json:"file,omitempty"`
+	Filename  string    `form:"filename"   json:"filename,omitempty"`
+	File      io.Reader `form:"file"       json:"file,omitempty"`
+	ProjectID int32     `form:"project_id" json:"project_id,omitempty"`
 }
 
 type UploadDesignFileUseCaseResult struct {
@@ -40,8 +40,9 @@ func UploadDesignFileUseCase(
 		return nil, shared.WrapWithAppError(err, "falha ao processar arquivo photoshop", "")
 	}
 	design, err := db.Createdesign(ctx, database.CreatedesignParams{
-		Name:    name,
-		FileUrl: pgtype.Text{String: url, Valid: true},
+		Name:      name,
+		FileUrl:   pgtype.Text{String: url, Valid: true},
+		ProjectID: pgtype.Int4{Int32: req.ProjectID, Valid: true},
 	})
 	log.Info(design.FileUrl.String, zap.String("url", url))
 	if err != nil {
