@@ -1,0 +1,26 @@
+.breadcrump {
+  @apply text-sm font-medium text-slate-700 dark:text-slate-300;
+}
+
+.breadcrump__list {
+  @apply flex flex-wrap items-center gap-1;
+}
+
+.breadcrump__list__item {
+  @apply flex items-center gap-1;
+}
+
+.breadcrump__list__item[data-position="last"] {
+  @apply flex items-center text-black gap-1 font-bold dark:text-white;
+}
+
+.breadcrump__list__item__icon {
+  height: 10px;
+  width: 10px;
+  display: block;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2" stroke="currentColor" ><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>');
+}
+
+.breadcrump__list__item__link {
+  @apply hover:text-black dark:hover:text-white;
+}

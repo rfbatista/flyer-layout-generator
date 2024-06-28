@@ -35,6 +35,7 @@ func AsController(f any) any {
 
 var Module = fx.Options(fx.Provide(
 	AsController(NewWebController),
+	AsController(NewProjectsController),
 	protected(NewUploadDesignAPI),
 	protected(NewListDesignElementsAPI),
 	public(NewLoginAPI),

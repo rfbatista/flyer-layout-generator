@@ -1,7 +1,4 @@
----
-to: web/pages/<%= h.changeCase.snake(name) %>/handler.go
----
-package <%= h.changeCase.snake(name) %>
+package project
 
 import (
 	"algvisual/internal/database"
@@ -25,12 +22,12 @@ func NewPage(
 ) apitools.Handler {
   static, err := bundler.AddPage(infra.BundlerPageParams{
     EntryPoints: []string{
-      fmt.Sprintf("%s/web/views/<%= h.changeCase.snake(name) %>/index.js", infra.FindProjectRoot()),
+      fmt.Sprintf("%s/web/views/project/index.js", infra.FindProjectRoot()),
     },
-    Name: "<%= h.changeCase.snake(name) %>",
+    Name: "project",
   })
   if err != nil {
-    panic(shared.WrapWithAppError(err, "failed to build web/views/<%= h.changeCase.snake(name) %> page", ""))
+    panic(shared.WrapWithAppError(err, "failed to build web/views/project page", ""))
   }
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)
@@ -39,12 +36,12 @@ func NewPage(
 		var req PageRequest
 		err := c.Bind(&req)
 		if err != nil {
-			log.Error("failed to render <%= h.changeCase.snake(name) %> page", zap.Error(err))
+			log.Error("failed to render project page", zap.Error(err))
 			return err
 		}
 		props, err := Props(c.Request().Context(), queries, req)
 		if err != nil {
-			log.Error("failed to render <%= h.changeCase.snake(name) %> page props", zap.Error(err))
+			log.Error("failed to render project page props", zap.Error(err))
 			return err
 		}
 		return render.Render(c, http.StatusOK, Page(props, static.CSSName, static.JSName))

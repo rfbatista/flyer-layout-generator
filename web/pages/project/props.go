@@ -1,7 +1,4 @@
----
-to: web/pages/<%= h.changeCase.snake(name) %>/props.go
----
-package <%= h.changeCase.snake(name) %>
+package project
 
 import (
 	"algvisual/internal/database"

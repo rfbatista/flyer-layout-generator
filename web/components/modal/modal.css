@@ -1,0 +1,47 @@
+.modal {
+  border-radius: 20px;
+  border: 1px solid var(--color-slate-400);
+  background: white;
+  max-width: 400px;
+  box-shadow: 0 5px 30px 0 rgb(0 0 0 / 10%);
+  animation: fadeIn 1s ease both;
+  min-width: 200px;
+}
+
+.modal[data-size="md"] {
+  width: 450px;
+}
+
+.modal__header {
+  @apply p-3;
+  background-color: var(--color-slate-200);
+  border-bottom: 1px solid var(--color-slate-400);
+}
+
+.modal__close {
+  filter: grayscale(1);
+  border: none;
+  background: none;
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  transition:
+    ease filter,
+    transform 0.3s;
+  cursor: pointer;
+  transform-origin: center;
+  width: 16px;
+  height: 16px;
+	background-image: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" fill="none" stroke-width="1.4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>');
+}
+
+.modal::backdrop {
+  animation: fadeIn 1s ease both;
+  background: rgb(255 255 255 / 40%);
+  z-index: 2;
+  backdrop-filter: blur(20px);
+}
+
+.modal__body {
+  @apply p-2;
+}

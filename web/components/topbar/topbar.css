@@ -1,11 +1,31 @@
 .topbar {
-	@apply flex items-center justify-between px-6 py-4 w-full;
+  @apply flex px-6 py-4 w-full;
+  border: 1px solid var(--color-slate-300);
+}
+
+.topbar__logo {
+  @apply h-9 w-10;
 }
 
 .topbar__list {
-	@apply items-center gap-4 sm:flex;
+  @apply items-center gap-4 sm:flex;
+  margin-right: 0px;
+  margin-left: auto;
 }
 
 .topbar__list__item {
-	@apply font-bold text-blue-700 underline-offset-2 hover:text-blue-700 focus:outline-none focus:underline dark:text-blue-600 dark:hover:text-blue-600;
+  @apply font-bold text-blue-700 underline-offset-2 hover:text-blue-700 focus:outline-none focus:underline dark:text-blue-600 dark:hover:text-blue-600;
+}
+
+.topbar__list__item[data-state="inactive"] {
+  @apply font-medium text-slate-700 underline-offset-2 hover:text-blue-700 focus:outline-none focus:underline dark:text-slate-300 dark:hover:text-blue-600;
+}
+
+.topbar__list__profile {
+  @apply relative flex items-center;
+}
+
+
+.topbar__list__profile__pic {
+  @apply size-10 rounded-full object-cover;
 }

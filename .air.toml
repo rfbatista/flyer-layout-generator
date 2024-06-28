@@ -7,7 +7,7 @@ tmp_dir = "tmp"
   pre_cmd = [
   "templ generate",
   # "npx tailwindcss --input ./web/static/components.css --output ./web/static/css/components.css",
-  "yarn css",
+  # "yarn css",
 	"yarn dev:build",
   ]
   bin = "./tmp/main"
