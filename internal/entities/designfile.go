@@ -19,6 +19,7 @@ type DesignFile struct {
 	Height         int32     `json:"height,omitempty"`
 	CreatedAt      time.Time `json:"created_at,omitempty"`
 	IsProcessed    bool      `json:"is_processed,omitempty"`
+	Layout         Layout    `json:"layout,omitempty"`
 }
 
 func (d *DesignFile) SID() string {

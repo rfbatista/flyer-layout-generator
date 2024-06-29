@@ -21,3 +21,16 @@ LIMIT 1;
 SELECT *
 FROM projects
 LIMIT $1 OFFSET $2;
+
+-- name: UpdateProjectByID :one
+UPDATE projects
+SET 
+    briefing = CASE WHEN @briefing_do_update::boolean
+        THEN @briefing::text ELSE briefing END,
+    name = CASE WHEN @name_do_update::boolean
+        THEN @name::text ELSE name END,
+    use_ai = CASE WHEN @use_ai_do_update::boolean
+        THEN @use_ai::bool ELSE use_ai END
+WHERE
+  id = @id
+RETURNING *;

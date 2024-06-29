@@ -19,7 +19,7 @@ type Response = {
 
 export function getDesignByIDApi(id: number): Promise<{ data: Design }> {
   return apiClient
-    .get<Response>(`/v1/project/${id}`)
+    .get<Response>(`/v1/design/${id}`)
     .then((res) => {
       return { data: Design.create(res.data.data) };
     })

@@ -6,11 +6,11 @@ export function Modal({
   children,
   title = "",
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   title: string;
 }) {
   const modalRef = useRef<HTMLDialogElement | null>(null);
-  const { isOpen, close } = useModal();
+  const { isOpen, close, ch, title: modalTitle } = useModal();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDialogElement>) => {
     if (event.key === "Escape") {
@@ -19,7 +19,6 @@ export function Modal({
   };
 
   useEffect(() => {
-    console.log("aqui");
     const modalElement = modalRef.current;
     if (modalElement) {
       if (isOpen) {
@@ -41,11 +40,11 @@ export function Modal({
           id="defaultModalTitle"
           className="font-semibold tracking-wide text-black dark:text-white"
         >
-          {title}
+          {modalTitle !== "" ? modalTitle : title}
         </h3>
-        <span className="modal__close" onClick={close}/>
+        <span className="modal__close" onClick={close} />
       </div>
-      <div className="modal__body">{children}</div>
+      <div className="modal__body">{ch ? ch : children}</div>
     </dialog>
   );
 }

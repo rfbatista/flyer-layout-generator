@@ -22,13 +22,13 @@ export function DesginCard(props: Props) {
             alt="view of a coastal Mediterranean village on a hillside, with small boats in the water."
           />
         </div>
-        <div>
+        <div className="design-card__body">
           <h2>{d.name}</h2>
         </div>
-        <div className="cluster center">
+        <div className="cluster center design-card__body">
           {d.isProcessed ? (
             <div>
-              <button>Edit</button>
+              <a href={`/editor?design=${d.id}`} data-type="button">Edit</a>
               <button>Generate</button>
             </div>
           ) : (

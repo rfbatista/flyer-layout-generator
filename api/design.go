@@ -45,6 +45,7 @@ func (s DesignController) Load(e *echo.Echo) error {
 	e.POST("/api/v1/design", s.UploadDesign())
 	e.GET("/api/v1/designs/project/:project_id", s.ListDesignsByProjectID())
 	e.POST("/api/v1/design/:design_id/process", s.ProcessDesginFileByID())
+	e.GET("/api/v1/design/:design_id", s.GetDesignByID())
 	return nil
 }
 
@@ -77,6 +78,21 @@ func (s DesignController) UploadDesign() echo.HandlerFunc {
 			s.storage.Upload,
 			s.log,
 		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) GetDesignByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req designs.GetDesignByIdRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := designs.GetDesignByIdUseCase(c.Request().Context(), req, s.db, s.log)
 		if err != nil {
 			return err
 		}

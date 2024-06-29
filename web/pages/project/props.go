@@ -1,15 +1,9 @@
 package project
 
-import (
-	"algvisual/internal/database"
-	"context"
-)
-
-type PageRequest struct {
-
+type request struct {
+	DesignID int32 `param:"design_id"`
+	LayoutID int32 `param:"layout_id"`
 }
 
-func Props(ctx context.Context, db *database.Queries, req PageRequest) (PageProps, error){
-  var props PageProps
-  return props, nil
+func Props() {
 }

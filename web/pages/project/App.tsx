@@ -8,9 +8,10 @@ import { useDesignsStore } from "../../domain/design/store";
 import { DesginCard } from "../../components/designcard/design_card";
 import { NewDesignForm } from "./components/new_design_form";
 import { useModal } from "../../components/modal/store";
+import { SideBar } from "./components/side-bar";
 
 export default function App() {
-  const { toggle } = useModal();
+  const { toggle, setCh, setTitle } = useModal();
   const { activeProject, setActiveProject } = useProjectsStore();
   const { listDesigns, designs } = useDesignsStore();
   useEffect(() => {
@@ -19,11 +20,14 @@ export default function App() {
     setActiveProject(Number(id));
     listDesigns(Number(id));
   }, []);
+  const openModal = () => {
+    setCh(<NewDesignForm />);
+    setTitle("New design");
+    toggle();
+  };
   return (
     <>
-      <Modal title="New design">
-        <NewDesignForm />
-      </Modal>
+      <Modal title="New design"></Modal>
       <TopBar />
       <div className="right-sidebar">
         <div>
@@ -42,7 +46,7 @@ export default function App() {
                   />
                   <div className="cluster">
                     <div className="projects-page__upload-design-btn">
-                      <button onClick={toggle}>New Design</button>
+                      <button onClick={openModal}>New Design</button>
                     </div>
                   </div>
                   <div className="stack">
@@ -61,7 +65,9 @@ export default function App() {
               </div>
             </div>
           </div>
-          <div className="box">ada</div>
+          <div className="box">
+            <SideBar />
+          </div>
         </div>
       </div>
     </>

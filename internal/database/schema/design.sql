@@ -19,6 +19,7 @@ CREATE TABLE projects (
   client_id int,
   advertiser_id int,
   briefing text,
+  use_ai BOOL DEFAULT FALSE,
   name text      NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,

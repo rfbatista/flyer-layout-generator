@@ -19,6 +19,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "./web/pages/projects/main.tsx"),
         project: resolve(__dirname, "./web/pages/project/main.tsx"),
+        editor: resolve(__dirname, "./web/pages/editor/main.tsx"),
       },
       treeshake: true,
       output: {

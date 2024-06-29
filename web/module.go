@@ -2,6 +2,7 @@ package web
 
 import (
 	"algvisual/internal/ports"
+	neditor "algvisual/web/pages/editor"
 	"algvisual/web/pages/project"
 	"algvisual/web/pages/projects"
 	"algvisual/web/views/batchlist"
@@ -68,4 +69,5 @@ var Module = fx.Options(fx.Provide(
 	protected(debug.CreateImage),
 	protected(projects.NewPage),
 	protected(project.NewPage),
+	protected(neditor.NewPage),
 ))

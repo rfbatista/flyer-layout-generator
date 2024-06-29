@@ -193,6 +193,15 @@ func (q *Queries) CreateTemplateSlot(ctx context.Context, arg CreateTemplateSlot
 	return i, err
 }
 
+const deleteTemplateByID = `-- name: DeleteTemplateByID :exec
+DELETE FROM templates WHERE id = $1
+`
+
+func (q *Queries) DeleteTemplateByID(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteTemplateByID, id)
+	return err
+}
+
 const getTemplate = `-- name: GetTemplate :one
 SELECT templates.id, templates.name, templates.request_id, templates.project_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at
 FROM templates
@@ -446,4 +455,17 @@ func (q *Queries) ListTemplatesByProjectID(ctx context.Context, arg ListTemplate
 		return nil, err
 	}
 	return items, nil
+}
+
+const totalTemplatesByProjectID = `-- name: TotalTemplatesByProjectID :one
+SELECT COUNT(*)
+FROM templates
+WHERE project_id = $1
+`
+
+func (q *Queries) TotalTemplatesByProjectID(ctx context.Context, projectID pgtype.Int4) (int64, error) {
+	row := q.db.QueryRow(ctx, totalTemplatesByProjectID, projectID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }

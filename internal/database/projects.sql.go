@@ -21,7 +21,7 @@ INSERT INTO projects (
   $2,
   $3
 )
-RETURNING id, client_id, advertiser_id, briefing, name, created_at, updated_at, deleted_at
+RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
 `
 
 type CreateProjectParams struct {
@@ -38,6 +38,7 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 		&i.ClientID,
 		&i.AdvertiserID,
 		&i.Briefing,
+		&i.UseAi,
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -47,7 +48,7 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 }
 
 const getProjectByID = `-- name: GetProjectByID :one
-SELECT id, client_id, advertiser_id, briefing, name, created_at, updated_at, deleted_at
+SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
 FROM projects
 WHERE id = $1
 LIMIT 1
@@ -61,6 +62,7 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (Project, error)
 		&i.ClientID,
 		&i.AdvertiserID,
 		&i.Briefing,
+		&i.UseAi,
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -70,7 +72,7 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (Project, error)
 }
 
 const listProjects = `-- name: ListProjects :many
-SELECT id, client_id, advertiser_id, briefing, name, created_at, updated_at, deleted_at
+SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
 FROM projects
 LIMIT $1 OFFSET $2
 `
@@ -94,6 +96,7 @@ func (q *Queries) ListProjects(ctx context.Context, arg ListProjectsParams) ([]P
 			&i.ClientID,
 			&i.AdvertiserID,
 			&i.Briefing,
+			&i.UseAi,
 			&i.Name,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -107,4 +110,53 @@ func (q *Queries) ListProjects(ctx context.Context, arg ListProjectsParams) ([]P
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateProjectByID = `-- name: UpdateProjectByID :one
+UPDATE projects
+SET 
+    briefing = CASE WHEN $1::boolean
+        THEN $2::text ELSE briefing END,
+    name = CASE WHEN $3::boolean
+        THEN $4::text ELSE name END,
+    use_ai = CASE WHEN $5::boolean
+        THEN $6::bool ELSE use_ai END
+WHERE
+  id = $7
+RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
+`
+
+type UpdateProjectByIDParams struct {
+	BriefingDoUpdate bool   `json:"briefing_do_update"`
+	Briefing         string `json:"briefing"`
+	NameDoUpdate     bool   `json:"name_do_update"`
+	Name             string `json:"name"`
+	UseAiDoUpdate    bool   `json:"use_ai_do_update"`
+	UseAi            bool   `json:"use_ai"`
+	ID               int64  `json:"id"`
+}
+
+func (q *Queries) UpdateProjectByID(ctx context.Context, arg UpdateProjectByIDParams) (Project, error) {
+	row := q.db.QueryRow(ctx, updateProjectByID,
+		arg.BriefingDoUpdate,
+		arg.Briefing,
+		arg.NameDoUpdate,
+		arg.Name,
+		arg.UseAiDoUpdate,
+		arg.UseAi,
+		arg.ID,
+	)
+	var i Project
+	err := row.Scan(
+		&i.ID,
+		&i.ClientID,
+		&i.AdvertiserID,
+		&i.Briefing,
+		&i.UseAi,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

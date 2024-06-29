@@ -66,6 +66,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   /* font-family: Helvetica, Arial, sans-serif; */
   --border: 4px solid black;
@@ -100,13 +105,13 @@ img {
   --content-min: 50%;
 }
 
-.with-sidebar > * {
+.with-sidebar>* {
   display: flex;
   flex-wrap: wrap;
   margin: calc((var(--space) / 2) * -1);
 }
 
-.with-sidebar > * > * {
+.with-sidebar>*>* {
   flex-basis: var(--side-width);
   flex-grow: 1;
   /* ↓ applies to both elements */
@@ -114,13 +119,12 @@ img {
 }
 
 /* ↓ if is a right sidebar (side: right) -> :first-child */
-.with-sidebar > * > :nth-of-type(2) {
+.with-sidebar>*> :nth-of-type(2) {
   /* ↓ grow from nothing */
   flex-basis: 0;
   flex-grow: 999;
   min-width: calc(var(--content-min) - var(--space));
 }
-
 
 .right-sidebar {
   overflow: hidden;
@@ -129,13 +133,13 @@ img {
   --content-min: 50%;
 }
 
-.right-sidebar > * {
+.right-sidebar>* {
   display: flex;
   flex-wrap: wrap;
   margin: calc((var(--space) / 2) * -1);
 }
 
-.right-sidebar > * > * {
+.right-sidebar>*>* {
   flex-basis: var(--side-width);
   flex-grow: 1;
   /* ↓ applies to both elements */
@@ -143,7 +147,7 @@ img {
 }
 
 /* ↓ if is a right sidebar (side: right) -> :first-child */
-.right-sidebar > * > :first-child {
+.right-sidebar>*> :first-child {
   /* ↓ grow from nothing */
   flex-basis: 0;
   flex-grow: 999;
@@ -173,7 +177,7 @@ img {
   --space: var(--s-1);
 }
 
-.stack > * + * {
+.stack>*+* {
   margin-top: var(--space);
 }
 
@@ -204,7 +208,7 @@ img {
   overflow: hidden;
 }
 
-.cluster > * {
+.cluster>* {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -212,7 +216,7 @@ img {
   margin: calc(var(--space) / 2 * -1);
 }
 
-.cluster > * > * {
+.cluster>*>* {
   margin: calc(var(--space) / 2);
 }
 
@@ -225,14 +229,14 @@ img {
   --large: calc(1 + 7 / 10);
 }
 
-.switcher > * {
+.switcher>* {
   display: flex;
   flex-wrap: wrap;
   /* ↓ Multiply by -1 to make negative */
   margin: calc(var(--space) / 2 * -1);
 }
 
-.switcher > * > * {
+.switcher>*>* {
   flex-grow: 1;
   flex-basis: calc((var(--threshold) - (100% - var(--space))) * 999);
   /* ↓ Half the value to each element, combining to make the whole */
@@ -263,22 +267,22 @@ img {
   padding: var(--padding);
 }
 
-.cover > * {
+.cover>* {
   margin-top: var(--space);
   margin-bottom: var(--space);
 }
 
 /* ↓ h2 is the centered selector but can be any selector */
-.cover > :first-child:not(h2) {
+.cover> :first-child:not(h2) {
   margin-top: 0;
 }
 
-.cover > :last-child:not(h2) {
+.cover> :last-child:not(h2) {
   margin-bottom: 0;
 }
 
 /* ↓ h2 is the centered selector but can be any selector */
-.cover > h2 {
+.cover>h2 {
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -323,7 +327,7 @@ img {
   --d: 1;
 }
 
-.frame > * {
+.frame>* {
   overflow: hidden;
   position: absolute;
   top: 0;
@@ -335,8 +339,8 @@ img {
   align-items: center;
 }
 
-.frame > img,
-.frame > video {
+.frame>img,
+.frame>video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -370,26 +374,24 @@ img {
 
 .reel::-webkit-scrollbar-thumb {
   background-color: var(--trackColor);
-  background-image: linear-gradient(
-    var(--trackColor) 0,
-    var(--trackColor) 0.25rem,
-    var(--thumbColor) 0.25rem,
-    var(--thumbColor) 0.75rem,
-    var(--trackColor) 0.75rem
-  );
+  background-image: linear-gradient(var(--trackColor) 0,
+      var(--trackColor) 0.25rem,
+      var(--thumbColor) 0.25rem,
+      var(--thumbColor) 0.75rem,
+      var(--trackColor) 0.75rem);
 }
 
-.reel > * {
+.reel>* {
   flex: 0 0 var(--itemWidth);
 }
 
-.reel > img {
+.reel>img {
   height: 100%;
   flex-basis: auto;
   width: auto;
 }
 
-.reel > * + * {
+.reel>*+* {
   margin-left: var(--space);
 }
 

@@ -244,6 +244,7 @@ type Project struct {
 	ClientID     pgtype.Int4      `json:"client_id"`
 	AdvertiserID pgtype.Int4      `json:"advertiser_id"`
 	Briefing     pgtype.Text      `json:"briefing"`
+	UseAi        pgtype.Bool      `json:"use_ai"`
 	Name         string           `json:"name"`
 	CreatedAt    pgtype.Timestamp `json:"created_at"`
 	UpdatedAt    pgtype.Timestamp `json:"updated_at"`

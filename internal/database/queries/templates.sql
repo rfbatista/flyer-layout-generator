@@ -79,6 +79,11 @@ WHERE project_id = $1
 OFFSET $2 LIMIT $3
 ;
 
+-- name: TotalTemplatesByProjectID :one
+SELECT COUNT(*)
+FROM templates
+WHERE project_id = $1;
+
 
 -- name: CreateTemplateByProject :one
 INSERT INTO templates (
@@ -95,3 +100,6 @@ INSERT INTO templates (
   $5
 )
 RETURNING *;
+
+-- name: DeleteTemplateByID :exec
+DELETE FROM templates WHERE id = $1;

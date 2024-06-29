@@ -19,6 +19,8 @@ type Response = {
       deleteed_at: string;
     };
     name: string;
+    use_ai: boolean;
+    briefing: string;
     created_at: string;
     updated_at: string;
     deleteed_at: string;

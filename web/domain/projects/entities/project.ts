@@ -15,6 +15,8 @@ type Props = {
     deleteed_at: string;
   };
   name: string;
+  use_ai: boolean;
+  briefing: string;
   created_at: string;
   updated_at: string;
   deleteed_at: string;
@@ -45,6 +47,14 @@ export class Project {
 
   get advertiserName() {
     return this.props.advertiser.name;
+  }
+
+  get briefing() {
+    return this.props.briefing;
+  }
+
+  get useAI(): boolean {
+    return this.props.use_ai
   }
 
   get createdAtText(): string {
