@@ -24,12 +24,9 @@ export class LayoutManager {
     const elementsSorted = layout.elements.sort((a, b) => {
       return a.level - b.level;
     });
-    const promises = [];
     for (const el of elementsSorted) {
-      console.log(el.level);
-      promises.push(this.drawElement(el));
+      await this.drawElement(el);
     }
-    await Promise.all(promises);
   }
 
   setCanvas(c: Canvas) {

@@ -20,19 +20,24 @@ export default function App() {
         <div className="container">
           <div>
             <div className="stack">
-              <Breadcrump
-                items={[
-                  { title: "projects", link: "/" },
-                  {
-                    title: activeProject ? activeProject.name : "",
-                    link: `/project?id=${activeProject?.id}`,
-                  },
-                  {
-                    title: "generate",
-                    link: "",
-                  },
-                ]}
-              />
+              <div>
+                <Breadcrump
+                  items={[
+                    { title: "projects", link: "/" },
+                    {
+                      title: activeProject ? activeProject.name : "",
+                      link: `/project?id=${activeProject?.id}`,
+                    },
+                    {
+                      title: "generate",
+                      link: "",
+                    },
+                  ]}
+                />
+                <div className="box">
+                  <button> Start </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
