@@ -1,5 +1,10 @@
-:80 :443
-
-reverse_proxy :8000
-
-
+:80 :443 {
+        reverse_proxy localhost:8000
+        log {
+          output file /home/ubuntu/server-access.log {
+              roll_size 10mb
+              roll_keep 20
+              roll_keep_for 720h
+            }
+        }
+}

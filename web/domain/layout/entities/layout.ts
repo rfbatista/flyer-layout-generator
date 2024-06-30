@@ -57,4 +57,12 @@ export class Layout {
   get elements() {
     return this._elements;
   }
+
+  get width() {
+    return this.p.width;
+  }
+
+  get height() {
+    return this.p.height;
+  }
 }
