@@ -35,7 +35,7 @@ func ImageUploadUseCase(
 	}
 	defer src.Close()
 	identifier := uuid.New()
-	name := fmt.Sprintf("%s::%s", identifier, req.Filename)
+	name := fmt.Sprintf("%s::%s", identifier, "v1")
 	fullpath := fmt.Sprintf("%s/%s", cfg.ImagesFolderPath, name)
 	fmt.Println(fullpath)
 	dst, err := os.Create(fullpath)

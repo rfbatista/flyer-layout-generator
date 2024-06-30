@@ -5,6 +5,7 @@ import (
 	"algvisual/internal/designprocessor"
 	"algvisual/internal/designs"
 	"algvisual/internal/infra"
+	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"algvisual/web/components/notification"
 	"net/http"
@@ -151,6 +152,26 @@ func (s DesignController) CreateComponent() echo.HandlerFunc {
 			s.db,
 			s.pool,
 			s.log,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) CreateLayoutRequest() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req layoutgenerator.CreateLayoutRequestInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := layoutgenerator.CreateLayoutRequestUseCase(
+			c.Request().Context(),
+			s.db,
+			s.pool,
+			req,
 		)
 		if err != nil {
 			return err
