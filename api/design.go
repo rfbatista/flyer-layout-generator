@@ -46,6 +46,7 @@ func (s DesignController) Load(e *echo.Echo) error {
 	e.GET("/api/v1/designs/project/:project_id", s.ListDesignsByProjectID())
 	e.POST("/api/v1/design/:design_id/process", s.ProcessDesginFileByID())
 	e.GET("/api/v1/design/:design_id", s.GetDesignByID())
+	e.POST("/editor/design/:design_id/layout/:layout_id/component", s.CreateComponent())
 	return nil
 }
 
@@ -129,6 +130,27 @@ func (s DesignController) ProcessDesginFileByID() echo.HandlerFunc {
 			s.log,
 			s.db,
 			s.pool,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) CreateComponent() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req designs.CreateComponentRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := designs.CreateComponentUseCase(
+			c.Request().Context(),
+			req,
+			s.db,
+			s.pool,
+			s.log,
 		)
 		if err != nil {
 			return err

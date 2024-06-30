@@ -1,6 +1,7 @@
 import { Canvas } from "fabric";
 import { create } from "zustand";
 import { LayoutManager } from "../../../domain/layout/layout_manager";
+import { Layer } from "../../../domain/layout/entities/layer";
 
 type Props = {
   editor?: Canvas;
@@ -10,11 +11,16 @@ type Props = {
   lastPosX: number;
   lastPosY: number;
   selection: boolean;
+  layers: Layer[];
   onMouseDown: (opt: any) => void;
   onMouseMove: (opt: any) => void;
   onMouseUp: () => void;
+  addActiveItem: (l: Layer) => void;
+  activeItems: Layer[];
   layoutManager?: LayoutManager;
+  addLayer: (l: Layer) => void;
   setLayoutManager: (l: LayoutManager) => void;
+  onUnselect: () => void;
 };
 
 const useEditorStore = create<Props>((set, get) => ({
@@ -24,13 +30,22 @@ const useEditorStore = create<Props>((set, get) => ({
   lastPosY: 0,
   editor: undefined,
   isReady: false,
+  layers: [],
+  activeItems: [],
   layoutManager: undefined,
   setEditor: (f: Canvas) => {
-    console.log("set");
     set({ editor: f, isReady: true });
   },
   setLayoutManager: (l: LayoutManager) => {
     set({ layoutManager: l });
+  },
+  addActiveItem: (l: Layer) => {
+    const editor = get().editor;
+    if (editor) {
+      editor.setActiveObject(l.obj);
+      editor.renderAll();
+      set((s) => ({ activeItems: [...s.activeItems, l] }));
+    }
   },
   onMouseDown: (opt: any) => {
     var evt = opt.e;
@@ -45,6 +60,9 @@ const useEditorStore = create<Props>((set, get) => ({
         });
       }
     }
+  },
+  addLayer: (l: Layer) => {
+    set((s) => ({ layers: [...s.layers, l] }));
   },
   onMouseUp: () => {
     const editor = get().editor;
@@ -67,6 +85,10 @@ const useEditorStore = create<Props>((set, get) => ({
         set({ lastPosX: e.clientX, lastPosY: e.clientY });
       }
     }
+  },
+  onUnselect: () => {
+    console.log("aqui");
+    set({ activeItems: [] });
   },
 }));
 

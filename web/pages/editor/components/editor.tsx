@@ -14,6 +14,8 @@ export function Editor() {
     onMouseMove,
     onMouseUp,
     setLayoutManager,
+    addLayer,
+    onUnselect,
   } = useEditorStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -21,6 +23,7 @@ export function Editor() {
     if (canvasRef.current != null && containerRef.current && !editor) {
       const editor = new Canvas(canvasRef.current, {
         backgroundColor: "#e2e8f0",
+        selection: false,
       });
       setEditor(editor);
       editor.setWidth(containerRef.current.offsetWidth);
@@ -28,6 +31,7 @@ export function Editor() {
       editor.on("mouse:down", onMouseDown);
       editor.on("mouse:move", onMouseMove);
       editor.on("mouse:up", onMouseUp);
+      editor.on("before:selection:cleared", onUnselect);
     }
     if (activeDesign && editor && activeDesign.layout) {
       const viewport = new Rect({
@@ -43,7 +47,7 @@ export function Editor() {
       editor.add(viewport);
       editor.centerObject(viewport);
       editor.zoomToPoint(viewport.getCenterPoint(), 0.5);
-      const l = new LayoutManager(editor);
+      const l = new LayoutManager(editor, addLayer);
       l.setOrigin(new Point(viewport.left, viewport.top));
       activeDesign.layout && l.drawLayout(activeDesign.layout);
       setLayoutManager(l);

@@ -1,10 +1,13 @@
-import { Point } from "fabric";
+import { FabricObject } from "fabric";
 import { LayoutElement } from "./layout_element";
+import { Point } from "./point";
 
 type Props = {
   id: number;
   element: LayoutElement;
   currentPosition: Point;
+  addedOrder: number;
+  object: FabricObject;
 };
 
 export class Layer {
@@ -19,5 +22,17 @@ export class Layer {
 
   get id() {
     return this.p.id;
+  }
+
+  get name() {
+    return this.p.element.name;
+  }
+
+  get addedOrder() {
+    return this.p.addedOrder;
+  }
+
+  get obj() {
+    return this.p.object;
   }
 }

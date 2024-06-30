@@ -70,4 +70,8 @@ export class LayoutElement {
   get top() {
     return this.p.OuterContainer.UpperLeft.Y;
   }
+
+  get name(){
+    return this.p.name
+  }
 }
