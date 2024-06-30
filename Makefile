@@ -74,4 +74,12 @@ activate:
 environment:
 	shell python -m venv venv
 
+prod-ai-status:
+	sudo systemctl status ai.service
+
+prod-ai-restart:
+	sudo systemctl restart ai.service
+
+
 .PHONY: clean
+

@@ -12,12 +12,12 @@ import (
 )
 
 type GetDesignByIdRequest struct {
-	ID int32 `params:"design_id" json:"id,omitempty"`
+	ID int32 `param:"design_id" json:"id,omitempty"`
 }
 
 type GetDesignByIdResult struct {
-	Status string
-	Data   entities.DesignFile
+	Status string              `json:"status,omitempty"`
+	Data   entities.DesignFile `json:"data,omitempty"`
 }
 
 func GetDesignByIdUseCase(
@@ -38,11 +38,11 @@ func GetDesignByIdUseCase(
 			ctx,
 			queries,
 			layoutgenerator.GetLayoutByIDRequest{
-				LayoutID: design.ID,
+				LayoutID: desgnEntities.LayoutID,
 			},
 		)
 		if err != nil {
-			err = shared.WrapWithAppError(err, "failed to get layoutby id", "")
+			err = shared.WrapWithAppError(err, "failed to get layout by id", "")
 			log.Error(err.Error())
 			return nil, err
 		}

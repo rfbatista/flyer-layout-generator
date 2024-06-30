@@ -215,6 +215,7 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
         def index_elements(element: PSDImage, level=0, group_id=0):
             if not isinstance(element, Iterable):
                 return
+            level = 0
             for layer in element:
                 # filename = "%s.png" % (uuid.uuid4())
                 # filepath = "%s/%s" % (app_config.dist_path, filename)
@@ -275,6 +276,7 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                         image=image_url,
                     )
                 )
+                level += 1
                 index_elements(layer, level=level + 1, group_id=layer.layer_id)
 
         index_elements(psd)

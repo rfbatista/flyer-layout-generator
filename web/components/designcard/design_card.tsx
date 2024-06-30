@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Design } from "../../domain/design/entities/design";
 import { useDesignsStore } from "../../domain/design/store";
 import "./design_card.css";
@@ -8,7 +9,8 @@ type Props = {
 
 export function DesginCard(props: Props) {
   const d = props.design;
-  const { isLoading, processDesignFile, listDesigns } = useDesignsStore();
+  const { processDesignFile, listDesigns } = useDesignsStore();
+  const [isLoading, setLoading] = useState(false);
   return (
     <article className="design-card">
       <div className="stack">
@@ -28,16 +30,22 @@ export function DesginCard(props: Props) {
         <div className="cluster center design-card__body">
           {d.isProcessed ? (
             <div>
-              <a href={`/editor?design=${d.id}`} data-type="button">Edit</a>
+              <a href={`/editor?design=${d.id}`} data-type="button">
+                Edit
+              </a>
               <button>Generate</button>
             </div>
           ) : (
             <div>
               <button
                 data-state={isLoading && "loading"}
-                onClick={() =>
-                  processDesignFile(d.id).then(() => listDesigns(d.projectId))
-                }
+                onClick={() => {
+                  setLoading(true);
+                  processDesignFile(d.id).then(() => {
+                    setLoading(false);
+                    listDesigns(d.projectId);
+                  });
+                }}
               >
                 <span data-type="spinner" />
                 Process

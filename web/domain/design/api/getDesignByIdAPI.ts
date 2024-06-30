@@ -1,7 +1,9 @@
 import { apiClient } from "../../../infrastructure/api";
+import { LayoutProps } from "../../layout/entities/layout";
 import { Design } from "../entities/design";
 
 type Response = {
+  status: string;
   data: {
     id: number;
     project_id: number;
@@ -14,6 +16,7 @@ type Response = {
     height: number;
     created_at: string;
     is_processed: boolean;
+    layout?: LayoutProps;
   };
 };
 

@@ -1,3 +1,5 @@
+import { Layout, LayoutProps } from "../../layout/entities/layout";
+
 type Props = {
   id: number;
   name: string;
@@ -14,11 +16,16 @@ type Props = {
 
 export class Design {
   private p: Props;
-  constructor(p: Props) {
+  private _layout?: Layout;
+  constructor(p: Props, layout?: Layout) {
     this.p = p;
+    this._layout = layout;
   }
 
-  static create(p: Props): Design {
+  static create(p: Props & { layout?: LayoutProps }): Design {
+    if (p.layout) {
+      return new Design(p, Layout.create(p.layout));
+    }
     return new Design(p);
   }
 
@@ -28,6 +35,10 @@ export class Design {
 
   get imageURL() {
     return this.p.image_path;
+  }
+
+  get layout(): Layout | undefined {
+    return this._layout;
   }
 
   get name() {
