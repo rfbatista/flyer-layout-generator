@@ -1,9 +1,10 @@
 import { Canvas, Point, Rect } from "fabric";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import LoadingScreen from "../../../components/loading_screen/loading_screen";
 import { useDesignsStore } from "../../../domain/design/store";
+import { LayoutManager } from "../../../domain/layout/layout_manager";
 import "./editor.css";
 import { useEditorStore } from "./editor_store";
-import { LayoutManager } from "../../../domain/layout/layout_manager";
 
 export function Editor() {
   const { activeDesign } = useDesignsStore();
@@ -19,6 +20,7 @@ export function Editor() {
   } = useEditorStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     if (canvasRef.current != null && containerRef.current && !editor) {
       const editor = new Canvas(canvasRef.current, {
@@ -49,8 +51,17 @@ export function Editor() {
       editor.zoomToPoint(viewport.getCenterPoint(), 0.5);
       const l = new LayoutManager(editor, addLayer);
       l.setOrigin(new Point(viewport.left, viewport.top));
-      activeDesign.layout && l.drawLayout(activeDesign.layout);
-      setLayoutManager(l);
+      if (!activeDesign.layout) return;
+      setLoading(true);
+      l.drawLayout(activeDesign.layout)
+        .then(() => {
+          setLoading(false);
+          setLayoutManager(l);
+        })
+        .catch((e) => {
+          setLoading(false);
+          console.error(e);
+        });
     }
   }, [activeDesign]);
   useLayoutEffect(() => {
@@ -66,9 +77,11 @@ export function Editor() {
   }, []);
   return (
     <>
-      <div className="w-full editor__canvas-container" ref={containerRef}>
-        <canvas id="canvas" ref={canvasRef} />
-      </div>
+      <LoadingScreen isLoading={isLoading}>
+        <div className="w-full editor__canvas-container" ref={containerRef}>
+          <canvas id="canvas" ref={canvasRef} />
+        </div>
+      </LoadingScreen>
     </>
   );
 }
