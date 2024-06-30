@@ -1,0 +1,23 @@
+package generation
+
+import (
+	"algvisual/web/views"
+	"time"
+  "fmt"
+)
+
+type PageProps struct {
+}
+
+templ Page(props PageProps) {
+  <html>
+  <head>
+			@views.Header()
+			<link href={ fmt.Sprintf("/dist/vite/assets/%s?time=%s", "style.css", time.Now().String()) } rel="stylesheet"/>
+  </head>
+  <body>
+			<div id="root"></div>
+			<script crossorigin src={ fmt.Sprintf("/dist/vite/assets/%s?time=%s", "generation.js", time.Now().String()) } type="module"></script>
+  </body>
+  </html>
+}

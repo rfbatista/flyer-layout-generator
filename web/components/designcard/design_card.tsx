@@ -33,7 +33,9 @@ export function DesginCard(props: Props) {
               <a href={`/editor?design=${d.id}`} data-type="button">
                 Edit
               </a>
-              <button>Generate</button>
+              <a data-type="button" href={`/generate?design=${d.id}&project=${d.projectId}`}>
+                Generate
+              </a>
             </div>
           ) : (
             <div>

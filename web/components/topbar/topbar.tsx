@@ -7,28 +7,8 @@ export function TopBar() {
       <img src={"/dist/vite/assets/logo.png"} className="topbar__logo"/>
       <ul className="topbar__list">
         <li>
-          <a href="#" className="topbar__list__item" aria-current="page">
+          <a href="/" className="topbar__list__item" aria-current="page">
             Projects
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            data-state="inactive"
-            className="topbar__list__item"
-            aria-current="page"
-          >
-            Clients
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            data-state="inactive"
-            className="topbar__list__item"
-            aria-current="page"
-          >
-            Templates
           </a>
         </li>
         <li className="topbar__list__profile">
