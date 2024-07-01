@@ -53,6 +53,15 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 	if err != nil {
 		p.Logger.Error("error loading .env file")
 	}
+	maxWorkers := int32(1)
+	sMaxWorker := os.Getenv("MAX_WORKERS")
+	if sMaxWorker != "" {
+		i, err := strconv.ParseInt(sMaxWorker, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+		maxWorkers = int32(i)
+	}
 	return &AppConfig{
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
@@ -63,6 +72,7 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
 		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
 		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
+		MaxWorkers:            maxWorkers,
 		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),

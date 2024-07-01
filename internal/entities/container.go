@@ -1,6 +1,9 @@
 package entities
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func NewContainer(ul Point, dr Point) Container {
 	return Container{UpperLeft: ul, DownRight: dr, width: dr.X - ul.X, heigth: dr.Y - ul.Y}
@@ -36,10 +39,10 @@ func (c *Container) Move(p Point) {
 func (c *Container) Padding(p int32) {
 	var px, py int32
 	if c.Width() > c.Height() {
-		py = p * (c.Height() / c.Width())
+		py = int32(math.Round(float64(p) * (float64(c.Height()) / float64(c.Width()))))
 		px = p
 	} else {
-		px = p * (c.Height() / c.Width())
+		px = int32(math.Round(float64(p) * (float64(c.Height()) / float64(c.Width()))))
 		py = p
 	}
 	c.UpperLeft.X += px
