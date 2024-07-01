@@ -1,5 +1,76 @@
+@import "./loading_button.css";
+
 button {
-  @apply cursor-pointer whitespace-nowrap rounded-xl bg-blue-700 px-4 py-2 text-sm font-medium tracking-wide text-slate-100 transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-blue-600 dark:text-slate-100 dark:focus-visible:outline-blue-600;
+  /* cursor: pointer; */
+  /* white-space: nowrap; */
+  display: inline-block;
+  border-radius: 0.75rem;
+  border-width: 1px;
+  /* --tw-bg-opacity: 1; */
+  /* background-color: rgb(29 78 216 / var(--tw-bg-opacity)); */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  color: var(--color-slate-100);
+  /* --tw-text-opacity: 1; */
+  /* transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter; */
+  /* transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; */
+  /* transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter; */
+  /* transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); */
+  /* transition-duration: 150ms; */
+  vertical-align: middle;
+  user-select: none;
+  background-color: var(--color-blue-700);
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    padding-right 0.3s,
+    padding-left 0.3s;
+  position: relative;
+}
+
+button:hover {
+  opacity: 0.75;
+}
+
+button:focus-visible {
+  outline-style: solid;
+  outline-width: 2px;
+  outline-offset: 2px;
+  outline-color: #1d4ed8;
+}
+
+button:active {
+  opacity: 1;
+  outline-offset: 0px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+@media (prefers-color-scheme: dark) {
+  button {
+    --tw-bg-opacity: 1;
+    background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+    --tw-text-opacity: 1;
+    color: rgb(241 245 249 / var(--tw-text-opacity));
+  }
+
+  button:focus-visible {
+    outline-color: #2563eb;
+  }
 }
 
 button[size="small"] {
@@ -10,17 +81,11 @@ button[data-type="outline"] {
   @apply cursor-pointer whitespace-nowrap bg-transparent rounded-xl border border-blue-700 px-4 py-2 text-sm font-medium tracking-wide text-blue-700 transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:border-blue-600 dark:text-blue-600 dark:focus-visible:outline-blue-600;
 }
 
-button[data-state="loading"] {
-  @apply cursor-pointer whitespace-nowrap bg-transparent rounded-xl text-sm font-medium tracking-wide text-blue-700 transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:text-blue-600 dark:focus-visible:outline-blue-600 size-5 animate-spin motion-reduce:animate-none fill-slate-100 dark:fill-slate-100;
-  padding: 0px;
-  width: var(--s1);
-  height: var(--s1);
-  display: flex;
-  background-color: var(attr(data-color), --color-slate-100);
-  background-image: url('data:image/svg+xml, <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ><path opacity="0.25" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" /><path d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z" /></svg>');
-  -webkit-mask-image: url('data:image/svg+xml, <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ><path opacity="0.25" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" /><path d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z" /></svg>');
-  mask-image: url('data:image/svg+xml, <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ><path opacity="0.25" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" /><path d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z" /></svg>');
-}
+/**************************************************************************
+Loading buttons
+**************************************************************************/
+
+/**************************************************************************/
 
 span[data-type="spinner"] {
   height: var(--s1);

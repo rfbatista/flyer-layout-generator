@@ -1394,6 +1394,10 @@ video {
   height: 1.25rem;
 }
 
+.h-10 {
+  height: 2.5rem;
+}
+
 .h-3 {
   height: 0.75rem;
 }
@@ -2693,7 +2697,7 @@ img {
 .right-sidebar {
   overflow: hidden;
   --space: 1em;
-  --side-width: 350px;
+  --side-width: 400px;
   --content-min: 50%;
 }
 

@@ -21,7 +21,23 @@ export default function App() {
   return (
     <>
       <Modal title="New design"></Modal>
-      <TopBar />
+      <TopBar
+        items={[
+          { title: "projects", link: "/" },
+          {
+            title: activeProject ? activeProject.name : "",
+            link: `/project?id=${activeProject?.id}`,
+          },
+          {
+            title: activeDesign ? activeDesign.name : "",
+            link: `/project?id=${activeProject?.id}`,
+          },
+          {
+            title: "generate",
+            link: "",
+          },
+        ]}
+      />
       <div className="with-sidebar">
         <div>
           <div className="box">
@@ -31,23 +47,6 @@ export default function App() {
             <div>
               <div className="stack">
                 <div>
-                  <Breadcrump
-                    items={[
-                      { title: "projects", link: "/" },
-                      {
-                        title: activeProject ? activeProject.name : "",
-                        link: `/project?id=${activeProject?.id}`,
-                      },
-                      {
-                        title: activeDesign ? activeDesign.name : "",
-                        link: `/project?id=${activeProject?.id}`,
-                      },
-                      {
-                        title: "generate",
-                        link: "",
-                      },
-                    ]}
-                  />
                   <div className="box">
                     <GenerationBoard />
                   </div>

@@ -129,7 +129,7 @@ img {
 .right-sidebar {
   overflow: hidden;
   --space: 1em;
-  --side-width: 350px;
+  --side-width: 400px;
   --content-min: 50%;
 }
 

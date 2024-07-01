@@ -4,7 +4,11 @@
 }
 
 .topbar__logo {
-  @apply h-9 w-10;
+  @apply h-10 w-11 relative flex items-center;
+}
+
+.topbar__logo > img{
+  @apply object-cover;
 }
 
 .topbar__list {

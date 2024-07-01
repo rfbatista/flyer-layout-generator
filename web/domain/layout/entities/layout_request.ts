@@ -35,6 +35,10 @@ export class LayoutRequest {
     return this.p.done;
   }
 
+  get isDoing(){
+    return this.p.done !== this.p.total
+  }
+
   get total() {
     return this.p.total;
   }

@@ -60,13 +60,15 @@ export function SideBar() {
                       <td>
                         <button
                           data-type="icon"
-                          data-icon={isLoading ? "spinner" : "remove"}
+                          data-state={isLoading && "loading"}
                           data-color="blue"
                           onClick={() => {
                             activeProject &&
                               deleteTemplate(activeProject.id, t.id);
                           }}
-                        ></button>
+                        >
+                          <div className="ld ld-ring ld-spin"></div>
+                        </button>
                       </td>
                     </tr>
                   );

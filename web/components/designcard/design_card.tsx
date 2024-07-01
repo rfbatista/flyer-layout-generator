@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Design } from "../../domain/design/entities/design";
 import { useDesignsStore } from "../../domain/design/store";
 import "./design_card.css";
+import { useProjectsStore } from "../../domain/projects/store";
 
 type Props = {
   design: Design;
@@ -10,6 +11,7 @@ type Props = {
 export function DesginCard(props: Props) {
   const d = props.design;
   const { processDesignFile, listDesigns } = useDesignsStore();
+  const { activeProject } = useProjectsStore();
   const [isLoading, setLoading] = useState(false);
   return (
     <article className="design-card">
@@ -30,10 +32,16 @@ export function DesginCard(props: Props) {
         <div className="cluster center design-card__body">
           {d.isProcessed ? (
             <div>
-              <a href={`/editor?design=${d.id}`} data-type="button">
+              <a
+                href={`/editor?design=${d.id}&project=${activeProject && activeProject.id}`}
+                data-type="button"
+              >
                 Edit
               </a>
-              <a data-type="button" href={`/generate?design=${d.id}&project=${d.projectId}`}>
+              <a
+                data-type="button"
+                href={`/generate?design=${d.id}&project=${d.projectId}`}
+              >
                 Generate
               </a>
             </div>

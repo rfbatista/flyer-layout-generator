@@ -97,11 +97,14 @@ export function GenerationBoard() {
             <button
               className="my-2"
               data-state={
-                isLoading ||
-                (request && request.done != request.total && "loading")
+                isLoading || request?.isDoing ? "loading" : ""
               }
               onClick={startGeneration}
             >
+              <div
+                className="ld ld-loader box-loader"
+                data-src="/web/assets/box.gif"
+              ></div>
               Start
             </button>
             <h1>{request && `${request.done}/${request.total}`}</h1>

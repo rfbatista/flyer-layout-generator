@@ -1,10 +1,18 @@
 import "./topbar.css";
 import "./logo.png";
+import { Breadcrump } from "../breadcrump/breadcrump";
 
-export function TopBar() {
+type Props = {
+  items: { title: string; link: string }[];
+};
+
+export function TopBar(props: Props) {
   return (
     <nav className="topbar">
-      <img src={"/dist/vite/assets/logo.png"} className="topbar__logo"/>
+      <div className="topbar__logo">
+      <img src={"/dist/vite/assets/logo.png"}  />
+      </div>
+      <Breadcrump items={props.items} />
       <ul className="topbar__list">
         <li>
           <a href="/" className="topbar__list__item" aria-current="page">

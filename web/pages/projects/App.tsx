@@ -1,14 +1,13 @@
-import { Breadcrump } from "../../components/breadcrump/breadcrump";
-import { TopBar } from "../../components/topbar/topbar";
-import { ProjectsTable } from "./components/projects_table";
-import { Modal } from "../../components/modal/modal";
-import { useModal } from "../../components/modal/store";
-import { CreateProjectForm } from "./components/create_project_form";
-import "./App.css";
+import "../../components/button/button.css";
 import "../../components/input/input.css";
 import "../../components/label/label.css";
+import { Modal } from "../../components/modal/modal";
+import { useModal } from "../../components/modal/store";
 import "../../components/select/select.css";
-import "../../components/button/button.css";
+import { TopBar } from "../../components/topbar/topbar";
+import "./App.css";
+import { CreateProjectForm } from "./components/create_project_form";
+import { ProjectsTable } from "./components/projects_table";
 
 export default function App() {
   const { toggle } = useModal();
@@ -17,14 +16,14 @@ export default function App() {
       <Modal title="Create a Project">
         <CreateProjectForm />
       </Modal>
-      <TopBar />
+      <TopBar items={[{ title: "projects", link: "" }]} />
       <div className="container">
         <div>
           <div className="stack">
-            <Breadcrump items={[{ title: "projects", link: "" }]} />
             <div className="cluster">
               <div className="projects-page__create-project-btn">
-                <button className="btn" onClick={toggle}>
+                <button onClick={toggle}>
+                  <div className="ld ld-ring ld-spin"></div>
                   Criar projeto
                 </button>
               </div>

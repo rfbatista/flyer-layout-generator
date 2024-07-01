@@ -56,7 +56,7 @@ export function EditorPanel() {
     }
   };
 
-  useEffect(() => {}, [editor]);
+  useEffect(() => { }, [editor]);
 
   return (
     <div className="stack">
@@ -93,12 +93,21 @@ export function EditorPanel() {
         <div className="box">
           <div className="table-container">
             <table>
+              <thead>
+                <tr>
+                  <th scope="col" className=""></th>
+                  <th scope="col" className=""></th>
+                  <th scope="col" className=""></th>
+                </tr>
+              </thead>
               <tbody>
                 {layers.map((l) => {
                   return (
                     <tr>
-                      <td>
-                        <span className="max-w-10 text-ellipsis">{l.name}</span>
+                      <td className="">
+                        <span className=" text-ellipsis">{l.name}</span>
+                      </td>
+                      <td className="">
                         {l.type && <span data-type="badge">{l.type}</span>}
                       </td>
                       <td>

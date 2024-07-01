@@ -44,9 +44,9 @@ func Header() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/web/css/owl.carousel.min.css?time=%s", time.Now().String()))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/web/css/loading.min.css")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/header.templ`, Line: 15, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/header.templ`, Line: 15, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

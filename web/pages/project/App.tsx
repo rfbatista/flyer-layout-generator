@@ -28,22 +28,21 @@ export default function App() {
   return (
     <>
       <Modal title="New design"></Modal>
-      <TopBar />
+      <TopBar
+        items={[
+          { title: "projects", link: "/" },
+          {
+            title: activeProject ? activeProject.name : "",
+            link: "",
+          },
+        ]}
+      />
       <div className="right-sidebar">
         <div>
           <div className="box">
             <div className="container">
               <div>
                 <div className="stack">
-                  <Breadcrump
-                    items={[
-                      { title: "projects", link: "/" },
-                      {
-                        title: activeProject ? activeProject.name : "",
-                        link: "",
-                      },
-                    ]}
-                  />
                   <div className="cluster">
                     <div className="projects-page__upload-design-btn">
                       <button onClick={openModal}>New Design</button>
