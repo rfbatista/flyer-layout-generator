@@ -11,7 +11,6 @@ func StageFindColision(
 	var out entities.Layout
 	var stageComponents []entities.LayoutComponent
 	for _, c := range prevLayout.Components {
-		prevGrid.PrintGrid(c.ID)
 		if !prevGrid.HaveColisionInList(c.Positions, c.ID) {
 			stageComponents = append(stageComponents, c)
 			continue
@@ -21,16 +20,13 @@ func StageFindColision(
 			c.InnerContainer,
 		)
 		if prevGrid.IsPositionListOcupiedByOtherThanThisId(c.Positions, c.ID) {
-			prevGrid.PrintGrid(c.ID)
 			prevGrid.RemoveFromAllCells(c.ID)
-			prevGrid.PrintGrid(c.ID)
 			continue
 		}
 		if err != nil {
 			prevGrid.RemoveFromAllCells(c.ID)
 			continue
 		}
-		prevGrid.PrintGrid(c.ID)
 		cont := prevGrid.PositionsToContainer(positions)
 		prevGrid.RemoveFromAllCells(c.ID)
 		prevGrid.OcupyByPositionList(positions, c.ID)

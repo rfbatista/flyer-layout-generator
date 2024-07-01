@@ -48,6 +48,5 @@ func GetLayoutByIDUseCase(
 	grid := entities.Grid{}
 	lay.Grid = grid
 	out.Layout = lay
-	fmt.Println(fmt.Sprintf("found %d", len(out.Layout.Elements)))
 	return out, nil
 }
