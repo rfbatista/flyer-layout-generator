@@ -56,6 +56,14 @@ func (w WorkerPool) Start() {
 	go func() {
 		defer func() {
 			w.log.Warn("closing worker thread")
+			if r := recover(); r != nil {
+				err, ok := r.(error)
+				if ok {
+					w.log.Error("panic error in worker", zap.Error(err))
+				} else {
+					w.log.Error("unknown panic error in worker")
+				}
+			}
 		}()
 		for {
 			select {
