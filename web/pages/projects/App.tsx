@@ -18,7 +18,7 @@ export default function App() {
       </Modal>
       <TopBar items={[{ title: "projects", link: "" }]} />
       <div className="container">
-        <div>
+        <div className="" style={{marginTop: "var(--s1)"}}>
           <div className="stack">
             <div className="cluster">
               <div className="projects-page__create-project-btn">

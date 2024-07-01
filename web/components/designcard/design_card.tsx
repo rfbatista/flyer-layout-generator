@@ -57,7 +57,7 @@ export function DesginCard(props: Props) {
                   });
                 }}
               >
-                <span data-type="spinner" />
+                <div className="ld ld-ring ld-spin"></div>
                 Process
               </button>
             </div>

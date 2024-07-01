@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"go.uber.org/fx"
@@ -22,6 +23,7 @@ type AppConfig struct {
 	DesignFilesFolderPath string
 	AiServiceBaseURL      string
 	GeneratorClientURL    string
+	MaxWorkers            int32
 }
 
 type HTTPServerConfig struct {
@@ -84,6 +86,15 @@ func NewTestConfig() (*AppConfig, error) {
 	if err != nil {
 		fmt.Println("cant load scripts/.env.test variables")
 	}
+	maxWorkers := int32(1)
+	sMaxWorker := os.Getenv("MAX_WORKERS")
+	if sMaxWorker != "" {
+		i, err := strconv.ParseInt(sMaxWorker, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+		maxWorkers = int32(i)
+	}
 	return &AppConfig{
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
@@ -96,6 +107,7 @@ func NewTestConfig() (*AppConfig, error) {
 		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
 		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
 		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
+		MaxWorkers:            maxWorkers,
 		Database: DatabaseConfig{
 			User:     os.Getenv("PG_DATABASE_USER"),
 			DBName:   os.Getenv("PG_DATABASE_NAME"),

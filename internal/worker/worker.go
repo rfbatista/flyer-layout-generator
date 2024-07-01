@@ -141,7 +141,11 @@ func createWorkerPool(
 	sse *infra.ServerSideEventManager,
 ) error {
 	log.Debug("buscando novo bactch de jobs")
-	out, err := layoutgenerator.ListLayoutRequestJobsNotStartedUseCase(context.TODO(), queries)
+	out, err := layoutgenerator.ListLayoutRequestJobsNotStartedUseCase(
+		context.TODO(),
+		queries,
+		config,
+	)
 	if err != nil {
 		log.Error("Falha na listagem de jobs não inicializados", zap.Error(err))
 		return err

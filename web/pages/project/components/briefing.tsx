@@ -87,7 +87,8 @@ export function Briefing() {
           <div className="box">
             <fieldset>
               <button type="submit" data-state={isLoading && "loading"}>
-                Salvar
+                <div className="ld ld-ring ld-spin"></div>
+                Save
               </button>
             </fieldset>
           </div>
