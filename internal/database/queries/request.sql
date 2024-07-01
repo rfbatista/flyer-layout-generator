@@ -29,7 +29,9 @@ RETURNING *;
 UPDATE layout_requests
 SET
     log = CASE WHEN @do_add_log::boolean
-                    THEN sqlc.narg(log) ELSE log END,
+      THEN sqlc.narg(log) ELSE log END,
+    total = CASE WHEN @do_add_total::boolean
+      THEN sqlc.narg(total) ELSE total END,
     updated_at = now()
 WHERE id = @layout_request_id
 RETURNING *;
@@ -90,3 +92,15 @@ FROM layout_requests_jobs AS lrj
 WHERE lrj.request_id = $1
 ;
 
+-- name: GetLastLayoutRequest :one
+SELECT *
+FROM layout_requests
+WHERE design_id = $1
+ORDER BY created_at DESC
+LIMIT 1
+;
+
+-- name: SetJobDoneForRequest :exec
+UPDATE layout_requests 
+SET done = done + 1
+WHERE id = $1;

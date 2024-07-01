@@ -39,6 +39,7 @@ export type LayoutElementProps = {
   };
   inner_xi?: number;
   inner_yi?: number;
+  type?: string;
 };
 
 export class LayoutElement {
@@ -51,6 +52,14 @@ export class LayoutElement {
     return new LayoutElement(p);
   }
 
+  setType(t: string) {
+    this.p.type = t;
+  }
+
+  get type() {
+    return this.p.type;
+  }
+
   get id() {
     return this.p.id;
   }
@@ -59,8 +68,8 @@ export class LayoutElement {
     return this.p.image;
   }
 
-  get level(){
-    return this.p.level
+  get level() {
+    return this.p.level;
   }
 
   get left() {
@@ -71,7 +80,7 @@ export class LayoutElement {
     return this.p.OuterContainer.UpperLeft.Y;
   }
 
-  get name(){
-    return this.p.name
+  get name() {
+    return this.p.name;
   }
 }

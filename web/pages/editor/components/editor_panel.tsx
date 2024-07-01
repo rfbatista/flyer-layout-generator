@@ -1,13 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useEditorStore } from "./editor_store";
 import "../../../components/table/table.css";
 import { useDesignsStore } from "../../../domain/design/store";
+import { defaultPriorities } from "../../../domain/layout/entities/priorities";
 
 const SCALE_STEP = 0.8;
 
 export function EditorPanel() {
   const { editor, layers, addActiveItem } = useEditorStore();
   const { activeDesign } = useDesignsStore();
+  const [compType, setCompType] = useState("");
+
   const zoomIn = () => {
     if (editor) {
       const zoom = editor.getZoom();
@@ -28,14 +31,15 @@ export function EditorPanel() {
       return;
     }
     const formData = new FormData();
-    const o = editor.getActiveObjects;
-    for (const e of o()) {
-      const id = e.get("element_id");
+    formData.append("type", compType);
+    const o = editor.getActiveObjects();
+    for (const e of o) {
+      const id = e.get("id");
       formData.append("elements[]", id);
     }
     try {
       const response = await fetch(
-        `/editor/design/${activeDesign.id}/layout/${activeDesign.layout.id}/component`,
+        `/api/v1/editor/design/${activeDesign.id}/layout/${activeDesign.layout.id}/component`,
         {
           method: "POST",
           body: formData,
@@ -63,7 +67,26 @@ export function EditorPanel() {
               <button onClick={zoomIn}>Zoom in</button>
               <button onClick={zoomOut}>Zoom out</button>
               <button>Save</button>
-              <button onClick={createComponent}>Create component</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="cluster">
+            <div>
+              <fieldset data-type="select">
+                <label htmlFor="type">Component types</label>
+                <span className="arrow" />
+                <select
+                  id="type"
+                  name="tye"
+                  onChange={(e) => setCompType(e.target.value)}
+                >
+                  {defaultPriorities.map((p) => {
+                    return <option value={p.text}>{p.text}</option>;
+                  })}
+                </select>
+                <button onClick={createComponent}>Create</button>
+              </fieldset>
             </div>
           </div>
         </div>
@@ -76,6 +99,7 @@ export function EditorPanel() {
                     <tr>
                       <td>
                         <span className="max-w-10 text-ellipsis">{l.name}</span>
+                        {l.type && <span data-type="badge">{l.type}</span>}
                       </td>
                       <td>
                         <button onClick={() => addActiveItem(l)}>Select</button>

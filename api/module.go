@@ -48,4 +48,5 @@ var Module = fx.Options(fx.Provide(
 	protected(NewUploadImage),
 	protected(NewDownloadImage),
 	protected(NewDownloadDesignFiles),
+	protected(CreateComponent),
 ))

@@ -199,7 +199,10 @@ CREATE TABLE layout_requests (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   log TEXT,
   config TEXT,
+  done INT DEFAULT 0 NOT NULL,
+  total INT,
   deleted_at TIMESTAMP,
+  updated_at      TIMESTAMP,
   FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

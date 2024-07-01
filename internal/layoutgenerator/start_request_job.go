@@ -87,6 +87,10 @@ func StartRequestJobUseCase(
 					zap.Error(erru),
 				)
 			}
+			err = queries.SetJobDoneForRequest(ctx, layoutReq.ID)
+			if err != nil {
+				log.Warn("failed to update layout request done to error after a panic")
+			}
 		}
 	}()
 	out, err := GenerateImageUseCase(
@@ -132,6 +136,10 @@ func StartRequestJobUseCase(
 	})
 	if uerr != nil {
 		return uerr
+	}
+	err = queries.SetJobDoneForRequest(ctx, layoutReq.ID)
+	if err != nil {
+		return err
 	}
 	return nil
 }

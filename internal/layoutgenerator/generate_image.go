@@ -119,9 +119,9 @@ func GenerateImageUseCase(
 		},
 	}
 	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
-	// if !req.ShowGrid {
-	// 	nprancheta.Grid = entities.Grid{}
-	// }
+	if !req.ShowGrid {
+		nprancheta.Grid = entities.Grid{}
+	}
 	res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
 		DesignFile: designFile.FileUrl.String,
 		Prancheta:  mapper.LayoutToDto(*nprancheta),

@@ -1,3 +1,4 @@
+import { LayoutComponentProps } from "./layout_component";
 import { LayoutElement, LayoutElementProps } from "./layout_element";
 
 export type LayoutProps = {
@@ -6,21 +7,24 @@ export type LayoutProps = {
   design_id: number;
   width: number;
   height: number;
+  total?: number;
+  done?: number;
   elements?: Array<LayoutElementProps>;
-  template: {
+  components?: Array<LayoutComponentProps>;
+  template?: {
     distortion: {};
     created_at: string;
   };
-  grid: {
+  grid?: {
     regions: any;
     SlotsX: number;
     SlotsY: number;
   };
-  config: {
-    grid: {
-      regions: any;
-      SlotsX: number;
-      SlotsY: number;
+  config?: {
+    grid?: {
+      regions?: any;
+      SlotsX?: number;
+      SlotsY?: number;
     };
   };
 };
@@ -34,16 +38,33 @@ export class Layout {
   }
 
   static create(p: LayoutProps): Layout {
-    const e: LayoutElement[] = [];
+    const elements: LayoutElement[] = [];
     if (p.elements)
       for (const element of p.elements) {
-        e.push(LayoutElement.create(element));
+        elements.push(LayoutElement.create(element));
       }
-    return new Layout(p, e);
+
+    if (p.components) {
+      for (const c of p.components) {
+        c.elements.forEach((e) => {
+          elements.forEach((el) => {
+            if (el.id === e.id) {
+              el.setType(c.type);
+            }
+          });
+        });
+      }
+    }
+
+    return new Layout(p, elements);
   }
 
   get id() {
     return this.p.id;
+  }
+
+  get designID() {
+    return this.p.design_id;
   }
 
   get imageURL() {

@@ -34,10 +34,18 @@ func (c *Container) Move(p Point) {
 }
 
 func (c *Container) Padding(p int32) {
-	c.UpperLeft.X += p
-	c.UpperLeft.Y += p
-	c.DownRight.X -= p
-	c.DownRight.Y -= p
+	var px, py int32
+	if c.Width() > c.Height() {
+		py = p * (c.Height() / c.Width())
+		px = p
+	} else {
+		px = p * (c.Height() / c.Width())
+		py = p
+	}
+	c.UpperLeft.X += px
+	c.UpperLeft.Y += py
+	c.DownRight.X -= px
+	c.DownRight.Y -= py
 }
 
 func (c *Container) Width() int32 {

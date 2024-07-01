@@ -18,6 +18,8 @@ func LayoutRequestToDomain(raw database.LayoutRequest) entities.LayoutRequest {
 		ID:        int32(raw.ID),
 		DesignID:  raw.DesignID.Int32,
 		CreatedAt: createdAt,
+		Total:     raw.Total.Int32,
+		Done:      raw.Done,
 		StartedAt: startedAt,
 		StoppedAt: stoppedAt,
 		ErrorAt:   errorAt,

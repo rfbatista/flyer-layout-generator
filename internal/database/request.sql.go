@@ -14,7 +14,7 @@ import (
 const createLayoutRequest = `-- name: CreateLayoutRequest :one
 INSERT INTO layout_requests (design_id, layout_id, config)
 VALUES ($1, $2, $3)
-RETURNING id, design_id, layout_id, created_at, log, config, deleted_at
+RETURNING id, design_id, layout_id, created_at, log, config, done, total, deleted_at, updated_at
 `
 
 type CreateLayoutRequestParams struct {
@@ -33,7 +33,10 @@ func (q *Queries) CreateLayoutRequest(ctx context.Context, arg CreateLayoutReque
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,
+		&i.Done,
+		&i.Total,
 		&i.DeletedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -117,8 +120,34 @@ func (q *Queries) FinishLayoutRequest(ctx context.Context, arg FinishLayoutReque
 	return i, err
 }
 
+const getLastLayoutRequest = `-- name: GetLastLayoutRequest :one
+SELECT id, design_id, layout_id, created_at, log, config, done, total, deleted_at, updated_at
+FROM layout_requests
+WHERE design_id = $1
+ORDER BY created_at DESC
+LIMIT 1
+`
+
+func (q *Queries) GetLastLayoutRequest(ctx context.Context, designID pgtype.Int4) (LayoutRequest, error) {
+	row := q.db.QueryRow(ctx, getLastLayoutRequest, designID)
+	var i LayoutRequest
+	err := row.Scan(
+		&i.ID,
+		&i.DesignID,
+		&i.LayoutID,
+		&i.CreatedAt,
+		&i.Log,
+		&i.Config,
+		&i.Done,
+		&i.Total,
+		&i.DeletedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getLayoutRequestByID = `-- name: GetLayoutRequestByID :one
-SELECT id, design_id, layout_id, created_at, log, config, deleted_at
+SELECT id, design_id, layout_id, created_at, log, config, done, total, deleted_at, updated_at
 FROM layout_requests
 WHERE id = $1
 LIMIT 1
@@ -134,7 +163,10 @@ func (q *Queries) GetLayoutRequestByID(ctx context.Context, id int64) (LayoutReq
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,
+		&i.Done,
+		&i.Total,
 		&i.DeletedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -274,7 +306,7 @@ func (q *Queries) ListLayoutRequestJobsNotStarted(ctx context.Context, limit int
 }
 
 const listLayoutRequests = `-- name: ListLayoutRequests :many
-SELECT id, design_id, layout_id, created_at, log, config, deleted_at
+SELECT id, design_id, layout_id, created_at, log, config, done, total, deleted_at, updated_at
 FROM layout_requests
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
@@ -301,7 +333,10 @@ func (q *Queries) ListLayoutRequests(ctx context.Context, arg ListLayoutRequests
 			&i.CreatedAt,
 			&i.Log,
 			&i.Config,
+			&i.Done,
+			&i.Total,
 			&i.DeletedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -311,6 +346,17 @@ func (q *Queries) ListLayoutRequests(ctx context.Context, arg ListLayoutRequests
 		return nil, err
 	}
 	return items, nil
+}
+
+const setJobDoneForRequest = `-- name: SetJobDoneForRequest :exec
+UPDATE layout_requests 
+SET done = done + 1
+WHERE id = $1
+`
+
+func (q *Queries) SetJobDoneForRequest(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, setJobDoneForRequest, id)
+	return err
 }
 
 const startLayoutRequest = `-- name: StartLayoutRequest :one
@@ -349,20 +395,30 @@ const updateLayoutRequest = `-- name: UpdateLayoutRequest :one
 UPDATE layout_requests
 SET
     log = CASE WHEN $1::boolean
-                    THEN $2 ELSE log END,
+      THEN $2 ELSE log END,
+    total = CASE WHEN $3::boolean
+      THEN $4 ELSE total END,
     updated_at = now()
-WHERE id = $3
-RETURNING id, design_id, layout_id, created_at, log, config, deleted_at
+WHERE id = $5
+RETURNING id, design_id, layout_id, created_at, log, config, done, total, deleted_at, updated_at
 `
 
 type UpdateLayoutRequestParams struct {
 	DoAddLog        bool        `json:"do_add_log"`
 	Log             pgtype.Text `json:"log"`
+	DoAddTotal      bool        `json:"do_add_total"`
+	Total           pgtype.Int4 `json:"total"`
 	LayoutRequestID int64       `json:"layout_request_id"`
 }
 
 func (q *Queries) UpdateLayoutRequest(ctx context.Context, arg UpdateLayoutRequestParams) (LayoutRequest, error) {
-	row := q.db.QueryRow(ctx, updateLayoutRequest, arg.DoAddLog, arg.Log, arg.LayoutRequestID)
+	row := q.db.QueryRow(ctx, updateLayoutRequest,
+		arg.DoAddLog,
+		arg.Log,
+		arg.DoAddTotal,
+		arg.Total,
+		arg.LayoutRequestID,
+	)
 	var i LayoutRequest
 	err := row.Scan(
 		&i.ID,
@@ -371,7 +427,10 @@ func (q *Queries) UpdateLayoutRequest(ctx context.Context, arg UpdateLayoutReque
 		&i.CreatedAt,
 		&i.Log,
 		&i.Config,
+		&i.Done,
+		&i.Total,
 		&i.DeletedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

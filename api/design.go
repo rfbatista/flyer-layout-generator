@@ -48,6 +48,9 @@ func (s DesignController) Load(e *echo.Echo) error {
 	e.POST("/api/v1/design/:design_id/process", s.ProcessDesginFileByID())
 	e.GET("/api/v1/design/:design_id", s.GetDesignByID())
 	e.POST("/editor/design/:design_id/layout/:layout_id/component", s.CreateComponent())
+	e.POST("/api/v1/project/design/:design_id/layout/:layout_id/generate", s.CreateLayoutRequest())
+	e.GET("/api/v1/project/design/:design_id/last_request", s.GetLastRequestJob())
+	e.GET("/api/v1/project/design/:design_id/layout/:request_id", s.GetLayoutByID())
 	return nil
 }
 
@@ -171,6 +174,44 @@ func (s DesignController) CreateLayoutRequest() echo.HandlerFunc {
 			c.Request().Context(),
 			s.db,
 			s.pool,
+			req,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) GetLastRequestJob() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req layoutgenerator.GetLastLayoutRequestInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := layoutgenerator.GetLastLayoutRequestUseCase(
+			c.Request().Context(),
+			req,
+			s.db,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) GetLayoutByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req layoutgenerator.GetLayoutByIDRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := layoutgenerator.GetLayoutByIDUseCase(
+			c.Request().Context(),
+			s.db,
 			req,
 		)
 		if err != nil {

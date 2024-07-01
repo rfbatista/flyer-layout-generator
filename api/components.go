@@ -81,3 +81,22 @@ func NewListComponentsByFileIDAPI(
 	})
 	return h
 }
+
+func CreateComponent(db *database.Queries, tx *pgxpool.Pool, log *zap.Logger) apitools.Handler {
+	h := apitools.NewHandler()
+	h.SetMethod(apitools.POST)
+	h.SetPath("/api/v1/editor/design/:design_id/layout/:layout_id/component")
+	h.SetHandle(func(c echo.Context) error {
+		var req designs.CreateComponentRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := designs.CreateComponentUseCase(c.Request().Context(), req, db, tx, log)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	})
+	return h
+}

@@ -87,6 +87,15 @@ func CreateLayoutRequestUseCase(
 			jobs = append(jobs, mapper.LayoutRequestJobToDomain(job))
 		}
 	}
+	_, err = qtx.UpdateLayoutRequest(ctx, database.UpdateLayoutRequestParams{
+		DoAddTotal:      true,
+		Total:           pgtype.Int4{Int32: int32(len(jobs)), Valid: true},
+		LayoutRequestID: layoutRes.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	err = tx.Commit(ctx)
 	if err != nil {
 		return nil, err

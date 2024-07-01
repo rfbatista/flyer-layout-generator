@@ -51,6 +51,8 @@ type LayoutRequest struct {
 	ID         int32              `json:"id,omitempty"`
 	DesignID   int32              `json:"design_id,omitempty"`
 	CreatedAt  *time.Time         `json:"created_at,omitempty"`
+	Total      int32              `json:"total"`
+	Done       int32              `json:"done"`
 	StartedAt  *time.Time         `json:"started_at,omitempty"`
 	StoppedAt  *time.Time         `json:"stopped_at,omitempty"`
 	ErrorAt    *time.Time         `json:"error_at,omitempty"`

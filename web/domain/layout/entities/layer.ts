@@ -7,6 +7,7 @@ type Props = {
   element: LayoutElement;
   currentPosition: Point;
   addedOrder: number;
+  type?: string;
   object: FabricObject;
 };
 
@@ -22,6 +23,10 @@ export class Layer {
 
   get id() {
     return this.p.id;
+  }
+
+  get type() {
+    return this.p.element.type;
   }
 
   get name() {

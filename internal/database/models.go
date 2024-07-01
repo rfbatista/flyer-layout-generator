@@ -218,7 +218,10 @@ type LayoutRequest struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	Log       pgtype.Text      `json:"log"`
 	Config    pgtype.Text      `json:"config"`
+	Done      int32            `json:"done"`
+	Total     pgtype.Int4      `json:"total"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type LayoutRequestsJob struct {
