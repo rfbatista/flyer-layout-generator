@@ -42,14 +42,6 @@ down:
 	docker compose -f ./scripts/docker-compose.dev.yaml down
 ssh:
 	ssh -i ./ssh-key.pem ec2-user@54.221.241.11
-run_in_server:
-	/usr/local/go/bin/go run ./cmd/server/main.go
-build_in_server:
-	/usr/local/go/bin/go build -o ./tmp/main ./cmd/server/main.go
-restart:
-	sudo systemctl restart server
-status:
-	sudo systemctl status server
 buildai:
 	docker build -t ai -f ./scripts/ai/Dockerfile.prod .
 runaid:
@@ -80,6 +72,18 @@ prod-ai-status:
 prod-ai-restart:
 	sudo systemctl restart ai.service
 
+run_in_server:
+	/usr/local/go/bin/go run ./cmd/server/main.go
+build_server:
+	/usr/local/go/bin/go build -o ./tmp/main ./cmd/server/main.go
+restart:
+	sudo systemctl restart server
+status:
+	sudo systemctl status server
+restart_ai:
+	sudo systemctl restart ai
+status_ai:
+	sudo systemctl status ai
 
 .PHONY: clean
 
