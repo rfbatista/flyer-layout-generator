@@ -45,7 +45,7 @@ func ListLayoutRequestJobsNotStartedUseCase(
 	ctx context.Context,
 	db *database.Queries,
 ) (*ListRequestJobsOutput, error) {
-	jobs, err := db.ListLayoutRequestJobsNotStarted(ctx, 5)
+	jobs, err := db.ListLayoutRequestJobsNotStarted(ctx, 1)
 	if err != nil {
 		return nil, err
 	}
