@@ -1,7 +1,7 @@
 package batchresults
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/layoutgenerator"
 	"context"

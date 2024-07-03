@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 )
 
 func NewDatabaseQueries(conn *pgxpool.Pool) (*database.Queries, error) {

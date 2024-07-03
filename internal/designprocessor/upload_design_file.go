@@ -1,7 +1,7 @@
 package designprocessor
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/ports"
 	"algvisual/internal/shared"
 	"context"

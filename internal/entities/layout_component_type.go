@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"errors"
 )
 

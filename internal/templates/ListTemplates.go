@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"
 	"algvisual/internal/shared"

@@ -2,7 +2,7 @@ package api
 
 import (
 	"algvisual/internal/advertisers"
-	"algvisual/internal/database"
+	"algvisual/database"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

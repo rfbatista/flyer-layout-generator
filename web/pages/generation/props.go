@@ -1,7 +1,7 @@
 package generation
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"context"
 )
 

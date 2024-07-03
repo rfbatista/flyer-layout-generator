@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/shared"
 )
 

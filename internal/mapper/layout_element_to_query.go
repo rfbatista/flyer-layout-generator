@@ -1,7 +1,7 @@
 package mapper
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 
 	"github.com/jackc/pgx/v5/pgtype"

@@ -1,7 +1,7 @@
 package designs
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"context"
 	"errors"
 )

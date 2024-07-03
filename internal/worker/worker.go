@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
 	"context"

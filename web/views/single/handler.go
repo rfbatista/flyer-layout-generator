@@ -1,7 +1,7 @@
 package single
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"

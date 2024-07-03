@@ -1,7 +1,7 @@
 package generate
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/templates"

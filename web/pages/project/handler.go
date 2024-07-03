@@ -1,7 +1,7 @@
 package project
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/web/render"
 	"net/http"

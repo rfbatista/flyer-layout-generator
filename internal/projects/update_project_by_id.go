@@ -1,7 +1,7 @@
 package projects
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"context"
 )

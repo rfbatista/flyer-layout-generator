@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rfbatista/apitools"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 )

@@ -1,7 +1,7 @@
 package batchlist
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/web/render"
 	"net/http"
 

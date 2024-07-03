@@ -6,7 +6,7 @@ import (
 	"algvisual/internal/mapper"
 	"context"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/shared"
 )
 

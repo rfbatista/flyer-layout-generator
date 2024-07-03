@@ -1,7 +1,7 @@
 package modifier
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/layoutgenerator"
 	"context"
 	"encoding/json"

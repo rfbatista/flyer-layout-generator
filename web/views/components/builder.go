@@ -1,7 +1,7 @@
 package components
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/designs"
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"

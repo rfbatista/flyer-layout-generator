@@ -1,7 +1,7 @@
 package files
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/designprocessor"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"

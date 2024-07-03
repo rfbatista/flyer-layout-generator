@@ -1,7 +1,7 @@
 package designs
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/shared"
 	"context"

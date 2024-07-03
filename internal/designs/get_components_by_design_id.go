@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 )
 
 type GetComponentsByDesignIdRequest struct {

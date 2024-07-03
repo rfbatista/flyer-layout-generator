@@ -1,7 +1,7 @@
 package batchlist
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/layoutgenerator"
 
 	"github.com/labstack/echo/v4"

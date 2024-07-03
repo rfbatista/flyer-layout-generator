@@ -1,7 +1,7 @@
 package templates
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/internal/templates"

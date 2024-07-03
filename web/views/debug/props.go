@@ -1,7 +1,7 @@
 package debug
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/layoutgenerator"
 	"context"
 	"encoding/json"

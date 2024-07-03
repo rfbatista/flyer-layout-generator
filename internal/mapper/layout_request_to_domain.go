@@ -1,7 +1,7 @@
 package mapper
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/entities"
 	"time"
 )

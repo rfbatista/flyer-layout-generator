@@ -10,7 +10,7 @@ import (
 	"github.com/rfbatista/apitools"
 	"go.uber.org/zap"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/shared"
 	"algvisual/web/components/notification"
 )

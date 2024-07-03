@@ -6,7 +6,7 @@ import (
 	"github.com/rfbatista/apitools"
 	"go.uber.org/zap"
 
-	"algvisual/internal/database"
+	"algvisual/database"
 )
 
 func NewPageCreateTemplate(

@@ -1,7 +1,7 @@
 package modifier
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 	"algvisual/web/render"

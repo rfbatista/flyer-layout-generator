@@ -1,7 +1,7 @@
 package api
 
 import (
-	"algvisual/internal/database"
+	"algvisual/database"
 	"algvisual/internal/projects"
 	"net/http"
 
