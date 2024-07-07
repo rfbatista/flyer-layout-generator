@@ -7,6 +7,7 @@ import (
 	"algvisual/internal/grammars"
 	"algvisual/internal/infra"
 	"algvisual/internal/mapper"
+	"algvisual/internal/renderer"
 	"algvisual/internal/shared"
 	"context"
 	"fmt"
@@ -16,7 +17,7 @@ import (
 )
 
 type GenerateImage struct {
-	PhotoshopID           int32    `form:"design_id"   json:"photoshop_id,omitempty"            param:"design_id"`
+	DesignID              int32    `form:"design_id"   json:"photoshop_id,omitempty"            param:"design_id"`
 	LayoutID              int32    `form:"layout_id"   json:"layout_id,omitempty"               param:"layout_id"`
 	TemplateID            int32    `form:"template_id" json:"template_id,omitempty"             param:"template_id"`
 	LimitSizerPerElement  bool     `                   json:"limit_sizer_per_element,omitempty" param:"limit_sizer_per_element"`
@@ -142,8 +143,9 @@ func GenerateImageUseCase(
 	db *pgxpool.Pool,
 	config infra.AppConfig,
 	log *zap.Logger,
+	render renderer.RendererService,
 ) (*GenerateImageOutput, error) {
-	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)
+	designFile, err := queries.Getdesign(ctx, req.DesignID)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
 		return nil, err
@@ -151,7 +153,7 @@ func GenerateImageUseCase(
 	prancheta, etemplate, err := getLayoutToRun(
 		ctx,
 		GetLayoutInput{
-			DesignID:   req.PhotoshopID,
+			DesignID:   req.DesignID,
 			TemplateID: req.TemplateID,
 			LayoutID:   req.LayoutID,
 			Padding:    req.Padding,
@@ -170,33 +172,36 @@ func GenerateImageUseCase(
 	if !req.ShowGrid {
 		nprancheta.Grid = entities.Grid{}
 	}
-	res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
-		DesignFile: designFile.FileUrl.String,
-		Prancheta:  mapper.LayoutToDto(*nprancheta),
-	}, log, config)
+	// res, err := GenerateImageFromPranchetaV2(GenerateImageRequestV2{
+	// 	DesignFile: designFile.FileUrl.String,
+	// 	Prancheta:  mapper.LayoutToDto(*nprancheta),
+	// }, log, config)
+
+	imageResult, err := render.RenderPNGImage(ctx, renderer.RenderPngImageInput{Layout: *nprancheta})
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err
 	}
-	for cidx := range nprancheta.Components {
-		for eidx := range nprancheta.Components[cidx].Elements {
-			id := nprancheta.Components[cidx].Elements[eidx].ID
-			for _, resultElements := range res.Elements {
-				if resultElements.ElementID == id {
-					nprancheta.Components[cidx].Elements[eidx].ImageURL = resultElements.ImageURL
-				}
-			}
-		}
-	}
+	// for cidx := range nprancheta.Components {
+	// 	for eidx := range nprancheta.Components[cidx].Elements {
+	// 		id := nprancheta.Components[cidx].Elements[eidx].ID
+	// 		for _, resultElements := range res.Elements {
+	// 			if resultElements.ElementID == id {
+	// 				nprancheta.Components[cidx].Elements[eidx].ImageURL = resultElements.ImageURL
+	// 			}
+	// 		}
+	// 	}
+	// }
 	gerated := *nprancheta
-	gerated.ImageURL = res.ImageURL
+	// gerated.ImageURL = res.ImageURL
+	gerated.ImageURL = imageResult.ImageURL
 	layoutCreated, err := SaveLayout(ctx, gerated, queries, db)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao salvar layout", "")
 		return nil, err
 	}
 	return &GenerateImageOutput{
-		Data:   res,
+		Data:   &GenerateImageResultV2{ImageURL: imageResult.ImageURL},
 		Layout: layoutCreated,
 	}, nil
 }

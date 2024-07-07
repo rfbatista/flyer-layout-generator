@@ -4,6 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
+	"algvisual/internal/renderer"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,13 +18,15 @@ func NewLayoutController(
 	cfg *infra.AppConfig,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
+	render renderer.RendererService,
 ) LayoutController {
-	return LayoutController{db: db, layoutService: lservice, cfg: cfg, log: log, pool: pool}
+	return LayoutController{db: db, layoutService: lservice, cfg: cfg, log: log, pool: pool, render: render}
 }
 
 type LayoutController struct {
 	db            *database.Queries
 	layoutService layoutgenerator.LayoutGeneratorService
+	render        renderer.RendererService
 	pool          *pgxpool.Pool
 	cfg           *infra.AppConfig
 	log           *zap.Logger
@@ -71,6 +74,7 @@ func (s LayoutController) GenerateLayout() echo.HandlerFunc {
 			s.pool,
 			*s.cfg,
 			s.log,
+			s.render,
 		)
 		if err != nil {
 			return err

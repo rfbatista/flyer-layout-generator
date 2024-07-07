@@ -5,6 +5,7 @@ import (
 	"algvisual/internal/entities"
 	"algvisual/internal/infra"
 	"algvisual/internal/mapper"
+	"algvisual/internal/renderer"
 	"context"
 	"time"
 
@@ -26,6 +27,7 @@ func StartRequestJobUseCase(
 	config infra.AppConfig,
 	log *zap.Logger,
 	req StartRequestJobInput,
+	render renderer.RendererService,
 ) error {
 	ctx := context.TODO()
 	layoutJobReq, err := queries.StartLayoutRequest(ctx, int64(req.ID))
@@ -52,9 +54,9 @@ func StartRequestJobUseCase(
 	}
 	job := mapper.LayoutRequestJobToDomain(layoutJobReq)
 	jobReq := GenerateImage{
-		PhotoshopID: layoutReq.DesignID.Int32,
-		TemplateID:  layoutJobReq.TemplateID.Int32,
-		LayoutID:    layoutReq.LayoutID.Int32,
+		DesignID:   layoutReq.DesignID.Int32,
+		TemplateID: layoutJobReq.TemplateID.Int32,
+		LayoutID:   layoutReq.LayoutID.Int32,
 	}
 	if job.Config != nil {
 		jobReq.ShowGrid = job.Config.ShowGrid
@@ -100,6 +102,7 @@ func StartRequestJobUseCase(
 		db,
 		config,
 		log,
+		render,
 	)
 	if err != nil {
 		log.Error("failed to generate design", zap.Error(err))

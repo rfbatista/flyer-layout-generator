@@ -54,7 +54,7 @@ export function SideBar() {
                       </td>
                       <td>
                         <span data-type="badge">
-                          {t.width}x{t.width}
+                          {t.width}x{t.height}
                         </span>
                       </td>
                       <td>
@@ -62,12 +62,14 @@ export function SideBar() {
                           data-type="icon"
                           data-state={isLoading && "loading"}
                           data-color="blue"
-                          onClick={() => {
+                          onClick={async () => {
+                            await new Promise((r) => setTimeout(r, 5000));
                             activeProject &&
                               deleteTemplate(activeProject.id, t.id);
                           }}
                         >
                           <div className="ld ld-ring ld-spin"></div>
+                          <i className="fa-solid fa-xmark"></i>
                         </button>
                       </td>
                     </tr>

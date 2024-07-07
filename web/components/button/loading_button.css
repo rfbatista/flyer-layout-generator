@@ -42,9 +42,24 @@ button[data-state="loading"] {
   transition: padding-left 0.3s;
 }
 
+button[data-state="loading"][data-type="icon"] {
+  padding: 8px !important;
+  width: 32px;
+  height: 32px;
+}
+
+button[data-state="loading"][data-type="icon"]>.ld {
+  right: auto;
+  left: auto;
+}
+
 button[data-state="loading"]>.ld {
   opacity: 1;
   display: block;
+}
+
+button[data-state="loading"]>i {
+  display: none;
 }
 
 button>.box-loader {

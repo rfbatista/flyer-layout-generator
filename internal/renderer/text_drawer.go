@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"algvisual/internal/entities"
 	"algvisual/internal/infra"
 	"flag"
 	"fmt"
@@ -45,8 +46,8 @@ func (t *TextDrawer) LoadFonts() error {
 	return nil
 }
 
-func (t *TextDrawer) addLabel(img *image.RGBA, x, y int, text string) error {
-	fontSize := float64(35)
+func (t *TextDrawer) addLabel(img *image.RGBA, x, y int, text string, size int32) error {
+	fontSize := float64(size)
 	opts := truetype.Options{}
 	opts.Size = fontSize
 	face := truetype.NewFace(t.font, &opts)
@@ -72,18 +73,27 @@ func (t *TextDrawer) addLabel(img *image.RGBA, x, y int, text string) error {
 		var linesTextx []string
 		splitStrings := strings.Split(textInLine, " ")
 		for _, splitstr := range splitStrings {
-			strWidth := font.MeasureString(face, splitstr).Ceil()
-			if lineWidth+strWidth+x+50 < IMAGE_WIDTH {
+			var textWidth int
+			if currentText == "" {
+				textWidth = font.MeasureString(face, splitstr).Ceil()
+			} else {
+				textWidth = font.MeasureString(face, fmt.Sprintf("%s %s", currentText, splitstr)).Ceil()
+			}
+			if lineWidth+textWidth+x+50 < IMAGE_WIDTH {
 				// stay on existing row
-				lineWidth += strWidth
-				currentText = fmt.Sprintf("%s %s", currentText, splitstr)
+				if currentText == "" {
+					currentText = splitstr
+				} else {
+					currentText = fmt.Sprintf("%s %s", currentText, splitstr)
+				}
+				lineWidth += textWidth
 			} else {
 				// move to new row
 				lineWidth = 0
 				linesTextx = append(linesTextx, currentText)
 				currentText = ""
-				currentText = fmt.Sprintf("%s %s", currentText, splitstr)
-				lineWidth += strWidth
+				currentText = splitstr
+				lineWidth += textWidth
 			}
 		}
 		if currentText != "" {
@@ -104,5 +114,56 @@ func (t *TextDrawer) addLabel(img *image.RGBA, x, y int, text string) error {
 	return nil
 }
 
-func (t *TextDrawer) WriteMultilineText(texts []string, face font.Face) {
+func (t *TextDrawer) FindTextSizeToFillContainer(text string, container entities.Container) int {
+	size := 1
+	for {
+		w, h, l := t.measureText(float64(size), text, container)
+		fmt.Println(l, w)
+		if h > int(container.Height()) {
+			return size
+		}
+		if w > int(container.Width()) {
+			return size
+		}
+		size += 1
+	}
+}
+
+func (t *TextDrawer) measureText(
+	size float64,
+	text string,
+	container entities.Container,
+) (int, int, int) {
+	fontSize := float64(size)
+	opts := truetype.Options{}
+	opts.Size = fontSize
+	face := truetype.NewFace(t.font, &opts)
+	lines := strings.Split(text, "\r")
+	totalLines := len(lines)
+	maxWidth := 0
+	for _, line := range lines {
+		lineWidth := 0
+		currentText := ""
+		splitStrings := strings.Split(line, " ")
+		for _, splitstr := range splitStrings {
+			textWidth := font.MeasureString(face, splitstr).Ceil()
+			lineWidth = textWidth + font.MeasureString(face, currentText).Ceil()
+			if lineWidth < int(container.Width()) {
+				if currentText == "" {
+					currentText = splitstr
+				} else {
+					currentText = fmt.Sprintf("%s %s", currentText, splitstr)
+				}
+			} else {
+				if maxWidth < lineWidth {
+					maxWidth = lineWidth
+				}
+				lineWidth = 0
+				totalLines += 1
+				currentText = splitstr
+			}
+		}
+	}
+	height := totalLines * (face.Metrics().Ascent.Ceil() + face.Metrics().Descent.Ceil())
+	return maxWidth, height, totalLines
 }

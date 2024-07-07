@@ -104,6 +104,16 @@ type GridDTO struct {
 	SlotsY     int32
 }
 
+func (g *Grid) GetCells() []GridCell {
+	var grids []GridCell
+	for _, c := range g.position {
+		for _, d := range c {
+			grids = append(grids, d)
+		}
+	}
+	return grids
+}
+
 func (g *Grid) PrintGrid(id int32) {
 	// Determine the grid dimensions
 	fmt.Println()
@@ -612,7 +622,8 @@ func (g *Grid) GetSurroundFreeCells(p Point) []Point {
 // Check if the position is is ocupied by the id
 func (g *Grid) IsPositionListOcupiedByOtherThanThisId(p []Position, id int32) bool {
 	for _, p := range p {
-		if len(g.position[p.X][p.Y].whoIsIn) > 1 || (len(g.position[p.X][p.Y].whoIsIn) == 1 && !g.position[p.X][p.Y].IsIdIn(id)) {
+		if len(g.position[p.X][p.Y].whoIsIn) > 1 ||
+			(len(g.position[p.X][p.Y].whoIsIn) == 1 && !g.position[p.X][p.Y].IsIdIn(id)) {
 			return true
 		}
 	}

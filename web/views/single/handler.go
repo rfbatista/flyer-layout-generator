@@ -4,6 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
+	"algvisual/internal/renderer"
 	"algvisual/internal/shared"
 	"algvisual/web/render"
 	"net/http"
@@ -39,6 +40,7 @@ func CreateImage(
 	log *zap.Logger,
 	db *pgxpool.Pool,
 	config *infra.AppConfig,
+	r renderer.RendererService,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
@@ -56,6 +58,7 @@ func CreateImage(
 			db,
 			*config,
 			log,
+			r,
 		)
 		if err != nil {
 			shared.ErrorNotification(c, err.Error())

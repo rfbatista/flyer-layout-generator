@@ -5,6 +5,7 @@ import (
 	"algvisual/internal/designs"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
+	"algvisual/internal/renderer"
 	"algvisual/internal/shared"
 	"algvisual/web/components/notification"
 	"algvisual/web/render"
@@ -91,6 +92,7 @@ func CreateImage(
 	log *zap.Logger,
 	db *pgxpool.Pool,
 	config *infra.AppConfig,
+	rend renderer.RendererService,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
@@ -102,14 +104,14 @@ func CreateImage(
 			return err
 		}
 		in := layoutgenerator.GenerateImage{
-			PhotoshopID: req.PhotoshopID,
-			TemplateID:  req.TemplateID[0],
-			LayoutID:    req.LayoutID,
-			SlotsX:      req.SlotsX,
-			SlotsY:      req.SlotsY,
-			Priorities:  req.Priorities,
-			Padding:     10,
-			ShowGrid:    true,
+			DesignID:   req.PhotoshopID,
+			TemplateID: req.TemplateID[0],
+			LayoutID:   req.LayoutID,
+			SlotsX:     req.SlotsX,
+			SlotsY:     req.SlotsY,
+			Priorities: req.Priorities,
+			Padding:    10,
+			ShowGrid:   true,
 		}
 		out, err := layoutgenerator.GenerateImageUseCase(
 			c.Request().Context(),
@@ -118,6 +120,7 @@ func CreateImage(
 			db,
 			*config,
 			log,
+			rend,
 		)
 		if err != nil {
 			shared.ErrorNotification(c, err.Error())
