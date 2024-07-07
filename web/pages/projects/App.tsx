@@ -21,7 +21,7 @@ export default function App() {
         <div className="" style={{marginTop: "var(--s1)"}}>
           <div className="stack">
             <div className="cluster">
-              <div className="projects-page__create-project-btn">
+              <div className="projects-page__create-project-btn p-1">
                 <button onClick={toggle}>
                   <div className="ld ld-ring ld-spin"></div>
                   Criar projeto

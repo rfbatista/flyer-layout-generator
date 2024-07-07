@@ -40,7 +40,7 @@ export function ProjectsTable() {
                 <td className="project-table__body__item">{p.createdAtText}</td>
                 <td className="project-table__body__item">
                   <div className="cluster">
-                    <div>
+                    <div className="p-2">
                       <a href={`/project?id=${p.id}`} data-type="button">
                         Open
                       </a>
