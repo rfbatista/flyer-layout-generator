@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
 	"algvisual/internal/infra"
@@ -15,19 +16,19 @@ import (
 )
 
 type GenerateImage struct {
-	PhotoshopID           int32    `form:"design_id"   json:"photoshop_id,omitempty"`
-	LayoutID              int32    `form:"layout_id"   json:"layout_id,omitempty"`
-	TemplateID            int32    `form:"template_id" json:"template_id,omitempty"`
-	LimitSizerPerElement  bool     `                   json:"limit_sizer_per_element,omitempty"`
-	AnchorElements        bool     `                   json:"anchor_elements,omitempty"`
-	ShowGrid              bool     `form:"show_grid"   json:"show_grid,omitempty"`
-	MinimiumComponentSize int32    `                   json:"minimium_component_size,omitempty"`
-	MinimiumTextSize      int32    `                   json:"minimium_text_size,omitempty"`
-	SlotsX                int32    `form:"grid_x"      json:"slots_x,omitempty"`
-	SlotsY                int32    `form:"grid_y"      json:"slots_y,omitempty"`
-	Padding               int32    `form:"padding"     json:"padding,omitempty"`
-	KeepProportions       bool     `                   json:"keep_proportions,omitempty"`
-	Priorities            []string `form:"priority[]"  json:"priorities,omitempty"`
+	PhotoshopID           int32    `form:"design_id"   json:"photoshop_id,omitempty"            param:"design_id"`
+	LayoutID              int32    `form:"layout_id"   json:"layout_id,omitempty"               param:"layout_id"`
+	TemplateID            int32    `form:"template_id" json:"template_id,omitempty"             param:"template_id"`
+	LimitSizerPerElement  bool     `                   json:"limit_sizer_per_element,omitempty" param:"limit_sizer_per_element"`
+	AnchorElements        bool     `                   json:"anchor_elements,omitempty"         param:"anchor_elements"`
+	ShowGrid              bool     `form:"show_grid"   json:"show_grid,omitempty"               param:"show_grid"`
+	MinimiumComponentSize int32    `                   json:"minimium_component_size,omitempty" param:"minimium_component_size"`
+	MinimiumTextSize      int32    `                   json:"minimium_text_size,omitempty"      param:"minimium_text_size"`
+	SlotsX                int32    `form:"grid_x"      json:"slots_x,omitempty"                 param:"slots_x"`
+	SlotsY                int32    `form:"grid_y"      json:"slots_y,omitempty"                 param:"slots_y"`
+	Padding               int32    `form:"padding"     json:"padding,omitempty"                 param:"padding"`
+	KeepProportions       bool     `                   json:"keep_proportions,omitempty"        param:"keep_proportions"`
+	Priorities            []string `form:"priority[]"  json:"priorities,omitempty"              param:"priorities"`
 }
 
 type GenerateImageOutput struct {
@@ -36,19 +37,22 @@ type GenerateImageOutput struct {
 	Layout     *entities.Layout
 }
 
-func GenerateImageUseCase(
+type GetLayoutInput struct {
+	TemplateID int32
+	LayoutID   int32
+	DesignID   int32
+	Padding    int32    `form:"padding"    json:"padding,omitempty"    param:"padding"`
+	Priorities []string `form:"priority[]" json:"priorities,omitempty" param:"priorities"`
+}
+
+func getLayoutToRun(
 	ctx context.Context,
-	req GenerateImage,
+	req GetLayoutInput,
 	queries *database.Queries,
-	db *pgxpool.Pool,
-	config infra.AppConfig,
 	log *zap.Logger,
-) (*GenerateImageOutput, error) {
-	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)
-	if err != nil {
-		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
-		return nil, err
-	}
+	width int32,
+	height int32,
+) (*entities.Layout, *entities.Template, error) {
 	template, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
 		err = shared.WrapWithAppError(
@@ -56,7 +60,7 @@ func GenerateImageUseCase(
 			fmt.Sprintf("Não foi possivel encontrar o template %d", req.TemplateID),
 			"",
 		)
-		return nil, err
+		return nil, nil, err
 	}
 	etemplate := mapper.TemplateToDomain(template.Template)
 	elements, err := queries.GetElementsByLayoutID(ctx, req.LayoutID)
@@ -66,11 +70,21 @@ func GenerateImageUseCase(
 			"Não foi possivel encontrar os elementos do arquivo Photoshop",
 			err.Error(),
 		)
-		return nil, err
+		return nil, nil, err
 	}
 	var eelements []entities.LayoutElement
 	for _, el := range elements {
-		eelements = append(eelements, mapper.ToDesignElementEntitie(el))
+		assets, err := designassets.GetDesignAssetByIdUseCase(
+			ctx,
+			designassets.GetDesignAssetByIdInput{ID: el.AssetID},
+			queries,
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+		element := mapper.ToDesignElementEntitie(el)
+		element.Properties = append(element.Properties, assets.Data.Properties...)
+		eelements = append(eelements, element)
 	}
 	compHash := make(map[int32][]entities.LayoutElement)
 	for _, c := range eelements {
@@ -88,7 +102,7 @@ func GenerateImageUseCase(
 				"Não foi possivel encontrar os componentes do arquivo Photoshop",
 				"",
 			)
-			return nil, compErr
+			return nil, nil, compErr
 		}
 		comp := mapper.TodesignComponentEntitie(data)
 		comp.Elements = compHash[k]
@@ -99,16 +113,16 @@ func GenerateImageUseCase(
 		}
 	}
 	if len(components) == 0 {
-		return nil, shared.NewAppError(
+		return nil, nil, shared.NewAppError(
 			400,
 			"nenhum componente definido para o design escolhido",
 			"",
 		)
 	}
 	prancheta := entities.Layout{
-		DesignID:   req.PhotoshopID,
-		Width:      designFile.Width.Int32,
-		Height:     designFile.Height.Int32,
+		DesignID:   req.DesignID,
+		Width:      width,
+		Height:     height,
 		Template:   etemplate,
 		Background: bg,
 		Components: components,
@@ -118,7 +132,41 @@ func GenerateImageUseCase(
 			Priorities: entities.ListToPrioritiesMap(req.Priorities),
 		},
 	}
-	nprancheta, _ := grammars.RunV2(prancheta, etemplate, req.SlotsX, req.SlotsY, log)
+	return &prancheta, &etemplate, nil
+}
+
+func GenerateImageUseCase(
+	ctx context.Context,
+	req GenerateImage,
+	queries *database.Queries,
+	db *pgxpool.Pool,
+	config infra.AppConfig,
+	log *zap.Logger,
+) (*GenerateImageOutput, error) {
+	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)
+	if err != nil {
+		err = shared.WrapWithAppError(err, "Não foi possivel encontrar o photoshop", "")
+		return nil, err
+	}
+	prancheta, etemplate, err := getLayoutToRun(
+		ctx,
+		GetLayoutInput{
+			DesignID:   req.PhotoshopID,
+			TemplateID: req.TemplateID,
+			LayoutID:   req.LayoutID,
+			Padding:    req.Padding,
+			Priorities: req.Priorities,
+		},
+		queries,
+		log,
+		designFile.Width.Int32,
+		designFile.Height.Int32,
+	)
+	if err != nil {
+		log.Error("failed to get layout to run", zap.Error(err))
+		return nil, err
+	}
+	nprancheta, _ := grammars.RunV2(*prancheta, *etemplate, req.SlotsX, req.SlotsY, log)
 	if !req.ShowGrid {
 		nprancheta.Grid = entities.Grid{}
 	}

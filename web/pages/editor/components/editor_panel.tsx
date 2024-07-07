@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useEditorStore } from "./editor_store";
 import "../../../components/table/table.css";
 import { useDesignsStore } from "../../../domain/design/store";
 import { defaultPriorities } from "../../../domain/layout/entities/priorities";
+import { useEditorStore } from "./editor_store";
 
 const SCALE_STEP = 0.8;
 
 export function EditorPanel() {
-  const { editor, layers, addActiveItem } = useEditorStore();
+  const { editor, layers, addActiveItem, save } = useEditorStore();
   const { activeDesign } = useDesignsStore();
   const [compType, setCompType] = useState("");
 
@@ -39,7 +39,7 @@ export function EditorPanel() {
     }
     try {
       const response = await fetch(
-        `/api/v1/editor/design/${activeDesign.id}/layout/${activeDesign.layout.id}/component`,
+        `/api/v1/editor/design/${activeDesign.id}/layout/${activeDesign.layoutID}/component`,
         {
           method: "POST",
           body: formData,
@@ -56,7 +56,12 @@ export function EditorPanel() {
     }
   };
 
-  useEffect(() => { }, [editor]);
+  useEffect(() => {
+    const data = layers.map((l) => ({ x: l.x, y: l.y, id: l.name }));
+    console.log(data);
+  }, [layers]);
+
+  useEffect(() => {}, [editor]);
 
   return (
     <div className="stack">
@@ -66,7 +71,7 @@ export function EditorPanel() {
             <div>
               <button onClick={zoomIn}>Zoom in</button>
               <button onClick={zoomOut}>Zoom out</button>
-              <button>Save</button>
+              <button onClick={save}>Save</button>
             </div>
           </div>
         </div>
@@ -81,6 +86,7 @@ export function EditorPanel() {
                   name="tye"
                   onChange={(e) => setCompType(e.target.value)}
                 >
+                  <option selected></option>
                   {defaultPriorities.map((p) => {
                     return <option value={p.text}>{p.text}</option>;
                   })}

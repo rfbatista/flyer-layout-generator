@@ -1,0 +1,5 @@
+.image {
+  @apply object-cover transition duration-700 ease-out group-hover:scale-105;
+  width: 240px;
+  border: 1px solid var(--color-slate-200)
+}

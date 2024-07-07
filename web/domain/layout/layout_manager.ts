@@ -25,7 +25,6 @@ export class LayoutManager {
       return a.level - b.level;
     });
     for (const el of elementsSorted) {
-      await this.drawElement(el);
     }
   }
 
@@ -33,29 +32,6 @@ export class LayoutManager {
     this.editor = c;
   }
 
-  drawComponent() {}
+  drawComponent() { }
 
-  async drawElement(l: LayoutElement) {
-    const i = await Image.fromURL(l.imageURL);
-    const opts = {
-      left: l.left + this.origin.x,
-      top: l.top + this.origin.y,
-      element: l,
-      id: l.id,
-      selectable: false,
-      order: this.elementsOrder,
-    };
-    i.set(opts);
-    this.editor.add(i);
-    this.elementsOrder += 1;
-    this.addLayerHook(
-      Layer.create({
-        element: l,
-        id: opts.id,
-        currentPosition: new Point(opts.left, opts.top),
-        addedOrder: this.elementsOrder,
-        object: i,
-      }),
-    );
-  }
 }

@@ -4,6 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/infra"
+	"algvisual/internal/mapper"
 	"algvisual/internal/ports"
 	"algvisual/internal/shared"
 	"context"
@@ -81,9 +82,38 @@ func ProcessDesignFileUseCasev2(
 		return nil, err
 	}
 	for _, i := range res.Elements {
+		designAsset, err := qtx.CreateDesignAsset(ctx, database.CreateDesignAssetParams{
+			ProjectID: pgtype.Int4{Int32: design.ProjectID.Int32, Valid: true},
+			DesignID:  pgtype.Int4{Int32: design.ID, Valid: true},
+			Name:      i.Name,
+			Type: database.NullDesignAssetType{
+				DesignAssetType: mapper.DesignAssetTypeToDB(
+					entities.StringToDesignAssetType(i.Kind),
+				),
+				Valid: true,
+			},
+			Width:  pgtype.Int4{Int32: i.FWidth, Valid: true},
+			Height: pgtype.Int4{Int32: i.FHeight, Valid: true},
+		})
+		if err != nil {
+			log.Error("failed to create design asset", zap.Error(err))
+			return nil, err
+		}
+		for _, p := range i.Properties {
+			err := qtx.CreateDesignAssetProperty(ctx, database.CreateDesignAssetPropertyParams{
+				AssetID: pgtype.Int4{Int32: designAsset.ID, Valid: true},
+				Key:     p.Key,
+				Value:   p.Value,
+			})
+			if err != nil {
+				log.Error("failed to create design asset property", zap.Error(err))
+				return nil, err
+			}
+		}
 		_, err = qtx.CreateElement(ctx, database.CreateElementParams{
 			DesignID:       photoshop.ID,
 			LayoutID:       int32(layout.ID),
+			AssetID:        designAsset.ID,
 			LayerID:        pgtype.Text{String: i.LayerID, Valid: true},
 			Name:           pgtype.Text{String: i.Name, Valid: true},
 			Text:           pgtype.Text{String: i.Text, Valid: true},

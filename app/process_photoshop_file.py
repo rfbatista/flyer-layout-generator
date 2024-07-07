@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from PIL import Image, ImageChops, ImageDraw, ImageOps
 
 from app.config import app_config
-from app.entities.photoshop import DesignElement, PhotoshopFile
+from app.entities.photoshop import DesignElement, PhotoshopFile, Property
 from app.logger import logger
 from app.upload_image import upload_image
 
@@ -238,10 +238,10 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                         layer.left + img_bbox[2],
                         layer.top + img_bbox[3],
                     )
-                inner_xi=box[0]
-                inner_xii=box[2]
-                inner_yi=box[1]
-                inner_yii=box[3]
+                inner_xi = box[0]
+                inner_xii = box[2]
+                inner_yi = box[1]
+                inner_yii = box[3]
                 if box[2] > psd.width:
                     inner_xii = psd.width
                 if box[3] > psd.height:
@@ -250,6 +250,12 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                     inner_xi = 0
                 if box[1] < 0:
                     inner_yi = 0
+                properties = []
+                try:
+                    if layer.kind == "type":
+                        properties = extract_properties(layer)
+                except:
+                    print("error parsing photoshop file")
 
                 items.append(
                     DesignElement(
@@ -274,6 +280,7 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
                         layer_id=str(layer.layer_id),
                         level=level,
                         image=image_url,
+                        properties=properties,
                     )
                 )
                 level += 1
@@ -290,6 +297,42 @@ def process_photoshop_file(req: ProcessDesignFileRequest):
         logger.exception("failed to save photoshop file")
         return {"error": "internal server error \n %s" % (e)}
 
+def extract_properties(layer):
+    properties = []
+    properties.append(Property(key="text", value=layer.text))
+    if "FontSet" in layer.resource_dict:
+        for font in layer.resource_dict["FontSet"]:
+            # print(font)
+            # print(font["Name"])
+            properties.append(
+                Property(key="font_name", value=str(font["Name"]))
+            )
+    if "StyleSheetSet" in layer.resource_dict:
+        for style in layer.resource_dict["StyleSheetSet"]:
+            # print(font)
+            # print(font["Name"])
+            if "StyleSheetData" in style and "FontSize" in style["StyleSheetData"]:
+                properties.append(
+                    Property(key="font_size", value=str(style["StyleSheetData"]["FontSize"]))
+                )
+    if "StyleRun" in layer.resource_dict:
+        for st in layer.resource_dict["StyleRun"]:
+            if (
+                "StyleSheet" in st
+                and "StyleSheetData" in st["StyleSheet"]
+                and "FontSize" in st["StyleSheet"]["StyleSheetData"]
+            ):
+                properties.append(
+                    Property(
+                        key="font_size",
+                        value=str(
+                            st["StyleSheet"]["StyleSheetData"][
+                                "FontSize"
+                            ]
+                        ),
+                    )
+                )
+    return properties
 
 if __name__ == "__main__":
     # execute only if run as the entry point into the program

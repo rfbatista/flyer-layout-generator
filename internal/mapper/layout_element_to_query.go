@@ -15,6 +15,7 @@ func LayoutElementToCreateElement(
 	return database.CreateElementParams{
 		DesignID:       designID,
 		LayoutID:       LayoutID,
+		AssetID:        i.AssetID,
 		ComponentID:    pgtype.Int4{Int32: componentID, Valid: true},
 		LayerID:        dbelem.LayerID,
 		Name:           dbelem.Name,

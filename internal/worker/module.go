@@ -6,7 +6,12 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(fx.Provide(NewWorkerPool), fx.Invoke(RegisterHooks))
+var Module = fx.Options(
+	fx.Provide(
+		NewWorkerPool,
+		NewWorkerService,
+	),
+	fx.Invoke(RegisterHooks))
 
 type RegisterHooksParams struct {
 	fx.In

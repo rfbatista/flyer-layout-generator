@@ -9,6 +9,7 @@ import { DesginCard } from "../../components/designcard/design_card";
 import { NewDesignForm } from "./components/new_design_form";
 import { useModal } from "../../components/modal/store";
 import { SideBar } from "./components/side-bar";
+import { DesignAssetsTable } from "./components/design_assets_table";
 
 export default function App() {
   const { toggle, setCh, setTitle } = useModal();
@@ -43,14 +44,18 @@ export default function App() {
             <div className="container">
               <div>
                 <div className="stack">
-                  <div className="cluster">
-                    <div className="projects-page__upload-design-btn">
-                      <button onClick={openModal}>New Design</button>
-                    </div>
-                  </div>
                   <div className="stack">
                     <div>
-                      <h2>Masters</h2>
+                      <h2 className="font-bold">Ad Copy</h2>
+                    </div>
+                    <DesignAssetsTable />
+                  </div>
+                  <div className="stack mt-3">
+                    <div className="flex justify-between">
+                      <h2 className="font-bold">Designs</h2>
+                      <div className="projects-page__upload-design-btn">
+                        <button onClick={openModal}>New Design</button>
+                      </div>
                     </div>
                     <div className="cluster">
                       <div>

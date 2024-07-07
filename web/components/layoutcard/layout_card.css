@@ -1,9 +1,9 @@
 .layout-card {
-  @apply overflow-hidden text-slate-700 dark:text-slate-300;
+  @apply overflow-hidden text-slate-700 dark:text-slate-300 flex-col border border-slate-300 bg-slate-100 dark:border-slate-700 dark:bg-slate-800;
   position: relative;
   overflow: hidden;
   width: 400px;
-  padding-bottom: var(--s0);
+  margin-bottom: 30px;
   /* border: 1px solid var(--color-slate-200) */
 }
 

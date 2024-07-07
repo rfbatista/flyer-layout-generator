@@ -35,9 +35,8 @@ func ImageUploadUseCase(
 	}
 	defer src.Close()
 	identifier := uuid.New()
-	name := fmt.Sprintf("%s::%s", identifier, "v1")
+	name := fmt.Sprintf("%s::%s.png", identifier, "v1")
 	fullpath := fmt.Sprintf("%s/%s", cfg.ImagesFolderPath, name)
-	fmt.Println(fullpath)
 	dst, err := os.Create(fullpath)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao iniciar file descriptor", err.Error())

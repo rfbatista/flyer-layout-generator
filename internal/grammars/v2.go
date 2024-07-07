@@ -22,6 +22,9 @@ func RunV2(
 	if err != nil {
 		return nil, err
 	}
+	log.Debug("summary of stage 0",
+		zap.Int("total of components", len(original.Components)),
+	)
 
 	// *************************************************
 	// STAGE 1
@@ -42,6 +45,9 @@ func RunV2(
 		return nil, err
 	}
 	stages = append(stages, string(jstage1))
+	log.Debug("summary of stage 1",
+		zap.Int("total of components", len(layout1.Components)),
+	)
 
 	// *************************************************
 	// STAGE 2
@@ -58,6 +64,9 @@ func RunV2(
 	}
 	stages = append(stages, string(jstage2))
 
+	log.Debug("summary of stage 2",
+		zap.Int("total of components", len(layout2.Components)),
+	)
 	// *************************************************
 	// STAGE 3
 	// Move elements that have colision
@@ -78,6 +87,10 @@ func RunV2(
 	}
 	stages = append(stages, string(jstage3))
 
+	log.Debug("summary of stage 3",
+		zap.Int("total of components", len(layout3.Components)),
+	)
+
 	// *************************************************
 	// STAGE 4
 	// Expand elements
@@ -92,6 +105,10 @@ func RunV2(
 		return nil, err
 	}
 	stages = append(stages, string(jstage4))
+
+	log.Debug("summary of stage 4",
+		zap.Int("total of components", len(layout4.Components)),
+	)
 
 	// *************************************************
 	// STAGE 5
@@ -113,6 +130,11 @@ func RunV2(
 		return nil, err
 	}
 	stages = append(stages, string(jstage5))
+
+	log.Debug("summary of stage 5",
+		zap.Int("total of components", len(layout5.Components)),
+	)
+
 	// *************************************************
 
 	if original.Background != nil {

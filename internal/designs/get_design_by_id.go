@@ -3,7 +3,6 @@ package designs
 import (
 	"algvisual/database"
 	"algvisual/internal/entities"
-	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/mapper"
 	"algvisual/internal/shared"
 	"context"
@@ -33,21 +32,6 @@ func GetDesignByIdUseCase(
 		return nil, err
 	}
 	desgnEntities := mapper.DesignFileToDomain(design)
-	if design.LayoutID.Valid {
-		out, err := layoutgenerator.GetLayoutByIDUseCase(
-			ctx,
-			queries,
-			layoutgenerator.GetLayoutByIDRequest{
-				LayoutID: desgnEntities.LayoutID,
-			},
-		)
-		if err != nil {
-			err = shared.WrapWithAppError(err, "failed to get layout by id", "")
-			log.Error(err.Error())
-			return nil, err
-		}
-		desgnEntities.Layout = out.Layout
-	}
 	return &GetDesignByIdResult{
 		Status: "success",
 		Data:   desgnEntities,

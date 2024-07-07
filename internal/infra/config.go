@@ -20,6 +20,7 @@ type AppConfig struct {
 	DistFolderPath        string
 	AssetsFolderPath      string
 	ImagesFolderPath      string
+	FontsFolderPath       string
 	DesignFilesFolderPath string
 	AiServiceBaseURL      string
 	GeneratorClientURL    string
@@ -72,6 +73,7 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
 		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
 		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
+		FontsFolderPath:       os.Getenv("FONTS_FOLDER"),
 		MaxWorkers:            maxWorkers,
 		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
 		Database: DatabaseConfig{

@@ -66,6 +66,7 @@ RETURNING *;
 INSERT INTO layout_elements (
   layout_id,
   layer_id,
+  asset_id,
   design_id,
   name,
   text,
@@ -108,6 +109,7 @@ INSERT INTO layout_elements (
   $19,
   $20,
   $21,
-  $22
+  $22,
+  $23
 )
 RETURNING *;

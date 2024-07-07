@@ -1,11 +1,13 @@
 import "./layout_card.css";
 import { Layout } from "../../domain/layout/entities/layout";
+import { useProjectsStore } from "../../domain/projects/store";
 
 type Props = {
   layout: Layout;
 };
 
 export function LayoutCard(props: Props) {
+  const { activeProject } = useProjectsStore();
   const d = props.layout;
   return (
     <article className="layout-card">
@@ -26,7 +28,10 @@ export function LayoutCard(props: Props) {
               <a href={d.imageURL} download data-type="button">
                 download
               </a>
-              <a href={`/editor?design=${d.designID}&layout=${d.id}`} data-type="button">
+              <a
+                href={`/editor?project=${activeProject && activeProject.id}&design=${d.designID}&layout=${d.id}`}
+                data-type="button"
+              >
                 edit
               </a>
             </div>

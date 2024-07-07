@@ -41,11 +41,20 @@ func CreateLayoutRequestUseCase(
 	}
 	defer tx.Rollback(ctx)
 	qtx := queries.WithTx(tx)
+	layoutConfig := entities.LayoutRequestConfig{
+		Padding:    req.Padding,
+		Priorities: entities.ListToPrioritiesMap(req.Priority),
+	}
+	rawConfig, err := json.Marshal(layoutConfig)
+	if err != nil {
+		return nil, err
+	}
 	layoutRes, err := qtx.CreateLayoutRequest(
 		ctx,
 		database.CreateLayoutRequestParams{
 			DesignID: pgtype.Int4{Int32: req.DesignID, Valid: true},
 			LayoutID: pgtype.Int4{Int32: req.LayoutID, Valid: true},
+			Config:   pgtype.Text{String: string(rawConfig), Valid: true},
 		},
 	)
 	if err != nil {
@@ -68,8 +77,8 @@ func CreateLayoutRequestUseCase(
 				Grid:                  grid,
 				Padding:               10,
 				KeepProportions:       req.KeepProportions,
-				SlotsX:                grid.SlotsX,
-				SlotsY:                grid.SlotsY,
+				SlotsX:                8,
+				SlotsY:                8,
 				Priorities:            entities.NewLayoutRequestConfigPriority(req.Priority),
 			})
 			if unmarshErr != nil {

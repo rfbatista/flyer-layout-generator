@@ -100,6 +100,50 @@ CREATE TABLE design
     FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE
 );
 
+
+CREATE TYPE DESIGN_ASSET_TYPE AS ENUM (
+  'text', 
+  'smartobject',
+  'shape',
+  'pixel',
+  'group',
+  'unknown'
+);
+
+CREATE TABLE design_assets
+(
+    id              SERIAL PRIMARY KEY,
+    project_id       int,
+    design_id       int,
+    alternative_to int,
+    name            TEXT NOT NULL,
+    width           int,
+    type            DESIGN_ASSET_TYPE,
+    asset_url TEXT,
+    asset_path TEXT,
+    height          int,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP,
+
+    FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE,
+    FOREIGN KEY (alternative_to) REFERENCES design_assets (id) ON UPDATE CASCADE,
+    FOREIGN KEY (design_id) REFERENCES design (id) ON UPDATE CASCADE
+);
+
+CREATE TABLE design_assets_properties
+(
+    id              SERIAL PRIMARY KEY,
+    asset_id       int,
+    key            TEXT NOT NULL,
+    value            TEXT NOT NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP,
+
+    FOREIGN KEY (asset_id) REFERENCES design_assets (id) ON UPDATE CASCADE
+);
+
+
+
 CREATE TYPE COMPONENT_TYPE AS ENUM (
     'background',
     'logotipo_marca',
@@ -166,6 +210,7 @@ CREATE TABLE layout_elements
     design_id       INT NOT NULL,
     layout_id  INT NOT NULL,
     component_id    INT,
+    asset_id INT NOT NULL,
     name            TEXT,
     layer_id        TEXT,
     text            TEXT,
@@ -189,6 +234,7 @@ CREATE TABLE layout_elements
     updated_at      TIMESTAMP,
     CONSTRAINT fk_design_element_design_id FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_design_element_component_id FOREIGN KEY (component_id) REFERENCES layout_components (id),
+    CONSTRAINT fk_design_element_design_asset_id FOREIGN KEY (asset_id) REFERENCES design_assets (id),
     FOREIGN KEY (layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

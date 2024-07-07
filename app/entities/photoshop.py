@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, NamedTuple, Optional
 
 from pydantic import BaseModel
 from PIL.Image import Image
@@ -37,6 +37,9 @@ class Elemento:
             self.pos(),
         )
 
+class Property(BaseModel):
+    key: str
+    value: str
 
 class DesignElement(BaseModel):
     id: Optional[int] = None
@@ -61,6 +64,7 @@ class DesignElement(BaseModel):
     component_id: Optional[int] = None
     image: Optional[str] = None
     image_extension: Optional[str] = None
+    properties: List[Property] = []
 
     def __repr__(self):
         return 'PhotoshopElement("%s")' % (self.image)

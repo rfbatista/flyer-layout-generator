@@ -15,6 +15,7 @@ const createElement = `-- name: CreateElement :one
 INSERT INTO layout_elements (
   layout_id,
   layer_id,
+  asset_id,
   design_id,
   name,
   text,
@@ -57,14 +58,16 @@ INSERT INTO layout_elements (
   $19,
   $20,
   $21,
-  $22
+  $22,
+  $23
 )
-RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, layout_id, component_id, asset_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
 `
 
 type CreateElementParams struct {
 	LayoutID       int32       `json:"layout_id"`
 	LayerID        pgtype.Text `json:"layer_id"`
+	AssetID        int32       `json:"asset_id"`
 	DesignID       int32       `json:"design_id"`
 	Name           pgtype.Text `json:"name"`
 	Text           pgtype.Text `json:"text"`
@@ -91,6 +94,7 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (L
 	row := q.db.QueryRow(ctx, createElement,
 		arg.LayoutID,
 		arg.LayerID,
+		arg.AssetID,
 		arg.DesignID,
 		arg.Name,
 		arg.Text,
@@ -118,6 +122,7 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (L
 		&i.DesignID,
 		&i.LayoutID,
 		&i.ComponentID,
+		&i.AssetID,
 		&i.Name,
 		&i.LayerID,
 		&i.Text,
@@ -354,7 +359,7 @@ func (q *Queries) GetLayoutComponentsByLayoutID(ctx context.Context, layoutID in
 }
 
 const getLayoutElementsByLayoutID = `-- name: GetLayoutElementsByLayoutID :many
-SELECT id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements
+SELECT id, design_id, layout_id, component_id, asset_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at FROM layout_elements
 WHERE layout_id = $1
 ORDER BY created_at desc
 `
@@ -373,6 +378,7 @@ func (q *Queries) GetLayoutElementsByLayoutID(ctx context.Context, layoutID int3
 			&i.DesignID,
 			&i.LayoutID,
 			&i.ComponentID,
+			&i.AssetID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,

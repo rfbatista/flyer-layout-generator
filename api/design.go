@@ -2,6 +2,7 @@ package api
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/designprocessor"
 	"algvisual/internal/designs"
 	"algvisual/internal/infra"
@@ -48,9 +49,10 @@ func (s DesignController) Load(e *echo.Echo) error {
 	e.POST("/api/v1/design/:design_id/process", s.ProcessDesginFileByID())
 	e.GET("/api/v1/design/:design_id", s.GetDesignByID())
 	e.POST("/editor/design/:design_id/layout/:layout_id/component", s.CreateComponent())
-	e.POST("/api/v1/project/design/:design_id/layout/:layout_id/generate", s.CreateLayoutRequest())
 	e.GET("/api/v1/project/design/:design_id/last_request", s.GetLastRequestJob())
 	e.GET("/api/v1/project/design/:design_id/layout/:request_id", s.GetLayoutByID())
+	e.GET("/api/v1/project/:project_id/assets", s.GetProjectDesignAssets())
+	e.POST("/api/v1/assets/:asset_id", s.AddAssetProperty())
 	return nil
 }
 
@@ -163,26 +165,6 @@ func (s DesignController) CreateComponent() echo.HandlerFunc {
 	}
 }
 
-func (s DesignController) CreateLayoutRequest() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var req layoutgenerator.CreateLayoutRequestInput
-		err := c.Bind(&req)
-		if err != nil {
-			return err
-		}
-		out, err := layoutgenerator.CreateLayoutRequestUseCase(
-			c.Request().Context(),
-			s.db,
-			s.pool,
-			req,
-		)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, out)
-	}
-}
-
 func (s DesignController) GetLastRequestJob() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req layoutgenerator.GetLastLayoutRequestInput
@@ -213,6 +195,44 @@ func (s DesignController) GetLayoutByID() echo.HandlerFunc {
 			c.Request().Context(),
 			s.db,
 			req,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) GetProjectDesignAssets() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req designassets.GetDesignAssetByProjectIdInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := designassets.GetDesignAssetByProjectIdUseCase(
+			c.Request().Context(),
+			req,
+			s.db,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s DesignController) AddAssetProperty() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req designassets.AddNewAssetPropertyInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := designassets.AddNewAssetPropertyUseCase(
+			c.Request().Context(),
+			req,
+			s.db,
 		)
 		if err != nil {
 			return err

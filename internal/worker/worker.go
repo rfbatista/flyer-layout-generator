@@ -16,9 +16,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var ticker = time.NewTicker(5 * time.Second)
+var ticker = time.NewTicker(1 * time.Second)
 
 var (
+	next         = make(chan struct{})
 	quit         = make(chan struct{})
 	gracefulStop = make(chan os.Signal, 1)
 )
@@ -30,6 +31,7 @@ func NewWorkerPool(
 	config *infra.AppConfig,
 	log *zap.Logger,
 	sse *infra.ServerSideEventManager,
+	wservice WorkerService,
 ) (WorkerPool, error) {
 	return WorkerPool{
 		client:  client,
@@ -38,6 +40,7 @@ func NewWorkerPool(
 		config:  config,
 		log:     log,
 		sse:     sse,
+		serv:    wservice,
 	}, nil
 }
 
@@ -48,6 +51,7 @@ type WorkerPool struct {
 	config  *infra.AppConfig
 	log     *zap.Logger
 	sse     *infra.ServerSideEventManager
+	serv    WorkerService
 }
 
 func (w WorkerPool) Start() {
@@ -68,7 +72,7 @@ func (w WorkerPool) Start() {
 		for {
 			select {
 			case <-ticker.C:
-				createWorkerPool(w.client, w.queries, w.db, w.config, w.log, w.sse)
+				w.createWorkerPool()
 			case <-quit:
 				ticker.Stop()
 				w.log.Info("closing worker pool")
@@ -86,83 +90,63 @@ func (w WorkerPool) Close() {
 	quit <- struct{}{}
 }
 
-func worker(
+func (w WorkerPool) worker(
 	wid int,
 	wg *sync.WaitGroup,
 	id int32,
-	client *infra.ImageGeneratorClient,
-	queries *database.Queries,
-	db *pgxpool.Pool,
-	config *infra.AppConfig,
-	log *zap.Logger,
-	sse *infra.ServerSideEventManager,
 ) {
+	ctx := context.TODO()
 	defer func() {
-		log.Debug("closing worker")
+		w.log.Debug("closing worker")
 		wg.Done()
 		if r := recover(); r != nil {
 			err, ok := r.(error)
 			if ok {
-				log.Error("panic error in worker", zap.Error(err))
+				w.log.Error("panic error in worker", zap.Error(err))
 			} else {
-				log.Error("unknown panic error in worker")
+				w.log.Error("unknown panic error in worker")
 			}
 		}
 	}()
-	err := sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
+	err := w.sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
 	if err != nil {
-		log.Error("falha ao enviar evento sse", zap.Error(err))
+		w.log.Error("falha ao enviar evento sse", zap.Error(err))
 	}
-	log.Debug(fmt.Sprintf("starting request job %d", wid))
-	err = layoutgenerator.StartRequestJobUseCase(
-		client,
-		queries,
-		db,
-		*config,
-		log,
-		layoutgenerator.StartRequestJobInput{ID: id},
-	)
+	w.log.Debug(fmt.Sprintf("starting request job %d", wid))
+	_, err = w.serv.GenerateJob(ctx, GenerateJobInput{ID: id})
 	if err != nil {
-		log.Error("Falha no processamento da layout request job", zap.Error(err))
+		w.log.Error("Falha no processamento da layout request job", zap.Error(err))
 	}
-	err = sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
+	err = w.sse.BroadCastEvent(infra.NewEvent("JOB_BATCH_UPDATE"))
 	if err != nil {
-		log.Error("falha ao enviar evento sse", zap.Error(err))
+		w.log.Error("falha ao enviar evento sse", zap.Error(err))
 	}
-	log.Debug(fmt.Sprintf("finishing request job %d", wid))
+	w.log.Debug(fmt.Sprintf("finishing request job %d", wid))
 }
 
-func createWorkerPool(
-	client *infra.ImageGeneratorClient,
-	queries *database.Queries,
-	db *pgxpool.Pool,
-	config *infra.AppConfig,
-	log *zap.Logger,
-	sse *infra.ServerSideEventManager,
-) error {
-	log.Debug("buscando novo bactch de jobs")
+func (w WorkerPool) createWorkerPool() error {
 	out, err := layoutgenerator.ListLayoutRequestJobsNotStartedUseCase(
 		context.TODO(),
-		queries,
-		config,
+		w.queries,
+		w.config,
 	)
 	if err != nil {
-		log.Error("Falha na listagem de jobs não inicializados", zap.Error(err))
+		w.log.Error("Falha na listagem de jobs não inicializados", zap.Error(err))
 		return err
 	}
 	if len(out.Data) == 0 {
-		log.Debug("nenhum job para ser processado")
+		w.log.Debug("nenhum job para ser processado")
 		return nil
 	}
-	log.Debug(fmt.Sprintf("iniciando processamento de %d jobs", len(out.Data)))
+	w.log.Debug(fmt.Sprintf("iniciando processamento de %d jobs", len(out.Data)))
 	var wg sync.WaitGroup
 	for idx, l := range out.Data {
-		log.Debug("spawning request workers")
+		w.log.Debug("spawning request workers")
 		wg.Add(1)
-		go worker(idx, &wg, l.ID, client, queries, db, config, log, sse)
+		go w.worker(idx, &wg, l.ID)
 	}
-	log.Debug("waiting request workers")
+	w.log.Debug("waiting request workers")
 	wg.Wait()
-	log.Debug("request workers finished")
+	w.log.Debug("request workers finished")
 	return nil
 }

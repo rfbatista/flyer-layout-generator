@@ -259,7 +259,7 @@ SET
     component_id = NULL
 WHERE
     id = ANY ($1) and design_id = $2
-RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, layout_id, component_id, asset_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
 `
 
 type RemoveComponentFromElementsParams struct {
@@ -281,6 +281,7 @@ func (q *Queries) RemoveComponentFromElements(ctx context.Context, arg RemoveCom
 			&i.DesignID,
 			&i.LayoutID,
 			&i.ComponentID,
+			&i.AssetID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,
@@ -323,7 +324,7 @@ SET
         THEN $4 ELSE name END
 WHERE
     id = ANY ($5) and design_id = $6
-RETURNING id, design_id, layout_id, component_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
+RETURNING id, design_id, layout_id, component_id, asset_id, name, layer_id, text, xi, xii, yi, yii, inner_xi, inner_xii, inner_yi, inner_yii, width, height, is_group, group_id, level, kind, image_url, image_extension, created_at, updated_at
 `
 
 type UpdateManydesignElementParams struct {
@@ -357,6 +358,7 @@ func (q *Queries) UpdateManydesignElement(ctx context.Context, arg UpdateManydes
 			&i.DesignID,
 			&i.LayoutID,
 			&i.ComponentID,
+			&i.AssetID,
 			&i.Name,
 			&i.LayerID,
 			&i.Text,

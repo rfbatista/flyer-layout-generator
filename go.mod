@@ -8,11 +8,13 @@ require (
 	github.com/a-h/templ v0.2.680
 	github.com/evanw/esbuild v0.21.5
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/oov/psd v0.0.0-20220121172623-5db5eafcecbb
 	github.com/rfbatista/apitools v0.0.0-20240229214227-3cacaa96fd09
 	go.uber.org/fx v1.21.0
@@ -37,10 +39,11 @@ require (
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

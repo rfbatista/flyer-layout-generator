@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"strconv"
 	"time"
 )
@@ -45,7 +46,7 @@ type Template struct {
 
 const (
 	minSlotSize = 50
-	maxSlots    = 6
+	maxSlots    = 8
 )
 
 func (t *Template) Grids() []Grid {
@@ -60,29 +61,30 @@ func (t *Template) Grids() []Grid {
 		maxYSlots = maxSlots
 	}
 
-	for x := 1; x <= int(maxXSlots); x++ {
-		slotWidth := int(t.Width) / x
-		if slotWidth < minSlotSize {
-			break
-		}
-		for y := 1; y <= int(maxYSlots); y++ {
-			slotHeight := int(t.Height) / y
-			if slotHeight < minSlotSize {
-				break
-			}
-			grid, _ := NewGrid(
-				WithDefault(t.Width, t.Height),
-				WithPivot(int32(slotWidth), int32(slotHeight)),
-				WithCells(int32(x), int32(y)),
+	for x := 2; x <= 4; x++ {
+		grid, _ := t.CreateGrid(x, x)
+		if grid != nil {
+			g = append(
+				g, *grid,
 			)
-			if grid != nil {
-				g = append(
-					g, *grid,
-				)
-			}
 		}
 	}
+
 	return g
+}
+
+func (t *Template) CreateGrid(x, y int) (*Grid, error) {
+	slotWidth := int(t.Width) / x
+	if slotWidth < minSlotSize {
+		return nil, errors.New("slow width < minimum slot size")
+	}
+	slotHeight := int(t.Height) / x
+	grid, _ := NewGrid(
+		WithDefault(t.Width, t.Height),
+		WithPivot(int32(slotWidth), int32(slotHeight)),
+		WithCells(int32(x), int32(x)),
+	)
+	return grid, nil
 }
 
 func (t *Template) MaxSlotsXText() string {

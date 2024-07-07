@@ -41,6 +41,10 @@ export class Design {
     return this._layout;
   }
 
+  get layoutID() {
+    return this.p.layout_id;
+  }
+
   get name() {
     return this.p.name;
   }

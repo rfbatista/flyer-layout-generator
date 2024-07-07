@@ -62,6 +62,52 @@ func (ns NullComponentType) Value() (driver.Value, error) {
 	return string(ns.ComponentType), nil
 }
 
+type DesignAssetType string
+
+const (
+	DesignAssetTypeText        DesignAssetType = "text"
+	DesignAssetTypeSmartobject DesignAssetType = "smartobject"
+	DesignAssetTypeShape       DesignAssetType = "shape"
+	DesignAssetTypePixel       DesignAssetType = "pixel"
+	DesignAssetTypeGroup       DesignAssetType = "group"
+	DesignAssetTypeUnknown     DesignAssetType = "unknown"
+)
+
+func (e *DesignAssetType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = DesignAssetType(s)
+	case string:
+		*e = DesignAssetType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for DesignAssetType: %T", src)
+	}
+	return nil
+}
+
+type NullDesignAssetType struct {
+	DesignAssetType DesignAssetType `json:"design_asset_type"`
+	Valid           bool            `json:"valid"` // Valid is true if DesignAssetType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullDesignAssetType) Scan(value interface{}) error {
+	if value == nil {
+		ns.DesignAssetType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.DesignAssetType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullDesignAssetType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.DesignAssetType), nil
+}
+
 type TemplateType string
 
 const (
@@ -136,6 +182,30 @@ type Design struct {
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
+type DesignAsset struct {
+	ID            int32               `json:"id"`
+	ProjectID     pgtype.Int4         `json:"project_id"`
+	DesignID      pgtype.Int4         `json:"design_id"`
+	AlternativeTo pgtype.Int4         `json:"alternative_to"`
+	Name          string              `json:"name"`
+	Width         pgtype.Int4         `json:"width"`
+	Type          NullDesignAssetType `json:"type"`
+	AssetUrl      pgtype.Text         `json:"asset_url"`
+	AssetPath     pgtype.Text         `json:"asset_path"`
+	Height        pgtype.Int4         `json:"height"`
+	CreatedAt     pgtype.Timestamp    `json:"created_at"`
+	UpdatedAt     pgtype.Timestamp    `json:"updated_at"`
+}
+
+type DesignAssetsProperty struct {
+	ID        int32            `json:"id"`
+	AssetID   pgtype.Int4      `json:"asset_id"`
+	Key       string           `json:"key"`
+	Value     string           `json:"value"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
 type Image struct {
 	ID          int64            `json:"id"`
 	Url         string           `json:"url"`
@@ -188,6 +258,7 @@ type LayoutElement struct {
 	DesignID       int32            `json:"design_id"`
 	LayoutID       int32            `json:"layout_id"`
 	ComponentID    pgtype.Int4      `json:"component_id"`
+	AssetID        int32            `json:"asset_id"`
 	Name           pgtype.Text      `json:"name"`
 	LayerID        pgtype.Text      `json:"layer_id"`
 	Text           pgtype.Text      `json:"text"`

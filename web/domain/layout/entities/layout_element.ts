@@ -1,3 +1,6 @@
+import { ContainerProps } from "./container";
+import { Point } from "./point";
+
 export type LayoutElementProps = {
   id: number;
   xi: number;
@@ -17,26 +20,8 @@ export type LayoutElementProps = {
   photoshop_id: number;
   image: string;
   component_id: number;
-  InnerContainer: {
-    UpperLeft: {
-      X: number;
-      Y: number;
-    };
-    DownRight: {
-      X: number;
-      Y: number;
-    };
-  };
-  OuterContainer: {
-    UpperLeft: {
-      X: number;
-      Y: number;
-    };
-    DownRight: {
-      X: number;
-      Y: number;
-    };
-  };
+  inner_container: ContainerProps;
+  outer_container: ContainerProps;
   inner_xi?: number;
   inner_yi?: number;
   type?: string;
@@ -64,6 +49,18 @@ export class LayoutElement {
     return this.p.id;
   }
 
+  get width() {
+    return (
+      this.p.outer_container.down_right.X - this.p.outer_container.upper_left.X
+    );
+  }
+
+  get height() {
+    return (
+      this.p.outer_container.down_right.Y - this.p.outer_container.upper_left.Y
+    );
+  }
+
   get imageURL() {
     return this.p.image;
   }
@@ -73,14 +70,34 @@ export class LayoutElement {
   }
 
   get left() {
-    return this.p.OuterContainer.UpperLeft.X;
+    console.log(this);
+    return this.p.outer_container.upper_left.X;
   }
 
   get top() {
-    return this.p.OuterContainer.UpperLeft.Y;
+    return this.p.outer_container.upper_left.Y;
   }
 
   get name() {
     return this.p.name;
+  }
+
+  get position() {
+    return new Point(
+      this.p.outer_container.upper_left.X,
+      this.p.outer_container.upper_left.Y,
+    );
+  }
+
+  move(x: number, y: number) {
+    this.p.outer_container.down_right.X += x;
+    this.p.outer_container.down_right.Y += y;
+    this.p.outer_container.upper_left.X += x;
+    this.p.outer_container.upper_left.Y += y;
+
+    this.p.inner_container.down_right.X += x;
+    this.p.inner_container.down_right.Y += y;
+    this.p.inner_container.upper_left.X += x;
+    this.p.inner_container.upper_left.Y += y;
   }
 }

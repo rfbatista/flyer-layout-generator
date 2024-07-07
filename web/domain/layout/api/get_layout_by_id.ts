@@ -34,10 +34,7 @@ type Response = {
   };
 };
 
-export function getLayoutByIdAPI(designId: number, layoutId: number) {
-  return apiClient
-    .get<Response>(`/v1/project/design/${designId}/layout/${layoutId}`)
-    .then((r) => {
-      return Layout.create(r.data.Layout);
-    });
+export async function getLayoutByIdAPI(layoutId: number) {
+  const r = await apiClient.get<Response>(`/v1/layout/${layoutId}`);
+  return Layout.create(r.data.Layout);
 }

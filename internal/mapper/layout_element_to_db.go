@@ -13,6 +13,7 @@ func DesignElementToDb(input entities.LayoutElement) database.LayoutElement {
 		ID:             input.ID,
 		DesignID:       input.DesignID,
 		ComponentID:    pgtype.Int4{Int32: input.ComponentID, Valid: true},
+		AssetID:        input.AssetID,
 		Name:           pgtype.Text{String: input.Name, Valid: true},
 		LayerID:        pgtype.Text{String: input.LayerID, Valid: true},
 		Text:           pgtype.Text{String: input.Text, Valid: true},

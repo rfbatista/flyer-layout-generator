@@ -1,0 +1,20 @@
+.design-table {
+  @apply w-full text-left text-sm text-slate-700 dark:text-slate-300;
+}
+
+.design-table__header {
+  @apply border-b border-slate-300 bg-slate-100 text-sm text-black dark:border-slate-700 dark:bg-slate-800 dark:text-white;
+}
+
+.design-table__header__item {
+  @apply p-4;
+}
+
+.design-table__body {
+  @apply divide-y divide-slate-300 dark:divide-slate-700;
+}
+
+
+.design-table__body__item {
+  @apply p-4;
+}

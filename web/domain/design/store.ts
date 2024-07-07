@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { Design } from "./entities/design";
 import { getDesignByIDApi } from "./api/getDesignByIdAPI";
 import { listDesignsByProjectID } from "./api/listDesignsByProjectID";
 import { processDesignFileAPI } from "./api/process_design_file";
 import { uploadDesignAPI } from "./api/upload_design";
+import { Design } from "./entities/design";
 
 type Store = {
   isLoading: boolean;
@@ -14,12 +14,19 @@ type Store = {
   listDesigns: (i: number) => Promise<void>;
   processDesignFile: (i: number) => Promise<void>;
   uploadDesign: (f: FormData) => Promise<void>;
+  getDesignById: (id: number) => Promise<Design>;
+  activeAsset?: number;
+  setActiveAsset: (id: number) => void;
 };
 
 const useDesignsStore = create<Store>((set) => ({
   designs: [],
   isLoading: false,
   activeDesign: undefined,
+  activeAsset: undefined,
+  setActiveAsset: (id: number) => {
+    set({ activeAsset: id });
+  },
   processDesignFile: (id: number) => {
     set({ isLoading: true });
     return processDesignFileAPI(id)
@@ -63,6 +70,9 @@ const useDesignsStore = create<Store>((set) => ({
       .catch(() => {
         set({ isLoading: false });
       });
+  },
+  getDesignById: (id: number) => {
+    return getDesignByIDApi(id).then((d) => d.data);
   },
 }));
 

@@ -33,7 +33,7 @@ export function DesginCard(props: Props) {
           {d.isProcessed ? (
             <div>
               <a
-                href={`/editor?design=${d.id}&project=${activeProject && activeProject.id}`}
+                href={`/editor?design=${d.id}&project=${activeProject && activeProject.id}&layout=${d.layoutID}`}
                 data-type="button"
               >
                 Edit

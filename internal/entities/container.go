@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"image"
 	"math"
 )
 
@@ -10,14 +11,18 @@ func NewContainer(ul Point, dr Point) Container {
 }
 
 type Container struct {
-	width     int32
-	heigth    int32
-	UpperLeft Point
-	DownRight Point
+	width     int32 `json:"width,omitempty"`
+	heigth    int32 `json:"heigth,omitempty"`
+	UpperLeft Point `json:"upper_left,omitempty"`
+	DownRight Point `json:"down_right,omitempty"`
 }
 
 func (c *Container) Print() {
 	fmt.Printf("Container Width: %d Height: %d", c.Width(), c.Height())
+}
+
+func (c *Container) Position() image.Point {
+	return image.Point{X: int(c.UpperLeft.X), Y: int(c.UpperLeft.Y)}
 }
 
 // Move the container to a new point position, using up left as origin
@@ -72,4 +77,13 @@ func (c *Container) Center() Point {
 	x := (float64(c.Width()) / 2) + float64(c.UpperLeft.X)
 	y := (float64(c.Height()) / 2) + float64(c.UpperLeft.Y)
 	return NewPoint(int32(x), int32(y))
+}
+
+func (c *Container) Rect() image.Rectangle {
+	return image.Rect(
+		int(c.UpperLeft.X),
+		int(c.UpperLeft.Y),
+		int(c.DownRight.X),
+		int(c.DownRight.Y),
+	)
 }
