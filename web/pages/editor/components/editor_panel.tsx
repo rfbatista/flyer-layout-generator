@@ -10,6 +10,7 @@ export function EditorPanel() {
   const { editor, layers, addActiveItem, save } = useEditorStore();
   const { activeDesign } = useDesignsStore();
   const [compType, setCompType] = useState("");
+  const [isLoading, setLoading] = useState(false)
 
   const zoomIn = () => {
     if (editor) {
@@ -38,6 +39,7 @@ export function EditorPanel() {
       formData.append("elements[]", id);
     }
     try {
+      setLoading(true)
       const response = await fetch(
         `/api/v1/editor/design/${activeDesign.id}/layout/${activeDesign.layoutID}/component`,
         {
@@ -48,20 +50,23 @@ export function EditorPanel() {
       if (response.ok) {
         const result = await response.json();
         console.log("Success:", result);
+      setLoading(false)
+        window.location.reload();
       } else {
         console.error("Error:", response.statusText);
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error:", error);
     }
   };
 
   useEffect(() => {
     const data = layers.map((l) => ({ x: l.x, y: l.y, id: l.name }));
-    console.log(data);
   }, [layers]);
 
-  useEffect(() => {}, [editor]);
+  useEffect(() => { }, [editor]);
 
   return (
     <div className="stack">
@@ -91,7 +96,10 @@ export function EditorPanel() {
                     return <option value={p.text}>{p.text}</option>;
                   })}
                 </select>
-                <button onClick={createComponent}>Create</button>
+                <button onClick={createComponent} data-state={isLoading && "loading"}>
+                  <div className="ld ld-ring ld-spin"></div>
+                  Create
+                </button>
               </fieldset>
             </div>
           </div>

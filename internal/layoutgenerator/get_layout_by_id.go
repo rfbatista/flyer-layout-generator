@@ -71,6 +71,16 @@ func GetLayoutByIDUseCase(
 			components = append(components, comp)
 		}
 	}
+	for idx := range components {
+		for elidx := range components[idx].Elements {
+			components[idx].Elements[elidx].Type = components[idx].Type
+		}
+	}
+	if bg != nil {
+		for elidx := range bg.Elements {
+			bg.Elements[elidx].Type = bg.Type
+		}
+	}
 	lay.Components = components
 	lay.Background = bg
 	grid := entities.Grid{}

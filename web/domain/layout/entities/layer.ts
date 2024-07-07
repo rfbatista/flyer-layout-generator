@@ -21,8 +21,6 @@ export class Layer {
   initContainer: Container;
   currentContainer: Container;
   constructor(p: Props) {
-    console.log("layer created");
-    console.log(p)
     this.p = p;
     this.initContainer = structuredClone(
       Container.create({

@@ -90,24 +90,39 @@ const useEditorStore = create<Props>((set, get) => ({
     editor.centerObject(viewport);
     editor.zoomToPoint(viewport.getCenterPoint(), 0.6);
     set({ origin: new Point(viewport.left, viewport.top), editor: editor });
-    console.log("components", layout.components);
+    const bgElementsID: number[] = []
     if (layout.bg) {
       const elementsSorted = layout.bg.elements.sort((a, b) => {
         return a.level - b.level;
       });
       for (const el of elementsSorted) {
-        console.log("adding element", el);
+        bgElementsID.push(el.id)
+        console.log("bg tipo: ", el.type)
         await get().drawElement(LayoutElement.create(el), viewport);
       }
     }
+    const componentElemntsID: number[] = []
+    console.log("components in", layout.components)
     for (const c of layout.components) {
       const elementsSorted = c.elements.sort((a, b) => {
         return a.level - b.level;
       });
       for (const el of elementsSorted) {
-        console.log("adding element", el);
+        componentElemntsID.push(el.id)
+        console.log("component tipo: ", el.type)
         await get().drawElement(LayoutElement.create(el), viewport);
       }
+    }
+    var new_array = layout.elements.filter(function (item) {
+      return bgElementsID.indexOf(item.id) < 0; // Returns true for items not found in b.
+    });
+    var notAcomponent = new_array.filter(function (item) {
+      return componentElemntsID.indexOf(item.id) < 0; // Returns true for items not found in b.
+    });
+    for (const el of notAcomponent) {
+      componentElemntsID.push(el.id)
+      console.log("tipo: ", el.type)
+      await get().drawElement(el, viewport);
     }
     const viewportOutline = new Rect({
       left: get().origin.x,
@@ -150,6 +165,7 @@ const useEditorStore = create<Props>((set, get) => ({
     }
   },
   addLayer: (l: Layer) => {
+    console.log("added layer", l.type)
     set((s) => ({ layers: [...s.layers, l] }));
   },
   onMouseUp: () => {
@@ -189,7 +205,6 @@ const useEditorStore = create<Props>((set, get) => ({
     set({ layers });
   },
   onObjectMoving: (opt) => {
-    // console.log(opt)
     const idx = get().layers.findIndex((l) => l.id === opt.target.id);
     const layers = get().layers;
     layers[idx].setPosition(opt.target.left, opt.target.top);
