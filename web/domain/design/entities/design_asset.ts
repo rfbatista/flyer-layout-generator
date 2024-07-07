@@ -1,6 +1,6 @@
-export const DesignAssetType = Object.freeze({
+export const DesignAssetType = {
   TEXT: 6,
-});
+};
 
 export const DesignAssetPropertyKey = Object.freeze({
   CONTENT: "text",
