@@ -113,3 +113,9 @@ INSERT INTO layout_elements (
   $23
 )
 RETURNING *;
+
+-- name: UpdateLayoutImagByID :exec
+UPDATE layout 
+SET 
+  image_url = $2
+WHERE id = $1;

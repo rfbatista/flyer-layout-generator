@@ -478,3 +478,20 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 	}
 	return items, nil
 }
+
+const updateLayoutImagByID = `-- name: UpdateLayoutImagByID :exec
+UPDATE layout 
+SET 
+  image_url = $2
+WHERE id = $1
+`
+
+type UpdateLayoutImagByIDParams struct {
+	ID       int64       `json:"id"`
+	ImageUrl pgtype.Text `json:"image_url"`
+}
+
+func (q *Queries) UpdateLayoutImagByID(ctx context.Context, arg UpdateLayoutImagByIDParams) error {
+	_, err := q.db.Exec(ctx, updateLayoutImagByID, arg.ID, arg.ImageUrl)
+	return err
+}
