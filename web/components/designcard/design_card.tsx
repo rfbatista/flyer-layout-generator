@@ -31,7 +31,7 @@ export function DesginCard(props: Props) {
         </div>
         <div className="cluster center design-card__body">
           {d.isProcessed ? (
-            <div>
+            <div className="p-1">
               <a
                 href={`/editor?design=${d.id}&project=${activeProject && activeProject.id}&layout=${d.layoutID}`}
                 data-type="button"

@@ -82,7 +82,7 @@ export function SideBar() {
         </div>
         <div className="box">
           <div className="cluster">
-            <div>
+            <div className="p-1">
               <button onClick={openModal}>CSV</button>
             </div>
           </div>

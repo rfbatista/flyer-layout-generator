@@ -93,7 +93,7 @@ export function BatchBoard() {
     <>
       <div className="box">
         <div className="cluster">
-          <div>
+          <div className="p-1">
             <button
               className="my-2"
               data-state={isLoading || request?.isDoing ? "loading" : ""}

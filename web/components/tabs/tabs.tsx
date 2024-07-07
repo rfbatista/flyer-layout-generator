@@ -13,7 +13,7 @@ export function Tabs(props: Props) {
       <div className="tabs">
         {props.items.map((i) => {
           return (
-            <div className="tabs__container" data-state={i.active && "active"}>
+            <div className="tabs__container p-1" data-state={i.active && "active"}>
               <button data-type="ghost" className="tabs__container__item" onClick={i.onClick}>
                 {i.name}
               </button>
