@@ -85,7 +85,7 @@ func RenderPngImageUseCase(
 	}
 	for _, c := range req.Layout.Components {
 		for _, e := range c.Elements {
-			if e.Kind == "type" {
+			if e.Kind == "typess" {
 				text := e.PickTextFromProperty()
 				size := textDrawer.FindTextSizeToFillContainer(text, e.OuterContainer)
 				textDrawer.addLabel(
