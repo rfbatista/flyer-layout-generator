@@ -135,8 +135,9 @@ export function DesignAssetsTable() {
                       onClick={() => openModal(p.id)}
                       type="button"
                       data-type="icon"
-                      data-icon="magic"
-                    ></button>
+                    >
+                      <i className="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
                   </td>
                 </tr>
               );
