@@ -3,6 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/database"
 	"algvisual/internal/entities"
+	"algvisual/internal/renderer"
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -21,6 +22,7 @@ func UpdateLayoutElementPositionUseCase(
 	ctx context.Context,
 	req UpdateLayoutElementPositionInput,
 	db *database.Queries,
+	render renderer.RendererService,
 ) (*UpdateLayoutElementPositionOutput, error) {
 	element, err := GetLayoutElementByIdUseCase(ctx, GetLayoutElementByIdInput{ID: req.ID}, db)
 	if err != nil {
@@ -37,6 +39,25 @@ func UpdateLayoutElementPositionUseCase(
 		InnerXii: pgtype.Int4{Int32: int32(element.Data.InnerXii), Valid: true},
 		InnerYi:  pgtype.Int4{Int32: int32(element.Data.InnerYi), Valid: true},
 		InnerYii: pgtype.Int4{Int32: int32(element.Data.InnerYii), Valid: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+	layout, err := GetLayoutByIDUseCase(ctx, db, GetLayoutByIDRequest{
+		LayoutID: element.Data.LayoutID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	out, err := render.RenderPNGImage(ctx, renderer.RenderPngImageInput{
+		Layout: layout.Layout,
+	})
+	if err != nil {
+		return nil, err
+	}
+	err = db.UpdateLayoutImagByID(ctx, database.UpdateLayoutImagByIDParams{
+		ID:       int64(layout.Layout.ID),
+		ImageUrl: pgtype.Text{String: out.ImageURL, Valid: true},
 	})
 	if err != nil {
 		return nil, err

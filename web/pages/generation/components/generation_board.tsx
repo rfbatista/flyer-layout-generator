@@ -5,7 +5,7 @@ import { TryBoard } from "./try_board";
 import { BatchBoard } from "./batch_board";
 
 export function GenerationBoard() {
-  const [activeTab, setActiveTab] = useState("try");
+  const [activeTab, setActiveTab] = useState("batch");
   return (
     <>
       <div className="box">

@@ -53,12 +53,12 @@ func (l LayoutGeneratorService) UpdateElementPosition(
 	ctx context.Context,
 	in UpdateLayoutElementPositionInput,
 ) (*UpdateLayoutElementPositionOutput, error) {
-	return UpdateLayoutElementPositionUseCase(ctx, in, l.db)
+	return UpdateLayoutElementPositionUseCase(ctx, in, l.db, l.rendererService)
 }
 
 func (l LayoutGeneratorService) UpdateElementSize(
 	ctx context.Context,
 	in UpdateLayoutElementSizeInput,
 ) (*UpdateLayoutElementSizeOutput, error) {
-	return UpdateLayoutElementSizeUseCase(ctx, in, l.db)
+	return UpdateLayoutElementSizeUseCase(ctx, in, l.db, l.rendererService)
 }

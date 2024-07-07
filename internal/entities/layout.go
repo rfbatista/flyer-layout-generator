@@ -16,7 +16,7 @@ type LayoutDTO struct {
 type Layout struct {
 	ID             int32               `json:"id,omitempty"`
 	Background     *LayoutComponent    `json:"background,omitempty"`
-	BackgroundList []LayoutComponent   `json:"background,omitempty"`
+	BackgroundList []LayoutComponent   `json:"background_list,omitempty"`
 	ImageURL       string              `json:"image_url,omitempty"`
 	DesignID       int32               `json:"design_id,omitempty"`
 	Width          int32               `json:"width,omitempty"`

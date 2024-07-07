@@ -12,6 +12,7 @@ func ToDesignElementEntitie(raw database.LayoutElement) entities.LayoutElement {
 		Xii:         raw.Xii.Int32,
 		Yi:          raw.Yi.Int32,
 		Yii:         raw.Yii.Int32,
+		LayoutID:    raw.LayoutID,
 		AssetID:     raw.AssetID,
 		InnerXi:     raw.InnerXi.Int32,
 		InnerXii:    raw.InnerXii.Int32,

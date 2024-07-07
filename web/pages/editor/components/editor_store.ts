@@ -40,7 +40,7 @@ type Props = {
     height: number,
   ) => Promise<void>;
   isLoading: boolean;
-  drawElement: (l: LayoutElement) => Promise<void>;
+  drawElement: (l: LayoutElement, viewport?: Rect) => Promise<void>;
 };
 
 const useEditorStore = create<Props>((set, get) => ({
@@ -88,14 +88,41 @@ const useEditorStore = create<Props>((set, get) => ({
     });
     editor.add(viewport);
     editor.centerObject(viewport);
-    editor.zoomToPoint(viewport.getCenterPoint(), 0.5);
+    editor.zoomToPoint(viewport.getCenterPoint(), 0.6);
     set({ origin: new Point(viewport.left, viewport.top), editor: editor });
-    const elementsSorted = layout.elements.sort((a, b) => {
-      return a.level - b.level;
-    });
-    for (const el of elementsSorted) {
-      await get().drawElement(el);
+    console.log("components", layout.components);
+    if (layout.bg) {
+      const elementsSorted = layout.bg.elements.sort((a, b) => {
+        return a.level - b.level;
+      });
+      for (const el of elementsSorted) {
+        console.log("adding element", el);
+        await get().drawElement(LayoutElement.create(el), viewport);
+      }
     }
+    for (const c of layout.components) {
+      const elementsSorted = c.elements.sort((a, b) => {
+        return a.level - b.level;
+      });
+      for (const el of elementsSorted) {
+        console.log("adding element", el);
+        await get().drawElement(LayoutElement.create(el), viewport);
+      }
+    }
+    const viewportOutline = new Rect({
+      left: get().origin.x,
+      top: get().origin.y,
+      width: layout.width,
+      height: layout.height,
+      selectable: false,
+      lockMovementX: true,
+      stroke: "#dddddd",
+      strokeWidth: 4,
+      fill: "rgba(0,0,0,0)",
+      lockMovementY: true,
+    });
+    editor.add(viewportOutline);
+    editor.centerObject(viewport);
   },
   setLayoutManager: (l: LayoutManager) => {
     set({ layoutManager: l });
@@ -168,7 +195,7 @@ const useEditorStore = create<Props>((set, get) => ({
     layers[idx].setPosition(opt.target.left, opt.target.top);
     set({ layers });
   },
-  drawElement: async (l: LayoutElement): Promise<void> => {
+  drawElement: async (l: LayoutElement, viewport?: Rect): Promise<void> => {
     const editor = get().editor;
     if (!editor) return;
     const i = await Image.fromURL(l.imageURL);
@@ -188,6 +215,7 @@ const useEditorStore = create<Props>((set, get) => ({
     i.scaleToWidth(l.width);
     i.scaleToHeight(l.height);
     i.set(opts);
+    if (viewport) setClipPath(i, viewport);
     editor.add(i);
     set({ elementsOrder: get().elementsOrder + 1 });
     get().addLayer(
@@ -210,7 +238,7 @@ const useEditorStore = create<Props>((set, get) => ({
           await updateElementPositionAPI(1, l.id, l.positionDTO());
         }
         if (l.scaled) {
-          l.print()
+          l.print();
           await updateElementSizeAPI(1, l.id, {
             width: l.currentContainer.witdth,
             height: l.currentContainer.height,
@@ -224,5 +252,16 @@ const useEditorStore = create<Props>((set, get) => ({
     }
   },
 }));
+
+function setClipPath(object: any, clipRect: any) {
+  object.clipPath = new Rect({
+    fill: "rgba(0,0,0,0)",
+    absolutePositioned: true,
+    left: clipRect.left,
+    top: clipRect.top,
+    width: clipRect.width,
+    height: clipRect.height,
+  });
+}
 
 export { useEditorStore };

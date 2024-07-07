@@ -11,6 +11,7 @@ export type LayoutProps = {
   done?: number;
   elements?: Array<LayoutElementProps>;
   components?: Array<LayoutComponentProps>;
+  background?: LayoutComponentProps
   template?: {
     distortion: {};
     created_at: string;
@@ -57,6 +58,14 @@ export class Layout {
     }
 
     return new Layout(p, elements);
+  }
+
+  get components(){
+    return this.p.components || []
+  }
+
+  get bg(){
+    return this.p.background
   }
 
   get id() {

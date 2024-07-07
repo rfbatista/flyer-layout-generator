@@ -39,26 +39,28 @@ func RenderPngImageUseCase(
 		zap.Int("layout height", int(req.Layout.Height)),
 	)
 	c := req.Layout.Background
-	for _, e := range c.Elements {
-		img, err := storage.LoadImageFromURL(e.ImageURL)
-		if err != nil {
-			return nil, err
+	if c != nil {
+		for _, e := range c.Elements {
+			img, err := storage.LoadImageFromURL(e.ImageURL)
+			if err != nil {
+				return nil, err
+			}
+			nimg := resize.Resize(
+				uint(e.OuterContainer.Width()),
+				uint(e.OuterContainer.Height()),
+				img,
+				resize.Lanczos2,
+			)
+			bounds := e.OuterContainer.Rect()
+			pos := image.Point{}
+			draw.Draw(
+				board,
+				bounds,
+				nimg,
+				pos,
+				draw.Over,
+			)
 		}
-		nimg := resize.Resize(
-			uint(e.OuterContainer.Width()),
-			uint(e.OuterContainer.Height()),
-			img,
-			resize.Lanczos2,
-		)
-		bounds := e.OuterContainer.Rect()
-		pos := image.Point{}
-		draw.Draw(
-			board,
-			bounds,
-			nimg,
-			pos,
-			draw.Over,
-		)
 	}
 	for _, c := range req.Layout.BackgroundList {
 		for _, e := range c.Elements {

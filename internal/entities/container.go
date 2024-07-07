@@ -11,10 +11,10 @@ func NewContainer(ul Point, dr Point) Container {
 }
 
 type Container struct {
-	width     int32 `json:"width,omitempty"`
-	heigth    int32 `json:"heigth,omitempty"`
-	UpperLeft Point `json:"upper_left,omitempty"`
-	DownRight Point `json:"down_right,omitempty"`
+	width     int32 `json:"width"`
+	heigth    int32 `json:"heigth"`
+	UpperLeft Point `json:"upper_left"`
+	DownRight Point `json:"down_right"`
 }
 
 func (c *Container) Print() {

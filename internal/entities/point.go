@@ -11,8 +11,8 @@ func NewPointp(x, y int32) *Point {
 }
 
 type Point struct {
-	X int32 `json:"X,omitempty"`
-	Y int32 `json:"Y,omitempty"`
+	X int32 `json:"X"`
+	Y int32 `json:"Y"`
 }
 
 func (p *Point) DisplacementFrom(d Point) Point {

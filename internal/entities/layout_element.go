@@ -45,6 +45,7 @@ type LayoutElement struct {
 	Yi             int32                     `json:"yi,omitempty"`
 	Yii            int32                     `json:"yii,omitempty"`
 	AssetID        int32                     `json:"asset_id,omitempty"`
+	LayoutID       int32                     `json:"layout_id,omitempty"`
 	InnerXi        int32                     `json:"inner_xi,omitempty"`
 	InnerXii       int32                     `json:"inner_xii,omitempty"`
 	InnerYi        int32                     `json:"inner_yi,omitempty"`

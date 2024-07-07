@@ -35,45 +35,67 @@ func SaveLayout(
 	}
 	ld := mapper.LayoutToDomain(layoutCreated)
 	for _, c := range l.Components {
-		comp := mapper.LayoutComponentFromDomain(c)
-		componentCreated, err := qtx.CreateLayoutComponent(
+		component, err := saveComponent(ctx, qtx, layoutCreated, c, l)
+		if err != nil {
+			return nil, err
+		}
+		ld.Components = append(ld.Components, *component)
+	}
+	if l.Background != nil {
+		component, err := saveComponent(ctx, qtx, layoutCreated, *l.Background, l)
+		if err != nil {
+			return nil, err
+		}
+		ld.Background = component
+	}
+	tx.Commit(ctx)
+	return &ld, nil
+}
+
+func saveComponent(
+	ctx context.Context,
+	qtx *database.Queries,
+	layoutCreated database.Layout,
+	c entities.LayoutComponent,
+	l entities.Layout,
+) (*entities.LayoutComponent, error) {
+	comp := mapper.LayoutComponentFromDomain(c)
+	componentCreated, err := qtx.CreateLayoutComponent(
+		ctx,
+		database.CreateLayoutComponentParams{
+			LayoutID: int32(layoutCreated.ID),
+			DesignID: l.DesignID,
+			Xi:       comp.Xi,
+			Xii:      comp.Xii,
+			Yi:       comp.Yi,
+			Yii:      comp.Yii,
+			Type:     comp.Type,
+			Color:    comp.Color,
+			BboxXi:   comp.BboxXi,
+			BboxYi:   comp.BboxYi,
+			BboxYii:  comp.BboxYii,
+			BboxXii:  comp.BboxXii,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	componentCreat := mapper.LayoutComponentToDomain(componentCreated)
+	for _, i := range c.Elements {
+		ele, err := qtx.CreateElement(
 			ctx,
-			database.CreateLayoutComponentParams{
-				LayoutID: int32(layoutCreated.ID),
-				DesignID: l.DesignID,
-				Xi:       comp.Xi,
-				Xii:      comp.Xii,
-				Yi:       comp.Yi,
-				Yii:      comp.Yii,
-				Type:     comp.Type,
-				Color:    comp.Color,
-				BboxXi:   comp.BboxXi,
-				BboxYi:   comp.BboxYi,
-				BboxYii:  comp.BboxYii,
-				BboxXii:  comp.BboxXii,
-			},
+			mapper.LayoutElementToCreateElement(
+				i,
+				int32(layoutCreated.ID),
+				l.DesignID,
+				componentCreated.ID,
+			),
 		)
 		if err != nil {
 			return nil, err
 		}
-		for _, i := range c.Elements {
-			ele, err := qtx.CreateElement(
-				ctx,
-				mapper.LayoutElementToCreateElement(
-					i,
-					int32(layoutCreated.ID),
-					l.DesignID,
-					componentCreated.ID,
-				),
-			)
-			if err != nil {
-				return nil, err
-			}
-			dele := mapper.ToDesignElementEntitie(ele)
-			c.Elements = append(c.Elements, dele)
-		}
-		ld.Components = append(ld.Components, c)
+		dele := mapper.ToDesignElementEntitie(ele)
+		componentCreat.Elements = append(c.Elements, dele)
 	}
-	tx.Commit(ctx)
-	return &ld, nil
+	return &componentCreat, nil
 }
