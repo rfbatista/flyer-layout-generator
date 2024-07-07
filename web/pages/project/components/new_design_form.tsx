@@ -29,7 +29,7 @@ export function NewDesignForm() {
         <div>
           <div>
             <button type="submit" data-state={isLoading && "loading"}>
-              <span data-type="spinner" />
+              <div className="ld ld-ring ld-spin"></div>
               Create
             </button>
           </div>
