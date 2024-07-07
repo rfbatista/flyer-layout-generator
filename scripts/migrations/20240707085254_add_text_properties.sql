@@ -1,0 +1,8 @@
+-- Create enum type "design_asset_type"
+CREATE TYPE "design_asset_type" AS ENUM ('text', 'smartobject', 'shape', 'pixel', 'group', 'unknown');
+-- Create "design_assets" table
+CREATE TABLE "design_assets" ("id" serial NOT NULL, "project_id" integer NULL, "design_id" integer NULL, "alternative_to" integer NULL, "name" text NOT NULL, "width" integer NULL, "type" "design_asset_type" NULL, "asset_url" text NULL, "asset_path" text NULL, "height" integer NULL, "created_at" timestamp NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp NULL, PRIMARY KEY ("id"), CONSTRAINT "design_assets_alternative_to_fkey" FOREIGN KEY ("alternative_to") REFERENCES "design_assets" ("id") ON UPDATE CASCADE ON DELETE NO ACTION, CONSTRAINT "design_assets_design_id_fkey" FOREIGN KEY ("design_id") REFERENCES "design" ("id") ON UPDATE CASCADE ON DELETE NO ACTION, CONSTRAINT "design_assets_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects" ("id") ON UPDATE CASCADE ON DELETE NO ACTION);
+-- Create "design_assets_properties" table
+CREATE TABLE "design_assets_properties" ("id" serial NOT NULL, "asset_id" integer NULL, "key" text NOT NULL, "value" text NOT NULL, "created_at" timestamp NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp NULL, PRIMARY KEY ("id"), CONSTRAINT "design_assets_properties_asset_id_fkey" FOREIGN KEY ("asset_id") REFERENCES "design_assets" ("id") ON UPDATE CASCADE ON DELETE NO ACTION);
+-- Modify "layout_elements" table
+ALTER TABLE "layout_elements" ADD COLUMN "asset_id" integer NOT NULL, ADD CONSTRAINT "fk_design_element_design_asset_id" FOREIGN KEY ("asset_id") REFERENCES "design_assets" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
