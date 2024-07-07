@@ -8,6 +8,7 @@ const outDir = resolve(__dirname, "./dist/vite");
 // https://vitejs.dev/config/
 export default defineConfig({
   root,
+  base: "/dist/vite/assets/",
   plugins: [react()],
   build: {
     minify: false,
