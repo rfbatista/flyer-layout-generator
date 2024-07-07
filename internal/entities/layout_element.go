@@ -40,16 +40,16 @@ func NewLayoutElement(xi, xii, yi, yii int32) LayoutElement {
 
 type LayoutElement struct {
 	ID             int32                     `json:"id,omitempty"`
-	Xi             int32                     `json:"xi,omitempty"`
-	Xii            int32                     `json:"xii,omitempty"`
-	Yi             int32                     `json:"yi,omitempty"`
-	Yii            int32                     `json:"yii,omitempty"`
+	Xi             int32                     `json:"xi"`
+	Xii            int32                     `json:"xii"`
+	Yi             int32                     `json:"yi"`
+	Yii            int32                     `json:"yii"`
 	AssetID        int32                     `json:"asset_id,omitempty"`
 	LayoutID       int32                     `json:"layout_id,omitempty"`
-	InnerXi        int32                     `json:"inner_xi,omitempty"`
-	InnerXii       int32                     `json:"inner_xii,omitempty"`
-	InnerYi        int32                     `json:"inner_yi,omitempty"`
-	InnerYii       int32                     `json:"inner_yii,omitempty"`
+	InnerXi        int32                     `json:"inner_xi"`
+	InnerXii       int32                     `json:"inner_xii"`
+	InnerYi        int32                     `json:"inner_yi"`
+	InnerYii       int32                     `json:"inner_yii"`
 	LayerID        string                    `json:"layer_id,omitempty"`
 	FWidth         int32                     `json:"width,omitempty"`
 	FHeight        int32                     `json:"height,omitempty"`
