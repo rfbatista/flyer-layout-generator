@@ -5,6 +5,8 @@ import { defineConfig } from "vite";
 const root = resolve(__dirname, "./web/pages/");
 const outDir = resolve(__dirname, "./dist/vite");
 
+export const hash = Math.floor(Math.random() * 90000) + 10000;
+
 // https://vitejs.dev/config/
 export default defineConfig({
   root,
@@ -26,7 +28,7 @@ export default defineConfig({
       treeshake: true,
       output: {
         entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/index-chunk.js`,
+        chunkFileNames: `assets/[name]` + hash + `.js`,
         assetFileNames: `assets/[name].[ext]`,
       },
     },
