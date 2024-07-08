@@ -24,15 +24,22 @@ func Stage4(
 		if err != nil || cont == nil {
 			continue
 		}
-		c.ScaleToFitInSize(cont.Width(), cont.Height())
-		if c.Height() < 50 {
-			continue
-		}
+		w := cont.Width()
+		h := cont.Height()
+		c.ScaleToFitInSize(w, h)
 		gcrid := prevGrid.ContainerToPositions(*cont)
 		prevGrid.OcupyByPositionList(gcrid, c.ID)
 		c.MoveTo(cont.UpperLeft)
 		c.CenterInContainer(*cont)
 		c.ApplyPadding(original.Config.Padding)
+		innerW := c.Width()
+		innerH := c.Height()
+		if innerW <= 50 {
+			continue
+		}
+		if innerH <= 50 {
+			continue
+		}
 		stageComponents = append(stageComponents, c)
 	}
 	out.Components = stageComponents

@@ -49,10 +49,12 @@ func GenerateJobUseCase(
 		}
 		return nil, err
 	}
+	layoutRequest := mapper.LayoutRequestToDomain(layoutReq)
 	job := mapper.LayoutRequestJobToDomain(layoutJobReq)
 	jobReq := layoutgenerator.GenerateImageV2Input{
-		TemplateID: layoutJobReq.TemplateID.Int32,
-		LayoutID:   layoutReq.LayoutID.Int32,
+		TemplateID:       layoutJobReq.TemplateID.Int32,
+		LayoutID:         layoutReq.LayoutID.Int32,
+		LayoutPriorities: layoutRequest.Config.Priorities,
 	}
 	if job.Config != nil {
 		jobReq.ShowGrid = job.Config.ShowGrid

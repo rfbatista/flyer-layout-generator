@@ -18,6 +18,14 @@ func StageRemoveColisions(
 			grid.RemoveFromAllCells(c.ID)
 			continue
 		}
+		innerW := c.Width()
+		innerH := c.Height()
+		if innerW <= 50 {
+			continue
+		}
+		if innerH <= 50 {
+			continue
+		}
 		stagecomponents = append(stagecomponents, c)
 	}
 	out.Components = stagecomponents

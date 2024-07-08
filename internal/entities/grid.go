@@ -170,6 +170,10 @@ func (g *Grid) CellWidth() int32 {
 	return g.slotWidth
 }
 
+func (g *Grid) GetCell(p Position) GridCell {
+	return g.position[p.X][p.Y]
+}
+
 func (g *Grid) CellHeight() int32 {
 	return g.slotHeight
 }
@@ -195,66 +199,6 @@ func (g *Grid) Height() int32 {
 type OverlapResult struct {
 	Region  GridCell `json:"region"`
 	Overlap int32    `json:"overlap"`
-}
-
-func findOverlappingRegions(rect LayoutComponent, regions []GridCell) []OverlapResult {
-	var overlappingRegions []OverlapResult
-	for _, region := range regions {
-		if overlap, area := isOverlap(rect, region); overlap {
-			overlappingRegions = append(
-				overlappingRegions,
-				OverlapResult{Region: region, Overlap: area},
-			)
-		}
-	}
-	return overlappingRegions
-}
-
-func isOverlap(rect LayoutComponent, region GridCell) (bool, int32) {
-	// Calculate the overlapping area if the rectangle overlaps with the region
-	xOverlap := min(rect.Xii, region.Xii) - max(rect.Xi, region.Xi)
-	yOverlap := min(rect.Yii, region.Yii) - max(rect.Yi, region.Yi)
-	if xOverlap > 0 && yOverlap > 0 {
-		return true, xOverlap * yOverlap
-	}
-	return false, 0
-}
-
-func (g *Grid) FindOverlappingRegions(e LayoutComponent) []OverlapResult {
-	return findOverlappingRegions(e, g.Cells())
-}
-
-func (g *Grid) WhereToSnap(e LayoutComponent) (GridCell, bool) {
-	snapToLeft := true
-	upleft := NewPointp(e.Xi, e.Yi)
-	upright := NewPointp(e.Xii, e.Yi)
-	downleft := NewPointp(e.Xi, e.Yii)
-	downright := NewPointp(e.Xii, e.Yii)
-	smallerDistance := int32(999999)
-	nearestRegion := g.Cells()[0]
-	for _, region := range g.Cells() {
-		if smallerDistance > region.DistanceToEdge(*upleft) {
-			smallerDistance = region.DistanceToEdge(*upleft)
-			snapToLeft = true
-			nearestRegion = region
-		}
-		if smallerDistance > region.DistanceToEdge(*upright) {
-			smallerDistance = region.DistanceToEdge(*upright)
-			snapToLeft = false
-			nearestRegion = region
-		}
-		if smallerDistance > region.DistanceToEdge(*downleft) {
-			smallerDistance = region.DistanceToEdge(*downleft)
-			snapToLeft = true
-			nearestRegion = region
-		}
-		if smallerDistance > region.DistanceToEdge(*downright) {
-			smallerDistance = region.DistanceToEdge(*downright)
-			snapToLeft = false
-			nearestRegion = region
-		}
-	}
-	return nearestRegion, snapToLeft
 }
 
 // Find in which cell the component is

@@ -108,31 +108,63 @@ func StringToDatabaseComponentType(s string) (database.ComponentType, error) {
 	}
 }
 
-func ComponentTypeToDatabaseComponentType(s ComponentType) (database.ComponentType, error) {
+// TODO: Mover para o pacote mapper
+func ComponentTypeToDatabaseComponentType(s ComponentType) database.ComponentType {
 	switch s {
 	case ComponentTypePlanoDeFundo:
-		return database.ComponentTypeBackground, nil
+		return database.ComponentTypeBackground
 	case ComponentTypeMarca:
-		return database.ComponentTypeLogotipoMarca, nil
+		return database.ComponentTypeLogotipoMarca
 	case ComponentTypeProduto:
-		return database.ComponentTypeLogotipoProduto, nil
+		return database.ComponentTypeLogotipoProduto
 	case ComponentTypePackshot:
-		return database.ComponentTypePackshot, nil
+		return database.ComponentTypePackshot
 	case ComponentTypeCelebridade:
-		return database.ComponentTypeCelebridade, nil
+		return database.ComponentTypeCelebridade
 	case ComponentTypeModelo:
-		return database.ComponentTypeModelo, nil
+		return database.ComponentTypeModelo
 	case ComponentTypeIllustration:
-		return database.ComponentTypeIlustracao, nil
+		return database.ComponentTypeIlustracao
 	case ComponentTypeOferta:
-		return database.ComponentTypeOferta, nil
+		return database.ComponentTypeOferta
 	case ComponentTypeTextoLegal:
-		return database.ComponentTypeTextoLegal, nil
+		return database.ComponentTypeTextoLegal
 	case ComponentTypeGrafismo:
-		return database.ComponentTypeGrafismo, nil
+		return database.ComponentTypeGrafismo
 	case ComponentTypeCallToAction:
-		return database.ComponentTypeTextoCta, nil
+		return database.ComponentTypeTextoCta
+		//TODO criar tipo desconhecido
 	default:
-		return "", errors.New("invalid ComponentType")
+		return database.ComponentTypeGrafismo
+	}
+}
+
+// TODO: Mover para o pacote mapper
+func DatabaseComponentTypeToDomain(s database.ComponentType) ComponentType {
+	switch s {
+	case database.ComponentTypeBackground:
+		return ComponentTypePlanoDeFundo
+	case database.ComponentTypeLogotipoMarca:
+		return ComponentTypeMarca
+	case database.ComponentTypeLogotipoProduto:
+		return ComponentTypeProduto
+	case database.ComponentTypePackshot:
+		return ComponentTypePackshot
+	case database.ComponentTypeCelebridade:
+		return ComponentTypeCelebridade
+	case database.ComponentTypeModelo:
+		return ComponentTypeModelo
+	case database.ComponentTypeIlustracao:
+		return ComponentTypeIllustration
+	case database.ComponentTypeOferta:
+		return ComponentTypeOferta
+	case database.ComponentTypeTextoLegal:
+		return ComponentTypeTextoLegal
+	case database.ComponentTypeGrafismo:
+		return ComponentTypeGrafismo
+	case database.ComponentTypeTextoCta:
+		return ComponentTypeCallToAction
+	default:
+		return ComponentTypeUnknown
 	}
 }

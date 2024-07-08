@@ -10,14 +10,6 @@ type LayoutComponent struct {
 	FHeight        int32           `json:"height,omitempty"`
 	Color          string          `json:"color,omitempty"`
 	Type           string          `json:"type,omitempty"`
-	Xi             int32           `json:"xi,omitempty"`
-	Xii            int32           `json:"xii,omitempty"`
-	Yi             int32           `json:"yi,omitempty"`
-	Yii            int32           `json:"yii,omitempty"`
-	BboxXi         int32           `json:"bbox_xi,omitempty"`
-	BboxXii        int32           `json:"bbox_xii,omitempty"`
-	BboxYi         int32           `json:"bbox_yi,omitempty"`
-	BboxYii        int32           `json:"bbox_yii,omitempty"`
 	Xsnaped        bool            `json:"xsnaped,omitempty"`
 	Ysnaped        bool            `json:"ysnaped,omitempty"`
 	LeftGap        Position        `json:"left_gap,omitempty"`
@@ -82,28 +74,8 @@ func (d *LayoutComponent) OrderPriority() int32 {
 	return 6
 }
 
-func (d *LayoutComponent) BboxWidth() int32 {
-	return d.BboxXii - d.BboxXi
-}
-
-func (d *LayoutComponent) BboxHeigth() int32 {
-	return d.BboxYii - d.BboxYi
-}
-
 func (d *LayoutComponent) IsBackground() bool {
 	return d.Type == "background"
-}
-
-func (d *LayoutComponent) CenterInRegion(r GridCell) {
-	xi := r.Xi
-	yi := r.Yi
-	if r.Width() > d.Width() {
-		xi = r.Xi + ((r.Width() - d.FWidth) / 2)
-	}
-	if r.Height() > d.FHeight {
-		yi = r.Yi + ((r.Height() - d.FHeight) / 2)
-	}
-	d.SetPosition(xi, yi)
 }
 
 func (d *LayoutComponent) CenterInContainer(r Container) {
@@ -226,62 +198,12 @@ func calculateGreaterScaleFactor(
 	return heightScaleFactor
 }
 
-func (d *LayoutComponent) ScaleTo(wscale, hscale float64) {
-	d.FHeight = int32(float64(d.FHeight) * hscale)
-	d.FWidth = int32(float64(d.FWidth) * wscale)
-	d.Xi = int32(float64(d.Xi) * wscale)
-	d.Yi = int32(float64(d.Yi) * hscale)
-	d.Xii = d.Xi + d.FWidth
-	d.Yii = d.Yi + d.FHeight
-	d.ScaleElements(wscale, hscale)
-	d.ScaleElementsPositions(wscale, hscale)
-}
-
-func (d *LayoutComponent) ScaleWithoutMoving(wscale, hscale float64) {
-	d.FHeight = int32(float64(d.FHeight) * hscale)
-	d.FWidth = int32(float64(d.FWidth) * wscale)
-	nxi := int32(float64(d.Xi) * wscale)
-	nyi := int32(float64(d.Yi) * hscale)
-	// movimentacao realizada
-	mxi := nxi - d.Xi
-	myi := nyi - d.Yi
-	d.Xi = nxi
-	d.Yi = nyi
-	d.Xii = d.Xi + d.FWidth
-	d.Yii = d.Yi + d.FHeight
-	d.ScaleElements(wscale, hscale)
-	for i := range d.Elements {
-		el := &d.Elements[i]
-		el.Xi = mxi + el.Xi
-		el.Yi = myi + el.Yi
-		el.Xii = el.Xi + el.FWidth
-		el.Yii = el.Yi + el.FHeight
-	}
-}
-
 func (d *LayoutComponent) ScaleElements(wscale, hscale float64) {
 	for i := range d.Elements {
 		el := &d.Elements[i]
 		el.FWidth = int32(float64(el.FWidth) * wscale)
 		el.FHeight = int32(float64(el.FHeight) * hscale)
 	}
-}
-
-func (d *LayoutComponent) SetPosition(xi, yi int32) {
-	xdif := xi - d.Xi
-	ydif := yi - d.Yi
-	d.Xi = xi
-	d.Yi = yi
-	d.Xii = xi + d.FWidth
-	d.Yii = yi + d.FHeight
-	for i := range d.Elements {
-		el := &d.Elements[i]
-		el.Xi += xdif
-		el.Yi += ydif
-		el.Xii += xdif
-		el.Yii += ydif
-	}
-	return
 }
 
 func (d *LayoutComponent) ScaleElementsPositions(wscale, hscale float64) {

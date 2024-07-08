@@ -5,13 +5,17 @@ import (
 )
 
 func TestNewGrid(t *testing.T) {
-	t.Run("should crete grid using pivot", func(tt *testing.T) {
-		t1, err := NewGrid(WithDefault(200, 200), WithPivot(100, 100))
+	t.Run("should find cell by point", func(tt *testing.T) {
+		t1, err := NewGrid(WithDefault(200, 200), WithCells(4, 4))
 		if err != nil {
 			tt.Errorf("error creating grid: %v", err)
 		}
-		if len(t1.Cells()) != 4 {
-			tt.Errorf("wrong number of regions: %d", len(t1.Cells()))
+		cell := t1.WhereIsPoint(NewPoint(75, 75))
+		if cell.positionX != 1 {
+			tt.Errorf("wrong position expected 1 but received %d", cell.positionX)
+		}
+		if cell.positionY != 1 {
+			tt.Errorf("wrong position expected 1 but received %d", cell.positionY)
 		}
 	})
 

@@ -14,18 +14,19 @@ import (
 )
 
 type GenerateImageV2Input struct {
-	LayoutID              int32    `param:"layout_id"   json:"layout_id,omitempty"`
-	TemplateID            int32    `param:"template_id" json:"template_id,omitempty"`
-	LimitSizerPerElement  bool     `                    json:"limit_sizer_per_element,omitempty"`
-	AnchorElements        bool     `                    json:"anchor_elements,omitempty"`
-	ShowGrid              bool     `                    json:"show_grid,omitempty"               form:"show_grid"`
-	MinimiumComponentSize int32    `                    json:"minimium_component_size,omitempty"`
-	MinimiumTextSize      int32    `                    json:"minimium_text_size,omitempty"`
-	SlotsX                int32    `                    json:"slots_x,omitempty"                 form:"grid_x"`
-	SlotsY                int32    `                    json:"slots_y,omitempty"                 form:"grid_y"`
-	Padding               int32    `                    json:"padding,omitempty"                 form:"padding"`
-	KeepProportions       bool     `                    json:"keep_proportions,omitempty"`
-	Priorities            []string `                    json:"priorities,omitempty"              form:"priority[]"`
+	LayoutID              int32          `param:"layout_id"   json:"layout_id,omitempty"`
+	TemplateID            int32          `param:"template_id" json:"template_id,omitempty"`
+	LimitSizerPerElement  bool           `                    json:"limit_sizer_per_element,omitempty"`
+	AnchorElements        bool           `                    json:"anchor_elements,omitempty"`
+	ShowGrid              bool           `                    json:"show_grid,omitempty"               form:"show_grid"`
+	MinimiumComponentSize int32          `                    json:"minimium_component_size,omitempty"`
+	MinimiumTextSize      int32          `                    json:"minimium_text_size,omitempty"`
+	SlotsX                int32          `                    json:"slots_x,omitempty"                 form:"grid_x"`
+	SlotsY                int32          `                    json:"slots_y,omitempty"                 form:"grid_y"`
+	Padding               int32          `                    json:"padding,omitempty"                 form:"padding"`
+	KeepProportions       bool           `                    json:"keep_proportions,omitempty"`
+	Priorities            []string       `                    json:"priorities,omitempty"              form:"priority[]"`
+	LayoutPriorities      map[string]int `                    json:"priorities,omitempty"`
 }
 
 type GenerateImageV2Output struct {
@@ -60,6 +61,7 @@ func GenerateImageV2UseCase(
 		log.Error("failed to get layout to run", zap.Error(err))
 		return nil, err
 	}
+	layout.Config.Priorities = req.LayoutPriorities
 	newLayout, err := grammars.RunV2(*layout, *temp, 10, 10, log)
 	if err != nil {
 		log.Error("failed to generate new layout", zap.Error(err))

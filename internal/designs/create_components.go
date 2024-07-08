@@ -56,11 +56,7 @@ func CreateComponentUseCase(
 	}
 	outer, inner := calculateContainersForComponent(elements)
 	ctype := entities.StringToComponentType(req.Type)
-	dtype, err := entities.ComponentTypeToDatabaseComponentType(ctype)
-	if err != nil {
-		log.Error("tipo de component invalido", zap.Error(err))
-		return nil, err
-	}
+	dtype := entities.ComponentTypeToDatabaseComponentType(ctype)
 	comp, err := qtx.CreateComponent(ctx, database.CreateComponentParams{
 		DesignID: int32(req.DesignID),
 		LayoutID: req.LayoutID,

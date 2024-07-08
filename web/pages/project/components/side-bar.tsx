@@ -63,7 +63,6 @@ export function SideBar() {
                           data-state={isLoading && "loading"}
                           data-color="blue"
                           onClick={async () => {
-                            await new Promise((r) => setTimeout(r, 5000));
                             activeProject &&
                               deleteTemplate(activeProject.id, t.id);
                           }}

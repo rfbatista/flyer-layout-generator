@@ -8,13 +8,12 @@ import (
 )
 
 func LayoutComponentFromDomain(c entities.LayoutComponent) database.LayoutComponent {
-	ctype, _ := entities.StringToDatabaseComponentType(c.Type)
 	return database.LayoutComponent{
 		DesignID: c.DesignID,
 		Width:    pgtype.Int4{Int32: c.OuterContainer.Width(), Valid: true},
 		Height:   pgtype.Int4{Int32: c.OuterContainer.Height(), Valid: true},
 		Type: database.NullComponentType{
-			ComponentType: ctype,
+			ComponentType: entities.ComponentTypeToDatabaseComponentType(entities.StringToComponentType(c.Type)),
 			Valid:         true,
 		},
 		Color: pgtype.Text{String: c.Color, Valid: true},

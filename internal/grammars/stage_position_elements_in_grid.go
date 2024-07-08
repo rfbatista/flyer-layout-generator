@@ -23,6 +23,12 @@ func PositionElementsInGrid(
 		c.ScaleToFitInSize(cont.Width(), cont.Height())
 		c.MoveTo(cont.UpperLeft)
 		c.CenterInContainer(cont)
+		if c.Width() <= 50 {
+			continue
+		}
+		if c.Height() <= 50 {
+			continue
+		}
 		c.GridContainer = cont
 		stagecomponents = append(stagecomponents, c)
 	}

@@ -74,7 +74,7 @@ func RunV2(
 	sort.Slice(layout2.Components, func(i, j int) bool {
 		it := original.Components[i].Type
 		jt := original.Components[j].Type
-		return original.Config.Priorities[it] > original.Config.Priorities[jt]
+		return original.Config.Priorities[it] < original.Config.Priorities[jt]
 	})
 	layout3, stage3Grid, err := StageFindColision(original, *layout2, template, *stage2Grid)
 	if err != nil {
@@ -144,5 +144,5 @@ func RunV2(
 
 	layout5.Background = original.Background
 	layout5.Stages = stages
-	return layout5, nil
+	return layout2, nil
 }
