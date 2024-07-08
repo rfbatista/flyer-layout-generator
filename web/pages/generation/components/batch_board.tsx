@@ -105,7 +105,7 @@ export function BatchBoard() {
               ></div>
               Start Batch
             </button>
-            <h1>{request && `${request.done}/${request.total}`}</h1>
+            <h1>{request && `${request.done || 0}/${request.total}`}</h1>
           </div>
         </div>
       </div>
