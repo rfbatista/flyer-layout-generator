@@ -71,27 +71,69 @@ func (t *Template) Grids() []Grid {
 	// 		}
 	// 	}
 	// }
-	grid, _ := t.CreateGrid(2, 3)
+	grid, _ := t.CreateGrid(1, 6)
 	if grid != nil {
 		g = append(
 			g, *grid,
 		)
 	}
-	grid, _ = t.CreateGrid(4, 3)
+	grid, _ = t.CreateGrid(2, 6)
 	if grid != nil {
 		g = append(
 			g, *grid,
 		)
 	}
 
+	grid, _ = t.CreateGrid(3, 6)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+
+	grid, _ = t.CreateGrid(4, 6)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
 	grid, _ = t.CreateGrid(5, 6)
 	if grid != nil {
 		g = append(
 			g, *grid,
 		)
 	}
-
-	grid, _ = t.CreateGrid(5, 5)
+	grid, _ = t.CreateGrid(6, 6)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+	grid, _ = t.CreateGrid(6, 2)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+	grid, _ = t.CreateGrid(6, 3)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+	grid, _ = t.CreateGrid(6, 4)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+	grid, _ = t.CreateGrid(6, 5)
+	if grid != nil {
+		g = append(
+			g, *grid,
+		)
+	}
+	grid, _ = t.CreateGrid(6, 1)
 	if grid != nil {
 		g = append(
 			g, *grid,
@@ -101,15 +143,18 @@ func (t *Template) Grids() []Grid {
 }
 
 func (t *Template) CreateGrid(x, y int) (*Grid, error) {
-	slotWidth := int(t.Width) / x
-	if slotWidth < minSlotSize {
+	slotWidth := float64(t.Width) / float64(x)
+	if slotWidth < float64(minSlotSize) {
 		return nil, errors.New("slow width < minimum slot size")
 	}
-	slotHeight := int(t.Height) / x
+	slotHeight := float64(t.Height) / float64(y)
+	if slotHeight < float64(minSlotSize) {
+		return nil, errors.New("slow height < minimum slot size")
+	}
 	grid, _ := NewGrid(
 		WithDefault(t.Width, t.Height),
 		WithPivot(int32(slotWidth), int32(slotHeight)),
-		WithCells(int32(x), int32(x)),
+		WithCells(int32(x), int32(y)),
 	)
 	return grid, nil
 }

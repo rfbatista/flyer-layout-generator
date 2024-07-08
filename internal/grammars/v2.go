@@ -3,6 +3,7 @@ package grammars
 import (
 	"algvisual/internal/entities"
 	"encoding/json"
+	"fmt"
 	"sort"
 
 	"go.uber.org/zap"
@@ -53,7 +54,8 @@ func RunV2(
 	// STAGE 2
 	// Position elements in target template grid
 	// *************************************************
-	layout2, stage2Grid, err := PositionElementsInGrid(original, *layout1, template, *stage1Grid)
+	inlay1, _ := Clone(layout1)
+	layout2, stage2Grid, err := PositionElementsInGrid(original, *inlay1, template, *stage1Grid)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +78,8 @@ func RunV2(
 		jt := original.Components[j].Type
 		return original.Config.Priorities[it] < original.Config.Priorities[jt]
 	})
-	layout3, stage3Grid, err := StageFindColision(original, *layout2, template, *stage2Grid)
+	inlay2, _ := Clone(layout2)
+	layout3, stage3Grid, err := StageFindColision(original, *inlay2, template, *stage2Grid)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +98,8 @@ func RunV2(
 	// STAGE 4
 	// Expand elements
 	// *************************************************
-	layout4, stage4Grid, err := ExpandElements(original, layout3, template, stage3Grid)
+	inlay3, _ := Clone(layout3)
+	layout4, stage4Grid, err := ExpandElements(original, inlay3, template, stage3Grid)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +124,8 @@ func RunV2(
 		// Put the one with less priorities to first
 		return original.Config.Priorities[it] < original.Config.Priorities[jt]
 	})
-	layout5, stage5Grid, err := StageRemoveColisions(original, *layout4, template, *stage4Grid)
+	inlay4, _ := Clone(layout4)
+	layout5, stage5Grid, err := StageRemoveColisions(original, *inlay4, template, *stage4Grid)
 	if err != nil {
 		return nil, err
 	}
@@ -136,6 +141,9 @@ func RunV2(
 	)
 
 	// *************************************************
+	log.Debug("((((((((((((((((()))))))))))))))))")
+	log.Debug(fmt.Sprintf("grid x: %d, y %d", gridX, gridY))
+	log.Debug("((((((((((((((((()))))))))))))))))")
 
 	if original.Background != nil {
 		original.Background.ScaleToFillInSize(template.Width, template.Height)
@@ -145,4 +153,18 @@ func RunV2(
 	layout5.Background = original.Background
 	layout5.Stages = stages
 	return layout5, nil
+}
+
+func Clone(orig *entities.Layout) (*entities.Layout, error) {
+	origJSON, err := json.Marshal(orig)
+	if err != nil {
+		return nil, err
+	}
+
+	clone := entities.Layout{}
+	if err = json.Unmarshal(origJSON, &clone); err != nil {
+		return nil, err
+	}
+
+	return &clone, nil
 }

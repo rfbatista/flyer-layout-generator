@@ -600,25 +600,34 @@ func (g *Grid) IsPositionOcupiedByID(p Position, id int32) bool {
 	return g.position[p.X][p.Y].IsIdIn(id)
 }
 
+// Function to check if a cell is within the grid bounds
+func isValidCell(x, y, width, height int32) bool {
+	return x >= 0 && y >= 0 && x < width && y < height
+}
+
 // Check if the component have space to grow
-func (g *Grid) CantItGrow(p Position, c Container, id int32) bool {
-	initCont := g.ContainerToGridContainer(c)
-	scale := float64(1.0)
-	co := NewContainer(c.UpperLeft, c.DownRight)
-	for {
-		co.Scale(scale)
-		nnCont := g.ContainerToPositions(co)
-		if g.IsPositionListOcupiedByOtherThanThisId(nnCont, id) {
-			if initCont.Width() != co.Width() || initCont.Height() != co.Height() {
+func (g *Grid) CantItGrow(rectangle []Position, id int32) bool {
+	width := g.SlotsX
+	height := g.SlotsY
+
+	directions := []Position{
+		NewPosition(-1, 0),
+		NewPosition(1, 0),
+		NewPosition(0, -1),
+		NewPosition(0, 1),
+	}
+
+	for _, cell := range rectangle {
+		for _, dir := range directions {
+			newX := cell.X + dir.X
+			newY := cell.Y + dir.Y
+			if isValidCell(newX, newY, width, height) && g.position[newX][newY].IsOnlyOcupiedBy(id) {
 				return true
 			}
-			return false
 		}
-		if initCont.Width() != co.Width() || initCont.Height() != co.Height() {
-			return true
-		}
-		scale += float64(0.1)
 	}
+
+	return false
 }
 
 // Find how many space a component could grow

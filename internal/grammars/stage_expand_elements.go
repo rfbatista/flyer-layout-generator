@@ -12,7 +12,7 @@ func ExpandElements(
 	var stageComponents []entities.LayoutComponent
 	// TODO: this can be improved
 	for _, c := range prevLayout.Components {
-		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
+		if !prevGrid.CantItGrow(c.Positions, c.ID) {
 			c.ApplyPadding(original.Config.Padding)
 			stageComponents = append(stageComponents, c)
 			continue

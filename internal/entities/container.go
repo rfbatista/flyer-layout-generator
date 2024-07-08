@@ -7,12 +7,10 @@ import (
 )
 
 func NewContainer(ul Point, dr Point) Container {
-	return Container{UpperLeft: ul, DownRight: dr, width: dr.X - ul.X, heigth: dr.Y - ul.Y}
+	return Container{UpperLeft: ul, DownRight: dr}
 }
 
 type Container struct {
-	width     int32 `json:"width"`
-	heigth    int32 `json:"heigth"`
 	UpperLeft Point `json:"upper_left"`
 	DownRight Point `json:"down_right"`
 }
@@ -69,8 +67,6 @@ func (c *Container) Scale(s float64) {
 		int32(float64(c.Width())*s)+c.UpperLeft.X,
 		int32(float64(c.Height())*s)+c.UpperLeft.Y,
 	)
-	c.width = c.Width()
-	c.heigth = c.Height()
 }
 
 func (c *Container) Center() Point {

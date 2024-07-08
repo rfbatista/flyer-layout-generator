@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"os"
 	"strings"
 
 	"github.com/golang/freetype"
@@ -37,12 +36,12 @@ type TextDrawer struct {
 }
 
 func (t *TextDrawer) LoadFonts() error {
-	fontBytes, err := os.ReadFile(fmt.Sprintf("%s/Roboto/Roboto-Black.ttf", t.c.FontsFolderPath))
-	f, err := truetype.Parse(fontBytes)
-	if err != nil {
-		return err
-	}
-	t.font = f
+	//fontBytes, err := os.ReadFile(fmt.Sprintf("%s/Roboto/Roboto-Black.ttf", t.c.FontsFolderPath))
+	//f, err := truetype.Parse(fontBytes)
+	//if err != nil {
+	//	return err
+	//}
+	//t.font = f
 	return nil
 }
 
