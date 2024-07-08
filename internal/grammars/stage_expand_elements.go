@@ -2,7 +2,7 @@ package grammars
 
 import "algvisual/internal/entities"
 
-func Stage4(
+func ExpandElements(
 	original entities.Layout,
 	prevLayout *entities.Layout,
 	template entities.Template,
@@ -10,17 +10,14 @@ func Stage4(
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
 	var stageComponents []entities.LayoutComponent
-	stageGrid, _ := entities.NewGrid(
-		entities.WithDefault(template.Width, template.Height),
-		entities.WithCells(prevGrid.SlotsX, prevGrid.SlotsY),
-	)
+	// TODO: this can be improved
 	for _, c := range prevLayout.Components {
 		if !prevGrid.CantItGrow(c.Positions[0], c.InnerContainer, c.ID) {
 			c.ApplyPadding(original.Config.Padding)
 			stageComponents = append(stageComponents, c)
 			continue
 		}
-		cont, err := prevGrid.FindSpaceToGrow(c.Positions[0], c.InnerContainer, c.ID)
+		cont, err := prevGrid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
 		if err != nil || cont == nil {
 			continue
 		}
@@ -47,6 +44,6 @@ func Stage4(
 	out.DesignID = original.DesignID
 	out.Width = template.Width
 	out.Height = template.Height
-	out.Grid = *stageGrid
-	return &out, stageGrid, nil
+	out.Grid = *prevGrid
+	return &out, prevGrid, nil
 }

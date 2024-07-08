@@ -564,8 +564,24 @@ func (g *Grid) GetSurroundFreeCells(p Point) []Point {
 }
 
 // Check if the position is is ocupied by the id
-func (g *Grid) IsPositionListOcupiedByOtherThanThisId(p []Position, id int32) bool {
-	for _, p := range p {
+func (g *Grid) IsPositionListOcupiedByOtherThanThisId(ps []Position, id int32) bool {
+	for _, p := range ps {
+		x := p.X
+		y := p.Y
+		gx := g.SlotsX
+		gy := g.SlotsY
+		if gx <= x {
+			p.X = gx - 1
+		}
+		if gy <= y {
+			p.Y = gy - 1
+		}
+		if x < 0 {
+			p.X = 0
+		}
+		if y < 0 {
+			p.Y = 0
+		}
 		if len(g.position[p.X][p.Y].whoIsIn) > 1 ||
 			(len(g.position[p.X][p.Y].whoIsIn) == 1 && !g.position[p.X][p.Y].IsIdIn(id)) {
 			return true
@@ -586,28 +602,21 @@ func (g *Grid) IsPositionOcupiedByID(p Position, id int32) bool {
 
 // Check if the component have space to grow
 func (g *Grid) CantItGrow(p Position, c Container, id int32) bool {
-	var nCont *GridContainer
 	initCont := g.ContainerToGridContainer(c)
 	scale := float64(1.0)
+	co := NewContainer(c.UpperLeft, c.DownRight)
 	for {
-		co := NewContainer(c.UpperLeft, c.DownRight)
 		co.Scale(scale)
-		nnCont := g.ContainerToGridContainer(co)
-		cont, found, err := g.FindPositionToFitGridContainer(
-			p,
-			nnCont,
-			id,
-		)
-		if err != nil || !found {
-			if nCont != nil {
-				if initCont.Width() == nCont.Width() && initCont.Height() == nCont.Height() {
-					return false
-				}
+		nnCont := g.ContainerToPositions(co)
+		if g.IsPositionListOcupiedByOtherThanThisId(nnCont, id) {
+			if initCont.Width() != co.Width() || initCont.Height() != co.Height() {
 				return true
 			}
 			return false
 		}
-		nCont = &cont
+		if initCont.Width() != co.Width() || initCont.Height() != co.Height() {
+			return true
+		}
 		scale += float64(0.1)
 	}
 }

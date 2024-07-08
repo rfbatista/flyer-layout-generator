@@ -1,6 +1,9 @@
 package grammars
 
-import "algvisual/internal/entities"
+import (
+	"algvisual/internal/entities"
+	"fmt"
+)
 
 func StageRemoveColisions(
 	original entities.Layout,
@@ -10,22 +13,24 @@ func StageRemoveColisions(
 ) (*entities.Layout, *entities.Grid, error) {
 	var out entities.Layout
 	var stagecomponents []entities.LayoutComponent
+	stagegrid, _ := entities.NewGrid(
+		entities.WithDefault(template.Width, template.Height),
+		entities.WithCells(grid.SlotsX, grid.SlotsY),
+	)
 	for _, c := range prevLayout.Components {
 		if len(c.Positions) == 0 {
 			continue
 		}
-		if grid.IsPositionListOcupiedByOtherThanThisId(c.Positions, c.ID) {
-			grid.RemoveFromAllCells(c.ID)
+		ctype := c.Type
+		if ctype == "o" {
+			fmt.Println(ctype)
+		}
+		positions := stagegrid.ContainerToPositions(c.InnerContainer)
+		if stagegrid.IsPositionListOcupiedByOtherThanThisId(positions, c.ID) {
+			stagegrid.RemoveFromAllCells(c.ID)
 			continue
 		}
-		innerW := c.Width()
-		innerH := c.Height()
-		if innerW <= 50 {
-			continue
-		}
-		if innerH <= 50 {
-			continue
-		}
+		stagegrid.OcupyByPositionList(positions, c.ID)
 		stagecomponents = append(stagecomponents, c)
 	}
 	out.Components = stagecomponents
@@ -33,6 +38,6 @@ func StageRemoveColisions(
 	out.DesignID = original.DesignID
 	out.Width = template.Width
 	out.Height = template.Height
-	out.Grid = grid
-	return &out, &grid, nil
+	out.Grid = *stagegrid
+	return &out, stagegrid, nil
 }

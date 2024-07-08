@@ -6,12 +6,14 @@ import (
 )
 
 func TodesignComponentEntitie(raw database.LayoutComponent) entities.LayoutComponent {
+	ctype := raw.Type.ComponentType
+	domainType := entities.DatabaseComponentTypeToDomain(ctype)
 	return entities.LayoutComponent{
 		ID:      raw.ID,
 		FWidth:  raw.Width.Int32,
 		FHeight: raw.Height.Int32,
 		Color:   raw.Color.String,
-		Type:    entities.DatabaseComponentTypeToDomain(raw.Type.ComponentType).ToString(),
+		Type:    domainType.ToString(),
 		OuterContainer: entities.NewContainer(
 			entities.NewPoint(raw.Xi.Int32, raw.Yi.Int32),
 			entities.NewPoint(raw.Xii.Int32, raw.Yii.Int32),

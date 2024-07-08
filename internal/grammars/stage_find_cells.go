@@ -14,6 +14,9 @@ func StageFindCells(
 		if cell == nil {
 			continue
 		}
+		if c.IsBackground() {
+			continue
+		}
 		c.Pivot = cell.Position()
 		grid.OcupyByPosition(cell.Position(), c.ID)
 		c.MoveTo(cell.UpLeft())

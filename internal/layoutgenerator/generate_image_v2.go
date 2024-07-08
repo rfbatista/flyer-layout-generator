@@ -62,7 +62,7 @@ func GenerateImageV2UseCase(
 		return nil, err
 	}
 	layout.Config.Priorities = req.LayoutPriorities
-	newLayout, err := grammars.RunV2(*layout, *temp, 10, 10, log)
+	newLayout, err := grammars.RunV2(*layout, *temp, req.SlotsX, req.SlotsY, log)
 	if err != nil {
 		log.Error("failed to generate new layout", zap.Error(err))
 		return nil, err

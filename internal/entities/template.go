@@ -61,12 +61,14 @@ func (t *Template) Grids() []Grid {
 		maxYSlots = maxSlots
 	}
 
-	for x := 2; x <= 4; x++ {
-		grid, _ := t.CreateGrid(x, x)
-		if grid != nil {
-			g = append(
-				g, *grid,
-			)
+	for x := 2; x <= 6; x++ {
+		for y := 2; y <= 6; y++ {
+			grid, _ := t.CreateGrid(x, y)
+			if grid != nil {
+				g = append(
+					g, *grid,
+				)
+			}
 		}
 	}
 

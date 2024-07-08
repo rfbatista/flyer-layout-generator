@@ -95,7 +95,7 @@ func RunV2(
 	// STAGE 4
 	// Expand elements
 	// *************************************************
-	layout4, stage4Grid, err := Stage4(original, layout3, template, stage3Grid)
+	layout4, stage4Grid, err := ExpandElements(original, layout3, template, stage3Grid)
 	if err != nil {
 		return nil, err
 	}
@@ -144,5 +144,5 @@ func RunV2(
 
 	layout5.Background = original.Background
 	layout5.Stages = stages
-	return layout2, nil
+	return layout5, nil
 }

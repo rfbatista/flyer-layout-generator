@@ -75,7 +75,7 @@ func (d *LayoutComponent) OrderPriority() int32 {
 }
 
 func (d *LayoutComponent) IsBackground() bool {
-	return d.Type == "background"
+	return d.Type == "background" || d.Type == "plano-de-fundo"
 }
 
 func (d *LayoutComponent) CenterInContainer(r Container) {

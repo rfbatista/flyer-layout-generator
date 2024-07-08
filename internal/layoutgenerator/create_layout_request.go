@@ -77,8 +77,8 @@ func CreateLayoutRequestUseCase(
 				Grid:                  grid,
 				Padding:               10,
 				KeepProportions:       req.KeepProportions,
-				SlotsX:                8,
-				SlotsY:                8,
+				SlotsX:                grid.SlotsX,
+				SlotsY:                grid.SlotsY,
 				Priorities:            entities.NewLayoutRequestConfigPriority(req.Priority),
 			})
 			if unmarshErr != nil {
