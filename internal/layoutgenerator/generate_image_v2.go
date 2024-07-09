@@ -56,7 +56,7 @@ func GenerateImageV2UseCase(
 		TemplateID: req.TemplateID,
 		LayoutID:   req.LayoutID,
 		DesignID:   out.Layout.DesignID,
-		Padding:    req.Padding,
+		Padding:    25,
 		Priorities: req.Priorities,
 	}, db, log, out.Layout.Width, out.Layout.Height)
 	if err != nil {
