@@ -5,6 +5,7 @@ import (
 	"algvisual/internal/entities"
 	"algvisual/internal/geometry"
 	"context"
+	"math"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -44,11 +45,13 @@ func CheckLayoutSimilaritiesUseCase(
 					if reqElement.AssetID != el.AssetID {
 						continue
 					}
-					if reqElement.Width() != el.Width() {
+					wdf := float64(reqElement.Width()) - float64(el.Width())
+					if math.Abs(wdf) > 20 {
 						isEqual = false
 						continue
 					}
-					if reqElement.Height() != el.Height() {
+					hdf := float64(reqElement.Height()) - float64(el.Height())
+					if math.Abs(hdf) > 20 {
 						isEqual = false
 						continue
 					}

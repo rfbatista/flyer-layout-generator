@@ -6,8 +6,12 @@ import (
 )
 
 func IsContainerSimilar(c1, c2 entities.Container, limit int) bool {
-	return math.Abs(float64(c1.UpperLeft.X)-float64(c2.UpperLeft.X)) <= float64(limit) &&
-		math.Abs(float64(c1.UpperLeft.Y)-float64(c2.UpperLeft.Y)) <= float64(limit) &&
-		math.Abs(float64(c1.DownRight.X)-float64(c2.DownRight.X)) <= float64(limit) &&
-		math.Abs(float64(c1.DownRight.Y)-float64(c2.DownRight.Y)) <= float64(limit)
+	upx := float64(c1.UpperLeft.X) - float64(c2.UpperLeft.X)
+	upy := float64(c1.UpperLeft.Y) - float64(c2.UpperLeft.Y)
+	dwx := float64(c1.DownRight.X) - float64(c2.DownRight.X)
+	dwy := float64(c1.DownRight.Y) - float64(c2.DownRight.Y)
+	return math.Abs(upx) <= float64(limit) &&
+		math.Abs(upy) <= float64(limit) &&
+		math.Abs(dwx) <= float64(limit) &&
+		math.Abs(dwy) <= float64(limit)
 }
