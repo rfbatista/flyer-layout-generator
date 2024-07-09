@@ -8,6 +8,10 @@ SELECT * FROM layout
 WHERE id = $1
 LIMIT 1;
 
+-- name: GetLayoutByRequestID :many
+SELECT * FROM layout
+WHERE request_id = $1
+ORDER BY created_at desc;
 
 -- name: GetOriginalLayoutByDesignID :one
 SELECT * FROM layout 
@@ -19,13 +23,14 @@ SELECT * FROM layout_components
 WHERE layout_id = $1
 ORDER BY created_at desc;
 
+
 -- name: GetLayoutElementsByLayoutID :many
 SELECT * FROM layout_elements
 WHERE layout_id = $1
 ORDER BY created_at desc;
 
 -- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+INSERT INTO layout (width, height, design_id, request_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: CreateLayoutComponent :one
 INSERT INTO layout_components (

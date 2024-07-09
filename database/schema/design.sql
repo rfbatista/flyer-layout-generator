@@ -159,9 +159,35 @@ CREATE TYPE COMPONENT_TYPE AS ENUM (
     );
 
 
+CREATE TABLE layout_requests (
+  id   BIGSERIAL PRIMARY KEY,
+  layout_id INT,
+  design_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  log TEXT,
+  config TEXT,
+  done INT DEFAULT 0 NOT NULL,
+  total INT,
+  deleted_at TIMESTAMP,
+  updated_at      TIMESTAMP,
+  FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+CREATE TABLE images (
+  id   BIGSERIAL PRIMARY KEY,
+  url text      NOT NULL,
+  photoshop_id INT,
+  template_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE layout (
   id   BIGSERIAL PRIMARY KEY,
   design_id INT,
+  request_id INT,
   is_original BOOL DEFAULT FALSE,
   image_url TEXT,
   width INT,
@@ -171,7 +197,8 @@ CREATE TABLE layout (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
-  CONSTRAINT fk_layout_design_id FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT fk_layout_design_id FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_layout_request_id FOREIGN KEY (request_id) REFERENCES layout_requests (id) ON UPDATE CASCADE
 );
 
 
@@ -238,20 +265,6 @@ CREATE TABLE layout_elements
     FOREIGN KEY (layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE layout_requests (
-  id   BIGSERIAL PRIMARY KEY,
-  design_id INT,
-  layout_id INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  log TEXT,
-  config TEXT,
-  done INT DEFAULT 0 NOT NULL,
-  total INT,
-  deleted_at TIMESTAMP,
-  updated_at      TIMESTAMP,
-  FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE layout_requests_jobs (
   id   BIGSERIAL PRIMARY KEY,
   layout_id INT,
@@ -273,13 +286,3 @@ CREATE TABLE layout_requests_jobs (
   FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
-CREATE TABLE images (
-  id   BIGSERIAL PRIMARY KEY,
-  url text      NOT NULL,
-  photoshop_id INT,
-  template_id INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-

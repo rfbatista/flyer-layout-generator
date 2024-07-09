@@ -52,6 +52,7 @@ func GenerateJobUseCase(
 	layoutRequest := mapper.LayoutRequestToDomain(layoutReq)
 	job := mapper.LayoutRequestJobToDomain(layoutJobReq)
 	jobReq := layoutgenerator.GenerateImageV2Input{
+		RequestID:        int32(layoutReq.ID),
 		TemplateID:       layoutJobReq.TemplateID.Int32,
 		LayoutID:         layoutReq.LayoutID.Int32,
 		LayoutPriorities: layoutRequest.Config.Priorities,
@@ -99,12 +100,18 @@ func GenerateJobUseCase(
 		_, uerr := queries.UpdateLayoutRequestJob(ctx, database.UpdateLayoutRequestJobParams{
 			DoAddLog:           true,
 			Log:                pgtype.Text{String: err.Error(), Valid: true},
+			DoAddFinishedAt:    true,
+			FinishedAt:         pgtype.Timestamp{Time: time.Now(), Valid: true},
 			DoAddErrorAt:       true,
 			ErrorAt:            pgtype.Timestamp{Time: time.Now(), Valid: true},
 			LayoutRequestJobID: layoutJobReq.ID,
 			DoAddStatus:        true,
 			Status:             pgtype.Text{String: entities.RequestStatusError.String()},
 		})
+		if uerr != nil {
+			return nil, uerr
+		}
+		err = queries.SetJobDoneForRequest(ctx, layoutReq.ID)
 		if uerr != nil {
 			return nil, uerr
 		}

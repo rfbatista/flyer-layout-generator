@@ -26,6 +26,7 @@ func SaveLayout(
 		Width:      pgtype.Int4{Int32: l.Width, Valid: true},
 		Height:     pgtype.Int4{Int32: l.Height, Valid: true},
 		DesignID:   pgtype.Int4{Int32: l.DesignID, Valid: true},
+		RequestID:  pgtype.Int4{Int32: l.RequestID, Valid: true},
 		IsOriginal: pgtype.Bool{},
 		ImageUrl:   pgtype.Text{String: l.ImageURL, Valid: true},
 		Stages:     l.Stages,

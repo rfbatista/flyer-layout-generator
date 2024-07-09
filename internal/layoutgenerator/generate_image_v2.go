@@ -8,13 +8,15 @@ import (
 	"algvisual/internal/renderer"
 	"algvisual/internal/templates"
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
 type GenerateImageV2Input struct {
-	LayoutID              int32          `param:"layout_id"   json:"layout_id,omitempty"`
+	LayoutID              int32 `param:"layout_id"   json:"layout_id,omitempty"`
+	RequestID             int32
 	TemplateID            int32          `param:"template_id" json:"template_id,omitempty"`
 	LimitSizerPerElement  bool           `                    json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool           `                    json:"anchor_elements,omitempty"`
@@ -82,12 +84,29 @@ func GenerateImageV2UseCase(
 		return nil, err
 	}
 	newLayout.DesignAssets = assets.Data
+	var elements []entities.LayoutElement
+	for _, c := range newLayout.Components {
+		elements = append(elements, c.Elements...)
+	}
+	newLayout.Elements = elements
+	checkResult, err := CheckLayoutSimilaritiesUseCase(ctx, CheckLayoutSimilaritiesInput{
+		RequestID: req.RequestID,
+		Layout:    *newLayout,
+	}, db)
+	if err != nil {
+		log.Error("failed to check new layout similarity", zap.Error(err))
+		return nil, err
+	}
+	if checkResult.HaveSimilar {
+		return nil, errors.New("similar layout was found")
+	}
 	imageResult, err := render.RenderPNGImage(ctx, renderer.RenderPngImageInput{Layout: *newLayout})
 	if err != nil {
 		log.Error("failed to render new layout", zap.Error(err))
 		return nil, err
 	}
 	newLayout.ImageURL = imageResult.ImageURL
+	newLayout.RequestID = req.RequestID
 	layoutCreated, err := SaveLayout(ctx, *newLayout, db, pool)
 	if err != nil {
 		log.Error("failed to save new layout", zap.Error(err))

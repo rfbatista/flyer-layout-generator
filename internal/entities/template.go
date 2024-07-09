@@ -49,6 +49,11 @@ const (
 	maxSlots    = 8
 )
 
+type slot struct {
+	x int
+	y int
+}
+
 func (t *Template) Grids() []Grid {
 	var g []Grid
 	maxXSlots := t.Width / minSlotSize
@@ -71,74 +76,37 @@ func (t *Template) Grids() []Grid {
 	// 		}
 	// 	}
 	// }
-	grid, _ := t.CreateGrid(1, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(2, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
+	grids := []slot{
+		{x: 2, y: 6},
+		{x: 4, y: 6},
+		{x: 4, y: 1},
+		{x: 4, y: 2},
+		{x: 4, y: 3},
+		{x: 4, y: 4},
+		{x: 1, y: 4},
+		{x: 2, y: 4},
+		{x: 3, y: 4},
+		{x: 2, y: 6},
+		{x: 3, y: 6},
+		{x: 4, y: 6},
+		{x: 5, y: 6},
+		{x: 6, y: 6},
+		{x: 6, y: 2},
+		{x: 6, y: 3},
+		{x: 6, y: 4},
+		{x: 6, y: 5},
+		{x: 6, y: 1},
 	}
 
-	grid, _ = t.CreateGrid(3, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
+	for _, gr := range grids {
+		grid, _ := t.CreateGrid(gr.x, gr.y)
+		if grid != nil {
+			g = append(
+				g, *grid,
+			)
+		}
 	}
 
-	grid, _ = t.CreateGrid(4, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(5, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 6)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 2)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 3)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 4)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 5)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
-	grid, _ = t.CreateGrid(6, 1)
-	if grid != nil {
-		g = append(
-			g, *grid,
-		)
-	}
 	return g
 }
 

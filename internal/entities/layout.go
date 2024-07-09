@@ -15,6 +15,7 @@ type LayoutDTO struct {
 // Prancheta
 type Layout struct {
 	ID             int32               `json:"id,omitempty"`
+	RequestID      int32               `json:"request_id,omitempty"`
 	Background     *LayoutComponent    `json:"background,omitempty"`
 	BackgroundList []LayoutComponent   `json:"background_list,omitempty"`
 	ImageURL       string              `json:"image_url,omitempty"`
@@ -27,7 +28,7 @@ type Layout struct {
 	Grid           Grid                `json:"grid,omitempty"`
 	Stages         []string            `json:"stages,omitempty"`
 	Config         LayoutRequestConfig `json:"config,omitempty"`
-	DesignAssets   []DesignAsset
+	DesignAssets   []DesignAsset       `json:"design_assets,omitempty"`
 }
 
 func ListToPrioritiesMap(list []string) map[string]int {
