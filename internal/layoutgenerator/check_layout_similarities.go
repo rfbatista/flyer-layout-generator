@@ -55,7 +55,7 @@ func CheckLayoutSimilaritiesUseCase(
 					isSimilar := geometry.IsContainerSimilar(
 						reqElement.OuterContainer,
 						el.OuterContainer,
-						5,
+						20,
 					)
 					if !isSimilar {
 						isEqual = false
