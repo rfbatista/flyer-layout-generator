@@ -17,10 +17,7 @@ func ExpandElements(
 			stageComponents = append(stageComponents, c)
 			continue
 		}
-		cont, err := prevGrid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
-		if err != nil || cont == nil {
-			continue
-		}
+		cont, _ := prevGrid.FindSpaceToGrow(c.Pivot, c.InnerContainer, c.ID)
 		w := cont.Width()
 		h := cont.Height()
 		c.ScaleToFitInSize(w, h)

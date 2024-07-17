@@ -24,7 +24,7 @@ func StageFindColision(
 			c.Pivot,
 			c.InnerContainer,
 		)
-		if stagegrid.HaveColisionInList(positions, c.ID) {
+		if stagegrid.IsPositionListOcupiedByOtherThanThisId(positions, c.ID) {
 			stagegrid.RemoveFromAllCells(c.ID)
 			continue
 		}

@@ -3,7 +3,6 @@ package grammars
 import (
 	"algvisual/internal/entities"
 	"encoding/json"
-	"fmt"
 	"sort"
 
 	"go.uber.org/zap"
@@ -141,9 +140,9 @@ func RunV2(
 	)
 
 	// *************************************************
-	log.Debug("((((((((((((((((()))))))))))))))))")
-	log.Debug(fmt.Sprintf("grid x: %d, y %d", gridX, gridY))
-	log.Debug("((((((((((((((((()))))))))))))))))")
+	// log.Debug("((((((((((((((((()))))))))))))))))")
+	// log.Debug(fmt.Sprintf("grid x: %d, y %d", gridX, gridY))
+	// log.Debug("((((((((((((((((()))))))))))))))))")
 
 	if original.Background != nil {
 		original.Background.ScaleToFillInSize(template.Width, template.Height)
