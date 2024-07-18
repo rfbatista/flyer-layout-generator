@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 venv
 tmp
+.env
+null-ls*
+
+# Python temp files
+__pycache__/
+*.py[cod]
+*.pyc
+*$py.class Python temp files
