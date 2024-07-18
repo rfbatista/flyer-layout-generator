@@ -86,6 +86,9 @@ func RenderPngImageUseCase(
 			)
 		}
 	}
+	if len(req.Layout.Components) == 0 {
+		return nil, errors.New("no component to render, skipping image generation request")
+	}
 	for _, c := range req.Layout.Components {
 		for _, e := range c.Elements {
 			if e.Kind == "typess" {
@@ -130,18 +133,18 @@ func RenderPngImageUseCase(
 	}
 
 	// draw grid
-	// borderColor := color.RGBA{255, 0, 0, 255} // Red color
-	// for _, g := range req.Layout.Grid.GetCells() {
-	// 	// Draw the rectangle borders
-	// 	for x := g.Xi; x < g.Xii; x++ {
-	// 		board.Set(int(x), int(g.Yi), borderColor)  // Top border
-	// 		board.Set(int(x), int(g.Yii), borderColor) // Bottom border
-	// 	}
-	// 	for y := g.Yi; y < g.Yii; y++ {
-	// 		board.Set(int(g.Xi), int(y), borderColor)  // Left border
-	// 		board.Set(int(g.Xii), int(y), borderColor) // Right border
-	// 	}
-	// }
+	borderColor := color.RGBA{255, 0, 0, 255} // Red color
+	for _, g := range req.Layout.Grid.GetCells() {
+		// Draw the rectangle borders
+		for x := g.Xi; x < g.Xii; x++ {
+			board.Set(int(x), int(g.Yi), borderColor)  // Top border
+			board.Set(int(x), int(g.Yii), borderColor) // Bottom border
+		}
+		for y := g.Yi; y < g.Yii; y++ {
+			board.Set(int(g.Xi), int(y), borderColor)  // Left border
+			board.Set(int(g.Xii), int(y), borderColor) // Right border
+		}
+	}
 
 	uniqid, _ := uuid.NewRandom()
 	name := uniqid.String()
