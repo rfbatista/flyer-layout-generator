@@ -12,7 +12,7 @@ upgrade:
 	alembic upgrade head
 sql:
 	sqlc generate
-db:
+docker-db:
 	docker run --rm -d --name atlas-sqlc -p 5432:5432 -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=123 postgres
 apply:
 	atlas schema apply --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" --dev-url "docker://postgres" --to "file://database/schema"
