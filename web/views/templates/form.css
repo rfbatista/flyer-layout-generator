@@ -1,9 +1,0 @@
-.template-form__input::part(form-control) {
-  display: flex;
-  align-items: center;
-}
-
-.template-form__input::part(form-control-label) {
-  margin-right: 10px;
-  /* Adjust the spacing between the label and the input field */
-}

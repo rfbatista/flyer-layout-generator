@@ -1,6 +1,0 @@
-import '../../css/global.css'
-import '../../components/layout/layout.css'
-import '../../components/topbar/homebar.css'
-import '../../components/imposter/imposter.js'
-import './card.css'
-import './card.js'
