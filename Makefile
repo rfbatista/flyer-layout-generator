@@ -73,9 +73,9 @@ prod-ai-restart:
 	sudo systemctl restart ai.service
 
 run_in_server:
-	/usr/local/go/bin/go run ./cmd/server/main.go
+	go run ./cmd/server/main.go
 build_server:
-	/usr/local/go/bin/go build -o ./tmp/main ./cmd/server/main.go
+	go build -o ./tmp/main ./cmd/server/main.go
 restart:
 	sudo systemctl restart server
 status:
