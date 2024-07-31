@@ -13,6 +13,7 @@ import (
 )
 
 type AppConfig struct {
+	APPENV                string
 	HTTPServer            HTTPServerConfig
 	Database              DatabaseConfig
 	CoreDatabasePath      string
@@ -25,10 +26,28 @@ type AppConfig struct {
 	AiServiceBaseURL      string
 	GeneratorClientURL    string
 	MaxWorkers            int32
+	Cognito               CognitoConfig
+	S3Config              AWSS3Config
+}
+
+type CognitoConfig struct {
+	ClientID   string
+	UserPoolID string
+	Region     string
+}
+
+func (c CognitoConfig) IssuerURL() string {
+	return fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", c.Region, c.UserPoolID)
 }
 
 type HTTPServerConfig struct {
 	Port string
+}
+
+type AWSS3Config struct {
+	Region      string
+	AccessKeyID string
+	SecretKeyID string
 }
 
 type DatabaseConfig struct {
@@ -54,6 +73,9 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 	if err != nil {
 		p.Logger.Error("error loading .env file")
 	}
+	if os.Getenv("APP_ENV") == "prod" {
+		return NewConfigFirebase()
+	}
 	maxWorkers := int32(1)
 	sMaxWorker := os.Getenv("MAX_WORKERS")
 	if sMaxWorker != "" {
@@ -64,6 +86,7 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		maxWorkers = int32(i)
 	}
 	return &AppConfig{
+		APPENV: os.Getenv("APP_ENV"),
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
 		},
@@ -82,6 +105,11 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 			Password: os.Getenv("PG_DATABASE_PASSWORD"),
 			Host:     os.Getenv("PG_DATABASE_HOST"),
 			Port:     os.Getenv("PG_DATABASE_PORT"),
+		},
+		Cognito: CognitoConfig{
+			ClientID:   os.Getenv(""),
+			UserPoolID: os.Getenv(""),
+			Region:     os.Getenv(""),
 		},
 	}, nil
 }

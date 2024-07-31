@@ -22,6 +22,7 @@ var Module = fx.Options(
 		NewImageGenerator,
 		NewServerSideEventManager,
 		NewBundler,
+		NewCognito,
 	),
 	fx.Invoke(RegisterHooks),
 )

@@ -108,6 +108,48 @@ func (ns NullDesignAssetType) Value() (driver.Value, error) {
 	return string(ns.DesignAssetType), nil
 }
 
+type Roles string
+
+const (
+	RolesAdmin Roles = "admin"
+	RolesColab Roles = "colab"
+)
+
+func (e *Roles) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Roles(s)
+	case string:
+		*e = Roles(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Roles: %T", src)
+	}
+	return nil
+}
+
+type NullRoles struct {
+	Roles Roles `json:"roles"`
+	Valid bool  `json:"valid"` // Valid is true if Roles is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullRoles) Scan(value interface{}) error {
+	if value == nil {
+		ns.Roles, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Roles.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullRoles) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Roles), nil
+}
+
 type TemplateType string
 
 const (
@@ -161,6 +203,15 @@ type Advertiser struct {
 type Client struct {
 	ID        int64            `json:"id"`
 	Name      string           `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+}
+
+type Company struct {
+	ID        int64            `json:"id"`
+	Name      string           `json:"name"`
+	Enabled   pgtype.Bool      `json:"enabled"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
@@ -362,4 +413,13 @@ type TemplatesSlot struct {
 	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
 	TemplateID int32            `json:"template_id"`
+}
+
+type User struct {
+	ID        int64            `json:"id"`
+	Name      string           `json:"name"`
+	Role      NullRoles        `json:"role"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 }

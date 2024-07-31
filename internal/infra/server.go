@@ -18,6 +18,7 @@ type HTTPServerParams struct {
 	Logger      *zap.Logger
 	Config      *AppConfig
 	Controllers []ports.Controller `group:"controller"`
+	Cognito     Cognito
 	Pool        *pgxpool.Pool
 	Sse         *ServerSideEventManager
 }
@@ -37,6 +38,12 @@ type HTTPErrorResult struct {
 	RequestID   string    `json:"request_id,omitempty"`
 	DocumentURL string    `json:"document_url,omitempty"`
 	Error       HTTPError `json:"error,omitempty"`
+}
+
+type APIHealth struct {
+	Status string `json:"status,omitempty"`
+	Error  string `json:"error,omitempty"`
+	Env    string `json:"env,omitempty"`
 }
 
 func NewHTTPServer(p HTTPServerParams) *echo.Echo {
@@ -78,11 +85,23 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e.GET("/api/health", func(c echo.Context) error {
 		err := p.Pool.Ping(c.Request().Context())
 		if err != nil {
-			return c.String(http.StatusOK, err.Error())
+			status := APIHealth{
+				Status: "error",
+				Error:  err.Error(),
+				Env:    p.Config.APPENV,
+			}
+			return c.JSONPretty(http.StatusOK, status, "")
 		} else {
-			return c.String(http.StatusOK, "Ok")
+			status := APIHealth{
+				Status: "ok",
+				Env:    p.Config.APPENV,
+			}
+			return c.JSONPretty(http.StatusOK, status, "")
 		}
 	})
+	if p.Config.APPENV == "prod" {
+		e.Use(NewAuthMiddleware(p.Cognito))
+	}
 	for _, controller := range p.Controllers {
 		err := controller.Load(e)
 		if err != nil {
@@ -92,5 +111,6 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	for _, r := range e.Routes() {
 		p.Logger.Info(fmt.Sprintf("%s\t%s", r.Method, r.Path))
 	}
+	e.HideBanner = true
 	return e
 }
