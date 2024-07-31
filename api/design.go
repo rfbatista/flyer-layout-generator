@@ -8,7 +8,6 @@ import (
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
-	"algvisual/web/components/notification"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -60,11 +59,7 @@ func (s DesignController) UploadDesign() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
-			return shared.RenderComponent(
-				shared.WithComponent(
-					notification.FailureMessage(err.Error()), c,
-				),
-			)
+			return err
 		}
 		src, err := file.Open()
 		if err != nil {

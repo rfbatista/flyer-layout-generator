@@ -7,7 +7,6 @@ import (
 	"algvisual/internal/renderer"
 	"algvisual/internal/templates"
 	"algvisual/internal/worker"
-	"algvisual/web"
 
 	"go.uber.org/fx"
 )
@@ -16,7 +15,6 @@ func main() {
 	fx.New(
 		api.Module,
 		infra.Module,
-		web.Module,
 		worker.Module,
 		renderer.Module,
 		templates.Module,
