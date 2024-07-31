@@ -73,9 +73,6 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 	if err != nil {
 		p.Logger.Error("error loading .env file")
 	}
-	if os.Getenv("APP_ENV") == "prod" {
-		return NewConfigFirebase()
-	}
 	maxWorkers := int32(1)
 	sMaxWorker := os.Getenv("MAX_WORKERS")
 	if sMaxWorker != "" {
