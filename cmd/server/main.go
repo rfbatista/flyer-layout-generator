@@ -19,6 +19,6 @@ func main() {
 		renderer.Module,
 		templates.Module,
 		layoutgenerator.Module,
-		// fx.NopLogger,
+		fx.NopLogger,
 	).Run()
 }

@@ -31,13 +31,14 @@ type AppConfig struct {
 }
 
 type CognitoConfig struct {
-	ClientID   string
-	UserPoolID string
-	Region     string
+	ClientID      string
+	UserPoolID    string
+	Region        string
+	PublicKeysURL string
 }
 
 func (c CognitoConfig) IssuerURL() string {
-	return fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", c.Region, c.UserPoolID)
+	return c.PublicKeysURL
 }
 
 type HTTPServerConfig struct {
@@ -104,9 +105,10 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 			Port:     os.Getenv("PG_DATABASE_PORT"),
 		},
 		Cognito: CognitoConfig{
-			ClientID:   os.Getenv(""),
-			UserPoolID: os.Getenv(""),
-			Region:     os.Getenv(""),
+			ClientID:      os.Getenv(""),
+			UserPoolID:    os.Getenv(""),
+			Region:        os.Getenv(""),
+			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
 		},
 	}, nil
 }

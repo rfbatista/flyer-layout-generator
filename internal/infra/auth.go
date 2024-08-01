@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewAuthMiddleware(cog Cognito) func(echo.HandlerFunc) echo.HandlerFunc {
+func NewAuthMiddleware(cog *Cognito) func(echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			key := c.Request().Header.Get("Authorization")
@@ -15,9 +15,9 @@ func NewAuthMiddleware(cog Cognito) func(echo.HandlerFunc) echo.HandlerFunc {
 				[]byte(strings.Split(key, "Bearer ")[1]),
 			)
 			if err != nil {
-				return next(c)
+				return err
 			}
-			return err
+			return next(c)
 		}
 	}
 }

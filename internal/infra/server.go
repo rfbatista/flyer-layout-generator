@@ -18,7 +18,7 @@ type HTTPServerParams struct {
 	Logger      *zap.Logger
 	Config      *AppConfig
 	Controllers []ports.Controller `group:"controller"`
-	Cognito     Cognito
+	Cognito     *Cognito
 	Pool        *pgxpool.Pool
 	Sse         *ServerSideEventManager
 }

@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/shared"
 	"context"
 	"errors"
 	"time"
@@ -10,8 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewCognito() Cognito {
-	return Cognito{}
+func NewCognito(c *AppConfig, log *zap.Logger) *Cognito {
+	return &Cognito{publicKeysURL: c.Cognito.IssuerURL(), logger: log}
 }
 
 type AWSCognitoJWK struct {
@@ -46,11 +47,9 @@ type AWSCognitoAccessTokenPayload struct {
 type Cognito struct {
 	jwksURL       string
 	publicKeysURL string
-	jwks          AWSCognitoJWK
 	jwkCache      *jwk.Cache
 	logger        *zap.Logger
 	client_id     string
-	iss           string
 	config        CognitoConfig
 }
 
@@ -58,17 +57,17 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) error {
 	_, err := c.jwkCache.Refresh(ctx, c.publicKeysURL)
 	if err != nil {
 		c.logger.Error("failed to refresh aws jwks", zap.Error(err))
-		return err
+		return shared.WrapWithAppError(err, "", err.Error())
 	}
 	keyset, err := c.jwkCache.Get(ctx, c.publicKeysURL)
 	if err != nil {
 		c.logger.Error("failed to retrieve aws jwks", zap.Error(err))
-		return err
+		return shared.WrapWithAppError(err, "", err.Error())
 	}
 	token, err := jwt.Parse(rawtoken, jwt.WithKeySet(keyset), jwt.WithValidate(true))
 	if err != nil {
 		c.logger.Error("failed to parse token", zap.Error(err))
-		return err
+		return shared.WrapWithAppError(err, "", err.Error())
 	}
 	clientID, _ := token.Get("client_id")
 	if clientID != c.client_id {
@@ -83,7 +82,10 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) error {
 
 func (c *Cognito) LoadJWK() error {
 	ca := jwk.NewCache(context.Background())
-	ca.Register(c.jwksURL, jwk.WithMinRefreshInterval(15*time.Minute))
+	err := ca.Register(c.publicKeysURL, jwk.WithMinRefreshInterval(15*time.Minute))
+	if err != nil {
+		return err
+	}
 	c.jwkCache = ca
 	return nil
 }
