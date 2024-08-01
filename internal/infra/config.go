@@ -105,9 +105,9 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 			Port:     os.Getenv("PG_DATABASE_PORT"),
 		},
 		Cognito: CognitoConfig{
-			ClientID:      os.Getenv(""),
-			UserPoolID:    os.Getenv(""),
-			Region:        os.Getenv(""),
+			ClientID:      os.Getenv("COGNITO_CLIENT_ID"),
+			UserPoolID:    os.Getenv("COGNITO_USER_POOL_ID"),
+			Region:        os.Getenv("COGNITO_REGION"),
 			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
 		},
 	}, nil
