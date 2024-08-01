@@ -73,10 +73,10 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) error {
 	if clientID != c.config.ClientID {
 		return errors.New("invalid access token: client id does not match")
 	}
-	iss, _ := token.Get("iss")
-	if iss != c.config.IssuerURL() {
-		return errors.New("invalid access token: issuer does not match")
-	}
+	// iss, _ := token.Get("iss")
+	// if iss != c.config.IssuerURL() {
+	// 	return errors.New("invalid access token: issuer does not match")
+	// }
 	return nil
 }
 
