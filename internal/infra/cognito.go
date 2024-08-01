@@ -12,7 +12,7 @@ import (
 )
 
 func NewCognito(c *AppConfig, log *zap.Logger) *Cognito {
-	return &Cognito{publicKeysURL: c.Cognito.IssuerURL(), logger: log}
+	return &Cognito{publicKeysURL: c.Cognito.IssuerURL(), logger: log, config: c.Cognito}
 }
 
 type AWSCognitoJWK struct {
