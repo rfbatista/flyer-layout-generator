@@ -1,6 +1,9 @@
 package infra
 
 import (
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
+	mid "algvisual/internal/infra/middlewares"
 	"algvisual/internal/ports"
 	"fmt"
 	"net/http"
@@ -16,9 +19,9 @@ import (
 type HTTPServerParams struct {
 	fx.In
 	Logger      *zap.Logger
-	Config      *AppConfig
+	Config      *config.AppConfig
 	Controllers []ports.Controller `group:"controller"`
-	Cognito     *Cognito
+	Cognito     *cognito.Cognito
 	Pool        *pgxpool.Pool
 	Sse         *ServerSideEventManager
 }
@@ -49,6 +52,7 @@ type APIHealth struct {
 func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e := echo.New()
 	e.HTTPErrorHandler = HTTPErrorHandler
+	e.Use(mid.NewApplicationContextMiddleware())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(
@@ -100,7 +104,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		}
 	})
 	if p.Config.APPENV == "prod" {
-		e.Use(NewAuthMiddleware(p.Cognito))
+		e.Use(mid.NewAuthMiddleware(p.Cognito))
 	}
 	for _, controller := range p.Controllers {
 		err := controller.Load(e)

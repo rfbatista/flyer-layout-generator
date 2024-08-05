@@ -7,10 +7,30 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createClient = `-- name: CreateClient :one
+INSERT INTO clients (name, company_id)
+VALUES ($1, $2)
+RETURNING id
+`
+
+type CreateClientParams struct {
+	Name      string      `json:"name"`
+	CompanyID pgtype.Int4 `json:"company_id"`
+}
+
+func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (int64, error) {
+	row := q.db.QueryRow(ctx, createClient, arg.Name, arg.CompanyID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getClientByID = `-- name: GetClientByID :one
-SELECT id, name, created_at, updated_at, deleted_at
+SELECT id, name, created_at, updated_at, deleted_at, company_id
 FROM clients
 WHERE id = $1
 LIMIT 1
@@ -25,12 +45,13 @@ func (q *Queries) GetClientByID(ctx context.Context, id int64) (Client, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const listClients = `-- name: ListClients :many
-SELECT id, name, created_at, updated_at, deleted_at
+SELECT id, name, created_at, updated_at, deleted_at, company_id
 FROM clients
 LIMIT $1 OFFSET $2
 `
@@ -55,6 +76,7 @@ func (q *Queries) ListClients(ctx context.Context, arg ListClientsParams) ([]Cli
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.CompanyID,
 		); err != nil {
 			return nil, err
 		}

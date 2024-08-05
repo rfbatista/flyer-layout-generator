@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"fmt"
 
 	"github.com/labstack/echo/v4"
@@ -8,7 +9,7 @@ import (
 )
 
 func SetupStaticServer(p HTTPServerParams, e *echo.Echo) {
-	webStaticPath := fmt.Sprintf("%s/web/static", FindProjectRoot())
+	webStaticPath := fmt.Sprintf("%s/web/static", config.FindProjectRoot())
 	webgroup := e.Group("/web")
 	webgroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{
@@ -16,7 +17,7 @@ func SetupStaticServer(p HTTPServerParams, e *echo.Echo) {
 			Browse: true,
 		}),
 	)
-	webDistPath := fmt.Sprintf("%s/dist/web", FindProjectRoot())
+	webDistPath := fmt.Sprintf("%s/dist/web", config.FindProjectRoot())
 	distGroup := e.Group("/dist")
 	distGroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{
@@ -25,7 +26,7 @@ func SetupStaticServer(p HTTPServerParams, e *echo.Echo) {
 		}),
 	)
 
-	viteDistPath := fmt.Sprintf("%s/dist/vite", FindProjectRoot())
+	viteDistPath := fmt.Sprintf("%s/dist/vite", config.FindProjectRoot())
 	viteDistGroup := e.Group("/dist/vite")
 	viteDistGroup.Use(
 		middleware.StaticWithConfig(middleware.StaticConfig{

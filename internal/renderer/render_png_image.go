@@ -3,6 +3,7 @@ package renderer
 import (
 	"algvisual/internal/entities"
 	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"context"
 	"errors"
 	"fmt"
@@ -29,7 +30,7 @@ func RenderPngImageUseCase(
 	ctx context.Context,
 	req RenderPngImageInput,
 	storage infra.FileStorage,
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 	log *zap.Logger,
 	textDrawer *TextDrawer,
 ) (*RenderPngImageOutput, error) {

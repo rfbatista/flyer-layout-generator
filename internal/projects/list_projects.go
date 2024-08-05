@@ -8,8 +8,9 @@ import (
 )
 
 type ListProjectsInput struct {
-	Page  int32 `query:"page"  json:"page,omitempty"`
-	Limit int32 `query:"limit" json:"limit,omitempty"`
+	Page  int32 `query:"page"     json:"page,omitempty"`
+	Limit int32 `query:"limit"    json:"limit,omitempty"`
+	Order int32 `query:"order"`
 }
 
 type ListProjectsOutput struct {

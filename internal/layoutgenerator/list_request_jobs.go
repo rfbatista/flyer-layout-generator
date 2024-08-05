@@ -3,7 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/database"
 	"algvisual/internal/entities"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/mapper"
 	"context"
 )
@@ -45,7 +45,7 @@ func ListRequestJobsUseCase(
 func ListLayoutRequestJobsNotStartedUseCase(
 	ctx context.Context,
 	db *database.Queries,
-	config *infra.AppConfig,
+	config *config.AppConfig,
 ) (*ListRequestJobsOutput, error) {
 	jobs, err := db.ListLayoutRequestJobsNotStarted(ctx, config.MaxWorkers)
 	if err != nil {

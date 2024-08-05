@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"algvisual/internal/ports"
 	"bytes"
 	"encoding/json"
@@ -14,13 +15,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewPhotoshpProcessor(l *zap.Logger, c *AppConfig) (*PhotoshopProcessor, error) {
+func NewPhotoshpProcessor(l *zap.Logger, c *config.AppConfig) (*PhotoshopProcessor, error) {
 	return &PhotoshopProcessor{log: l, conf: c}, nil
 }
 
 type PhotoshopProcessor struct {
 	log  *zap.Logger
-	conf *AppConfig
+	conf *config.AppConfig
 }
 
 func (p PhotoshopProcessor) ProcessFile(

@@ -2,7 +2,7 @@ package layoutgenerator
 
 import (
 	entities2 "algvisual/internal/entities"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -26,7 +26,7 @@ type GenerateImageResult struct {
 }
 
 func GenerateImageFromPrancheta(
-	input GenerateImageRequest, log *zap.Logger, config infra.AppConfig,
+	input GenerateImageRequest, log *zap.Logger, config config.AppConfig,
 ) (*GenerateImageResult, error) {
 	jsonBody, err := json.Marshal(input)
 	if err != nil {

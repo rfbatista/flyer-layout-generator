@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"context"
 	"fmt"
 	"os"
@@ -20,7 +21,7 @@ func NewFirebase() (*firebase.App, error) {
 	return app, err
 }
 
-func NewConfigFirebase() (*AppConfig, error) {
+func NewConfigFirebase() (*config.AppConfig, error) {
 	app, err := NewFirebase()
 	if err != nil {
 		return nil, err
@@ -33,9 +34,9 @@ func NewConfigFirebase() (*AppConfig, error) {
 	ref, _ := cl.Collection("configs").Doc("prod").Get(ctx)
 	fmt.Printf("ref: %v\n", ref.Data())
 	configs := ref.Data()
-	return &AppConfig{
+	return &config.AppConfig{
 		APPENV: os.Getenv("APP_ENV"),
-		HTTPServer: HTTPServerConfig{
+		HTTPServer: config.HTTPServerConfig{
 			Port: os.Getenv("PORT"),
 		},
 		DistFolderPath:        configs["DIST_FOLDER_PATH"].(string),
@@ -47,14 +48,14 @@ func NewConfigFirebase() (*AppConfig, error) {
 		FontsFolderPath:       configs["FONTS_FOLDER"].(string),
 		MaxWorkers:            1,
 		AssetsFolderPath:      configs["ASSETS_FOLDER_PATH"].(string),
-		Database: DatabaseConfig{
+		Database: config.DatabaseConfig{
 			User:     configs["PG_DATABASE_USER"].(string),
 			DBName:   configs["PG_DATABASE_NAME"].(string),
 			Password: configs["PG_DATABASE_PASSWORD"].(string),
 			Host:     configs["PG_DATABASE_HOST"].(string),
 			Port:     configs["PG_DATABASE_PORT"].(string),
 		},
-		Cognito: CognitoConfig{
+		Cognito: config.CognitoConfig{
 			ClientID:   configs[""].(string),
 			UserPoolID: configs[""].(string),
 			Region:     configs[""].(string),
@@ -62,7 +63,7 @@ func NewConfigFirebase() (*AppConfig, error) {
 	}, nil
 }
 
-func NewConfigFromFirebase() (*AppConfig, error) {
+func NewConfigFromFirebase() (*config.AppConfig, error) {
 	ctx := context.Background()
 	credentials := os.Getenv("FIREBASE_CREDENTIALS")
 	err := os.WriteFile("/tmp/whippet-serv-1.json", []byte(credentials), 0644)
@@ -79,9 +80,9 @@ func NewConfigFromFirebase() (*AppConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &AppConfig{
+	return &config.AppConfig{
 		APPENV: os.Getenv("APP_ENV"),
-		HTTPServer: HTTPServerConfig{
+		HTTPServer: config.HTTPServerConfig{
 			Port: c.Parameters["PORT"].DefaultValue.Value,
 		},
 		DistFolderPath:        c.Parameters["DIST_FOLDER_PATH"].DefaultValue.Value,
@@ -93,14 +94,14 @@ func NewConfigFromFirebase() (*AppConfig, error) {
 		FontsFolderPath:       c.Parameters["FONTS_FOLDER"].DefaultValue.Value,
 		MaxWorkers:            1,
 		AssetsFolderPath:      c.Parameters["ASSETS_FOLDER_PATH"].DefaultValue.Value,
-		Database: DatabaseConfig{
+		Database: config.DatabaseConfig{
 			User:     c.Parameters["PG_DATABASE_USER"].DefaultValue.Value,
 			DBName:   c.Parameters["PG_DATABASE_NAME"].DefaultValue.Value,
 			Password: c.Parameters["PG_DATABASE_PASSWORD"].DefaultValue.Value,
 			Host:     c.Parameters["PG_DATABASE_HOST"].DefaultValue.Value,
 			Port:     c.Parameters["PG_DATABASE_PORT"].DefaultValue.Value,
 		},
-		Cognito: CognitoConfig{
+		Cognito: config.CognitoConfig{
 			ClientID:   c.Parameters[""].DefaultValue.Value,
 			UserPoolID: c.Parameters[""].DefaultValue.Value,
 			Region:     c.Parameters[""].DefaultValue.Value,

@@ -3,19 +3,19 @@ package api
 import (
 	"algvisual/database"
 	"algvisual/internal/designassets"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-func NewAssetsController(db *database.Queries, cfg *infra.AppConfig) AssetsController {
+func NewAssetsController(db *database.Queries, cfg *config.AppConfig) AssetsController {
 	return AssetsController{db: db, cfg: cfg}
 }
 
 type AssetsController struct {
 	db  *database.Queries
-	cfg *infra.AppConfig
+	cfg *config.AppConfig
 }
 
 func (s AssetsController) Load(e *echo.Echo) error {

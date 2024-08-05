@@ -2,7 +2,7 @@ package api
 
 import (
 	"algvisual/database"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/renderer"
 	"net/http"
@@ -15,7 +15,7 @@ import (
 func NewLayoutController(
 	db *database.Queries,
 	lservice layoutgenerator.LayoutGeneratorService,
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
 	render renderer.RendererService,
@@ -28,7 +28,7 @@ type LayoutController struct {
 	layoutService layoutgenerator.LayoutGeneratorService
 	render        renderer.RendererService
 	pool          *pgxpool.Pool
-	cfg           *infra.AppConfig
+	cfg           *config.AppConfig
 	log           *zap.Logger
 }
 

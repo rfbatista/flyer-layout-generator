@@ -5,11 +5,11 @@ import (
 )
 
 type CreateApiKeyInput struct {
+	CompanyID int32
 }
 
-type CreateApiKeyOutput struct {
-}
+type CreateApiKeyOutput struct{}
 
-func  CreateApiKeyUseCase(ctx context.Context, req CreateApiKeyInput) (*CreateApiKeyOutput, error) {
-  return &CreateApiKeyOutput{}, nil
-} 
+func CreateApiKeyUseCase(ctx context.Context, req CreateApiKeyInput) (*CreateApiKeyOutput, error) {
+	return &CreateApiKeyOutput{}, nil
+}

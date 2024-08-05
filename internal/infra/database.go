@@ -6,6 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"algvisual/database"
+	"algvisual/internal/infra/config"
 )
 
 func NewDatabaseQueries(conn *pgxpool.Pool) (*database.Queries, error) {
@@ -13,7 +14,7 @@ func NewDatabaseQueries(conn *pgxpool.Pool) (*database.Queries, error) {
 	return queries, nil
 }
 
-func NewDatabaseConnection(c *AppConfig) (*pgxpool.Pool, error) {
+func NewDatabaseConnection(c *config.AppConfig) (*pgxpool.Pool, error) {
 	ctx := context.Background()
 	conn, err := pgxpool.New(ctx, c.Database.URI())
 	if err != nil {
@@ -23,7 +24,7 @@ func NewDatabaseConnection(c *AppConfig) (*pgxpool.Pool, error) {
 }
 
 func NewTestDatabase() (*pgxpool.Pool, *database.Queries) {
-	c, err := NewTestConfig()
+	c, err := config.NewTestConfig()
 	if err != nil {
 		panic(err)
 	}

@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"errors"
 	"fmt"
 	"image"
@@ -10,7 +11,7 @@ import (
 	"os"
 )
 
-func NewFileStorage(c *AppConfig) FileStorage {
+func NewFileStorage(c *config.AppConfig) FileStorage {
 	return FileStorage{
 		dirpath: c.PhotoshopFilesPath,
 		cfg:     c,
@@ -19,7 +20,7 @@ func NewFileStorage(c *AppConfig) FileStorage {
 
 type FileStorage struct {
 	dirpath string
-	cfg     *AppConfig
+	cfg     *config.AppConfig
 }
 
 func (f FileStorage) Upload(file io.Reader, name string) (string, error) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/shared"
 )
 
@@ -26,7 +26,7 @@ type ImageUploadResult struct {
 func ImageUploadUseCase(
 	ctx context.Context,
 	req ImageUploadRequest,
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 ) (*ImageUploadResult, error) {
 	src, err := req.File.Open()
 	if err != nil {

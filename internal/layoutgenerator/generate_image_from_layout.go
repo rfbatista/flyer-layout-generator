@@ -2,7 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/internal/entities"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/mapper"
 
 	"go.uber.org/zap"
@@ -19,7 +19,7 @@ type GenerateImageFromLayoutOutput struct {
 
 func GenerateImageFromLayoutUseCase(
 	log *zap.Logger,
-	config infra.AppConfig,
+	config config.AppConfig,
 	req GenerateImageFromLayoutInput,
 ) (GenerateImageFromLayoutOutput, error) {
 	var out GenerateImageFromLayoutOutput

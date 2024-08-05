@@ -1,6 +1,8 @@
-package infra
+package cognito
 
 import (
+	"algvisual/internal/entities"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/shared"
 	"context"
 	"errors"
@@ -11,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewCognito(c *AppConfig, log *zap.Logger) *Cognito {
+func NewCognito(c *config.AppConfig, log *zap.Logger) *Cognito {
 	return &Cognito{publicKeysURL: c.Cognito.IssuerURL(), logger: log, config: c.Cognito}
 }
 
@@ -45,39 +47,40 @@ type AWSCognitoAccessTokenPayload struct {
 }
 
 type Cognito struct {
-	jwksURL       string
 	publicKeysURL string
 	jwkCache      *jwk.Cache
 	logger        *zap.Logger
-	client_id     string
-	config        CognitoConfig
+	config        config.CognitoConfig
 }
 
-func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) error {
+func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) (*entities.UserSession, error) {
 	_, err := c.jwkCache.Refresh(ctx, c.publicKeysURL)
 	if err != nil {
 		c.logger.Error("failed to refresh aws jwks", zap.Error(err))
-		return shared.WrapWithAppError(err, "", err.Error())
+		return nil, shared.WrapWithAppError(err, "", err.Error())
 	}
 	keyset, err := c.jwkCache.Get(ctx, c.publicKeysURL)
 	if err != nil {
 		c.logger.Error("failed to retrieve aws jwks", zap.Error(err))
-		return shared.WrapWithAppError(err, "", err.Error())
+		return nil, shared.WrapWithAppError(err, "", err.Error())
 	}
 	token, err := jwt.Parse(rawtoken, jwt.WithKeySet(keyset), jwt.WithValidate(true))
 	if err != nil {
 		c.logger.Error("failed to parse token", zap.Error(err))
-		return shared.WrapWithAppError(err, "", err.Error())
+		return nil, shared.WrapWithAppError(err, "", err.Error())
 	}
 	clientID, _ := token.Get("client_id")
 	if clientID != c.config.ClientID {
-		return errors.New("invalid access token: client id does not match")
+		return nil, errors.New("invalid access token: client id does not match")
 	}
 	// iss, _ := token.Get("iss")
 	// if iss != c.config.IssuerURL() {
 	// 	return errors.New("invalid access token: issuer does not match")
 	// }
-	return nil
+	username, _ := token.Get("username")
+	return &entities.UserSession{
+		Username: username.(string),
+	}, nil
 }
 
 func (c *Cognito) LoadJWK() error {

@@ -1,9 +1,47 @@
+CREATE TABLE companies (
+  id BIGSERIAL PRIMARY KEY,
+  name text NOT NULL,
+  enabled bool,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP
+);
+
+CREATE TYPE ROLES AS ENUM ('admin', 'colab', 'gm');
+
+CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  name text NOT NULL,
+  email text,
+  username text,
+  role ROLES default 'colab',
+  company_id int,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP,
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE companies_api_credentials (
+  id BIGSERIAL PRIMARY KEY,
+  name text,
+  api_key text NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP,
+  company_id int,
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 CREATE TABLE advertisers (
   id   BIGSERIAL PRIMARY KEY,
   name text      NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP,
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE clients (
@@ -11,7 +49,10 @@ CREATE TABLE clients (
   name text      NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP,
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE projects (
@@ -24,7 +65,9 @@ CREATE TABLE projects (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
-  
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (client_id) REFERENCES clients (id) ON UPDATE CASCADE,
   FOREIGN KEY (advertiser_id) REFERENCES advertisers (id) ON UPDATE CASCADE
 );
@@ -48,6 +91,9 @@ CREATE TABLE templates (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
 
   FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -96,6 +142,9 @@ CREATE TABLE design
     is_proccessed   bool DEFAULT false,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP,
+    company_id int,
+
+    FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
 
     FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE
 );
@@ -170,6 +219,9 @@ CREATE TABLE layout_requests (
   total INT,
   deleted_at TIMESTAMP,
   updated_at      TIMESTAMP,
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -197,6 +249,9 @@ CREATE TABLE layout (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   deleted_at TIMESTAMP,
+  company_id int,
+
+  FOREIGN KEY (company_id) REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_layout_design_id FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_layout_request_id FOREIGN KEY (request_id) REFERENCES layout_requests (id) ON UPDATE CASCADE
 );
@@ -281,6 +336,7 @@ CREATE TABLE layout_requests_jobs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   config TEXT,
   log TEXT,
+
   FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (request_id) REFERENCES layout_requests (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (design_id) REFERENCES design (id) ON DELETE CASCADE ON UPDATE CASCADE,

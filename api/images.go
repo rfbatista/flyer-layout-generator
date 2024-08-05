@@ -2,6 +2,7 @@ package api
 
 import (
 	"algvisual/internal/designassets"
+	"algvisual/internal/infra/config"
 	"fmt"
 	"net/http"
 
@@ -11,7 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"algvisual/database"
-	"algvisual/internal/infra"
 	"algvisual/internal/shared"
 )
 
@@ -39,7 +39,7 @@ func NewListGeneratedImagesAPI(
 }
 
 func NewUploadImage(
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.POST)
@@ -62,7 +62,7 @@ func NewUploadImage(
 }
 
 func NewDownloadImage(
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 ) apitools.Handler {
 	h := apitools.NewHandler()
 	h.SetMethod(apitools.GET)

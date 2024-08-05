@@ -3,6 +3,7 @@ package worker
 import (
 	"algvisual/database"
 	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/layoutgenerator"
 	"context"
 	"fmt"
@@ -28,7 +29,7 @@ func NewWorkerPool(
 	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
 	db *pgxpool.Pool,
-	config *infra.AppConfig,
+	config *config.AppConfig,
 	log *zap.Logger,
 	sse *infra.ServerSideEventManager,
 	wservice WorkerService,
@@ -48,7 +49,7 @@ type WorkerPool struct {
 	client  *infra.ImageGeneratorClient
 	queries *database.Queries
 	db      *pgxpool.Pool
-	config  *infra.AppConfig
+	config  *config.AppConfig
 	log     *zap.Logger
 	sse     *infra.ServerSideEventManager
 	serv    WorkerService

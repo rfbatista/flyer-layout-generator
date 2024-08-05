@@ -2,7 +2,7 @@ package renderer
 
 import (
 	"algvisual/internal/entities"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"flag"
 	"fmt"
 	"image"
@@ -24,13 +24,13 @@ var (
 )
 
 func NewTextDrawer(
-	c *infra.AppConfig,
+	c *config.AppConfig,
 ) *TextDrawer {
 	return &TextDrawer{c: c}
 }
 
 type TextDrawer struct {
-	c    *infra.AppConfig
+	c    *config.AppConfig
 	font *truetype.Font
 	face font.Face
 }

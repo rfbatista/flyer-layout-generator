@@ -2,6 +2,7 @@ package infra
 
 import (
 	entities2 "algvisual/internal/entities"
+	"algvisual/internal/infra/config"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -15,7 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewImageGenerator(c *AppConfig, log *zap.Logger) (*ImageGeneratorClient, error) {
+func NewImageGenerator(c *config.AppConfig, log *zap.Logger) (*ImageGeneratorClient, error) {
 	return &ImageGeneratorClient{c: c, log: log}, nil
 }
 
@@ -35,7 +36,7 @@ type GeneratorResult struct {
 }
 
 type ImageGeneratorClient struct {
-	c   *AppConfig
+	c   *config.AppConfig
 	log *zap.Logger
 }
 
@@ -124,7 +125,7 @@ type GenerateImageResult struct {
 }
 
 func GenerateImageFromPrancheta(
-	input GenerateImageRequest, log *zap.Logger, config AppConfig,
+	input GenerateImageRequest, log *zap.Logger, config config.AppConfig,
 ) (*GenerateImageResult, error) {
 	jsonBody, err := json.Marshal(input)
 	if err != nil {

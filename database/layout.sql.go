@@ -149,7 +149,7 @@ func (q *Queries) CreateElement(ctx context.Context, arg CreateElementParams) (L
 }
 
 const createLayout = `-- name: CreateLayout :one
-INSERT INTO layout (width, height, design_id, request_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at
+INSERT INTO layout (width, height, design_id, request_id, is_original, image_url, stages) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id
 `
 
 type CreateLayoutParams struct {
@@ -186,6 +186,7 @@ func (q *Queries) CreateLayout(ctx context.Context, arg CreateLayoutParams) (Lay
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
@@ -288,7 +289,7 @@ func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutCom
 }
 
 const getLayoutByID = `-- name: GetLayoutByID :one
-SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout 
 WHERE id = $1
 LIMIT 1
 `
@@ -309,12 +310,13 @@ func (q *Queries) GetLayoutByID(ctx context.Context, id int64) (Layout, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const getLayoutByRequestID = `-- name: GetLayoutByRequestID :many
-SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout
+SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout
 WHERE request_id = $1
 ORDER BY created_at desc
 `
@@ -341,6 +343,7 @@ func (q *Queries) GetLayoutByRequestID(ctx context.Context, requestID pgtype.Int
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.CompanyID,
 		); err != nil {
 			return nil, err
 		}
@@ -455,7 +458,7 @@ func (q *Queries) GetLayoutElementsByLayoutID(ctx context.Context, layoutID int3
 }
 
 const getOriginalLayoutByDesignID = `-- name: GetOriginalLayoutByDesignID :one
-SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout 
 WHERE design_id = $1 AND is_original = true
 LIMIT 1
 `
@@ -476,12 +479,13 @@ func (q *Queries) GetOriginalLayoutByDesignID(ctx context.Context, designID pgty
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const listLayouts = `-- name: ListLayouts :many
-SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at FROM layout 
+SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout 
 ORDER BY created_at desc
 LIMIT $1 OFFSET $2
 `
@@ -513,6 +517,7 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.CompanyID,
 		); err != nil {
 			return nil, err
 		}

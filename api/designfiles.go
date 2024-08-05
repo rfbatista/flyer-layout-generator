@@ -7,12 +7,12 @@ import (
 	"github.com/rfbatista/apitools"
 
 	"algvisual/database"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/shared"
 )
 
 func NewDownloadDesignFiles(
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 	db *database.Queries,
 ) apitools.Handler {
 	h := apitools.NewHandler()

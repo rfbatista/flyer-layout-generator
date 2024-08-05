@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"context"
 
 	"go.uber.org/zap"
@@ -9,7 +10,7 @@ import (
 
 func NewRendererService(
 	storage infra.FileStorage,
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 	log *zap.Logger,
 	t *TextDrawer,
 ) RendererService {
@@ -23,7 +24,7 @@ func NewRendererService(
 
 type RendererService struct {
 	storage    infra.FileStorage
-	cfg        *infra.AppConfig
+	cfg        *config.AppConfig
 	log        *zap.Logger
 	textDrawer *TextDrawer
 }

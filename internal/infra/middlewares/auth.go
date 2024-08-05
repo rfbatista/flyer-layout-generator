@@ -1,16 +1,17 @@
-package infra
+package middlewares
 
 import (
+	"algvisual/internal/infra/cognito"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
-func NewAuthMiddleware(cog *Cognito) func(echo.HandlerFunc) echo.HandlerFunc {
+func NewAuthMiddleware(cog *cognito.Cognito) func(echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			key := c.Request().Header.Get("Authorization")
-			err := cog.VerifyToken(
+			_, err := cog.VerifyToken(
 				c.Request().Context(),
 				[]byte(strings.Split(key, "Bearer ")[1]),
 			)

@@ -21,7 +21,7 @@ INSERT INTO projects (
   $2,
   $3
 )
-RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
+RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 `
 
 type CreateProjectParams struct {
@@ -43,12 +43,13 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const getProjectByID = `-- name: GetProjectByID :one
-SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
+SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 FROM projects
 WHERE id = $1
 LIMIT 1
@@ -67,12 +68,13 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (Project, error)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const listProjects = `-- name: ListProjects :many
-SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
+SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 FROM projects
 LIMIT $1 OFFSET $2
 `
@@ -101,6 +103,7 @@ func (q *Queries) ListProjects(ctx context.Context, arg ListProjectsParams) ([]P
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.CompanyID,
 		); err != nil {
 			return nil, err
 		}
@@ -123,7 +126,7 @@ SET
         THEN $6::bool ELSE use_ai END
 WHERE
   id = $7
-RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at
+RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 `
 
 type UpdateProjectByIDParams struct {
@@ -157,6 +160,7 @@ func (q *Queries) UpdateProjectByID(ctx context.Context, arg UpdateProjectByIDPa
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }

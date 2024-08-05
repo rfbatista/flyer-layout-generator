@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"fmt"
 	"io"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type S3Storage struct {
-	c AppConfig
+	c config.AppConfig
 }
 
 func (s S3Storage) CreateSession() (*session.Session, error) {

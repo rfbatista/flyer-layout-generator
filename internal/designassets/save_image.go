@@ -1,7 +1,7 @@
 package designassets
 
 import (
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/shared"
 	"context"
 	"fmt"
@@ -20,7 +20,7 @@ type SaveImageOutput struct {
 
 func SaveImageUseCase(
 	ctx context.Context,
-	cfg *infra.AppConfig,
+	cfg *config.AppConfig,
 	req SaveImageInput,
 ) (*SaveImageOutput, error) {
 	fullpath := fmt.Sprintf("%s/%s", cfg.ImagesFolderPath, req.Name)

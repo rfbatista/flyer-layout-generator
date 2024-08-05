@@ -1,7 +1,7 @@
 package main
 
 import (
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"fmt"
 	"os"
 	"path"
@@ -27,7 +27,7 @@ func processLayer(filename string, layerName string, l *psd.Layer) error {
 }
 
 func main() {
-	root := infra.FindProjectRoot()
+	root := config.FindProjectRoot()
 	filePath := path.Join(root, "./dist/files/teste")
 	fmt.Printf("loading file from %s", filePath)
 	file, err := os.Open(filePath)

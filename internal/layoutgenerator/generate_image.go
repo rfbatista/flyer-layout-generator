@@ -5,7 +5,7 @@ import (
 	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/mapper"
 	"algvisual/internal/renderer"
 	"algvisual/internal/shared"
@@ -141,7 +141,7 @@ func GenerateImageUseCase(
 	req GenerateImage,
 	queries *database.Queries,
 	db *pgxpool.Pool,
-	config infra.AppConfig,
+	config config.AppConfig,
 	log *zap.Logger,
 	render renderer.RendererService,
 ) (*GenerateImageOutput, error) {

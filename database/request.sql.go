@@ -14,7 +14,7 @@ import (
 const createLayoutRequest = `-- name: CreateLayoutRequest :one
 INSERT INTO layout_requests (design_id, layout_id, config)
 VALUES ($1, $2, $3)
-RETURNING id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at
+RETURNING id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at, company_id
 `
 
 type CreateLayoutRequestParams struct {
@@ -37,6 +37,7 @@ func (q *Queries) CreateLayoutRequest(ctx context.Context, arg CreateLayoutReque
 		&i.Total,
 		&i.DeletedAt,
 		&i.UpdatedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
@@ -121,7 +122,7 @@ func (q *Queries) FinishLayoutRequest(ctx context.Context, arg FinishLayoutReque
 }
 
 const getLastLayoutRequest = `-- name: GetLastLayoutRequest :one
-SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at
+SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at, company_id
 FROM layout_requests
 WHERE design_id = $1
 ORDER BY created_at DESC
@@ -142,12 +143,13 @@ func (q *Queries) GetLastLayoutRequest(ctx context.Context, designID pgtype.Int4
 		&i.Total,
 		&i.DeletedAt,
 		&i.UpdatedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
 
 const getLayoutRequestByID = `-- name: GetLayoutRequestByID :one
-SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at
+SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at, company_id
 FROM layout_requests
 WHERE id = $1
 LIMIT 1
@@ -167,6 +169,7 @@ func (q *Queries) GetLayoutRequestByID(ctx context.Context, id int64) (LayoutReq
 		&i.Total,
 		&i.DeletedAt,
 		&i.UpdatedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }
@@ -306,7 +309,7 @@ func (q *Queries) ListLayoutRequestJobsNotStarted(ctx context.Context, limit int
 }
 
 const listLayoutRequests = `-- name: ListLayoutRequests :many
-SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at
+SELECT id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at, company_id
 FROM layout_requests
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
@@ -337,6 +340,7 @@ func (q *Queries) ListLayoutRequests(ctx context.Context, arg ListLayoutRequests
 			&i.Total,
 			&i.DeletedAt,
 			&i.UpdatedAt,
+			&i.CompanyID,
 		); err != nil {
 			return nil, err
 		}
@@ -400,7 +404,7 @@ SET
       THEN $4 ELSE total END,
     updated_at = now()
 WHERE id = $5
-RETURNING id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at
+RETURNING id, layout_id, design_id, created_at, log, config, done, total, deleted_at, updated_at, company_id
 `
 
 type UpdateLayoutRequestParams struct {
@@ -431,6 +435,7 @@ func (q *Queries) UpdateLayoutRequest(ctx context.Context, arg UpdateLayoutReque
 		&i.Total,
 		&i.DeletedAt,
 		&i.UpdatedAt,
+		&i.CompanyID,
 	)
 	return i, err
 }

@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
 	"context"
 	"fmt"
 
@@ -13,7 +15,7 @@ import (
 var Module = fx.Options(
 	fx.Provide(
 		NewLogger,
-		NewConfig,
+		config.NewConfig,
 		NewHTTPServer,
 		NewDatabaseConnection,
 		NewDatabaseQueries,
@@ -21,7 +23,7 @@ var Module = fx.Options(
 		NewPhotoshpProcessor,
 		NewImageGenerator,
 		NewServerSideEventManager,
-		NewCognito,
+		cognito.NewCognito,
 	),
 	fx.Invoke(RegisterHooks),
 )
@@ -30,9 +32,9 @@ type RegisterHooksParams struct {
 	fx.In
 	Server  *echo.Echo
 	Logger  *zap.Logger
-	Config  *AppConfig
+	Config  *config.AppConfig
 	Conn    *pgxpool.Pool
-	Cognito *Cognito
+	Cognito *cognito.Cognito
 	SSE     *ServerSideEventManager
 }
 

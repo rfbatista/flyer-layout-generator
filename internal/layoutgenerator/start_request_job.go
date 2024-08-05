@@ -4,6 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/mapper"
 	"algvisual/internal/renderer"
 	"context"
@@ -24,7 +25,7 @@ func StartRequestJobUseCase(
 	client *infra.ImageGeneratorClient,
 	queries *database.Queries,
 	db *pgxpool.Pool,
-	config infra.AppConfig,
+	config config.AppConfig,
 	log *zap.Logger,
 	req StartRequestJobInput,
 	render renderer.RendererService,

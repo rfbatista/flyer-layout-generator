@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"algvisual/internal/infra/config"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -14,7 +15,7 @@ import (
 )
 
 func NewBundler(logger *zap.Logger) (*Bundler, error) {
-	assetsDirPath := fmt.Sprintf("%s/dist/web", FindProjectRoot())
+	assetsDirPath := fmt.Sprintf("%s/dist/web", config.FindProjectRoot())
 	return &Bundler{assetsPath: assetsDirPath, logger: logger}, nil
 }
 

@@ -7,7 +7,7 @@ import (
 
 func ClientToDomain(raw database.Client) entities.Client {
 	return entities.Client{
-		ID:         int32(raw.ID),
+		ID:         int64(raw.ID),
 		Name:       raw.Name,
 		CreatedAt:  &raw.CreatedAt.Time,
 		UpdatedAt:  &raw.UpdatedAt.Time,

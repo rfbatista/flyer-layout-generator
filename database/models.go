@@ -113,6 +113,7 @@ type Roles string
 const (
 	RolesAdmin Roles = "admin"
 	RolesColab Roles = "colab"
+	RolesGm    Roles = "gm"
 )
 
 func (e *Roles) Scan(src interface{}) error {
@@ -198,6 +199,7 @@ type Advertiser struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
 }
 
 type Client struct {
@@ -206,6 +208,17 @@ type Client struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
+}
+
+type CompaniesApiCredential struct {
+	ID        int64            `json:"id"`
+	Name      pgtype.Text      `json:"name"`
+	ApiKey    string           `json:"api_key"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
 }
 
 type Company struct {
@@ -231,6 +244,7 @@ type Design struct {
 	IsProccessed   pgtype.Bool      `json:"is_proccessed"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+	CompanyID      pgtype.Int4      `json:"company_id"`
 }
 
 type DesignAsset struct {
@@ -278,6 +292,7 @@ type Layout struct {
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
 	DeletedAt  pgtype.Timestamp `json:"deleted_at"`
+	CompanyID  pgtype.Int4      `json:"company_id"`
 }
 
 type LayoutComponent struct {
@@ -345,6 +360,7 @@ type LayoutRequest struct {
 	Total     pgtype.Int4      `json:"total"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
 }
 
 type LayoutRequestsJob struct {
@@ -375,6 +391,7 @@ type Project struct {
 	CreatedAt    pgtype.Timestamp `json:"created_at"`
 	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 	DeletedAt    pgtype.Timestamp `json:"deleted_at"`
+	CompanyID    pgtype.Int4      `json:"company_id"`
 }
 
 type Template struct {
@@ -391,6 +408,7 @@ type Template struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
 }
 
 type TemplatesDistortion struct {
@@ -418,7 +436,10 @@ type TemplatesSlot struct {
 type User struct {
 	ID        int64            `json:"id"`
 	Name      string           `json:"name"`
+	Email     pgtype.Text      `json:"email"`
+	Username  pgtype.Text      `json:"username"`
 	Role      NullRoles        `json:"role"`
+	CompanyID pgtype.Int4      `json:"company_id"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	DeletedAt pgtype.Timestamp `json:"deleted_at"`

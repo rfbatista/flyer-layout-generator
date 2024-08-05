@@ -4,7 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
-	"algvisual/internal/infra"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/mapper"
 	"algvisual/internal/shared"
 	"context"
@@ -31,7 +31,7 @@ func GenerateDesignUseCasev3(
 	req GenerateDesignRequestv3,
 	queries *database.Queries,
 	db *pgxpool.Pool,
-	config infra.AppConfig,
+	config config.AppConfig,
 	log *zap.Logger,
 ) (*GenerateDesignResultv3, error) {
 	designFile, err := queries.Getdesign(ctx, req.PhotoshopID)

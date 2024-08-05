@@ -7,7 +7,7 @@ import (
 
 func AdvertiserToDomain(raw database.Advertiser) entities.Advertiser {
 	return entities.Advertiser{
-		ID:         int32(raw.ID),
+		ID:         raw.ID,
 		Name:       raw.Name,
 		CreatedAt:  &raw.CreatedAt.Time,
 		UpdatedAt:  &raw.UpdatedAt.Time,
