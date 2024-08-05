@@ -19,6 +19,7 @@ type ClientController struct {
 
 func (s ClientController) Load(e *echo.Echo) error {
 	e.GET("/api/v1/clients", s.ListClients())
+	e.POST("/api/v1/clients", s.CreateClient())
 	return nil
 }
 
