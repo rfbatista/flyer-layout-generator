@@ -1,14 +1,15 @@
 package advertisers
 
 import (
-	"algvisual/internal/repositories"
 	"context"
 )
 
-func NewAdvertiserService() {}
+func NewAdvertiserService(repo AdvertiserRepository) AdvertiserService {
+	return AdvertiserService{repo: repo}
+}
 
 type AdvertiserService struct {
-	repo repositories.AdvertiserRepository
+	repo AdvertiserRepository
 }
 
 func (a AdvertiserService) Create(

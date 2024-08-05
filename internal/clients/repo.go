@@ -1,4 +1,4 @@
-package repositories
+package clients
 
 import (
 	"algvisual/database"
@@ -8,7 +8,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewClientRepository() {}
+func NewClientRepository(db *database.Queries) ClientRepository {
+	return ClientRepository{db: db}
+}
 
 type ClientRepository struct {
 	db *database.Queries

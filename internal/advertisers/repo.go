@@ -1,4 +1,4 @@
-package repositories
+package advertisers
 
 import (
 	"algvisual/database"

@@ -2,7 +2,6 @@ package clients
 
 import (
 	"algvisual/internal/entities"
-	"algvisual/internal/repositories"
 	"context"
 )
 
@@ -18,7 +17,7 @@ type CreateClientOutput struct {
 func CreateClientUseCase(
 	ctx context.Context,
 	req CreateClientInput,
-	repo repositories.ClientRepository,
+	repo ClientRepository,
 ) (*CreateClientOutput, error) {
 	e := entities.Client{
 		Name:      req.Name,

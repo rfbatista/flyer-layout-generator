@@ -1,16 +1,15 @@
 package clients
 
 import (
-	"algvisual/internal/repositories"
 	"context"
 )
 
-func NewClientService(repo repositories.ClientRepository) ClientService {
+func NewClientService(repo ClientRepository) ClientService {
 	return ClientService{repo: repo}
 }
 
 type ClientService struct {
-	repo repositories.ClientRepository
+	repo ClientRepository
 }
 
 func (c ClientService) CreateClient(

@@ -2,7 +2,6 @@ package advertisers
 
 import (
 	"algvisual/internal/entities"
-	"algvisual/internal/repositories"
 	"context"
 )
 
@@ -18,7 +17,7 @@ type CreateAdvertiserOutput struct {
 func CreateAdvertiserUseCase(
 	ctx context.Context,
 	req CreateAdvertiserInput,
-	repo repositories.AdvertiserRepository,
+	repo AdvertiserRepository,
 ) (*CreateAdvertiserOutput, error) {
 	e := entities.Advertiser{
 		Name:      req.Name,
