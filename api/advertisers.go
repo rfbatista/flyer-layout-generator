@@ -22,6 +22,7 @@ type AdvertiserController struct {
 
 func (s AdvertiserController) Load(e *echo.Echo) error {
 	e.GET("/api/v1/advertisers", s.ListAdvertisers())
+	e.POST("/api/v1/advertisers", s.CreateAdvertiser())
 	return nil
 }
 
