@@ -9,3 +9,8 @@ LIMIT 1;
 SELECT *
 FROM clients
 LIMIT $1 OFFSET $2;
+
+-- name: CreateClient :one
+INSERT INTO clients (name, company_id)
+VALUES ($1, $2)
+RETURNING id;

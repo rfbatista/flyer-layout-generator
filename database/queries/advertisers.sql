@@ -8,3 +8,8 @@ LIMIT 1;
 SELECT *
 FROM advertisers
 LIMIT $1 OFFSET $2;
+
+-- name: CreateAdvertiser :one
+INSERT INTO advertisers (name, company_id)
+VALUES ($1, $2)
+RETURNING id;
