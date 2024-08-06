@@ -18,6 +18,6 @@ var Module = fx.Options(
 	fx.Provide(
 		NewAdvertiserService,
 		NewAdvertiserRepository,
-		NewAdvertiserController,
+		AsController(NewAdvertiserController),
 	),
 )
