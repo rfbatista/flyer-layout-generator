@@ -28,6 +28,22 @@ var Module = fx.Options(
 	fx.Invoke(RegisterHooks),
 )
 
+var TestModule = fx.Options(
+	fx.Provide(
+		NewLogger,
+		config.NewTestConfig,
+		NewHTTPServer,
+		NewDatabaseConnection,
+		NewDatabaseQueries,
+		NewFileStorage,
+		NewPhotoshpProcessor,
+		NewImageGenerator,
+		NewServerSideEventManager,
+		cognito.NewCognito,
+	),
+	fx.Invoke(RegisterHooks),
+)
+
 type RegisterHooksParams struct {
 	fx.In
 	Server  *echo.Echo

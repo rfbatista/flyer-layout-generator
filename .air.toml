@@ -4,12 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  pre_cmd = [
-  "templ generate",
-  # "npx tailwindcss --input ./web/static/components.css --output ./web/static/css/components.css",
-  # "yarn css",
-	"yarn dev:build",
-  ]
+  pre_cmd = []
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server/main.go"
   delay = 1000

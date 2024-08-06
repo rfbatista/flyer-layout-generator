@@ -115,15 +115,17 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 
 func FindProjectRoot() string {
 	_, b, _, _ := runtime.Caller(0)
-	rootPath := filepath.Join(filepath.Dir(b), "../..")
+	rootPath := filepath.Join(filepath.Dir(b), "../../..")
 	return string(rootPath)
 }
 
 func NewTestConfig() (*AppConfig, error) {
 	rootPath := FindProjectRoot()
-	err := godotenv.Load(filepath.Join(string(rootPath), "./scripts/.env.test"))
+	fmt.Println(rootPath)
+	fullpath := filepath.Join(string(rootPath), "./scripts/env/.env.test")
+	err := godotenv.Load(fullpath)
 	if err != nil {
-		fmt.Println("cant load scripts/.env.test variables")
+		fmt.Println(fmt.Sprintf("cant load %s variables", fullpath))
 	}
 	maxWorkers := int32(1)
 	sMaxWorker := os.Getenv("MAX_WORKERS")

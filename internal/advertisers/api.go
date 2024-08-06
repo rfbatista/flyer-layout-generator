@@ -1,8 +1,7 @@
-package api
+package advertisers
 
 import (
 	"algvisual/database"
-	"algvisual/internal/advertisers"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -10,14 +9,14 @@ import (
 
 func NewAdvertiserController(
 	db *database.Queries,
-	ads advertisers.AdvertiserService,
+	ads AdvertiserService,
 ) AdvertiserController {
 	return AdvertiserController{db: db, ads: ads}
 }
 
 type AdvertiserController struct {
 	db  *database.Queries
-	ads advertisers.AdvertiserService
+	ads AdvertiserService
 }
 
 func (s AdvertiserController) Load(e *echo.Echo) error {
@@ -28,12 +27,12 @@ func (s AdvertiserController) Load(e *echo.Echo) error {
 
 func (s AdvertiserController) ListAdvertisers() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req advertisers.ListAdvertisersInput
+		var req ListAdvertisersInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := advertisers.ListAdvertisersUseCase(c.Request().Context(), req, s.db)
+		out, err := ListAdvertisersUseCase(c.Request().Context(), req, s.db)
 		if err != nil {
 			return err
 		}
@@ -43,7 +42,7 @@ func (s AdvertiserController) ListAdvertisers() echo.HandlerFunc {
 
 func (s AdvertiserController) CreateAdvertiser() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req advertisers.CreateAdvertiserInput
+		var req CreateAdvertiserInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err

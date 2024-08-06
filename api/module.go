@@ -36,7 +36,6 @@ var Module = fx.Options(fx.Provide(
 	AsController(NewWebController),
 	AsController(NewProjectsController),
 	AsController(NewClientsController),
-	AsController(NewAdvertiserController),
 	AsController(NewDesignController),
 	AsController(NewAssetsController),
 	AsController(NewTemplatesController),
