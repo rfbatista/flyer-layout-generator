@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gavv/httpexpect/v2"
 	"go.uber.org/fx"
 )
 
@@ -23,14 +24,10 @@ func TestCreateClient(tt *testing.T) {
 	if err := app.Start(startCtx); err != nil {
 		log.Fatal(err)
 	}
+	e := httpexpect.Default(tt, "http://localhost:8000")
 	tt.Run("should create a client", func(t *testing.T) {
-		if _, err := http.Get("http://localhost:8000/"); err != nil {
-			log.Fatal(err)
-		}
-		stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-		defer cancel()
-		if err := app.Stop(stopCtx); err != nil {
-			log.Fatal(err)
-		}
+		e.POST("/api/v1/advertisers").
+			Expect().
+			Status(http.StatusOK)
 	})
 }

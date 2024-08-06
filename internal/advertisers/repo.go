@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewAdvertiserRepository() (AdvertiserRepository, error) {
-	return AdvertiserRepository{}, nil
+func NewAdvertiserRepository(db *database.Queries) (AdvertiserRepository, error) {
+	return AdvertiserRepository{db: db}, nil
 }
 
 type AdvertiserRepository struct {
