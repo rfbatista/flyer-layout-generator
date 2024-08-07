@@ -80,6 +80,9 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 			http.MethodPost,
 			http.MethodDelete,
 			http.MethodPatch,
+			http.MethodHead,
+			http.MethodOptions,
+			"Origin, X-Requested-With, Content-Type, Accept",
 		},
 	}))
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
