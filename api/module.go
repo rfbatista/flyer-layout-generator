@@ -39,7 +39,6 @@ var Module = fx.Options(fx.Provide(
 	AsController(NewDesignController),
 	AsController(NewAssetsController),
 	AsController(NewTemplatesController),
-	AsController(NewLayoutController),
 	AsController(NewIAMAPI),
 	protected(NewSetPhotoshopBackgroundAPI),
 	protected(NewListGeneratedImagesAPI),

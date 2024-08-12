@@ -1,9 +1,9 @@
-package api
+package layoutgenerator
 
 import (
 	"algvisual/database"
 	"algvisual/internal/infra/config"
-	"algvisual/internal/layoutgenerator"
+	"algvisual/internal/layoutgenerator/usecase"
 	"algvisual/internal/renderer"
 	"net/http"
 
@@ -14,7 +14,7 @@ import (
 
 func NewLayoutController(
 	db *database.Queries,
-	lservice layoutgenerator.LayoutGeneratorService,
+	lservice LayoutGeneratorService,
 	cfg *config.AppConfig,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
@@ -25,7 +25,7 @@ func NewLayoutController(
 
 type LayoutController struct {
 	db            *database.Queries
-	layoutService layoutgenerator.LayoutGeneratorService
+	layoutService LayoutGeneratorService
 	render        renderer.RendererService
 	pool          *pgxpool.Pool
 	cfg           *config.AppConfig
@@ -42,17 +42,18 @@ func (s LayoutController) Load(e *echo.Echo) error {
 	e.POST("/api/v1/project/design/:design_id/layout/:layout_id/generate", s.CreateLayoutRequest())
 	e.PATCH("/api/v1/layout/:layout_id/element/:element_id/position", s.UpdateLayoutElementPosition())
 	e.PATCH("/api/v1/layout/:layout_id/element/:element_id/size", s.UpdateLayoutElementSize())
+	e.DELETE("/api/v1/batch/:batch_id/layout/:layout_id", s.DeleteBatchLayout())
 	return nil
 }
 
 func (s LayoutController) GetLayoutByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.GetLayoutByIDRequest
+		var req GetLayoutByIDRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.GetLayoutByIDUseCase(c.Request().Context(), s.db, req)
+		out, err := GetLayoutByIDUseCase(c.Request().Context(), s.db, req)
 		if err != nil {
 			return err
 		}
@@ -62,12 +63,12 @@ func (s LayoutController) GetLayoutByID() echo.HandlerFunc {
 
 func (s LayoutController) GenerateLayout() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.GenerateImage
+		var req GenerateImage
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.GenerateImageUseCase(
+		out, err := GenerateImageUseCase(
 			c.Request().Context(),
 			req,
 			s.db,
@@ -85,7 +86,7 @@ func (s LayoutController) GenerateLayout() echo.HandlerFunc {
 
 func (s LayoutController) GenerateLayoutv2() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.GenerateImageV2Input
+		var req GenerateImageV2Input
 		err := c.Bind(&req)
 		if err != nil {
 			return err
@@ -100,12 +101,12 @@ func (s LayoutController) GenerateLayoutv2() echo.HandlerFunc {
 
 func (s LayoutController) CreateLayoutRequest() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.CreateLayoutRequestInput
+		var req CreateLayoutRequestInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := layoutgenerator.CreateLayoutRequestUseCase(
+		out, err := CreateLayoutRequestUseCase(
 			c.Request().Context(),
 			s.db,
 			s.pool,
@@ -120,7 +121,7 @@ func (s LayoutController) CreateLayoutRequest() echo.HandlerFunc {
 
 func (s LayoutController) UpdateLayoutElementPosition() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.UpdateLayoutElementPositionInput
+		var req UpdateLayoutElementPositionInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
@@ -138,12 +139,30 @@ func (s LayoutController) UpdateLayoutElementPosition() echo.HandlerFunc {
 
 func (s LayoutController) UpdateLayoutElementSize() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.UpdateLayoutElementSizeInput
+		var req UpdateLayoutElementSizeInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
 		out, err := s.layoutService.UpdateElementSize(
+			c.Request().Context(),
+			req,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s LayoutController) DeleteBatchLayout() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req usecase.DeleteLayoutByIdInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := s.layoutService.DeleteLayout(
 			c.Request().Context(),
 			req,
 		)

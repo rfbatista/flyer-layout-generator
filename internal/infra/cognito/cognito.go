@@ -6,8 +6,13 @@ import (
 	"algvisual/internal/shared"
 	"context"
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"go.uber.org/zap"
@@ -78,8 +83,25 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) (*entities.U
 	// 	return errors.New("invalid access token: issuer does not match")
 	// }
 	username, _ := token.Get("username")
+	// companyID, _ := token.Get("custom:company_id")
+
+	var companyID int64
+	user, err := c.GetUser(c.createSession(), string(rawtoken))
+	if err != nil {
+		c.logger.Error("failed to get cognito user", zap.Error(err))
+	} else {
+		for idx := range user.UserAttributes {
+			if user.UserAttributes[idx].Name != nil && *user.UserAttributes[idx].Name == "custom:company_id" && user.UserAttributes[idx].Value != nil {
+				companyID, err = strconv.ParseInt(*user.UserAttributes[idx].Value, 10, 64)
+				if err != nil {
+					c.logger.Error("failed to parse company id", zap.Error(err))
+				}
+			}
+		}
+	}
 	return &entities.UserSession{
-		Username: username.(string),
+		Username:  username.(string),
+		CompanyID: companyID,
 	}, nil
 }
 
@@ -91,4 +113,33 @@ func (c *Cognito) LoadJWK() error {
 	}
 	c.jwkCache = ca
 	return nil
+}
+
+func (c *Cognito) createSession() *session.Session {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(c.config.Region), // Replace with your region
+	})
+	if err != nil {
+		fmt.Println("Failed to create session,", err)
+		return nil
+	}
+	return sess
+}
+
+func (c *Cognito) GetUser(
+	sess *session.Session,
+	accessToken string,
+) (*cognitoidentityprovider.GetUserOutput, error) {
+	svc := cognitoidentityprovider.New(sess)
+
+	input := &cognitoidentityprovider.GetUserInput{
+		AccessToken: aws.String(accessToken),
+	}
+
+	result, err := svc.GetUser(input)
+	if err != nil {
+		fmt.Println("Failed to get user,", err)
+		return nil, err
+	}
+	return result, nil
 }

@@ -124,3 +124,7 @@ UPDATE layout
 SET 
   image_url = $2
 WHERE id = $1;
+
+
+-- name: DeleteLayoutByID :exec
+DELETE FROM layout WHERE id = $1;

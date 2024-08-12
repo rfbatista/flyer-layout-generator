@@ -2,6 +2,8 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/layoutgenerator/repository"
+	"algvisual/internal/layoutgenerator/usecase"
 	"algvisual/internal/renderer"
 	"algvisual/internal/templates"
 	"context"
@@ -16,6 +18,7 @@ func NewLayoutGeneratorService(
 	log *zap.Logger,
 	rendererService renderer.RendererService,
 	pool *pgxpool.Pool,
+	repo repository.LayoutRepository,
 ) LayoutGeneratorService {
 	return LayoutGeneratorService{
 		db:              db,
@@ -23,6 +26,7 @@ func NewLayoutGeneratorService(
 		log:             log,
 		rendererService: rendererService,
 		pool:            pool,
+		repo:            repo,
 	}
 }
 
@@ -32,6 +36,7 @@ type LayoutGeneratorService struct {
 	log             *zap.Logger
 	rendererService renderer.RendererService
 	pool            *pgxpool.Pool
+	repo            repository.LayoutRepository
 }
 
 func (l LayoutGeneratorService) GenerateNewLayout(
@@ -61,4 +66,11 @@ func (l LayoutGeneratorService) UpdateElementSize(
 	in UpdateLayoutElementSizeInput,
 ) (*UpdateLayoutElementSizeOutput, error) {
 	return UpdateLayoutElementSizeUseCase(ctx, in, l.db, l.rendererService)
+}
+
+func (l LayoutGeneratorService) DeleteLayout(
+	ctx context.Context,
+	in usecase.DeleteLayoutByIdInput,
+) (*usecase.DeleteLayoutByIdOutput, error) {
+	return usecase.DeleteLayoutByIdUseCase(ctx, in, l.repo)
 }

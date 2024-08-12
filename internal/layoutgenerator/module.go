@@ -1,7 +1,16 @@
 package layoutgenerator
 
-import "go.uber.org/fx"
+import (
+	"algvisual/internal/layoutgenerator/repository"
+	"algvisual/internal/ports"
+
+	"go.uber.org/fx"
+)
 
 var Module = fx.Options(
-	fx.Provide(NewLayoutGeneratorService),
+	fx.Provide(
+		ports.AsController(NewLayoutController),
+		NewLayoutGeneratorService,
+		repository.NewRepository,
+	),
 )

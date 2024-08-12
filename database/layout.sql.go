@@ -288,6 +288,15 @@ func (q *Queries) CreateLayoutComponent(ctx context.Context, arg CreateLayoutCom
 	return i, err
 }
 
+const deleteLayoutByID = `-- name: DeleteLayoutByID :exec
+DELETE FROM layout WHERE id = $1
+`
+
+func (q *Queries) DeleteLayoutByID(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteLayoutByID, id)
+	return err
+}
+
 const getLayoutByID = `-- name: GetLayoutByID :one
 SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout 
 WHERE id = $1
