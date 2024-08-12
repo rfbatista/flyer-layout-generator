@@ -1,7 +1,7 @@
 ---
-to: internal/<%= h.changeCase.snake(module) %>/<%= h.changeCase.snake(name) %>.go
+to: internal/<%= h.changeCase.snake(module) %>/usecase/<%= h.changeCase.snake(name) %>.go
 ---
-package <%= h.changeCase.snake(module) %>
+package usecase
 
 import (
 	"context"
