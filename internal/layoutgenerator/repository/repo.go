@@ -7,8 +7,8 @@ import (
 	"context"
 )
 
-func NewRepository() LayoutRepository {
-	return LayoutRepository{}
+func NewRepository(db *database.Queries) LayoutRepository {
+	return LayoutRepository{db: db}
 }
 
 type LayoutRepository struct {
