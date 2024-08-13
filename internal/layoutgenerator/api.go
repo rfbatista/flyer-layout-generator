@@ -20,7 +20,14 @@ func NewLayoutController(
 	pool *pgxpool.Pool,
 	render renderer.RendererService,
 ) LayoutController {
-	return LayoutController{db: db, layoutService: lservice, cfg: cfg, log: log, pool: pool, render: render}
+	return LayoutController{
+		db:            db,
+		layoutService: lservice,
+		cfg:           cfg,
+		log:           log,
+		pool:          pool,
+		render:        render,
+	}
 }
 
 type LayoutController struct {
@@ -40,9 +47,13 @@ func (s LayoutController) Load(e *echo.Echo) error {
 	)
 	e.POST("/api/v2/layout/:layout_id/template/:template_id/generate", s.GenerateLayoutv2())
 	e.POST("/api/v1/project/design/:design_id/layout/:layout_id/generate", s.CreateLayoutRequest())
-	e.PATCH("/api/v1/layout/:layout_id/element/:element_id/position", s.UpdateLayoutElementPosition())
+	e.PATCH(
+		"/api/v1/layout/:layout_id/element/:element_id/position",
+		s.UpdateLayoutElementPosition(),
+	)
 	e.PATCH("/api/v1/layout/:layout_id/element/:element_id/size", s.UpdateLayoutElementSize())
 	e.DELETE("/api/v1/batch/:batch_id/layout/:layout_id", s.DeleteBatchLayout())
+	e.GET("/api/v1/batch/:batch_id/download", s.CreateZipBatch())
 	return nil
 }
 
@@ -163,6 +174,24 @@ func (s LayoutController) DeleteBatchLayout() echo.HandlerFunc {
 			return err
 		}
 		out, err := s.layoutService.DeleteLayout(
+			c.Request().Context(),
+			req,
+		)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s LayoutController) CreateZipBatch() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req usecase.CreateZipForBatchInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := s.layoutService.ZipBatchImages(
 			c.Request().Context(),
 			req,
 		)

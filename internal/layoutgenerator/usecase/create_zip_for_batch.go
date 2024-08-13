@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"algvisual/internal/layoutgenerator/repository"
 	"archive/zip"
 	"bytes"
 	"context"
@@ -10,15 +11,34 @@ import (
 	"strings"
 )
 
-type CreateZipForBatchInput struct{}
+type CreateZipForBatchInput struct {
+	RequestID int64
+}
 
-type CreateZipForBatchOutput struct{}
+type CreateZipForBatchOutput struct {
+	Data []byte
+}
 
 func CreateZipForBatchUseCase(
 	ctx context.Context,
 	req CreateZipForBatchInput,
+	repo repository.LayoutRepository,
 ) (*CreateZipForBatchOutput, error) {
-	return &CreateZipForBatchOutput{}, nil
+	layouts, err := repo.GetLayoutByRequestID(ctx, req.RequestID)
+	if err != nil {
+		return nil, err
+	}
+	var urls []string
+	for _, l := range layouts {
+		urls = append(urls, l.ImageURL)
+	}
+	images, err := zipImages("teste", urls)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateZipForBatchOutput{
+		Data: images,
+	}, nil
 }
 
 func downloadImage(url string) ([]byte, error) {

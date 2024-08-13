@@ -74,3 +74,10 @@ func (l LayoutGeneratorService) DeleteLayout(
 ) (*usecase.DeleteLayoutByIdOutput, error) {
 	return usecase.DeleteLayoutByIdUseCase(ctx, in, l.repo)
 }
+
+func (l LayoutGeneratorService) ZipBatchImages(
+	ctx context.Context,
+	in usecase.CreateZipForBatchInput,
+) (*usecase.CreateZipForBatchOutput, error) {
+	return usecase.CreateZipForBatchUseCase(ctx, in, l.repo)
+}
