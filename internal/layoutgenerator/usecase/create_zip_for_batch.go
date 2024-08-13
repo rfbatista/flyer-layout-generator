@@ -39,7 +39,7 @@ func CreateZipForBatchUseCase(
 	if err != nil {
 		return nil, err
 	}
-	images, err := zipImages(fmt.Sprintf("%s_%s.jpg", cl.Name, adv.Name), urls)
+	images, err := zipImages(fmt.Sprintf("%s_%s", cl.Name, adv.Name), urls)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func zipImages(name string, urls []string) ([]byte, error) {
 			return nil, err
 		}
 
-		fileName := fmt.Sprintf("%s::%d", name, idx)
+		fileName := fmt.Sprintf("%s::%d.jpg", name, idx)
 		fileWriter, err := zipWriter.Create(fileName)
 		if err != nil {
 			return nil, err
