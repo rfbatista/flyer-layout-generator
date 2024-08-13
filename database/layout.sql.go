@@ -297,6 +297,70 @@ func (q *Queries) DeleteLayoutByID(ctx context.Context, id int64) error {
 	return err
 }
 
+const getAdvertiserByBatchID = `-- name: GetAdvertiserByBatchID :one
+SELECT advertisers.id, advertisers.name, advertisers.created_at, advertisers.updated_at, advertisers.deleted_at, advertisers.company_id 
+FROM layout_requests lr
+LEFT JOIN design as d on d.id = lr.design_id
+LEFT JOIN projects on projects.id = d.project_id
+LEFT JOIN advertisers on advertisers.id = projects.advertiser_id
+WHERE lr.id = $1
+`
+
+type GetAdvertiserByBatchIDRow struct {
+	ID        pgtype.Int8      `json:"id"`
+	Name      pgtype.Text      `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
+}
+
+func (q *Queries) GetAdvertiserByBatchID(ctx context.Context, id int64) (GetAdvertiserByBatchIDRow, error) {
+	row := q.db.QueryRow(ctx, getAdvertiserByBatchID, id)
+	var i GetAdvertiserByBatchIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+		&i.CompanyID,
+	)
+	return i, err
+}
+
+const getClientByBatchID = `-- name: GetClientByBatchID :one
+SELECT clients.id, clients.name, clients.created_at, clients.updated_at, clients.deleted_at, clients.company_id 
+FROM layout_requests lr
+LEFT JOIN design as d on d.id = lr.design_id
+LEFT JOIN projects on projects.id = d.project_id
+LEFT JOIN clients on clients.id = projects.client_id
+WHERE lr.id = $1
+`
+
+type GetClientByBatchIDRow struct {
+	ID        pgtype.Int8      `json:"id"`
+	Name      pgtype.Text      `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	DeletedAt pgtype.Timestamp `json:"deleted_at"`
+	CompanyID pgtype.Int4      `json:"company_id"`
+}
+
+func (q *Queries) GetClientByBatchID(ctx context.Context, id int64) (GetClientByBatchIDRow, error) {
+	row := q.db.QueryRow(ctx, getClientByBatchID, id)
+	var i GetClientByBatchIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+		&i.CompanyID,
+	)
+	return i, err
+}
+
 const getLayoutByID = `-- name: GetLayoutByID :one
 SELECT id, design_id, request_id, is_original, image_url, width, height, data, stages, created_at, updated_at, deleted_at, company_id FROM layout 
 WHERE id = $1

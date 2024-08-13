@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 )
 
 type CreateZipForBatchInput struct {
@@ -32,7 +31,15 @@ func CreateZipForBatchUseCase(
 	for _, l := range layouts {
 		urls = append(urls, l.ImageURL)
 	}
-	images, err := zipImages("teste", urls)
+	adv, err := repo.GetAdvertiserByBatchID(ctx, req.BatchID)
+	if err != nil {
+		return nil, err
+	}
+	cl, err := repo.GetClientByBatchID(ctx, req.BatchID)
+	if err != nil {
+		return nil, err
+	}
+	images, err := zipImages(fmt.Sprintf("%s::%s", cl.Name, adv.Name), urls)
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +62,13 @@ func zipImages(name string, urls []string) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(buf)
 
-	for _, url := range urls {
+	for idx, url := range urls {
 		data, err := downloadImage(url)
 		if err != nil {
 			return nil, err
 		}
 
-		fileName := fmt.Sprintf("%s::%s", name, url[strings.LastIndex(url, "/")+1:])
+		fileName := fmt.Sprintf("%s::%d", name, idx)
 		fileWriter, err := zipWriter.Create(fileName)
 		if err != nil {
 			return nil, err

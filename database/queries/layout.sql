@@ -128,3 +128,20 @@ WHERE id = $1;
 
 -- name: DeleteLayoutByID :exec
 DELETE FROM layout WHERE id = $1;
+
+-- name: GetClientByBatchID :one
+SELECT clients.* 
+FROM layout_requests lr
+LEFT JOIN design as d on d.id = lr.design_id
+LEFT JOIN projects on projects.id = d.project_id
+LEFT JOIN clients on clients.id = projects.client_id
+WHERE lr.id = $1;
+
+
+-- name: GetAdvertiserByBatchID :one
+SELECT advertisers.* 
+FROM layout_requests lr
+LEFT JOIN design as d on d.id = lr.design_id
+LEFT JOIN projects on projects.id = d.project_id
+LEFT JOIN advertisers on advertisers.id = projects.advertiser_id
+WHERE lr.id = $1;

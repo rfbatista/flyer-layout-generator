@@ -45,3 +45,39 @@ func (lr LayoutRepository) GetLayoutByRequestID(
 	}
 	return entities, nil
 }
+
+func (lr LayoutRepository) GetAdvertiserByBatchID(
+	ctx context.Context,
+	id int64,
+) (*entities.Advertiser, error) {
+	res, err := lr.db.GetAdvertiserByBatchID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &entities.Advertiser{
+		ID:         res.ID.Int64,
+		Name:       res.Name.String,
+		CompanyID:  res.CompanyID.Int32,
+		CreatedAt:  &res.CreatedAt.Time,
+		UpdatedAt:  &res.UpdatedAt.Time,
+		DeleteedAt: &res.DeletedAt.Time,
+	}, nil
+}
+
+func (lr LayoutRepository) GetClientByBatchID(
+	ctx context.Context,
+	id int64,
+) (*entities.Client, error) {
+	res, err := lr.db.GetClientByBatchID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &entities.Client{
+		ID:         res.ID.Int64,
+		Name:       res.Name.String,
+		CompanyID:  res.CompanyID.Int32,
+		CreatedAt:  &res.CreatedAt.Time,
+		UpdatedAt:  &res.UpdatedAt.Time,
+		DeleteedAt: &res.DeletedAt.Time,
+	}, nil
+}
