@@ -12,7 +12,7 @@ import (
 )
 
 type CreateZipForBatchInput struct {
-	RequestID int64
+	BatchID int64 `param:"batch_id"`
 }
 
 type CreateZipForBatchOutput struct {
@@ -24,7 +24,7 @@ func CreateZipForBatchUseCase(
 	req CreateZipForBatchInput,
 	repo repository.LayoutRepository,
 ) (*CreateZipForBatchOutput, error) {
-	layouts, err := repo.GetLayoutByRequestID(ctx, req.RequestID)
+	layouts, err := repo.GetLayoutByRequestID(ctx, req.BatchID)
 	if err != nil {
 		return nil, err
 	}
