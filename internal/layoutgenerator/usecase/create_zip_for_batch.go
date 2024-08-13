@@ -42,7 +42,7 @@ func CreateZipForBatchUseCase(
 }
 
 func downloadImage(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+	resp, err := http.Get(fmt.Sprintf("http://localhost:8000%s", url))
 	if err != nil {
 		return nil, err
 	}
