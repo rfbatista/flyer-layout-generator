@@ -2,7 +2,9 @@ package templates
 
 import (
 	"algvisual/database"
-	"context"
+	"algvisual/internal/templates/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 func NewTemplateService(db *database.Queries) TemplatesService {
@@ -14,8 +16,8 @@ type TemplatesService struct {
 }
 
 func (t TemplatesService) GetTemplateByID(
-	ctx context.Context,
-	in GetTemplateByIdInput,
-) (*GetTemplateByIdOutput, error) {
-	return GetTemplateByIdUseCase(ctx, in, t.db)
+	ctx echo.Context,
+	in usecase.GetTemplateByIdInput,
+) (*usecase.GetTemplateByIdOutput, error) {
+	return usecase.GetTemplateByIdUseCase(ctx, in, t.db)
 }

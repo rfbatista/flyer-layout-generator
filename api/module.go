@@ -34,18 +34,6 @@ func AsController(f any) any {
 
 var Module = fx.Options(fx.Provide(
 	AsController(NewWebController),
-	AsController(NewProjectsController),
-	AsController(NewClientsController),
-	AsController(NewDesignController),
-	AsController(NewAssetsController),
-	AsController(NewTemplatesController),
 	AsController(NewIAMAPI),
-	protected(NewSetPhotoshopBackgroundAPI),
-	protected(NewListGeneratedImagesAPI),
-	protected(NewRemoveComponentAPI),
-	protected(NewListComponentsByFileIDAPI),
-	protected(NewUploadImage),
-	protected(NewDownloadImage),
 	protected(NewDownloadDesignFiles),
-	protected(CreateComponent),
 ))

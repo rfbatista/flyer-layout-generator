@@ -53,16 +53,18 @@ func (q *Queries) GetAdvertiserByID(ctx context.Context, id int64) (Advertiser, 
 const listAdvertisers = `-- name: ListAdvertisers :many
 SELECT id, name, created_at, updated_at, deleted_at, company_id
 FROM advertisers
+WHERE company_id = $3
 LIMIT $1 OFFSET $2
 `
 
 type ListAdvertisersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 }
 
 func (q *Queries) ListAdvertisers(ctx context.Context, arg ListAdvertisersParams) ([]Advertiser, error) {
-	rows, err := q.db.Query(ctx, listAdvertisers, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listAdvertisers, arg.Limit, arg.Offset, arg.CompanyID)
 	if err != nil {
 		return nil, err
 	}

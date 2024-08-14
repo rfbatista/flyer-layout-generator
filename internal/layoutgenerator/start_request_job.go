@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"algvisual/internal/infra"
 	"algvisual/internal/infra/config"
@@ -29,6 +30,7 @@ func StartRequestJobUseCase(
 	log *zap.Logger,
 	req StartRequestJobInput,
 	render renderer.RendererService,
+	das *designassets.DesignAssetService,
 ) error {
 	ctx := context.TODO()
 	layoutJobReq, err := queries.StartLayoutRequest(ctx, int64(req.ID))
@@ -104,6 +106,7 @@ func StartRequestJobUseCase(
 		config,
 		log,
 		render,
+		das,
 	)
 	if err != nil {
 		log.Error("failed to generate design", zap.Error(err))

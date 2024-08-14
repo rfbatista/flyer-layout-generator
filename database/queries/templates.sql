@@ -1,6 +1,7 @@
 -- name: ListTemplates :many
 SELECT *
 FROM templates
+WHERE company_id = $3
 LIMIT $1 OFFSET $2;
 
 -- name: GetTemplate :one
@@ -35,12 +36,14 @@ INSERT INTO templates (
   name,
   width,
   height,
+  company_id,
   request_id
 ) VALUES (
   $1,
   $2,
   $3,
-  $4
+  $4,
+  $5
 )
 RETURNING *;
 
@@ -91,13 +94,15 @@ INSERT INTO templates (
   width,
   height,
   request_id,
+  company_id,
   project_id
 ) VALUES (
   $1,
   $2,
   $3,
   $4,
-  $5
+  $5,
+  $6
 )
 RETURNING *;
 

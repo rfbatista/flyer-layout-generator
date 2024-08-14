@@ -112,9 +112,6 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 			return c.JSONPretty(http.StatusOK, status, "")
 		}
 	})
-	if p.Config.APPENV == "prod" {
-		e.Use(mid.NewAuthMiddleware(p.Cognito))
-	}
 	for _, controller := range p.Controllers {
 		err := controller.Load(e)
 		if err != nil {

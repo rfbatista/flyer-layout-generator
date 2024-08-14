@@ -1,20 +1,23 @@
 package advertisers
 
 import (
-	"context"
+	"algvisual/internal/advertisers/repository"
+	"algvisual/internal/advertisers/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
-func NewAdvertiserService(repo AdvertiserRepository) AdvertiserService {
+func NewAdvertiserService(repo repository.AdvertiserRepository) AdvertiserService {
 	return AdvertiserService{repo: repo}
 }
 
 type AdvertiserService struct {
-	repo AdvertiserRepository
+	repo repository.AdvertiserRepository
 }
 
 func (a AdvertiserService) Create(
-	ctx context.Context,
-	req CreateAdvertiserInput,
-) (*CreateAdvertiserOutput, error) {
-	return CreateAdvertiserUseCase(ctx, req, a.repo)
+	ctx echo.Context,
+	req usecase.CreateAdvertiserInput,
+) (*usecase.CreateAdvertiserOutput, error) {
+	return usecase.CreateAdvertiserUseCase(ctx, req, a.repo)
 }

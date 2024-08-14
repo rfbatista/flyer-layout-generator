@@ -15,11 +15,13 @@ const createProject = `-- name: CreateProject :one
 INSERT INTO projects (
   name,
   client_id,
+  company_id,
   advertiser_id
 ) VALUES (
   $1,
   $2,
-  $3
+  $3,
+  $4
 )
 RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 `
@@ -27,11 +29,17 @@ RETURNING id, client_id, advertiser_id, briefing, use_ai, name, created_at, upda
 type CreateProjectParams struct {
 	Name         string      `json:"name"`
 	ClientID     pgtype.Int4 `json:"client_id"`
+	CompanyID    pgtype.Int4 `json:"company_id"`
 	AdvertiserID pgtype.Int4 `json:"advertiser_id"`
 }
 
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
-	row := q.db.QueryRow(ctx, createProject, arg.Name, arg.ClientID, arg.AdvertiserID)
+	row := q.db.QueryRow(ctx, createProject,
+		arg.Name,
+		arg.ClientID,
+		arg.CompanyID,
+		arg.AdvertiserID,
+	)
 	var i Project
 	err := row.Scan(
 		&i.ID,
@@ -76,16 +84,18 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (Project, error)
 const listProjects = `-- name: ListProjects :many
 SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 FROM projects
+WHERE company_id = $3
 LIMIT $1 OFFSET $2
 `
 
 type ListProjectsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 }
 
 func (q *Queries) ListProjects(ctx context.Context, arg ListProjectsParams) ([]Project, error) {
-	rows, err := q.db.Query(ctx, listProjects, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listProjects, arg.Limit, arg.Offset, arg.CompanyID)
 	if err != nil {
 		return nil, err
 	}

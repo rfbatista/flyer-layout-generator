@@ -1,22 +1,36 @@
 package clients
 
 import (
-	"context"
+	"algvisual/database"
+	"algvisual/internal/clients/repository"
+	"algvisual/internal/clients/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
-func NewClientService(repo ClientRepository) ClientService {
-	return ClientService{repo: repo}
+func NewClientService(repo repository.ClientRepository, db *database.Queries) ClientService {
+	return ClientService{repo: repo, db: db}
 }
 
 type ClientService struct {
-	repo ClientRepository
+	db   *database.Queries
+	repo repository.ClientRepository
 }
 
 func (c ClientService) CreateClient(
-	ctx context.Context,
-	req CreateClientInput,
-) (*CreateClientOutput, error) {
-	return CreateClientUseCase(
+	ctx echo.Context,
+	req usecase.CreateClientInput,
+) (*usecase.CreateClientOutput, error) {
+	return usecase.CreateClientUseCase(
 		ctx, req, c.repo,
+	)
+}
+
+func (c ClientService) ListClients(
+	ctx echo.Context,
+	req usecase.ListClientsInput,
+) (*usecase.ListClientsOutput, error) {
+	return usecase.ListClientsUseCase(
+		ctx, req, c.db,
 	)
 }

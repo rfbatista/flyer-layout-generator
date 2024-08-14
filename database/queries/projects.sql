@@ -2,11 +2,13 @@
 INSERT INTO projects (
   name,
   client_id,
+  company_id,
   advertiser_id
 ) VALUES (
   $1,
   $2,
-  $3
+  $3,
+  $4
 )
 RETURNING *;
 
@@ -20,6 +22,7 @@ LIMIT 1;
 -- name: ListProjects :many
 SELECT *
 FROM projects
+WHERE company_id = $3
 LIMIT $1 OFFSET $2;
 
 -- name: UpdateProjectByID :one

@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"algvisual/internal/renderer"
 	"context"
@@ -23,6 +24,7 @@ func UpdateLayoutElementPositionUseCase(
 	req UpdateLayoutElementPositionInput,
 	db *database.Queries,
 	render renderer.RendererService,
+	das *designassets.DesignAssetService,
 ) (*UpdateLayoutElementPositionOutput, error) {
 	element, err := GetLayoutElementByIdUseCase(ctx, GetLayoutElementByIdInput{ID: req.ID}, db)
 	if err != nil {
@@ -45,7 +47,7 @@ func UpdateLayoutElementPositionUseCase(
 	}
 	layout, err := GetLayoutByIDUseCase(ctx, db, GetLayoutByIDRequest{
 		LayoutID: element.Data.LayoutID,
-	})
+	}, das)
 	if err != nil {
 		return nil, err
 	}

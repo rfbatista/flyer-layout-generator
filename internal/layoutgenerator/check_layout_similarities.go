@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"algvisual/internal/geometry"
 	"context"
@@ -23,6 +24,7 @@ func CheckLayoutSimilaritiesUseCase(
 	ctx context.Context,
 	req CheckLayoutSimilaritiesInput,
 	db *database.Queries,
+	das *designassets.DesignAssetService,
 ) (*CheckLayoutSimilaritiesOutput, error) {
 	layouts, err := db.GetLayoutByRequestID(ctx, pgtype.Int4{Int32: req.RequestID, Valid: true})
 	if err != nil {
@@ -31,7 +33,7 @@ func CheckLayoutSimilaritiesUseCase(
 	for _, l := range layouts {
 		data, err := GetLayoutByIDUseCase(ctx, db, GetLayoutByIDRequest{
 			LayoutID: int32(l.ID),
-		})
+		}, das)
 		if len(data.Layout.Components) != len(req.Layout.Components) {
 			continue
 		}

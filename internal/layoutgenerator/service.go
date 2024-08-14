@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/layoutgenerator/repository"
 	"algvisual/internal/layoutgenerator/usecase"
 	"algvisual/internal/renderer"
@@ -19,6 +20,7 @@ func NewLayoutGeneratorService(
 	rendererService renderer.RendererService,
 	pool *pgxpool.Pool,
 	repo repository.LayoutRepository,
+	das *designassets.DesignAssetService,
 ) LayoutGeneratorService {
 	return LayoutGeneratorService{
 		db:              db,
@@ -27,6 +29,7 @@ func NewLayoutGeneratorService(
 		rendererService: rendererService,
 		pool:            pool,
 		repo:            repo,
+		das:             das,
 	}
 }
 
@@ -37,6 +40,7 @@ type LayoutGeneratorService struct {
 	rendererService renderer.RendererService
 	pool            *pgxpool.Pool
 	repo            repository.LayoutRepository
+	das             *designassets.DesignAssetService
 }
 
 func (l LayoutGeneratorService) GenerateNewLayout(
@@ -51,6 +55,7 @@ func (l LayoutGeneratorService) GenerateNewLayout(
 		l.log,
 		l.rendererService,
 		l.pool,
+		l.das,
 	)
 }
 
@@ -58,14 +63,14 @@ func (l LayoutGeneratorService) UpdateElementPosition(
 	ctx context.Context,
 	in UpdateLayoutElementPositionInput,
 ) (*UpdateLayoutElementPositionOutput, error) {
-	return UpdateLayoutElementPositionUseCase(ctx, in, l.db, l.rendererService)
+	return UpdateLayoutElementPositionUseCase(ctx, in, l.db, l.rendererService, l.das)
 }
 
 func (l LayoutGeneratorService) UpdateElementSize(
 	ctx context.Context,
 	in UpdateLayoutElementSizeInput,
 ) (*UpdateLayoutElementSizeOutput, error) {
-	return UpdateLayoutElementSizeUseCase(ctx, in, l.db, l.rendererService)
+	return UpdateLayoutElementSizeUseCase(ctx, in, l.db, l.rendererService, l.das)
 }
 
 func (l LayoutGeneratorService) DeleteLayout(

@@ -1,6 +1,7 @@
 package advertisers
 
 import (
+	"algvisual/internal/advertisers/repository"
 	"algvisual/internal/ports"
 
 	"go.uber.org/fx"
@@ -17,7 +18,7 @@ func AsController(f any) any {
 var Module = fx.Options(
 	fx.Provide(
 		NewAdvertiserService,
-		NewAdvertiserRepository,
+		repository.NewAdvertiserRepository,
 		AsController(NewAdvertiserController),
 	),
 )

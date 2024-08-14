@@ -3,6 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/database"
 	"algvisual/internal/designassets"
+	"algvisual/internal/designassets/usecase"
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"
 	"algvisual/internal/shared"
@@ -21,6 +22,7 @@ func GetLayoutByIDUseCase(
 	ctx context.Context,
 	db *database.Queries,
 	req GetLayoutByIDRequest,
+	das *designassets.DesignAssetService,
 ) (GetLayoytByIDOutput, error) {
 	var out GetLayoytByIDOutput
 	l, err := db.GetLayoutByID(ctx, int64(req.LayoutID))
@@ -33,10 +35,9 @@ func GetLayoutByIDUseCase(
 		return out, err
 	}
 	for _, e := range elements {
-		assets, err := designassets.GetDesignAssetByIdUseCase(
+		assets, err := das.GetDesignAssetByID(
 			ctx,
-			designassets.GetDesignAssetByIdInput{ID: e.AssetID},
-			db,
+			usecase.GetDesignAssetByIdInput{ID: e.AssetID},
 		)
 		if err != nil {
 			return out, err

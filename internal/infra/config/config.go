@@ -69,6 +69,50 @@ type NewConfigParams struct {
 	Logger *zap.Logger
 }
 
+func NewAppConfig(p NewConfigParams) (AppConfig, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		p.Logger.Error("error loading .env file")
+	}
+	maxWorkers := int32(1)
+	sMaxWorker := os.Getenv("MAX_WORKERS")
+	if sMaxWorker != "" {
+		i, err := strconv.ParseInt(sMaxWorker, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+		maxWorkers = int32(i)
+	}
+	return AppConfig{
+		APPENV: os.Getenv("APP_ENV"),
+		HTTPServer: HTTPServerConfig{
+			Port: os.Getenv("PORT"),
+		},
+		DistFolderPath:        os.Getenv("DIST_FOLDER_PATH"),
+		PhotoshopFilesPath:    os.Getenv("PHOTOSHOP_FILES_PATH"),
+		CoreDatabasePath:      os.Getenv("CORE_DATABASE_PATH"),
+		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
+		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
+		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
+		FontsFolderPath:       os.Getenv("FONTS_FOLDER"),
+		MaxWorkers:            maxWorkers,
+		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
+		Database: DatabaseConfig{
+			User:     os.Getenv("PG_DATABASE_USER"),
+			DBName:   os.Getenv("PG_DATABASE_NAME"),
+			Password: os.Getenv("PG_DATABASE_PASSWORD"),
+			Host:     os.Getenv("PG_DATABASE_HOST"),
+			Port:     os.Getenv("PG_DATABASE_PORT"),
+		},
+		Cognito: CognitoConfig{
+			ClientID:      os.Getenv("COGNITO_CLIENT_ID"),
+			UserPoolID:    os.Getenv("COGNITO_USER_POOL_ID"),
+			Region:        os.Getenv("COGNITO_REGION"),
+			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
+		},
+	}, nil
+}
+
 func NewConfig(p NewConfigParams) (*AppConfig, error) {
 	err := godotenv.Load(".env")
 	if err != nil {

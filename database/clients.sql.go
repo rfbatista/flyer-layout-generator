@@ -53,16 +53,18 @@ func (q *Queries) GetClientByID(ctx context.Context, id int64) (Client, error) {
 const listClients = `-- name: ListClients :many
 SELECT id, name, created_at, updated_at, deleted_at, company_id
 FROM clients
+WHERE company_id = $3
 LIMIT $1 OFFSET $2
 `
 
 type ListClientsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 }
 
 func (q *Queries) ListClients(ctx context.Context, arg ListClientsParams) ([]Client, error) {
-	rows, err := q.db.Query(ctx, listClients, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listClients, arg.Limit, arg.Offset, arg.CompanyID)
 	if err != nil {
 		return nil, err
 	}

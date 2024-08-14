@@ -3,6 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/database"
 	"algvisual/internal/designassets"
+	"algvisual/internal/designassets/usecase"
 	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
 	"algvisual/internal/infra/config"
@@ -53,6 +54,7 @@ func getLayoutToRun(
 	log *zap.Logger,
 	width int32,
 	height int32,
+	das *designassets.DesignAssetService,
 ) (*entities.Layout, *entities.Template, error) {
 	template, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
@@ -75,10 +77,9 @@ func getLayoutToRun(
 	}
 	var eelements []entities.LayoutElement
 	for _, el := range elements {
-		assets, err := designassets.GetDesignAssetByIdUseCase(
+		assets, err := das.GetDesignAssetByID(
 			ctx,
-			designassets.GetDesignAssetByIdInput{ID: el.AssetID},
-			queries,
+			usecase.GetDesignAssetByIdInput{ID: el.AssetID},
 		)
 		if err != nil {
 			return nil, nil, err
@@ -144,6 +145,7 @@ func GenerateImageUseCase(
 	config config.AppConfig,
 	log *zap.Logger,
 	render renderer.RendererService,
+	das *designassets.DesignAssetService,
 ) (*GenerateImageOutput, error) {
 	designFile, err := queries.Getdesign(ctx, req.DesignID)
 	if err != nil {
@@ -163,6 +165,7 @@ func GenerateImageUseCase(
 		log,
 		designFile.Width.Int32,
 		designFile.Height.Int32,
+		das,
 	)
 	if err != nil {
 		log.Error("failed to get layout to run", zap.Error(err))
@@ -177,7 +180,10 @@ func GenerateImageUseCase(
 	// 	Prancheta:  mapper.LayoutToDto(*nprancheta),
 	// }, log, config)
 
-	imageResult, err := render.RenderPNGImage(ctx, renderer.RenderPngImageInput{Layout: *nprancheta})
+	imageResult, err := render.RenderPNGImage(
+		ctx,
+		renderer.RenderPngImageInput{Layout: *nprancheta},
+	)
 	if err != nil {
 		err = shared.WrapWithAppError(err, "Falha ao tentar gerar imagem", "")
 		return nil, err

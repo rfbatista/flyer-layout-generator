@@ -15,11 +15,13 @@ const createdesign = `-- name: Createdesign :one
 INSERT INTO design (
   name,
   file_url,
+  company_id,
   project_id
 ) VALUES (
   $1,
   $2,
-  $3
+  $3,
+  $4
 )
 RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at, company_id
 `
@@ -27,11 +29,17 @@ RETURNING id, name, image_url, layout_id, project_id, image_extension, file_url,
 type CreatedesignParams struct {
 	Name      string      `json:"name"`
 	FileUrl   pgtype.Text `json:"file_url"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 	ProjectID pgtype.Int4 `json:"project_id"`
 }
 
 func (q *Queries) Createdesign(ctx context.Context, arg CreatedesignParams) (Design, error) {
-	row := q.db.QueryRow(ctx, createdesign, arg.Name, arg.FileUrl, arg.ProjectID)
+	row := q.db.QueryRow(ctx, createdesign,
+		arg.Name,
+		arg.FileUrl,
+		arg.CompanyID,
+		arg.ProjectID,
+	)
 	var i Design
 	err := row.Scan(
 		&i.ID,
@@ -191,16 +199,18 @@ func (q *Queries) ListDesignsByProjectID(ctx context.Context, projectID pgtype.I
 
 const listdesign = `-- name: Listdesign :many
 SELECT id, name, image_url, layout_id, project_id, image_extension, file_url, file_extension, width, height, is_proccessed, created_at, updated_at, company_id FROM design
+WHERE company_id = $3
 OFFSET $1 LIMIT $2
 `
 
 type ListdesignParams struct {
-	Offset int32 `json:"offset"`
-	Limit  int32 `json:"limit"`
+	Offset    int32       `json:"offset"`
+	Limit     int32       `json:"limit"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 }
 
 func (q *Queries) Listdesign(ctx context.Context, arg ListdesignParams) ([]Design, error) {
-	rows, err := q.db.Query(ctx, listdesign, arg.Offset, arg.Limit)
+	rows, err := q.db.Query(ctx, listdesign, arg.Offset, arg.Limit, arg.CompanyID)
 	if err != nil {
 		return nil, err
 	}

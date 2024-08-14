@@ -8,6 +8,7 @@ LIMIT 1;
 -- name: ListClients :many
 SELECT *
 FROM clients
+WHERE company_id = $3
 LIMIT $1 OFFSET $2;
 
 -- name: CreateClient :one

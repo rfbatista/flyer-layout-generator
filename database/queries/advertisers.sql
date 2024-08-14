@@ -7,6 +7,7 @@ LIMIT 1;
 -- name: ListAdvertisers :many
 SELECT *
 FROM advertisers
+WHERE company_id = $3
 LIMIT $1 OFFSET $2;
 
 -- name: CreateAdvertiser :one

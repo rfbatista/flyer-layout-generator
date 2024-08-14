@@ -35,11 +35,13 @@ RETURNING *;
 INSERT INTO design (
   name,
   file_url,
+  company_id,
   project_id
 ) VALUES (
   $1,
   $2,
-  $3
+  $3,
+  $4
 )
 RETURNING *;
 
@@ -57,6 +59,7 @@ WHERE design_id = $1 AND type = 'background' LIMIT 1;
 
 -- name: Listdesign :many
 SELECT * FROM design
+WHERE company_id = $3
 OFFSET $1 LIMIT $2;
 
 

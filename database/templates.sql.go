@@ -16,12 +16,14 @@ INSERT INTO templates (
   name,
   width,
   height,
+  company_id,
   request_id
 ) VALUES (
   $1,
   $2,
   $3,
-  $4
+  $4,
+  $5
 )
 RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 `
@@ -30,6 +32,7 @@ type CreateTemplateParams struct {
 	Name      string      `json:"name"`
 	Width     pgtype.Int4 `json:"width"`
 	Height    pgtype.Int4 `json:"height"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 	RequestID pgtype.Text `json:"request_id"`
 }
 
@@ -38,6 +41,7 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		arg.Name,
 		arg.Width,
 		arg.Height,
+		arg.CompanyID,
 		arg.RequestID,
 	)
 	var i Template
@@ -66,13 +70,15 @@ INSERT INTO templates (
   width,
   height,
   request_id,
+  company_id,
   project_id
 ) VALUES (
   $1,
   $2,
   $3,
   $4,
-  $5
+  $5,
+  $6
 )
 RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 `
@@ -82,6 +88,7 @@ type CreateTemplateByProjectParams struct {
 	Width     pgtype.Int4 `json:"width"`
 	Height    pgtype.Int4 `json:"height"`
 	RequestID pgtype.Text `json:"request_id"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 	ProjectID pgtype.Int4 `json:"project_id"`
 }
 
@@ -91,6 +98,7 @@ func (q *Queries) CreateTemplateByProject(ctx context.Context, arg CreateTemplat
 		arg.Width,
 		arg.Height,
 		arg.RequestID,
+		arg.CompanyID,
 		arg.ProjectID,
 	)
 	var i Template
@@ -373,16 +381,18 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 const listTemplates = `-- name: ListTemplates :many
 SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
+WHERE company_id = $3
 LIMIT $1 OFFSET $2
 `
 
 type ListTemplatesParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	CompanyID pgtype.Int4 `json:"company_id"`
 }
 
 func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([]Template, error) {
-	rows, err := q.db.Query(ctx, listTemplates, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listTemplates, arg.Limit, arg.Offset, arg.CompanyID)
 	if err != nil {
 		return nil, err
 	}

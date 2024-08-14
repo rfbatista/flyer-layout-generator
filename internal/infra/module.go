@@ -23,6 +23,7 @@ var Module = fx.Options(
 		NewPhotoshpProcessor,
 		NewImageGenerator,
 		NewServerSideEventManager,
+		config.NewAppConfig,
 		cognito.NewCognito,
 	),
 	fx.Invoke(RegisterHooks),

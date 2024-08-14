@@ -4,9 +4,12 @@ import (
 	"algvisual/api"
 	"algvisual/internal/advertisers"
 	"algvisual/internal/clients"
+	"algvisual/internal/designassets"
+	"algvisual/internal/designprocessor"
 	"algvisual/internal/iam"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
+	"algvisual/internal/projects"
 	"algvisual/internal/renderer"
 	"algvisual/internal/templates"
 	"algvisual/internal/worker"
@@ -33,6 +36,9 @@ func main() {
 		advertisers.Module,
 		clients.Module,
 		iam.Module,
+		designprocessor.Module,
+		projects.Module,
+		designassets.Module,
 	)
 	fmt.Println(app.Err())
 	app.Run()

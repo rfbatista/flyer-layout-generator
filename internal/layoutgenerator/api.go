@@ -2,7 +2,10 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
+	"algvisual/internal/infra/cognito"
 	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/middlewares"
 	"algvisual/internal/layoutgenerator/usecase"
 	"algvisual/internal/renderer"
 	"net/http"
@@ -15,18 +18,22 @@ import (
 func NewLayoutController(
 	db *database.Queries,
 	lservice LayoutGeneratorService,
-	cfg *config.AppConfig,
+	cfg config.AppConfig,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
 	render renderer.RendererService,
+	das *designassets.DesignAssetService,
+	cog *cognito.Cognito,
 ) LayoutController {
 	return LayoutController{
 		db:            db,
 		layoutService: lservice,
 		cfg:           cfg,
 		log:           log,
+		cog:           cog,
 		pool:          pool,
 		render:        render,
+		das:           das,
 	}
 }
 
@@ -35,12 +42,18 @@ type LayoutController struct {
 	layoutService LayoutGeneratorService
 	render        renderer.RendererService
 	pool          *pgxpool.Pool
-	cfg           *config.AppConfig
+	cfg           config.AppConfig
+	cog           *cognito.Cognito
 	log           *zap.Logger
+	das           *designassets.DesignAssetService
 }
 
 func (s LayoutController) Load(e *echo.Echo) error {
-	e.GET("/api/v1/layout/:layout_id", s.GetLayoutByID())
+	e.GET(
+		"/api/v1/layout/:layout_id",
+		s.GetLayoutByID(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	e.POST(
 		"/api/v1/design/:design_id/layout/:layout_id/template/:template_id/generate",
 		s.GenerateLayout(),
@@ -64,7 +77,7 @@ func (s LayoutController) GetLayoutByID() echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		out, err := GetLayoutByIDUseCase(c.Request().Context(), s.db, req)
+		out, err := GetLayoutByIDUseCase(c.Request().Context(), s.db, req, s.das)
 		if err != nil {
 			return err
 		}
@@ -84,9 +97,10 @@ func (s LayoutController) GenerateLayout() echo.HandlerFunc {
 			req,
 			s.db,
 			s.pool,
-			*s.cfg,
+			s.cfg,
 			s.log,
 			s.render,
+			s.das,
 		)
 		if err != nil {
 			return err

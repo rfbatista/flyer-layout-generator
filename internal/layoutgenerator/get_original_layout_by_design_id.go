@@ -2,6 +2,7 @@ package layoutgenerator
 
 import (
 	"algvisual/database"
+	"algvisual/internal/designassets"
 	"algvisual/internal/entities"
 	"context"
 
@@ -22,6 +23,7 @@ func GetOriginalLayoutByDesignIDUseCase(
 	db *database.Queries,
 	ctx context.Context,
 	log *zap.Logger,
+	das *designassets.DesignAssetService,
 ) (GetOriginalLayoutByDesignIDOutput, error) {
 	var out GetOriginalLayoutByDesignIDOutput
 	l, err := db.GetOriginalLayoutByDesignID(ctx, pgtype.Int4{Int32: req.DesignID, Valid: true})
@@ -29,7 +31,12 @@ func GetOriginalLayoutByDesignIDUseCase(
 		log.Error("failed to get original layout by design id", zap.Error(err))
 		return out, err
 	}
-	layoutresult, err := GetLayoutByIDUseCase(ctx, db, GetLayoutByIDRequest{LayoutID: int32(l.ID)})
+	layoutresult, err := GetLayoutByIDUseCase(
+		ctx,
+		db,
+		GetLayoutByIDRequest{LayoutID: int32(l.ID)},
+		das,
+	)
 	if err != nil {
 		log.Error("failed to get layout by id", zap.Error(err))
 		return out, err

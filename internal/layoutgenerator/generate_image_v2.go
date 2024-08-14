@@ -3,6 +3,7 @@ package layoutgenerator
 import (
 	"algvisual/database"
 	"algvisual/internal/designassets"
+	"algvisual/internal/designassets/usecase"
 	"algvisual/internal/entities"
 	"algvisual/internal/grammars"
 	"algvisual/internal/renderer"
@@ -44,10 +45,11 @@ func GenerateImageV2UseCase(
 	log *zap.Logger,
 	render renderer.RendererService,
 	pool *pgxpool.Pool,
+	das *designassets.DesignAssetService,
 ) (*GenerateImageV2Output, error) {
 	out, err := GetLayoutByIDUseCase(ctx, db, GetLayoutByIDRequest{
 		LayoutID: req.LayoutID,
-	})
+	}, das)
 	if err != nil {
 		log.Error("failed to get layout by id", zap.Error(err))
 		return nil, err
@@ -58,7 +60,7 @@ func GenerateImageV2UseCase(
 		DesignID:   out.Layout.DesignID,
 		Padding:    60,
 		Priorities: req.Priorities,
-	}, db, log, out.Layout.Width, out.Layout.Height)
+	}, db, log, out.Layout.Width, out.Layout.Height, das)
 	if err != nil {
 		log.Error("failed to get layout to run", zap.Error(err))
 		return nil, err
@@ -72,12 +74,11 @@ func GenerateImageV2UseCase(
 	log.Debug("summary of layout output",
 		zap.Int("total of components", len(newLayout.Components)),
 	)
-	assets, err := designassets.GetDesignAssetsByDesignIdUseCase(
+	assets, err := das.GetDesignAssetByDesignID(
 		ctx,
-		designassets.GetDesignAssetsByDesignIdInput{
+		usecase.GetDesignAssetsByDesignIdInput{
 			DesignID: out.Layout.DesignID,
 		},
-		db,
 	)
 	if err != nil {
 		log.Error("failed to render new layout", zap.Error(err))
@@ -92,7 +93,7 @@ func GenerateImageV2UseCase(
 	checkResult, err := CheckLayoutSimilaritiesUseCase(ctx, CheckLayoutSimilaritiesInput{
 		RequestID: req.RequestID,
 		Layout:    *newLayout,
-	}, db)
+	}, db, das)
 	if err != nil {
 		log.Error("failed to check new layout similarity", zap.Error(err))
 		return nil, err
