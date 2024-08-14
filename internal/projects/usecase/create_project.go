@@ -25,7 +25,7 @@ func CreateProjectUseCase(
 	db *database.Queries,
 ) (*CreateProjectOutput, error) {
 	ctx := c.Request().Context()
-	session := c.(middlewares.ApplicationContext)
+	session := c.(*middlewares.ApplicationContext)
 	pr, _ := db.CreateProject(ctx, database.CreateProjectParams{
 		Name:         req.Name,
 		ClientID:     pgtype.Int4{Int32: req.ClientID, Valid: true},

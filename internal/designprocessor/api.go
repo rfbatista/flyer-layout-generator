@@ -5,6 +5,9 @@ import (
 	"algvisual/internal/designassets"
 	"algvisual/internal/designprocessor/usecase"
 	"algvisual/internal/infra"
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/middlewares"
 	"algvisual/internal/layoutgenerator"
 	"algvisual/internal/shared"
 	"net/http"
@@ -22,6 +25,9 @@ func NewDesignController(
 	pool *pgxpool.Pool,
 	processorFile *infra.PhotoshopProcessor,
 	ds *designassets.DesignAssetService,
+	cfg config.AppConfig,
+	cog *cognito.Cognito,
+	dpr *DesignProcessorService,
 ) DesignController {
 	return DesignController{
 		db:            db,
@@ -29,27 +35,48 @@ func NewDesignController(
 		proc:          proc,
 		storage:       storage,
 		log:           log,
+		cfg:           cfg,
 		pool:          pool,
 		processorFile: processorFile,
+		dpr:           dpr,
+		cog:           cog,
 	}
 }
 
 type DesignController struct {
 	db            *database.Queries
+	ds            *designassets.DesignAssetService
 	proc          *infra.PhotoshopProcessor
 	storage       infra.FileStorage
 	log           *zap.Logger
+	cfg           config.AppConfig
 	pool          *pgxpool.Pool
 	processorFile *infra.PhotoshopProcessor
-	ds            *designassets.DesignAssetService
 	dpr           *DesignProcessorService
+	cog           *cognito.Cognito
 }
 
 func (s DesignController) Load(e *echo.Echo) error {
-	e.POST("/api/v1/design", s.UploadDesign())
-	e.POST("/api/v1/design/:design_id/process", s.ProcessDesginFileByID())
-	e.GET("/api/v1/project/design/:design_id/last_request", s.GetLastRequestJob())
-	e.GET("/api/v1/project/design/:design_id/layout/:request_id", s.GetLayoutByID())
+	e.POST(
+		"/api/v1/design",
+		s.UploadDesign(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.POST(
+		"/api/v1/design/:design_id/process",
+		s.ProcessDesginFileByID(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/project/design/:design_id/last_request",
+		s.GetLastRequestJob(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/project/design/:design_id/layout/:request_id",
+		s.GetLayoutByID(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	return nil
 }
 

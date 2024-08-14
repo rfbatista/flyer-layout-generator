@@ -2,6 +2,9 @@ package templates
 
 import (
 	"algvisual/database"
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/middlewares"
 	"algvisual/internal/templates/usecase"
 	"net/http"
 
@@ -14,20 +17,36 @@ func NewTemplatesController(
 	db *database.Queries,
 	pool *pgxpool.Pool,
 	log *zap.Logger,
+	cfg config.AppConfig,
+	cog *cognito.Cognito,
 ) TemplatesController {
-	return TemplatesController{db: db, pool: pool, log: log}
+	return TemplatesController{db: db, pool: pool, log: log, cog: cog, cfg: cfg}
 }
 
 type TemplatesController struct {
 	db   *database.Queries
 	pool *pgxpool.Pool
 	log  *zap.Logger
+	cfg  config.AppConfig
+	cog  *cognito.Cognito
 }
 
 func (s TemplatesController) Load(e *echo.Echo) error {
-	e.GET("/api/v1/project/:project_id/templates", s.ListTemplates())
-	e.POST("/api/v1/project/:project_id/templates", s.UploadTemplatesCSV())
-	e.DELETE("/api/v1/project/:project_id/templates/:template_id", s.DeleteTemplate())
+	e.GET(
+		"/api/v1/project/:project_id/templates",
+		s.ListTemplates(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.POST(
+		"/api/v1/project/:project_id/templates",
+		s.UploadTemplatesCSV(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.DELETE(
+		"/api/v1/project/:project_id/templates/:template_id",
+		s.DeleteTemplate(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	return nil
 }
 

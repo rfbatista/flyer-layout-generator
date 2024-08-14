@@ -3,8 +3,9 @@ package designassets
 import (
 	"algvisual/database"
 	"algvisual/internal/designassets/usecase"
+	"algvisual/internal/infra/cognito"
 	"algvisual/internal/infra/config"
-	"algvisual/internal/shared"
+	"algvisual/internal/infra/middlewares"
 	"fmt"
 	"net/http"
 
@@ -13,35 +14,56 @@ import (
 
 func NewAssetsController(
 	db *database.Queries,
-	cfg *config.AppConfig,
+	cfg config.AppConfig,
 	s *DesignAssetService,
+	cog *cognito.Cognito,
 ) AssetsController {
-	return AssetsController{db: db, cfg: cfg, s: s}
+	return AssetsController{db: db, cfg: cfg, s: s, cog: cog}
 }
 
 type AssetsController struct {
 	db  *database.Queries
-	cfg *config.AppConfig
+	cfg config.AppConfig
 	s   *DesignAssetService
+	cog *cognito.Cognito
 }
 
 func (s AssetsController) Load(e *echo.Echo) error {
-	e.GET("/api/v1/images", s.UploadImage())
-	e.POST("/api/v1/images", s.UploadImage())
-	e.GET("/api/v1/project/:project_id/assets", s.GetProjectDesignAssets())
-	e.POST("/api/v1/assets/:asset_id", s.AddAssetProperty())
-	e.GET(shared.EndpointListImagesGenerated.String(), s.ListGeneratedImages())
-	e.GET(shared.DownloadImageEndpoint.String(), s.DownloadImage())
+	e.POST(
+		"/api/v1/images",
+		s.UploadImage(),
+	)
+	e.GET(
+		"/api/v1/project/:project_id/assets",
+		s.GetProjectDesignAssets(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.POST(
+		"/api/v1/assets/:asset_id",
+		s.AddAssetProperty(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/images",
+		s.ListGeneratedImages(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/images/:image_name",
+		s.DownloadImage(),
+	)
 	return nil
 }
 
 func (s AssetsController) UploadImage() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req usecase.ImageUploadRequest
-		err := c.Bind(&req)
+		file, err := c.FormFile("file")
 		if err != nil {
-			return err
+			return c.String(http.StatusBadRequest, "bad request")
 		}
+		req.File = file
+		req.Filename = c.FormValue("filename")
 		out, err := s.s.ImageUpload(c, req)
 		if err != nil {
 			return err

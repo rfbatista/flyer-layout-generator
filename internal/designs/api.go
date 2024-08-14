@@ -3,7 +3,9 @@ package designs
 import (
 	"algvisual/database"
 	"algvisual/internal/designs/usecase"
-	"algvisual/internal/shared"
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/middlewares"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -11,22 +13,66 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewDesignController() {}
+func NewDesignController(
+	db *database.Queries,
+	pool *pgxpool.Pool,
+	log *zap.Logger,
+	cog *cognito.Cognito,
+	cfg config.AppConfig,
+) (*DesignController, error) {
+	return &DesignController{
+		db:   db,
+		pool: pool,
+		log:  log,
+		cog:  cog,
+		cfg:  cfg,
+	}, nil
+}
 
 type DesignController struct {
 	db   *database.Queries
 	pool *pgxpool.Pool
 	log  *zap.Logger
+	cog  *cognito.Cognito
+	cfg  config.AppConfig
 }
 
 func (d DesignController) Load(e *echo.Echo) error {
-	e.POST(shared.EndpointRemoveComponentElements.String(), d.RemoveComponentAPI())
-	e.POST(shared.EndpointSetPhotoshopBackground.String(), d.SetPhotoshopBackgroundAPI())
-	e.GET(shared.ListComponentByFileIDEndpoint.String(), d.ListComponentsByFileIDAPI())
-	e.POST("/api/v1/editor/design/:design_id/layout/:layout_id/component", d.CreateComponent())
-	e.GET("/api/v1/design/:design_id", d.GetDesignByID())
-	e.GET("/api/v1/designs/project/:project_id", d.ListDesignsByProjectID())
-	e.POST("/editor/design/:design_id/layout/:layout_id/component", d.CreateComponent())
+	e.POST(
+		"/api/v1/photoshop/:photoshop_id/components/remove",
+		d.RemoveComponentAPI(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.POST(
+		"/api/v1/photoshop/:photoshop_id/background",
+		d.SetPhotoshopBackgroundAPI(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.GET(
+		"/api/v1/file/:photoshop_id/components",
+		d.ListComponentsByFileIDAPI(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.POST(
+		"/api/v1/editor/design/:design_id/layout/:layout_id/component",
+		d.CreateComponent(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.GET(
+		"/api/v1/design/:design_id",
+		d.GetDesignByID(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.GET(
+		"/api/v1/designs/project/:project_id",
+		d.ListDesignsByProjectID(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
+	e.POST(
+		"/editor/design/:design_id/layout/:layout_id/component",
+		d.CreateComponent(),
+		middlewares.NewAuthMiddleware(d.cog, d.cfg),
+	)
 	return nil
 }
 

@@ -27,7 +27,7 @@ func ListProjectsUseCase(
 	req ListProjectsInput,
 	db *database.Queries,
 ) (*ListProjectsOutput, error) {
-	session := c.(middlewares.ApplicationContext)
+	session := c.(*middlewares.ApplicationContext)
 	ctx := c.Request().Context()
 	pr, err := db.ListProjects(ctx, database.ListProjectsParams{
 		Limit:     req.Limit,

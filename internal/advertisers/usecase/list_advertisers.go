@@ -24,7 +24,7 @@ func ListAdvertisersUseCase(
 	req ListAdvertisersInput,
 	db *database.Queries,
 ) (*ListAdvertisersOutput, error) {
-	cc := ctx.(middlewares.ApplicationContext)
+	cc := ctx.(*middlewares.ApplicationContext)
 	advertisersFromDb, err := db.ListAdvertisers(
 		ctx.Request().Context(),
 		database.ListAdvertisersParams{

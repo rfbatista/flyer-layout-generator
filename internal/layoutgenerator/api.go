@@ -18,11 +18,11 @@ import (
 func NewLayoutController(
 	db *database.Queries,
 	lservice LayoutGeneratorService,
-	cfg config.AppConfig,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
 	render renderer.RendererService,
 	das *designassets.DesignAssetService,
+	cfg config.AppConfig,
 	cog *cognito.Cognito,
 ) LayoutController {
 	return LayoutController{
@@ -57,16 +57,38 @@ func (s LayoutController) Load(e *echo.Echo) error {
 	e.POST(
 		"/api/v1/design/:design_id/layout/:layout_id/template/:template_id/generate",
 		s.GenerateLayout(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
 	)
-	e.POST("/api/v2/layout/:layout_id/template/:template_id/generate", s.GenerateLayoutv2())
-	e.POST("/api/v1/project/design/:design_id/layout/:layout_id/generate", s.CreateLayoutRequest())
+	e.POST(
+		"/api/v2/layout/:layout_id/template/:template_id/generate",
+		s.GenerateLayoutv2(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.POST(
+		"/api/v1/project/design/:design_id/layout/:layout_id/generate",
+		s.CreateLayoutRequest(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	e.PATCH(
 		"/api/v1/layout/:layout_id/element/:element_id/position",
 		s.UpdateLayoutElementPosition(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
 	)
-	e.PATCH("/api/v1/layout/:layout_id/element/:element_id/size", s.UpdateLayoutElementSize())
-	e.DELETE("/api/v1/batch/:batch_id/layout/:layout_id", s.DeleteBatchLayout())
-	e.GET("/api/v1/batch/:batch_id/download", s.CreateZipBatch())
+	e.PATCH(
+		"/api/v1/layout/:layout_id/element/:element_id/size",
+		s.UpdateLayoutElementSize(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.DELETE(
+		"/api/v1/batch/:batch_id/layout/:layout_id",
+		s.DeleteBatchLayout(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/batch/:batch_id/download",
+		s.CreateZipBatch(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	return nil
 }
 

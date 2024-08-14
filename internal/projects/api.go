@@ -2,25 +2,54 @@ package projects
 
 import (
 	"algvisual/database"
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/middlewares"
 	"algvisual/internal/projects/usecase"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-func NewProjectsController(db *database.Queries) ProjectsController {
-	return ProjectsController{db: db}
+func NewProjectsController(
+	db *database.Queries,
+	cfg config.AppConfig,
+	cog *cognito.Cognito,
+) ProjectsController {
+	return ProjectsController{
+		db:  db,
+		cfg: cfg,
+		cog: cog,
+	}
 }
 
 type ProjectsController struct {
-	db *database.Queries
+	db  *database.Queries
+	cfg config.AppConfig
+	cog *cognito.Cognito
 }
 
 func (s ProjectsController) Load(e *echo.Echo) error {
-	e.POST("/api/v1/project", s.CreateProject())
-	e.GET("/api/v1/projects", s.ListProjects())
-	e.GET("/api/v1/project/:project_id", s.GetProjectByID())
-	e.PATCH("/api/v1/project/:project_id", s.UpdateProject())
+	e.POST(
+		"/api/v1/project",
+		s.CreateProject(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/projects",
+		s.ListProjects(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/project/:project_id",
+		s.GetProjectByID(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.PATCH(
+		"/api/v1/project/:project_id",
+		s.UpdateProject(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	return nil
 }
 

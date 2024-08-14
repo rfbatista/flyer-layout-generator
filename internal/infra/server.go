@@ -74,16 +74,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{
-			http.MethodGet,
-			http.MethodPut,
-			http.MethodPost,
-			http.MethodDelete,
-			http.MethodPatch,
-			http.MethodHead,
-			http.MethodOptions,
-			"Origin, X-Requested-With, Content-Type, Accept",
-		},
+		AllowMethods: []string{"*"},
 	}))
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

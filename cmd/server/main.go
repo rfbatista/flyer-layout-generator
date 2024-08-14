@@ -6,6 +6,7 @@ import (
 	"algvisual/internal/clients"
 	"algvisual/internal/designassets"
 	"algvisual/internal/designprocessor"
+	"algvisual/internal/designs"
 	"algvisual/internal/iam"
 	"algvisual/internal/infra"
 	"algvisual/internal/layoutgenerator"
@@ -39,6 +40,7 @@ func main() {
 		designprocessor.Module,
 		projects.Module,
 		designassets.Module,
+		designs.Module,
 	)
 	fmt.Println(app.Err())
 	app.Run()
