@@ -24,7 +24,7 @@ func (c AdvertiserRepository) Create(
 ) (entities.Advertiser, error) {
 	id, err := c.db.CreateAdvertiser(ctx.Request().Context(), database.CreateAdvertiserParams{
 		Name:      e.Name,
-		CompanyID: pgtype.Int4{Int32: e.CompanyID, Valid: e.CompanyID != int32(0)},
+		CompanyID: pgtype.Int4{Int32: e.CompanyID, Valid: e.CompanyID != 0},
 	})
 	if err != nil {
 		return e, err

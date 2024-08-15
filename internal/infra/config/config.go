@@ -2,14 +2,13 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 
 	"github.com/joho/godotenv"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 )
 
 type AppConfig struct {
@@ -28,6 +27,11 @@ type AppConfig struct {
 	MaxWorkers            int32
 	Cognito               CognitoConfig
 	S3Config              AWSS3Config
+	LogPath               string
+}
+
+func (a AppConfig) IsProd() bool {
+	return a.APPENV == "prod"
 }
 
 type CognitoConfig struct {
@@ -63,61 +67,19 @@ func (d DatabaseConfig) URI() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", d.User, d.Password, d.Host, d.Port, d.DBName)
 }
 
-type NewConfigParams struct {
-	fx.In
-
-	Logger *zap.Logger
-}
-
-func NewAppConfig(p NewConfigParams) (AppConfig, error) {
+func NewAppConfig() (AppConfig, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		p.Logger.Error("error loading .env file")
+		log.Fatalln("error loading .env file", err)
 	}
-	maxWorkers := int32(1)
-	sMaxWorker := os.Getenv("MAX_WORKERS")
-	if sMaxWorker != "" {
-		i, err := strconv.ParseInt(sMaxWorker, 10, 32)
-		if err != nil {
-			panic(err)
-		}
-		maxWorkers = int32(i)
+	c, err := SetupConfig()
+	if err != nil {
+		log.Fatalln("error loading config", err)
 	}
-	return AppConfig{
-		APPENV: os.Getenv("APP_ENV"),
-		HTTPServer: HTTPServerConfig{
-			Port: os.Getenv("PORT"),
-		},
-		DistFolderPath:        os.Getenv("DIST_FOLDER_PATH"),
-		PhotoshopFilesPath:    os.Getenv("PHOTOSHOP_FILES_PATH"),
-		CoreDatabasePath:      os.Getenv("CORE_DATABASE_PATH"),
-		AiServiceBaseURL:      os.Getenv("AI_SERVICE_BASE_URL"),
-		ImagesFolderPath:      os.Getenv("IMAGE_FOLDER_PATH"),
-		DesignFilesFolderPath: os.Getenv("DESIGN_FILE_PATH"),
-		FontsFolderPath:       os.Getenv("FONTS_FOLDER"),
-		MaxWorkers:            maxWorkers,
-		AssetsFolderPath:      os.Getenv("ASSETS_FOLDER_PATH"),
-		Database: DatabaseConfig{
-			User:     os.Getenv("PG_DATABASE_USER"),
-			DBName:   os.Getenv("PG_DATABASE_NAME"),
-			Password: os.Getenv("PG_DATABASE_PASSWORD"),
-			Host:     os.Getenv("PG_DATABASE_HOST"),
-			Port:     os.Getenv("PG_DATABASE_PORT"),
-		},
-		Cognito: CognitoConfig{
-			ClientID:      os.Getenv("COGNITO_CLIENT_ID"),
-			UserPoolID:    os.Getenv("COGNITO_USER_POOL_ID"),
-			Region:        os.Getenv("COGNITO_REGION"),
-			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
-		},
-	}, nil
+	return *c, nil
 }
 
-func NewConfig(p NewConfigParams) (*AppConfig, error) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		p.Logger.Error("error loading .env file")
-	}
+func SetupConfig() (*AppConfig, error) {
 	maxWorkers := int32(1)
 	sMaxWorker := os.Getenv("MAX_WORKERS")
 	if sMaxWorker != "" {
@@ -132,6 +94,7 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 		HTTPServer: HTTPServerConfig{
 			Port: os.Getenv("PORT"),
 		},
+		LogPath:               os.Getenv("LOG_PATH"),
 		DistFolderPath:        os.Getenv("DIST_FOLDER_PATH"),
 		PhotoshopFilesPath:    os.Getenv("PHOTOSHOP_FILES_PATH"),
 		CoreDatabasePath:      os.Getenv("CORE_DATABASE_PATH"),
@@ -155,6 +118,14 @@ func NewConfig(p NewConfigParams) (*AppConfig, error) {
 			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
 		},
 	}, nil
+}
+
+func NewConfig() (*AppConfig, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalln("error loading .env file", err)
+	}
+	return SetupConfig()
 }
 
 func FindProjectRoot() string {

@@ -34,6 +34,5 @@ func AsController(f any) any {
 
 var Module = fx.Options(fx.Provide(
 	AsController(NewWebController),
-	AsController(NewIAMAPI),
 	protected(NewDownloadDesignFiles),
 ))
