@@ -37,3 +37,6 @@ SET
 WHERE
   id = @id
 RETURNING *;
+
+-- name: DeleteProjectByID :exec
+DELETE FROM projects WHERE id = $1 AND company_id = $2;

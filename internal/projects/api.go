@@ -50,6 +50,11 @@ func (s ProjectsController) Load(e *echo.Echo) error {
 		s.UpdateProject(),
 		middlewares.NewAuthMiddleware(s.cog, s.cfg),
 	)
+	e.DELETE(
+		"/api/v1/project/:project_id",
+		s.DeleteProject(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	return nil
 }
 
@@ -106,6 +111,21 @@ func (s ProjectsController) GetProjectByID() echo.HandlerFunc {
 			return err
 		}
 		out, err := usecase.GetProjectByIdUseCase(c, req, s.db)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s ProjectsController) DeleteProject() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req usecase.DeleteProjectByIdInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := usecase.DeleteProjectByIdUseCase(c, req, s.db)
 		if err != nil {
 			return err
 		}

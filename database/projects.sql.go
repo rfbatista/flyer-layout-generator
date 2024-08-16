@@ -56,6 +56,20 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 	return i, err
 }
 
+const deleteProjectByID = `-- name: DeleteProjectByID :exec
+DELETE FROM projects WHERE id = $1 AND company_id = $2
+`
+
+type DeleteProjectByIDParams struct {
+	ID        int64       `json:"id"`
+	CompanyID pgtype.Int4 `json:"company_id"`
+}
+
+func (q *Queries) DeleteProjectByID(ctx context.Context, arg DeleteProjectByIDParams) error {
+	_, err := q.db.Exec(ctx, deleteProjectByID, arg.ID, arg.CompanyID)
+	return err
+}
+
 const getProjectByID = `-- name: GetProjectByID :one
 SELECT id, client_id, advertiser_id, briefing, use_ai, name, created_at, updated_at, deleted_at, company_id
 FROM projects
