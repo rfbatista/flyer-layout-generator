@@ -15,5 +15,7 @@ CREATE TYPE COMPONENT_TYPE AS ENUM (
   'preco',
   'botao',
   'logotipo',
+  'texto',
+  'foto',
   'texto_cta'
 );

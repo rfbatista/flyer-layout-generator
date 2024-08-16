@@ -30,6 +30,8 @@ const (
 	ComponentTypePreco           ComponentType = "preco"
 	ComponentTypeBotao           ComponentType = "botao"
 	ComponentTypeLogotipo        ComponentType = "logotipo"
+	ComponentTypeTexto           ComponentType = "texto"
+	ComponentTypeFoto            ComponentType = "foto"
 	ComponentTypeTextoCta        ComponentType = "texto_cta"
 )
 
