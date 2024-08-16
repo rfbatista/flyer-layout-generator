@@ -83,14 +83,13 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) (*entities.U
 	// 	return errors.New("invalid access token: issuer does not match")
 	// }
 	username, _ := token.Get("username")
-	// companyID, _ := token.Get("custom:company_id")
-
 	var companyID int64
 	user, err := c.GetUser(c.createSession(), string(rawtoken))
 	if err != nil {
 		c.logger.Error("failed to get cognito user", zap.Error(err))
 	} else {
 		for idx := range user.UserAttributes {
+			fmt.Println(user.UserAttributes[idx].Name)
 			if user.UserAttributes[idx].Name != nil && *user.UserAttributes[idx].Name == "custom:company_id" && user.UserAttributes[idx].Value != nil {
 				companyID, err = strconv.ParseInt(*user.UserAttributes[idx].Value, 10, 64)
 				if err != nil {
@@ -98,6 +97,9 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) (*entities.U
 				}
 			}
 		}
+	}
+	if companyID == 0 {
+		return nil, errors.New("company not defined to user")
 	}
 	return &entities.UserSession{
 		Username:  username.(string),

@@ -24,6 +24,11 @@ const (
 	ComponentTypeOferta          ComponentType = "oferta"
 	ComponentTypeTextoLegal      ComponentType = "texto_legal"
 	ComponentTypeGrafismo        ComponentType = "grafismo"
+	ComponentTypeIcone           ComponentType = "icone"
+	ComponentTypeContorno        ComponentType = "contorno"
+	ComponentTypeTitulo          ComponentType = "titulo"
+	ComponentTypePreco           ComponentType = "preco"
+	ComponentTypeBotao           ComponentType = "botao"
 	ComponentTypeTextoCta        ComponentType = "texto_cta"
 )
 

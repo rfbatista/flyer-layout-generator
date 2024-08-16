@@ -1,6 +1,7 @@
-h1:Gp6YguTHCJ7RvEGQKGDFvGBCRec2/f7zpsrZ5b3IRqI=
+h1:Dc1+lugBOlB41SFJp/vlrUeaamRBb7vBeo9mRA+dawI=
 20240630081833_init.sql h1:K3oJIIyNK+JiLvnklu2L/S/PsBGn5yngn7++NVzO8iQ=
 20240701214015_add_done_in_layout_requests.sql h1:FAO777TqfSQ9VZenL+W3K1R93ZMQ/k9WSMn6AGTcx/8=
 20240707085254_add_text_properties.sql h1:vGlEunXw+FHVHJH/VoXuLqBUTjMmRXuM7BimjTwUuhY=
 20240709060049_add_request_id_to_layout.sql h1:HYlGhJkEgvTkiOj9lFulpGS8ZnO0atvQkSWmXBMUDUw=
 20240805204014_add_company_id.sql h1:aemZ7Y7nmFl30zVwlKPbhrt86oKIOmKAlCqvDxozWqs=
+20240816131052_new_component_type.sql h1:+j9mBA3AB3PdDm/LI5v6wKtyl0/59mOZ93uP67XH4GA=

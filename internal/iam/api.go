@@ -1,20 +1,32 @@
 package iam
 
 import (
+	"algvisual/internal/infra/cognito"
+	"algvisual/internal/infra/config"
 	"algvisual/internal/infra/middlewares"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-func NewIAMController() IAMController {
-	return IAMController{}
+func NewIAMController(
+	cog *cognito.Cognito,
+	c config.AppConfig,
+) IAMController {
+	return IAMController{cog: cog, c: c}
 }
 
-type IAMController struct{}
+type IAMController struct {
+	cog *cognito.Cognito
+	c   config.AppConfig
+}
 
 func (i IAMController) Load(e *echo.Echo) error {
-	e.GET("/whoami", i.WhoAmI())
+	e.GET(
+		"/whoami",
+		i.WhoAmI(),
+		middlewares.NewAuthMiddleware(i.cog, i.c),
+	)
 	return nil
 }
 

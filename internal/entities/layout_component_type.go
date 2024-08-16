@@ -20,6 +20,11 @@ const (
 	ComponentTypePackshot
 	ComponentTypeIllustration
 	ComponentTypeTextoLegal
+	ComponentTypeIcone
+	ComponentTypeContorno
+	ComponentTypeTitulo
+	ComponentTypePreco
+	ComponentTypeBotao
 )
 
 func (c ComponentType) ToString() string {
@@ -46,6 +51,14 @@ func (c ComponentType) ToString() string {
 		return "ilustracao"
 	case ComponentTypeTextoLegal:
 		return "texto-legal"
+	case ComponentTypeContorno:
+		return "contorno"
+	case ComponentTypeTitulo:
+		return "titulo"
+	case ComponentTypePreco:
+		return "preco"
+	case ComponentTypeBotao:
+		return "botao"
 	}
 
 	return "desconhecido"
@@ -53,28 +66,38 @@ func (c ComponentType) ToString() string {
 
 func StringToComponentType(s string) ComponentType {
 	switch s {
-	case "produto":
+	case "Produto":
 		return ComponentTypeProduto
-	case "cta":
+	case "CTA":
 		return ComponentTypeCallToAction
 	case "marca":
 		return ComponentTypeMarca
-	case "modelo":
+	case "Modelo":
 		return ComponentTypeModelo
-	case "grafismo":
-		return ComponentTypeGrafismo
-	case "celebridade":
-		return ComponentTypeCelebridade
-	case "oferta":
+	// case "grafismo":
+	// 	return ComponentTypeGrafismo
+	// case "celebridade":
+	// 	return ComponentTypeCelebridade
+	case "Oferta":
 		return ComponentTypeOferta
-	case "packshot":
-		return ComponentTypePackshot
-	case "ilustracao":
+	// case "packshot":
+	// 	return ComponentTypePackshot
+	case "Ilustração":
 		return ComponentTypeIllustration
-	case "texto-legal":
+	case "Texto-legal":
 		return ComponentTypeTextoLegal
-	case "plano-de-fundo":
+	case "Fundo":
 		return ComponentTypePlanoDeFundo
+	case "Ícone":
+		return ComponentTypeIcone
+	case "Contorno":
+		return ComponentTypeContorno
+	case "Título":
+		return ComponentTypeTitulo
+	case "Preço":
+		return ComponentTypePreco
+	case "Botão":
+		return ComponentTypeBotao
 	}
 	return ComponentTypeUnknown
 }
@@ -103,6 +126,16 @@ func StringToDatabaseComponentType(s string) (database.ComponentType, error) {
 		return database.ComponentTypeGrafismo, nil
 	case string(database.ComponentTypeTextoCta):
 		return database.ComponentTypeTextoCta, nil
+	case string(database.ComponentTypeIcone):
+		return database.ComponentTypeIcone, nil
+	case string(database.ComponentTypeContorno):
+		return database.ComponentTypeContorno, nil
+	case string(database.ComponentTypeTitulo):
+		return database.ComponentTypeTitulo, nil
+	case string(database.ComponentTypePreco):
+		return database.ComponentTypePreco, nil
+	case string(database.ComponentTypeBotao):
+		return database.ComponentTypeBotao, nil
 	default:
 		return "", errors.New("invalid ComponentType")
 	}
@@ -133,7 +166,15 @@ func ComponentTypeToDatabaseComponentType(s ComponentType) database.ComponentTyp
 		return database.ComponentTypeGrafismo
 	case ComponentTypeCallToAction:
 		return database.ComponentTypeTextoCta
-		//TODO criar tipo desconhecido
+	case ComponentTypeIcone:
+		return database.ComponentTypeIcone
+	case ComponentTypeContorno:
+		return database.ComponentTypeContorno
+		// TODO criar tipo desconhecido
+	case ComponentTypeTitulo:
+		return database.ComponentTypeTitulo
+	case ComponentTypePreco:
+		return database.ComponentTypePreco
 	default:
 		return database.ComponentTypeGrafismo
 	}
@@ -164,6 +205,14 @@ func DatabaseComponentTypeToDomain(s database.ComponentType) ComponentType {
 		return ComponentTypeGrafismo
 	case database.ComponentTypeTextoCta:
 		return ComponentTypeCallToAction
+	case database.ComponentTypeIcone:
+		return ComponentTypeIcone
+	case database.ComponentTypeContorno:
+		return ComponentTypeContorno
+	case database.ComponentTypeTitulo:
+		return ComponentTypeTitulo
+	case database.ComponentTypePreco:
+		return ComponentTypePreco
 	default:
 		return ComponentTypeUnknown
 	}

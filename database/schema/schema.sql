@@ -173,21 +173,6 @@ CREATE TABLE design_assets_properties
 
 
 
-CREATE TYPE COMPONENT_TYPE AS ENUM (
-    'background',
-    'logotipo_marca',
-    'logotipo_produto',
-    'packshot',
-    'celebridade',
-    'modelo',
-    'ilustracao',
-    'oferta',
-    'texto_legal',
-    'grafismo',
-    'texto_cta'
-    );
-
-
 CREATE TABLE layout_requests (
   id   BIGSERIAL PRIMARY KEY,
   layout_id INT,
