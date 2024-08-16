@@ -11,6 +11,7 @@ const (
 	ComponentTypeProduto ComponentType = iota
 	ComponentTypeCallToAction
 	ComponentTypeMarca
+	ComponentTypeLogotipo
 	ComponentTypeModelo
 	ComponentTypeCelebridade
 	ComponentTypePlanoDeFundo
@@ -59,6 +60,8 @@ func (c ComponentType) ToString() string {
 		return "preco"
 	case ComponentTypeBotao:
 		return "botao"
+	case ComponentTypeLogotipo:
+		return "logotipo"
 	}
 
 	return "desconhecido"
@@ -98,6 +101,8 @@ func StringToComponentType(s string) ComponentType {
 		return ComponentTypePreco
 	case "Botão":
 		return ComponentTypeBotao
+	case "Logotipo":
+		return ComponentTypeLogotipo
 	}
 	return ComponentTypeUnknown
 }
@@ -136,6 +141,8 @@ func StringToDatabaseComponentType(s string) (database.ComponentType, error) {
 		return database.ComponentTypePreco, nil
 	case string(database.ComponentTypeBotao):
 		return database.ComponentTypeBotao, nil
+	case string(database.ComponentTypeLogotipo):
+		return database.ComponentTypeLogotipo, nil
 	default:
 		return "", errors.New("invalid ComponentType")
 	}
@@ -175,6 +182,8 @@ func ComponentTypeToDatabaseComponentType(s ComponentType) database.ComponentTyp
 		return database.ComponentTypeTitulo
 	case ComponentTypePreco:
 		return database.ComponentTypePreco
+	case ComponentTypeLogotipo:
+		return database.ComponentTypeLogotipo
 	default:
 		return database.ComponentTypeGrafismo
 	}
@@ -213,6 +222,8 @@ func DatabaseComponentTypeToDomain(s database.ComponentType) ComponentType {
 		return ComponentTypeTitulo
 	case database.ComponentTypePreco:
 		return ComponentTypePreco
+	case database.ComponentTypeLogotipo:
+		return ComponentTypeLogotipo
 	default:
 		return ComponentTypeUnknown
 	}

@@ -29,6 +29,7 @@ const (
 	ComponentTypeTitulo          ComponentType = "titulo"
 	ComponentTypePreco           ComponentType = "preco"
 	ComponentTypeBotao           ComponentType = "botao"
+	ComponentTypeLogotipo        ComponentType = "logotipo"
 	ComponentTypeTextoCta        ComponentType = "texto_cta"
 )
 
