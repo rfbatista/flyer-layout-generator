@@ -157,6 +157,8 @@ func StringToDatabaseComponentType(s string) (database.ComponentType, error) {
 		return database.ComponentTypeLogotipo, nil
 	case string(database.ComponentTypeFoto):
 		return database.ComponentTypeFoto, nil
+	case string(database.ComponentTypeTexto):
+		return database.ComponentTypeTexto, nil
 	default:
 		return "", errors.New("invalid ComponentType")
 	}
@@ -200,6 +202,8 @@ func ComponentTypeToDatabaseComponentType(s ComponentType) database.ComponentTyp
 		return database.ComponentTypeLogotipo
 	case ComponentTypeFoto:
 		return database.ComponentTypeFoto
+	case ComponentTypeTexto:
+		return database.ComponentTypeTexto
 	default:
 		return database.ComponentTypeGrafismo
 	}
@@ -242,6 +246,8 @@ func DatabaseComponentTypeToDomain(s database.ComponentType) ComponentType {
 		return ComponentTypeLogotipo
 	case database.ComponentTypeFoto:
 		return ComponentTypeFoto
+	case database.ComponentTypeTexto:
+		return ComponentTypeTexto
 	default:
 		return ComponentTypeUnknown
 	}
