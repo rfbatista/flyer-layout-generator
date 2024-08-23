@@ -11,6 +11,52 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AdaptationBatchStatus string
+
+const (
+	AdaptationBatchStatusPending  AdaptationBatchStatus = "pending"
+	AdaptationBatchStatusStarted  AdaptationBatchStatus = "started"
+	AdaptationBatchStatusFinished AdaptationBatchStatus = "finished"
+	AdaptationBatchStatusError    AdaptationBatchStatus = "error"
+	AdaptationBatchStatusClosed   AdaptationBatchStatus = "closed"
+	AdaptationBatchStatusUnknown  AdaptationBatchStatus = "unknown"
+)
+
+func (e *AdaptationBatchStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AdaptationBatchStatus(s)
+	case string:
+		*e = AdaptationBatchStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AdaptationBatchStatus: %T", src)
+	}
+	return nil
+}
+
+type NullAdaptationBatchStatus struct {
+	AdaptationBatchStatus AdaptationBatchStatus `json:"adaptation_batch_status"`
+	Valid                 bool                  `json:"valid"` // Valid is true if AdaptationBatchStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAdaptationBatchStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.AdaptationBatchStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AdaptationBatchStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAdaptationBatchStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AdaptationBatchStatus), nil
+}
+
 type ComponentType string
 
 const (
@@ -164,6 +210,7 @@ type TemplateType string
 const (
 	TemplateTypeSlots      TemplateType = "slots"
 	TemplateTypeDistortion TemplateType = "distortion"
+	TemplateTypeAdaptation TemplateType = "adaptation"
 )
 
 func (e *TemplateType) Scan(src interface{}) error {
@@ -199,6 +246,42 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.TemplateType), nil
+}
+
+type AdaptationBatch struct {
+	ID         int64                     `json:"id"`
+	LayoutID   pgtype.Int4               `json:"layout_id"`
+	DesignID   pgtype.Int4               `json:"design_id"`
+	RequestID  pgtype.Int4               `json:"request_id"`
+	UserID     pgtype.Int4               `json:"user_id"`
+	TemplateID pgtype.Int4               `json:"template_id"`
+	Status     NullAdaptationBatchStatus `json:"status"`
+	StartedAt  pgtype.Timestamp          `json:"started_at"`
+	FinishedAt pgtype.Timestamp          `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp          `json:"error_at"`
+	StoppedAt  pgtype.Timestamp          `json:"stopped_at"`
+	UpdatedAt  pgtype.Timestamp          `json:"updated_at"`
+	CreatedAt  pgtype.Timestamp          `json:"created_at"`
+	Config     pgtype.Text               `json:"config"`
+	Log        pgtype.Text               `json:"log"`
+}
+
+type AdaptationBatchJob struct {
+	ID         int64            `json:"id"`
+	LayoutID   pgtype.Int4      `json:"layout_id"`
+	DesignID   pgtype.Int4      `json:"design_id"`
+	RequestID  pgtype.Int4      `json:"request_id"`
+	TemplateID pgtype.Int4      `json:"template_id"`
+	Status     pgtype.Text      `json:"status"`
+	ImageUrl   pgtype.Text      `json:"image_url"`
+	StartedAt  pgtype.Timestamp `json:"started_at"`
+	FinishedAt pgtype.Timestamp `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp `json:"error_at"`
+	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	Config     pgtype.Text      `json:"config"`
+	Log        pgtype.Text      `json:"log"`
 }
 
 type Advertiser struct {
