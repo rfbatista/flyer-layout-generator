@@ -65,8 +65,8 @@ func (a AdaptationController) StartAdaptationBatch() echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		session := c.Get("session").(entities.UserSession)
-		req.Session = session
+		session := c.Get("session").(*entities.UserSession)
+		req.Session = *session
 		out, err := a.service.StartAdaptation(c, req)
 		if err != nil {
 			return err
@@ -82,8 +82,8 @@ func (a AdaptationController) GetActiveAdaptation() echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		session := c.Get("session").(entities.UserSession)
-		req.Session = session
+		session := c.Get("session").(*entities.UserSession)
+		req.Session = *session
 		out, err := a.service.GetActiveAdaptation(c.Request().Context(), req)
 		if err != nil {
 			return err
@@ -129,8 +129,8 @@ func (a AdaptationController) StopAdaptation() echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		session := c.Get("session").(entities.UserSession)
-		req.Session = session
+		session := c.Get("session").(*entities.UserSession)
+		req.Session = *session
 		out, err := a.service.StopAdaptation(c.Request().Context(), req)
 		if err != nil {
 			return err
