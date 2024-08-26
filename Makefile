@@ -84,6 +84,8 @@ restart_ai:
 	sudo systemctl restart ai
 status_ai:
 	sudo systemctl status ai
+log:
+	journalctl -xe -u server.service
 
 .PHONY: clean
 
