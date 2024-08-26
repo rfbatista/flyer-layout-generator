@@ -14,7 +14,7 @@ import (
 )
 
 func NewSQS(cfg config.AppConfig) (*SQS, error) {
-	waitTime := 10
+	waitTime := 2
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1"),
 	})
