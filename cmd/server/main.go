@@ -16,7 +16,9 @@ import (
 	"algvisual/internal/templates"
 	"algvisual/internal/worker"
 	"fmt"
+	"log"
 	"os"
+	"runtime"
 
 	"go.uber.org/fx"
 )
@@ -25,6 +27,9 @@ func main() {
 	defer func() { // catch or finally
 		if err := recover(); err != nil { // catch
 			fmt.Fprintf(os.Stderr, "exception: %v\n", err)
+			buf := make([]byte, 1024)
+			n := runtime.Stack(buf, false)
+			log.Printf("Stack trace:\n%s", buf[:n])
 			os.Exit(1)
 		}
 	}()
