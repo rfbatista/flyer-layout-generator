@@ -3,6 +3,7 @@ package infra
 import (
 	"algvisual/internal/infra/cognito"
 	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/sqs"
 	"context"
 	"fmt"
 
@@ -25,6 +26,7 @@ var Module = fx.Options(
 		NewServerSideEventManager,
 		config.NewAppConfig,
 		cognito.NewCognito,
+		sqs.NewSQS,
 	),
 	fx.Invoke(RegisterHooks),
 )

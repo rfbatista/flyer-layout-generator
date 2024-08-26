@@ -17,11 +17,13 @@ func NewAuthMiddleware(
 		return func(next echo.HandlerFunc) echo.HandlerFunc {
 			return func(c echo.Context) error {
 				cc := c.(*ApplicationContext)
-				cc.SetUserSession(
-					entities.UserSession{
-						Username:  "local-user",
-						CompanyID: 1,
-					})
+				session := entities.UserSession{
+					Username:  "local-user",
+					CompanyID: 1,
+					UserID:    1,
+				}
+				cc.SetUserSession(session)
+				c.Set("session", session)
 				return next(cc)
 			}
 		}
@@ -38,6 +40,7 @@ func NewAuthMiddleware(
 			}
 			cc := c.(*ApplicationContext)
 			cc.SetUserSession(*user)
+			c.Set("session", user)
 			return next(cc)
 		}
 	}

@@ -11,6 +11,7 @@ var Module = fx.Options(
 	fx.Provide(
 		ports.AsController(NewLayoutController),
 		NewLayoutGeneratorService,
+		repository.NewLayoutJobRepository,
 		repository.NewRepository,
 	),
 )

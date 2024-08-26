@@ -1,6 +1,6 @@
 -- name: CreateAdaptationBatch :one
 INSERT INTO adaptation_batch (
-    layout_id, design_id, request_id, template_id, status, 
+    layout_id, design_id, request_id, status, user_id,
     started_at, finished_at, error_at, stopped_at, updated_at, config, log
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
@@ -17,7 +17,7 @@ SELECT * FROM adaptation_batch WHERE id = $1;
 SELECT * 
 FROM adaptation_batch 
 WHERE user_id = $1 
-AND (status <> sqlc.narg(status) OR NOT @filter_by_status)
+AND ((status = ANY (sqlc.slice(status))) OR NOT @filter_by_status)
 ;
 
 -- name: UpdateAdaptationBatch :one
@@ -38,4 +38,12 @@ SET
     updated_at = NOW()
 WHERE
     id = ANY (sqlc.slice(ids)) and design_id = @design_id
+RETURNING *;
+
+-- name: CancelActiveAdaptationBatches :many
+UPDATE adaptation_batch
+SET
+  status = 'canceled',
+  updated_at = NOW()
+WHERE user_id = $1 AND status <> 'canceled'
 RETURNING *;

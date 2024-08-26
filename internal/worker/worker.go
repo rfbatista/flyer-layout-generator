@@ -4,6 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/infra"
 	"algvisual/internal/infra/config"
+	"algvisual/internal/infra/sqs"
 	"algvisual/internal/layoutgenerator"
 	"context"
 	"fmt"
@@ -20,10 +21,13 @@ import (
 var ticker = time.NewTicker(1 * time.Second)
 
 var (
-	next         = make(chan struct{})
-	quit         = make(chan struct{})
+	quit         = make(chan struct{}, 1)
 	gracefulStop = make(chan os.Signal, 1)
 )
+
+func init() {
+	signal.Notify(gracefulStop, syscall.SIGTERM)
+}
 
 func NewWorkerPool(
 	client *infra.ImageGeneratorClient,
@@ -33,6 +37,7 @@ func NewWorkerPool(
 	log *zap.Logger,
 	sse *infra.ServerSideEventManager,
 	wservice WorkerService,
+	sqs *sqs.SQS,
 ) (WorkerPool, error) {
 	return WorkerPool{
 		client:  client,
@@ -41,7 +46,9 @@ func NewWorkerPool(
 		config:  config,
 		log:     log,
 		sse:     sse,
+		sqs:     sqs,
 		serv:    wservice,
+		wg:      &sync.WaitGroup{},
 	}, nil
 }
 
@@ -53,11 +60,20 @@ type WorkerPool struct {
 	log     *zap.Logger
 	sse     *infra.ServerSideEventManager
 	serv    WorkerService
+	sqs     *sqs.SQS
+	wg      *sync.WaitGroup
 }
 
-func (w WorkerPool) Start() {
+func (w WorkerPool) Start() error {
 	w.log.Info("starting worker pool")
-	signal.Notify(gracefulStop, syscall.SIGTERM)
+	err := w.StartAdaptationWorker(w.wg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w WorkerPool) StartDefaultWorkerPool() {
 	go func() {
 		defer func() {
 			w.log.Warn("closing worker thread")
@@ -89,6 +105,7 @@ func (w WorkerPool) Start() {
 
 func (w WorkerPool) Close() {
 	quit <- struct{}{}
+	w.wg.Wait()
 }
 
 func (w WorkerPool) worker(

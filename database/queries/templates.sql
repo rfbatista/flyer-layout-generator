@@ -1,7 +1,11 @@
 -- name: ListTemplates :many
 SELECT *
 FROM templates
-WHERE company_id = $3
+WHERE 
+(company_id = $3 OR NOT @filter_by_company)
+AND (type = $4 OR NOT @filter_by_type)
+AND (project_id = $4 OR NOT @filter_by_project)
+AND deleted_at = NULL
 LIMIT $1 OFFSET $2;
 
 -- name: GetTemplate :one

@@ -34,9 +34,10 @@ func ListTemplatesUseCase(
 		limit = 10
 	}
 	result, err := queries.ListTemplates(ctx, database.ListTemplatesParams{
-		Limit:     int32(limit),
-		Offset:    int32(req.Skip),
-		CompanyID: pgtype.Int4{Int32: int32(session.UserSession().CompanyID), Valid: true},
+		Limit:           int32(limit),
+		Offset:          int32(req.Skip),
+		FilterByCompany: true,
+		CompanyID:       pgtype.Int4{Int32: int32(session.UserSession().CompanyID), Valid: true},
 	})
 	if err != nil {
 		err = shared.WrapWithAppError(err, "failed to list templates", "")

@@ -14,7 +14,7 @@ type GetLayoytRequestInput struct {
 }
 
 type GetLayoytRequestOutput struct {
-	Request entities.LayoutRequest
+	Request entities.ReplicationBatch
 }
 
 func GetLayoutRequestUseCase(

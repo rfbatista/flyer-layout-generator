@@ -18,22 +18,28 @@ type AdaptationBatchRepository struct {
 }
 
 type AdaptationBatchRepositoryGetByUserParams struct {
-	Status     entities.AdaptationBatchStatus
+	Status     []entities.AdaptationBatchStatus
 	DoByStatus bool
 }
 
 func (a AdaptationBatchRepository) GetByUser(
 	ctx context.Context,
-	user entities.User,
+	id int32,
 	params AdaptationBatchRepositoryGetByUserParams,
 ) (*entities.AdaptationBatch, error) {
+	var statuses []database.NullAdaptationBatchStatus
+	for _, st := range params.Status {
+		statuses = append(statuses,
+			database.NullAdaptationBatchStatus{
+				AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(st),
+				Valid:                 params.DoByStatus,
+			},
+		)
+	}
 	_, err := a.db.GetAdaptationBatchByUser(ctx, database.GetAdaptationBatchByUserParams{
-		UserID:         pgtype.Int4{Int32: user.ID, Valid: user.ID != 0},
+		UserID:         pgtype.Int4{Int32: id, Valid: id != 0},
 		FilterByStatus: params.DoByStatus,
-		Status: database.NullAdaptationBatchStatus{
-			AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(params.Status),
-			Valid:                 params.DoByStatus,
-		},
+		Status:         statuses,
 	})
 	if err != nil {
 		return nil, err
@@ -46,10 +52,9 @@ func (a AdaptationBatchRepository) Create(
 	b entities.AdaptationBatch,
 ) (*entities.AdaptationBatch, error) {
 	id, err := a.db.CreateAdaptationBatch(ctx, database.CreateAdaptationBatchParams{
-		LayoutID:   pgtype.Int4{Int32: b.LayoutID, Valid: b.LayoutID != 0},
-		DesignID:   pgtype.Int4{Int32: b.DesignID, Valid: b.DesignID != 0},
-		RequestID:  pgtype.Int4{Int32: b.RequestID, Valid: b.RequestID != 0},
-		TemplateID: pgtype.Int4{Int32: b.TemplateID, Valid: b.TemplateID != 0},
+		LayoutID:  pgtype.Int4{Int32: b.LayoutID, Valid: b.LayoutID != 0},
+		UserID:    pgtype.Int4{Int32: int32(b.UserID), Valid: b.UserID != 0},
+		RequestID: pgtype.Int4{Int32: b.RequestID, Valid: b.RequestID != 0},
 		Status: database.NullAdaptationBatchStatus{
 			AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(b.Status),
 			Valid:                 true,
@@ -103,4 +108,22 @@ func (a AdaptationBatchRepository) Update(
 	}
 	ent := mapper.AdaptationBatchToDomain(raw)
 	return &ent, nil
+}
+
+func (a AdaptationBatchRepository) CancelActiveAdaptations(
+	ctx context.Context,
+	id int32,
+) ([]entities.AdaptationBatch, error) {
+	var batches []entities.AdaptationBatch
+	raw, err := a.db.CancelActiveAdaptationBatches(
+		ctx,
+		pgtype.Int4{Int32: id, Valid: id != 0},
+	)
+	if err != nil {
+		return nil, err
+	}
+	for _, r := range raw {
+		batches = append(batches, mapper.AdaptationBatchToDomain(r))
+	}
+	return batches, nil
 }

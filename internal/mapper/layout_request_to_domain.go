@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func LayoutRequestToDomain(raw database.LayoutRequest) entities.LayoutRequest {
+func LayoutRequestToDomain(raw database.LayoutRequest) entities.ReplicationBatch {
 	var createdAt *time.Time
 	var startedAt *time.Time
 	var stoppedAt *time.Time
@@ -19,7 +19,7 @@ func LayoutRequestToDomain(raw database.LayoutRequest) entities.LayoutRequest {
 	if raw.Config.Valid {
 		json.Unmarshal([]byte(raw.Config.String), &config)
 	}
-	return entities.LayoutRequest{
+	return entities.ReplicationBatch{
 		ID:        int32(raw.ID),
 		DesignID:  raw.DesignID.Int32,
 		CreatedAt: createdAt,

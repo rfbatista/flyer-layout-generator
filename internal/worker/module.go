@@ -25,6 +25,7 @@ func RegisterHooks(lc fx.Lifecycle, params RegisterHooksParams) {
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
+			params.WorkerPool.Close()
 			return nil
 		},
 	})

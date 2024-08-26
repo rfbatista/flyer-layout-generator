@@ -19,6 +19,7 @@ type AppConfig struct {
 	PhotoshopFilesPath    string
 	DistFolderPath        string
 	AssetsFolderPath      string
+	SQSConfig             SQSConfig
 	ImagesFolderPath      string
 	FontsFolderPath       string
 	DesignFilesFolderPath string
@@ -116,6 +117,12 @@ func SetupConfig() (*AppConfig, error) {
 			UserPoolID:    os.Getenv("COGNITO_USER_POOL_ID"),
 			Region:        os.Getenv("COGNITO_REGION"),
 			PublicKeysURL: os.Getenv("COGNITO_PUBLIC_KEYS_URL"),
+		},
+		SQSConfig: SQSConfig{
+			AdaptationQueueName:  os.Getenv("SQS_ADAPTATION_BATCH_QUEUE_NAME"),
+			ReplicationQueueName: os.Getenv("SQS_REPLICATION_BATCH_QUEUE_NAME"),
+			LayoutJobQueue:       os.Getenv("SQS_LAYOUT_JOB_QUEUE_NAME"),
+			RendererJobQueue:     os.Getenv("SQS_RENDERER_JOB_QUEUE_NAME"),
 		},
 	}, nil
 }

@@ -14,12 +14,13 @@ import (
 type AdaptationBatchStatus string
 
 const (
-	AdaptationBatchStatusPending  AdaptationBatchStatus = "pending"
-	AdaptationBatchStatusStarted  AdaptationBatchStatus = "started"
-	AdaptationBatchStatusFinished AdaptationBatchStatus = "finished"
-	AdaptationBatchStatusError    AdaptationBatchStatus = "error"
-	AdaptationBatchStatusClosed   AdaptationBatchStatus = "closed"
-	AdaptationBatchStatusUnknown  AdaptationBatchStatus = "unknown"
+	AdaptationBatchStatusPending         AdaptationBatchStatus = "pending"
+	AdaptationBatchStatusStarted         AdaptationBatchStatus = "started"
+	AdaptationBatchStatusRenderingImages AdaptationBatchStatus = "rendering_images"
+	AdaptationBatchStatusFinished        AdaptationBatchStatus = "finished"
+	AdaptationBatchStatusError           AdaptationBatchStatus = "error"
+	AdaptationBatchStatusCanceled        AdaptationBatchStatus = "canceled"
+	AdaptationBatchStatusUnknown         AdaptationBatchStatus = "unknown"
 )
 
 func (e *AdaptationBatchStatus) Scan(src interface{}) error {
@@ -162,6 +163,147 @@ func (ns NullDesignAssetType) Value() (driver.Value, error) {
 	return string(ns.DesignAssetType), nil
 }
 
+type LayoutJobStatus string
+
+const (
+	LayoutJobStatusPending         LayoutJobStatus = "pending"
+	LayoutJobStatusStarted         LayoutJobStatus = "started"
+	LayoutJobStatusRenderingImages LayoutJobStatus = "rendering_images"
+	LayoutJobStatusFinished        LayoutJobStatus = "finished"
+	LayoutJobStatusError           LayoutJobStatus = "error"
+	LayoutJobStatusClosed          LayoutJobStatus = "closed"
+	LayoutJobStatusUnknown         LayoutJobStatus = "unknown"
+	LayoutJobStatusCanceled        LayoutJobStatus = "canceled"
+)
+
+func (e *LayoutJobStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = LayoutJobStatus(s)
+	case string:
+		*e = LayoutJobStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for LayoutJobStatus: %T", src)
+	}
+	return nil
+}
+
+type NullLayoutJobStatus struct {
+	LayoutJobStatus LayoutJobStatus `json:"layout_job_status"`
+	Valid           bool            `json:"valid"` // Valid is true if LayoutJobStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullLayoutJobStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.LayoutJobStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.LayoutJobStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullLayoutJobStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.LayoutJobStatus), nil
+}
+
+type RendererJobStatus string
+
+const (
+	RendererJobStatusPending         RendererJobStatus = "pending"
+	RendererJobStatusStarted         RendererJobStatus = "started"
+	RendererJobStatusRenderingImages RendererJobStatus = "rendering_images"
+	RendererJobStatusFinished        RendererJobStatus = "finished"
+	RendererJobStatusError           RendererJobStatus = "error"
+	RendererJobStatusUnknown         RendererJobStatus = "unknown"
+)
+
+func (e *RendererJobStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = RendererJobStatus(s)
+	case string:
+		*e = RendererJobStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for RendererJobStatus: %T", src)
+	}
+	return nil
+}
+
+type NullRendererJobStatus struct {
+	RendererJobStatus RendererJobStatus `json:"renderer_job_status"`
+	Valid             bool              `json:"valid"` // Valid is true if RendererJobStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullRendererJobStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.RendererJobStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.RendererJobStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullRendererJobStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.RendererJobStatus), nil
+}
+
+type ReplicationBatchStatus string
+
+const (
+	ReplicationBatchStatusPending         ReplicationBatchStatus = "pending"
+	ReplicationBatchStatusStarted         ReplicationBatchStatus = "started"
+	ReplicationBatchStatusRenderingImages ReplicationBatchStatus = "rendering_images"
+	ReplicationBatchStatusFinished        ReplicationBatchStatus = "finished"
+	ReplicationBatchStatusError           ReplicationBatchStatus = "error"
+	ReplicationBatchStatusClosed          ReplicationBatchStatus = "closed"
+	ReplicationBatchStatusUnknown         ReplicationBatchStatus = "unknown"
+)
+
+func (e *ReplicationBatchStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ReplicationBatchStatus(s)
+	case string:
+		*e = ReplicationBatchStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ReplicationBatchStatus: %T", src)
+	}
+	return nil
+}
+
+type NullReplicationBatchStatus struct {
+	ReplicationBatchStatus ReplicationBatchStatus `json:"replication_batch_status"`
+	Valid                  bool                   `json:"valid"` // Valid is true if ReplicationBatchStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullReplicationBatchStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ReplicationBatchStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ReplicationBatchStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullReplicationBatchStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ReplicationBatchStatus), nil
+}
+
 type Roles string
 
 const (
@@ -208,9 +350,8 @@ func (ns NullRoles) Value() (driver.Value, error) {
 type TemplateType string
 
 const (
-	TemplateTypeSlots      TemplateType = "slots"
-	TemplateTypeDistortion TemplateType = "distortion"
 	TemplateTypeAdaptation TemplateType = "adaptation"
+	TemplateTypeUnknown    TemplateType = "unknown"
 )
 
 func (e *TemplateType) Scan(src interface{}) error {
@@ -254,7 +395,6 @@ type AdaptationBatch struct {
 	DesignID   pgtype.Int4               `json:"design_id"`
 	RequestID  pgtype.Int4               `json:"request_id"`
 	UserID     pgtype.Int4               `json:"user_id"`
-	TemplateID pgtype.Int4               `json:"template_id"`
 	Status     NullAdaptationBatchStatus `json:"status"`
 	StartedAt  pgtype.Timestamp          `json:"started_at"`
 	FinishedAt pgtype.Timestamp          `json:"finished_at"`
@@ -264,24 +404,6 @@ type AdaptationBatch struct {
 	CreatedAt  pgtype.Timestamp          `json:"created_at"`
 	Config     pgtype.Text               `json:"config"`
 	Log        pgtype.Text               `json:"log"`
-}
-
-type AdaptationBatchJob struct {
-	ID         int64            `json:"id"`
-	LayoutID   pgtype.Int4      `json:"layout_id"`
-	DesignID   pgtype.Int4      `json:"design_id"`
-	RequestID  pgtype.Int4      `json:"request_id"`
-	TemplateID pgtype.Int4      `json:"template_id"`
-	Status     pgtype.Text      `json:"status"`
-	ImageUrl   pgtype.Text      `json:"image_url"`
-	StartedAt  pgtype.Timestamp `json:"started_at"`
-	FinishedAt pgtype.Timestamp `json:"finished_at"`
-	ErrorAt    pgtype.Timestamp `json:"error_at"`
-	StoppedAt  pgtype.Timestamp `json:"stopped_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	Config     pgtype.Text      `json:"config"`
-	Log        pgtype.Text      `json:"log"`
 }
 
 type Advertiser struct {
@@ -440,6 +562,25 @@ type LayoutElement struct {
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
+type LayoutJob struct {
+	ID                 int64            `json:"id"`
+	BasedOnLayoutID    pgtype.Int4      `json:"based_on_layout_id"`
+	CreatedLayoutID    pgtype.Int4      `json:"created_layout_id"`
+	TemplateID         pgtype.Int4      `json:"template_id"`
+	UserID             pgtype.Int4      `json:"user_id"`
+	Config             pgtype.Text      `json:"config"`
+	AdaptationBatchID  pgtype.Int4      `json:"adaptation_batch_id"`
+	ReplicationBatchID pgtype.Int4      `json:"replication_batch_id"`
+	Status             LayoutJobStatus  `json:"status"`
+	Attempts           int32            `json:"attempts"`
+	StartedAt          pgtype.Timestamp `json:"started_at"`
+	FinishedAt         pgtype.Timestamp `json:"finished_at"`
+	ErrorAt            pgtype.Timestamp `json:"error_at"`
+	UpdatedAt          pgtype.Timestamp `json:"updated_at"`
+	CreatedAt          pgtype.Timestamp `json:"created_at"`
+	Log                pgtype.Text      `json:"log"`
+}
+
 type LayoutRequest struct {
 	ID        int64            `json:"id"`
 	LayoutID  pgtype.Int4      `json:"layout_id"`
@@ -485,11 +626,42 @@ type Project struct {
 	CompanyID    pgtype.Int4      `json:"company_id"`
 }
 
+type RendererJob struct {
+	ID           int64             `json:"id"`
+	LayoutID     pgtype.Int4       `json:"layout_id"`
+	ImageID      pgtype.Int4       `json:"image_id"`
+	AdaptationID pgtype.Int4       `json:"adaptation_id"`
+	Status       RendererJobStatus `json:"status"`
+	Attempts     int32             `json:"attempts"`
+	StartedAt    pgtype.Timestamp  `json:"started_at"`
+	FinishedAt   pgtype.Timestamp  `json:"finished_at"`
+	ErrorAt      pgtype.Timestamp  `json:"error_at"`
+	CreatedAt    pgtype.Timestamp  `json:"created_at"`
+	Log          pgtype.Text       `json:"log"`
+}
+
+type ReplicationBatch struct {
+	ID         int64                      `json:"id"`
+	LayoutID   pgtype.Int4                `json:"layout_id"`
+	DesignID   pgtype.Int4                `json:"design_id"`
+	UserID     pgtype.Int4                `json:"user_id"`
+	Status     NullReplicationBatchStatus `json:"status"`
+	StartedAt  pgtype.Timestamp           `json:"started_at"`
+	FinishedAt pgtype.Timestamp           `json:"finished_at"`
+	ErrorAt    pgtype.Timestamp           `json:"error_at"`
+	StoppedAt  pgtype.Timestamp           `json:"stopped_at"`
+	UpdatedAt  pgtype.Timestamp           `json:"updated_at"`
+	CreatedAt  pgtype.Timestamp           `json:"created_at"`
+	Config     pgtype.Text                `json:"config"`
+	Log        pgtype.Text                `json:"log"`
+}
+
 type Template struct {
 	ID        int32            `json:"id"`
 	Name      string           `json:"name"`
 	RequestID pgtype.Text      `json:"request_id"`
 	ProjectID pgtype.Int4      `json:"project_id"`
+	Type      NullTemplateType `json:"type"`
 	Width     pgtype.Int4      `json:"width"`
 	Height    pgtype.Int4      `json:"height"`
 	SlotsX    pgtype.Int4      `json:"slots_x"`

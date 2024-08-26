@@ -16,7 +16,7 @@ type ListLayoytRequestInput struct {
 }
 
 type ListLayoytRequestOutput struct {
-	Requests []entities.LayoutRequest
+	Requests []entities.ReplicationBatch
 }
 
 func ListLayoutRequestUseCase(

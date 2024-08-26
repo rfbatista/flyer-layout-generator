@@ -11,6 +11,8 @@ type TemplateType string
 const (
 	TemplateSlotsType      TemplateType = "slots"
 	TemplateDistortionType TemplateType = "distortion"
+	TemplateTypeAdaptation TemplateType = "adaptation"
+	TemplateUnknownType    TemplateType = "unknown"
 )
 
 func (s TemplateType) String() string {

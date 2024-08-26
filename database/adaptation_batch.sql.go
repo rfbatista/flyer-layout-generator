@@ -11,9 +11,53 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const cancelActiveAdaptationBatches = `-- name: CancelActiveAdaptationBatches :many
+UPDATE adaptation_batch
+SET
+  status = 'canceled',
+  updated_at = NOW()
+WHERE user_id = $1 AND status <> 'canceled'
+RETURNING id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+`
+
+func (q *Queries) CancelActiveAdaptationBatches(ctx context.Context, userID pgtype.Int4) ([]AdaptationBatch, error) {
+	rows, err := q.db.Query(ctx, cancelActiveAdaptationBatches, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AdaptationBatch
+	for rows.Next() {
+		var i AdaptationBatch
+		if err := rows.Scan(
+			&i.ID,
+			&i.LayoutID,
+			&i.DesignID,
+			&i.RequestID,
+			&i.UserID,
+			&i.Status,
+			&i.StartedAt,
+			&i.FinishedAt,
+			&i.ErrorAt,
+			&i.StoppedAt,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+			&i.Config,
+			&i.Log,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const createAdaptationBatch = `-- name: CreateAdaptationBatch :one
 INSERT INTO adaptation_batch (
-    layout_id, design_id, request_id, template_id, status, 
+    layout_id, design_id, request_id, status, user_id,
     started_at, finished_at, error_at, stopped_at, updated_at, config, log
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
@@ -25,8 +69,8 @@ type CreateAdaptationBatchParams struct {
 	LayoutID   pgtype.Int4               `json:"layout_id"`
 	DesignID   pgtype.Int4               `json:"design_id"`
 	RequestID  pgtype.Int4               `json:"request_id"`
-	TemplateID pgtype.Int4               `json:"template_id"`
 	Status     NullAdaptationBatchStatus `json:"status"`
+	UserID     pgtype.Int4               `json:"user_id"`
 	StartedAt  pgtype.Timestamp          `json:"started_at"`
 	FinishedAt pgtype.Timestamp          `json:"finished_at"`
 	ErrorAt    pgtype.Timestamp          `json:"error_at"`
@@ -41,8 +85,8 @@ func (q *Queries) CreateAdaptationBatch(ctx context.Context, arg CreateAdaptatio
 		arg.LayoutID,
 		arg.DesignID,
 		arg.RequestID,
-		arg.TemplateID,
 		arg.Status,
+		arg.UserID,
 		arg.StartedAt,
 		arg.FinishedAt,
 		arg.ErrorAt,
@@ -57,7 +101,7 @@ func (q *Queries) CreateAdaptationBatch(ctx context.Context, arg CreateAdaptatio
 }
 
 const getAdaptationBatchByID = `-- name: GetAdaptationBatchByID :one
-SELECT id, layout_id, design_id, request_id, user_id, template_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
+SELECT id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
 `
 
 func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (AdaptationBatch, error) {
@@ -69,7 +113,6 @@ func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (Adaptat
 		&i.DesignID,
 		&i.RequestID,
 		&i.UserID,
-		&i.TemplateID,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,
@@ -84,16 +127,16 @@ func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (Adaptat
 }
 
 const getAdaptationBatchByUser = `-- name: GetAdaptationBatchByUser :many
-SELECT id, layout_id, design_id, request_id, user_id, template_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
+SELECT id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
 FROM adaptation_batch 
 WHERE user_id = $1 
-AND (status <> $2 OR NOT $3)
+AND ((status = ANY ($2)) OR NOT $3)
 `
 
 type GetAdaptationBatchByUserParams struct {
-	UserID         pgtype.Int4               `json:"user_id"`
-	Status         NullAdaptationBatchStatus `json:"status"`
-	FilterByStatus interface{}               `json:"filter_by_status"`
+	UserID         pgtype.Int4                 `json:"user_id"`
+	Status         []NullAdaptationBatchStatus `json:"status"`
+	FilterByStatus interface{}                 `json:"filter_by_status"`
 }
 
 func (q *Queries) GetAdaptationBatchByUser(ctx context.Context, arg GetAdaptationBatchByUserParams) ([]AdaptationBatch, error) {
@@ -111,7 +154,6 @@ func (q *Queries) GetAdaptationBatchByUser(ctx context.Context, arg GetAdaptatio
 			&i.DesignID,
 			&i.RequestID,
 			&i.UserID,
-			&i.TemplateID,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -133,7 +175,7 @@ func (q *Queries) GetAdaptationBatchByUser(ctx context.Context, arg GetAdaptatio
 }
 
 const listAdaptationBatch = `-- name: ListAdaptationBatch :many
-SELECT id, layout_id, design_id, request_id, user_id, template_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
+SELECT id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
 `
 
 type ListAdaptationBatchParams struct {
@@ -156,7 +198,6 @@ func (q *Queries) ListAdaptationBatch(ctx context.Context, arg ListAdaptationBat
 			&i.DesignID,
 			&i.RequestID,
 			&i.UserID,
-			&i.TemplateID,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -195,7 +236,7 @@ SET
     updated_at = NOW()
 WHERE
     id = ANY ($12) and design_id = $13
-RETURNING id, layout_id, design_id, request_id, user_id, template_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type UpdateAdaptationBatchParams struct {
@@ -237,7 +278,6 @@ func (q *Queries) UpdateAdaptationBatch(ctx context.Context, arg UpdateAdaptatio
 		&i.DesignID,
 		&i.RequestID,
 		&i.UserID,
-		&i.TemplateID,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,

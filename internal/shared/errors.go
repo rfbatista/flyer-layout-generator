@@ -6,6 +6,16 @@ import (
 	"time"
 )
 
+func NewError(code ErrorCode, msg, detail string) *AppError {
+	return &AppError{
+		Message:    msg,
+		ErrorCode:  code,
+		StatusCode: 400,
+		Detail:     detail,
+		Timestamp:  time.Now(),
+	}
+}
+
 func NewAppError(code int, msg string, detail string) *AppError {
 	return &AppError{
 		Message:    msg,
@@ -17,6 +27,7 @@ func NewAppError(code int, msg string, detail string) *AppError {
 
 type AppError struct {
 	StatusCode int
+	ErrorCode  ErrorCode
 	Inner      error
 	// Provide any additional fields that you need.
 	Message           string

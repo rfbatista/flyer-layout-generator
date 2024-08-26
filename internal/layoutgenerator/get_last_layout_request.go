@@ -14,7 +14,7 @@ type GetLastLayoutRequestInput struct {
 }
 
 type GetLastLayoutRequestOutput struct {
-	Data entities.LayoutRequest `json:"data,omitempty"`
+	Data entities.ReplicationBatch `json:"data,omitempty"`
 }
 
 func GetLastLayoutRequestUseCase(

@@ -25,7 +25,7 @@ type CreateLayoutRequestInput struct {
 }
 
 type CreateLayoutRequestOutput struct {
-	Request entities.LayoutRequest
+	Request entities.ReplicationBatch
 	Jobs    []entities.LayoutRequestJob
 }
 

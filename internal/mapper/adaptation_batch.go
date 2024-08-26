@@ -7,15 +7,13 @@ import (
 
 func AdaptationBatchToDomain(raw database.AdaptationBatch) entities.AdaptationBatch {
 	adap := entities.AdaptationBatch{
-		ID:         raw.ID,
-		LayoutID:   raw.LayoutID.Int32,
-		DesignID:   raw.DesignID.Int32,
-		RequestID:  raw.RequestID.Int32,
-		UserID:     int64(raw.UserID.Int32),
-		TemplateID: raw.TemplateID.Int32,
-		Log:        raw.Log.String,
+		ID:        raw.ID,
+		LayoutID:  raw.LayoutID.Int32,
+		RequestID: raw.RequestID.Int32,
+		UserID:    int64(raw.UserID.Int32),
+		Log:       raw.Log.String,
+		Status:    AdaptationBatchStatusFromDatabase(raw.Status.AdaptationBatchStatus),
 	}
-
 	if raw.StartedAt.Valid {
 		adap.StartedAt = raw.StartedAt.Time
 	}

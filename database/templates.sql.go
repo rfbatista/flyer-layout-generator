@@ -25,7 +25,7 @@ INSERT INTO templates (
   $4,
   $5
 )
-RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+RETURNING id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 `
 
 type CreateTemplateParams struct {
@@ -50,6 +50,7 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		&i.Name,
 		&i.RequestID,
 		&i.ProjectID,
+		&i.Type,
 		&i.Width,
 		&i.Height,
 		&i.SlotsX,
@@ -80,7 +81,7 @@ INSERT INTO templates (
   $5,
   $6
 )
-RETURNING id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+RETURNING id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 `
 
 type CreateTemplateByProjectParams struct {
@@ -107,6 +108,7 @@ func (q *Queries) CreateTemplateByProject(ctx context.Context, arg CreateTemplat
 		&i.Name,
 		&i.RequestID,
 		&i.ProjectID,
+		&i.Type,
 		&i.Width,
 		&i.Height,
 		&i.SlotsX,
@@ -213,7 +215,7 @@ func (q *Queries) DeleteTemplateByID(ctx context.Context, id int32) error {
 }
 
 const getTemplate = `-- name: GetTemplate :one
-SELECT templates.id, templates.name, templates.request_id, templates.project_id, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at, templates.company_id
+SELECT templates.id, templates.name, templates.request_id, templates.project_id, templates.type, templates.width, templates.height, templates.slots_x, templates.slots_y, templates.max_slots_x, templates.max_slots_y, templates.created_at, templates.updated_at, templates.deleted_at, templates.company_id
 FROM templates
 WHERE templates.id = $1 LIMIT 1
 `
@@ -230,6 +232,7 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 		&i.Template.Name,
 		&i.Template.RequestID,
 		&i.Template.ProjectID,
+		&i.Template.Type,
 		&i.Template.Width,
 		&i.Template.Height,
 		&i.Template.SlotsX,
@@ -245,7 +248,7 @@ func (q *Queries) GetTemplate(ctx context.Context, id int32) (GetTemplateRow, er
 }
 
 const getTemplateByID = `-- name: GetTemplateByID :one
-SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+SELECT id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
 WHERE id = $1 LIMIT 1
 `
@@ -258,6 +261,7 @@ func (q *Queries) GetTemplateByID(ctx context.Context, id int32) (Template, erro
 		&i.Name,
 		&i.RequestID,
 		&i.ProjectID,
+		&i.Type,
 		&i.Width,
 		&i.Height,
 		&i.SlotsX,
@@ -338,7 +342,7 @@ func (q *Queries) GetTemplateSlots(ctx context.Context, templateID int32) ([]Get
 }
 
 const getTemplatesByRequestID = `-- name: GetTemplatesByRequestID :many
-SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+SELECT id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
 WHERE request_id = $1
 `
@@ -357,6 +361,7 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 			&i.Name,
 			&i.RequestID,
 			&i.ProjectID,
+			&i.Type,
 			&i.Width,
 			&i.Height,
 			&i.SlotsX,
@@ -379,20 +384,36 @@ func (q *Queries) GetTemplatesByRequestID(ctx context.Context, requestID pgtype.
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+SELECT id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
-WHERE company_id = $3
+WHERE 
+(company_id = $3 OR NOT $5)
+AND (type = $4 OR NOT $6)
+AND (project_id = $4 OR NOT $7)
+AND deleted_at = NULL
 LIMIT $1 OFFSET $2
 `
 
 type ListTemplatesParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	CompanyID pgtype.Int4 `json:"company_id"`
+	Limit           int32            `json:"limit"`
+	Offset          int32            `json:"offset"`
+	CompanyID       pgtype.Int4      `json:"company_id"`
+	Type            NullTemplateType `json:"type"`
+	FilterByCompany interface{}      `json:"filter_by_company"`
+	FilterByType    interface{}      `json:"filter_by_type"`
+	FilterByProject interface{}      `json:"filter_by_project"`
 }
 
 func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([]Template, error) {
-	rows, err := q.db.Query(ctx, listTemplates, arg.Limit, arg.Offset, arg.CompanyID)
+	rows, err := q.db.Query(ctx, listTemplates,
+		arg.Limit,
+		arg.Offset,
+		arg.CompanyID,
+		arg.Type,
+		arg.FilterByCompany,
+		arg.FilterByType,
+		arg.FilterByProject,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -405,6 +426,7 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 			&i.Name,
 			&i.RequestID,
 			&i.ProjectID,
+			&i.Type,
 			&i.Width,
 			&i.Height,
 			&i.SlotsX,
@@ -427,7 +449,7 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 }
 
 const listTemplatesByProjectID = `-- name: ListTemplatesByProjectID :many
-SELECT id, name, request_id, project_id, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
+SELECT id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
 WHERE project_id = $1
 OFFSET $2 LIMIT $3
@@ -453,6 +475,7 @@ func (q *Queries) ListTemplatesByProjectID(ctx context.Context, arg ListTemplate
 			&i.Name,
 			&i.RequestID,
 			&i.ProjectID,
+			&i.Type,
 			&i.Width,
 			&i.Height,
 			&i.SlotsX,

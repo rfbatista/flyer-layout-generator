@@ -3,11 +3,10 @@ package infra
 import (
 	"algvisual/internal/infra/cognito"
 	"algvisual/internal/infra/config"
-	mid "algvisual/internal/infra/middlewares"
+	"algvisual/internal/infra/middlewares"
 	"algvisual/internal/ports"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -26,23 +25,6 @@ type HTTPServerParams struct {
 	Sse         *ServerSideEventManager
 }
 
-type HTTPError struct {
-	Code       string    `json:"code,omitempty"`
-	Message    string    `json:"message,omitempty"`
-	Details    string    `json:"details,omitempty"`
-	Timestamp  time.Time `json:"timestamp,omitempty"`
-	Path       string    `json:"path,omitempty"`
-	Suggestion string    `json:"suggestion,omitempty"`
-}
-
-type HTTPErrorResult struct {
-	Status      string    `json:"status,omitempty"`
-	StatusCode  int       `json:"status_code,omitempty"`
-	RequestID   string    `json:"request_id,omitempty"`
-	DocumentURL string    `json:"document_url,omitempty"`
-	Error       HTTPError `json:"error,omitempty"`
-}
-
 type APIHealth struct {
 	Status string `json:"status,omitempty"`
 	Error  string `json:"error,omitempty"`
@@ -51,8 +33,8 @@ type APIHealth struct {
 
 func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 	e := echo.New()
-	e.HTTPErrorHandler = HTTPErrorHandler
-	e.Use(mid.NewApplicationContextMiddleware())
+	e.HTTPErrorHandler = middlewares.HTTPErrorHandler
+	e.Use(middlewares.NewApplicationContextMiddleware())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(
@@ -104,6 +86,7 @@ func NewHTTPServer(p HTTPServerParams) *echo.Echo {
 		}
 	})
 	for _, controller := range p.Controllers {
+		p.Logger.Info("loading controller")
 		err := controller.Load(e)
 		if err != nil {
 			p.Logger.Error("failed to load controller", zap.Error(err))

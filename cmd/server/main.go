@@ -2,6 +2,7 @@ package main
 
 import (
 	"algvisual/api"
+	"algvisual/internal/adaptations"
 	"algvisual/internal/advertisers"
 	"algvisual/internal/clients"
 	"algvisual/internal/designassets"
@@ -23,14 +24,14 @@ import (
 func main() {
 	defer func() { // catch or finally
 		if err := recover(); err != nil { // catch
-			fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
+			fmt.Fprintf(os.Stderr, "exception: %v\n", err)
 			os.Exit(1)
 		}
 	}()
 	app := fx.New(
-		api.Module,
-		infra.Module,
 		worker.Module,
+		adaptations.Module,
+		api.Module,
 		renderer.Module,
 		templates.Module,
 		layoutgenerator.Module,
@@ -41,6 +42,7 @@ func main() {
 		projects.Module,
 		designassets.Module,
 		designs.Module,
+		infra.Module,
 	)
 	fmt.Println(app.Err())
 	app.Run()
