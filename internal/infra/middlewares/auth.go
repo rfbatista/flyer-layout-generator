@@ -23,7 +23,7 @@ func NewAuthMiddleware(
 					UserID:    1,
 				}
 				cc.SetUserSession(session)
-				c.Set("session", session)
+				c.Set("session", &session)
 				return next(cc)
 			}
 		}

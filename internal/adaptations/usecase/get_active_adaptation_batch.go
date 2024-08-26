@@ -23,6 +23,7 @@ func GetActiveAdaptationBatchUseCase(
 		ctx,
 		req.Session.UserID,
 		repositories.AdaptationBatchRepositoryGetByUserParams{
+			DoByStatus: true,
 			Status: []entities.AdaptationBatchStatus{
 				entities.AdaptationBatchStatusPending,
 				entities.AdaptationBatchStatusStarted,
