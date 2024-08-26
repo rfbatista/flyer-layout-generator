@@ -37,8 +37,14 @@ func (w WorkerPool) StartAdaptationWorker(wg *sync.WaitGroup) error {
 				return
 			case <-ticker.C:
 				err := w.AdaptationWorker(0)
-				if err != nil {
-					w.log.Info("adaptation worker failed", zap.Error(err))
+				switch err := err.(type) {
+				case *shared.AppError:
+					if err.ErrorCode == STOPPING_WORKER {
+						w.log.Warn("stopping adaptation worker")
+						return
+					}
+				case error:
+					w.log.Error("error pulling adaptation event", zap.Error(err))
 				}
 			}
 		}
@@ -54,13 +60,12 @@ func (w WorkerPool) AdaptationWorker(stack int) error {
 	select {
 	case <-quit:
 		ticker.Stop()
-		w.log.Info("closing worker pool")
-		//TODO: ao retornar deve se fechar a rotina anterior tambem
-		return nil
+		w.log.Info("quitting adaptation worker")
+		return shared.NewError(STOPPING_WORKER, "graceful stop", "")
 	case <-gracefulStop:
-		w.log.Info("closing worker pool")
+		w.log.Info("graceful stopping adaptation worker")
 		ticker.Stop()
-		return nil
+		return shared.NewError(STOPPING_WORKER, "graceful stop", "")
 	default:
 		event, err := w.sqs.PullAdaptationEvent()
 		switch err := err.(type) {
