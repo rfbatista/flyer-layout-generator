@@ -29,6 +29,7 @@ type AppConfig struct {
 	Cognito               CognitoConfig
 	S3Config              AWSS3Config
 	LogPath               string
+	AWS                   AWSConfig
 }
 
 func (a AppConfig) IsProd() bool {
@@ -123,6 +124,10 @@ func SetupConfig() (*AppConfig, error) {
 			ReplicationQueueName: os.Getenv("SQS_REPLICATION_BATCH_QUEUE_NAME"),
 			LayoutJobQueue:       os.Getenv("SQS_LAYOUT_JOB_QUEUE_NAME"),
 			RendererJobQueue:     os.Getenv("SQS_RENDERER_JOB_QUEUE_NAME"),
+		},
+		AWS: AWSConfig{
+			AccessKey: os.Getenv("AWS_ACCESS_KEY"),
+			SecretKey: os.Getenv("AWS_SECRET_KEY"),
 		},
 	}, nil
 }

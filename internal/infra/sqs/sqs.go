@@ -9,14 +9,17 @@ import (
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
 func NewSQS(cfg config.AppConfig) (*SQS, error) {
 	waitTime := 2
+	cred := credentials.NewStaticCredentials(cfg.AWS.AccessKey, cfg.AWS.SecretKey, "")
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region:      aws.String("us-east-1"),
+		Credentials: cred,
 	})
 	if err != nil {
 		return nil, err
