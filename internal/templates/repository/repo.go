@@ -9,8 +9,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewTemplateRepository() (*TemplateRepository, error) {
-	return &TemplateRepository{}, nil
+func NewTemplateRepository(db *database.Queries) (*TemplateRepository, error) {
+	return &TemplateRepository{db: db}, nil
 }
 
 type TemplateRepository struct {

@@ -31,12 +31,12 @@ type AdaptationController struct {
 
 func (a AdaptationController) Load(e *echo.Echo) error {
 	e.POST(
-		"/api/v1/adaptation/batch/start",
+		"/api/v1/adaptation/start",
 		a.StartAdaptationBatch(),
 		middlewares.NewAuthMiddleware(a.cog, a.cfg),
 	)
 	e.POST(
-		"/api/v1/adaptation/batch/stop",
+		"/api/v1/adaptation/stop",
 		a.StopAdaptation(),
 		middlewares.NewAuthMiddleware(a.cog, a.cfg),
 	)
