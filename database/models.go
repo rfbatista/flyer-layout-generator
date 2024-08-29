@@ -350,6 +350,8 @@ func (ns NullRoles) Value() (driver.Value, error) {
 type TemplateType string
 
 const (
+	TemplateTypeSlots      TemplateType = "slots"
+	TemplateTypeDistortion TemplateType = "distortion"
 	TemplateTypeAdaptation TemplateType = "adaptation"
 	TemplateTypeUnknown    TemplateType = "unknown"
 )

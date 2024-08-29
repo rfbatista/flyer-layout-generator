@@ -27,19 +27,16 @@ func (a AdaptationBatchRepository) GetByUser(
 	id int32,
 	params AdaptationBatchRepositoryGetByUserParams,
 ) (*entities.AdaptationBatch, error) {
-	var statuses []database.NullAdaptationBatchStatus
+	var statuses []string
 	for _, st := range params.Status {
 		statuses = append(statuses,
-			database.NullAdaptationBatchStatus{
-				AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(st),
-				Valid:                 params.DoByStatus,
-			},
+			string(mapper.AdaptationBatchStatusToDatabase(st)),
 		)
 	}
 	_, err := a.db.GetAdaptationBatchByUser(ctx, database.GetAdaptationBatchByUserParams{
 		UserID:         pgtype.Int4{Int32: id, Valid: id != 0},
 		FilterByStatus: params.DoByStatus,
-		Status:         statuses,
+		Column2:        statuses,
 	})
 	if err != nil {
 		return nil, err

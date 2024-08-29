@@ -3,7 +3,8 @@ package usecase
 import (
 	"algvisual/database"
 	"algvisual/internal/entities"
-	"algvisual/internal/mapper"
+	"algvisual/internal/templates"
+	"algvisual/internal/templates/usecase"
 	"context"
 	"encoding/json"
 
@@ -12,7 +13,6 @@ import (
 )
 
 type CreateLayoutJobsInput struct {
-	DesignID              int32    `form:"design_id"               json:"design_id,omitempty"`
 	LayoutID              int32    `form:"layout_id"               json:"layout_id,omitempty"`
 	LimitSizerPerElement  bool     `form:"limit_sizer_per_element" json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool     `form:"anchor_elements"         json:"anchor_elements,omitempty"`
@@ -22,6 +22,7 @@ type CreateLayoutJobsInput struct {
 	Padding               int32    `form:"padding"                 json:"padding,omitempty"`
 	Priority              []string `form:"priority[]"              json:"priority,omitempty"`
 	KeepProportions       bool     `form:"keep_proportions"        json:"keep_proportions,omitempty"`
+	IsAdaptation          bool
 }
 
 type CreateLayoutJobsOutput struct {
@@ -34,6 +35,7 @@ func CreateLayoutJobsUseCase(
 	queries *database.Queries,
 	dbx *pgxpool.Pool,
 	req CreateLayoutJobsInput,
+	tservice templates.TemplatesService,
 ) (*CreateLayoutJobsOutput, error) {
 	tx, err := dbx.Begin(ctx)
 	if err != nil {
@@ -43,11 +45,13 @@ func CreateLayoutJobsUseCase(
 	qtx := queries.WithTx(tx)
 	var jobs []entities.LayoutJob
 	for _, tid := range req.Templates {
-		templateFound, getTemplErr := qtx.GetTemplateByID(ctx, tid)
+		templateFound, getTemplErr := tservice.GetTemplateByID(ctx, usecase.GetTemplateByIdInput{
+			TemplateID: tid,
+		})
 		if getTemplErr != nil {
 			continue
 		}
-		templateDomain := mapper.TemplateToDomain(templateFound)
+		templateDomain := templateFound.Data
 		for _, grid := range templateDomain.Grids() {
 			c, unmarshErr := json.Marshal(entities.LayoutRequestConfig{
 				LimitSizerPerElement:  req.LimitSizerPerElement,

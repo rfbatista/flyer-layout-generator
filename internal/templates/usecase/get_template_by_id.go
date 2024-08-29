@@ -4,8 +4,7 @@ import (
 	"algvisual/database"
 	"algvisual/internal/entities"
 	"algvisual/internal/mapper"
-
-	"github.com/labstack/echo/v4"
+	"context"
 )
 
 type GetTemplateByIdInput struct {
@@ -17,11 +16,10 @@ type GetTemplateByIdOutput struct {
 }
 
 func GetTemplateByIdUseCase(
-	c echo.Context,
+	ctx context.Context,
 	req GetTemplateByIdInput,
 	queries *database.Queries,
 ) (*GetTemplateByIdOutput, error) {
-	ctx := c.Request().Context()
 	raw, err := queries.GetTemplate(ctx, req.TemplateID)
 	if err != nil {
 		return nil, err

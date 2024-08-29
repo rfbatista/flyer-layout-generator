@@ -15,6 +15,7 @@ import (
 
 func NewLayoutGeneratorService(
 	db *database.Queries,
+	dbx *pgxpool.Pool,
 	templateService templates.TemplatesService,
 	log *zap.Logger,
 	rendererService renderer.RendererService,
@@ -30,11 +31,13 @@ func NewLayoutGeneratorService(
 		pool:            pool,
 		repo:            repo,
 		das:             das,
+		dbx:             dbx,
 	}
 }
 
 type LayoutGeneratorService struct {
 	db              *database.Queries
+	dbx             *pgxpool.Pool
 	templateService templates.TemplatesService
 	log             *zap.Logger
 	rendererService renderer.RendererService
@@ -85,4 +88,11 @@ func (l LayoutGeneratorService) ZipBatchImages(
 	in usecase.CreateZipForBatchInput,
 ) (*usecase.CreateZipForBatchOutput, error) {
 	return usecase.CreateZipForBatchUseCase(ctx, in, l.repo)
+}
+
+func (l LayoutGeneratorService) CreateLayoutJobs(
+	ctx context.Context,
+	in usecase.CreateLayoutJobsInput,
+) (*usecase.CreateLayoutJobsOutput, error) {
+	return usecase.CreateLayoutJobsUseCase(ctx, l.db, l.dbx, in, l.templateService)
 }

@@ -118,9 +118,12 @@ CREATE TABLE design_assets_properties
 
 
 CREATE TYPE TEMPLATE_TYPE AS ENUM (
-  'adaptation',
+  'slots', 
+  'distortion', 
+  'adaptation', 
   'unknown'
 );
+
 
 CREATE TABLE templates (
   id   SERIAL PRIMARY KEY,
@@ -298,10 +301,7 @@ CREATE TABLE layout_jobs (
   FOREIGN KEY (adaptation_batch_id) REFERENCES adaptation_batch (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (replication_batch_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE,
   foreign key (user_id) references users (id) on delete cascade on update cascade,
-
-  FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (based_on_layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (created_layout_id) REFERENCES layout (id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

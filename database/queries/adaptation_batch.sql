@@ -17,7 +17,7 @@ SELECT * FROM adaptation_batch WHERE id = $1;
 SELECT * 
 FROM adaptation_batch 
 WHERE user_id = $1 
-AND ((status = ANY (sqlc.slice(status))) OR NOT @filter_by_status)
+AND (status = ANY ($2::text[]) OR NOT @filter_by_status)
 ;
 
 -- name: UpdateAdaptationBatch :one

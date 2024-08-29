@@ -1,0 +1,32 @@
+@startuml
+actor user
+box "Worker"
+participant worker
+queue batchqueue
+queue layoutjobsqueue
+queue rendererjob
+end box
+box Adaptation
+participant startbatch
+end box
+box "Layout Generator"
+participant createlayoutjobs
+participant createlayout
+end box
+box "Renderer Engine"
+participant createrendererjob
+participant createimage
+end box
+
+user --> startbatch 
+startbatch -> batchqueue
+batchqueue -> worker
+worker -> createlayoutjobs
+createlayoutjobs -> layoutjobsqueue
+layoutjobsqueue -> worker
+worker -> createlayout
+createlayout -> createrendererjob
+createrendererjob -> rendererjob
+rendererjob -> createimage
+
+@enduml

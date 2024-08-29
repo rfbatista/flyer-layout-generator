@@ -130,17 +130,17 @@ const getAdaptationBatchByUser = `-- name: GetAdaptationBatchByUser :many
 SELECT id, layout_id, design_id, request_id, user_id, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
 FROM adaptation_batch 
 WHERE user_id = $1 
-AND ((status = ANY ($2)) OR NOT $3)
+AND (status = ANY ($2::text[]) OR NOT $3)
 `
 
 type GetAdaptationBatchByUserParams struct {
-	UserID         pgtype.Int4                 `json:"user_id"`
-	Status         []NullAdaptationBatchStatus `json:"status"`
-	FilterByStatus interface{}                 `json:"filter_by_status"`
+	UserID         pgtype.Int4 `json:"user_id"`
+	Column2        []string    `json:"column_2"`
+	FilterByStatus interface{} `json:"filter_by_status"`
 }
 
 func (q *Queries) GetAdaptationBatchByUser(ctx context.Context, arg GetAdaptationBatchByUserParams) ([]AdaptationBatch, error) {
-	rows, err := q.db.Query(ctx, getAdaptationBatchByUser, arg.UserID, arg.Status, arg.FilterByStatus)
+	rows, err := q.db.Query(ctx, getAdaptationBatchByUser, arg.UserID, arg.Column2, arg.FilterByStatus)
 	if err != nil {
 		return nil, err
 	}

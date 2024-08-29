@@ -1,5 +1,7 @@
 package sqs
 
+import "algvisual/internal/entities"
+
 type MessageAtributte string
 
 const (
@@ -7,7 +9,8 @@ const (
 )
 
 type AdaptationBatchEvent struct {
-	ID int64
+	ID         string
+	Adaptation entities.AdaptationBatch
 }
 
 type LayoutJobEvent struct {

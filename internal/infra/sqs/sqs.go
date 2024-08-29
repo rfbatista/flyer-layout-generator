@@ -136,7 +136,7 @@ func (s SQS) PullAdaptationEvent() (*AdaptationBatchEvent, error) {
 	if err != nil {
 		return nil, errors.New("error in unmarshal adaptation evento")
 	}
-	return &AdaptationBatchEvent{ID: batch.ID}, nil
+	return &AdaptationBatchEvent{ID: *msgResult.Messages[0].MessageId, Adaptation: batch}, nil
 }
 
 func (s SQS) PullLayoutEvent() (*LayoutJobEvent, error) {
