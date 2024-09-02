@@ -1,8 +1,7 @@
 package clients
 
 import (
-	"algvisual/internal/advertisers"
-	"algvisual/internal/infra"
+	"algvisual/internal/application/usecases/advertisers"
 	"context"
 	"log"
 	"net/http"
@@ -15,7 +14,6 @@ import (
 
 func TestCreateClient(tt *testing.T) {
 	app := fx.New(
-		infra.TestModule,
 		advertisers.Module,
 		fx.NopLogger,
 	)

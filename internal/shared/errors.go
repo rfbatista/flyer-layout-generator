@@ -25,6 +25,13 @@ func NewAppError(code int, msg string, detail string) *AppError {
 	}
 }
 
+func NewInjectionError(msg string) *AppError {
+	return &AppError{
+		Message:   msg,
+		Timestamp: time.Now(),
+	}
+}
+
 type AppError struct {
 	StatusCode int
 	ErrorCode  ErrorCode

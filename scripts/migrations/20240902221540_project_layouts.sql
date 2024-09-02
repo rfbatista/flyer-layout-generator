@@ -1,0 +1,2 @@
+-- Create "project_layouts" table
+CREATE TABLE "project_layouts" ("id" bigserial NOT NULL, "layout_id" integer NULL, "design_id" integer NULL, "project_id" integer NULL, "updated_at" timestamp NULL, "created_at" timestamp NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"), CONSTRAINT "project_layouts_layout_id_fkey" FOREIGN KEY ("layout_id") REFERENCES "layout" ("id") ON UPDATE CASCADE ON DELETE CASCADE, CONSTRAINT "project_layouts_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects" ("id") ON UPDATE CASCADE ON DELETE CASCADE);

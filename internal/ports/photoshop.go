@@ -1,8 +1,6 @@
 package ports
 
-import (
-	"algvisual/internal/entities"
-)
+import "algvisual/internal/domain/entities"
 
 type ProcessFileResult struct {
 	Photoshop entities.DesignFile      `json:"photoshop,omitempty"`

@@ -15,9 +15,9 @@ sql:
 docker-db:
 	docker run --rm -d --name atlas-sqlc -p 5432:5432 -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=123 postgres
 apply:
-	atlas schema apply --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" --dev-url "docker://postgres" --to "file://database/schema"
+	atlas schema apply --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable" --dev-url "docker://postgres" --to "file://intelal/infrastructure/database/schema"
 apply_in_server:
-	atlas schema apply --url "postgres://postgres:123@localhost:5432/algvisual?sslmode=disable" --to "file://database/schema"
+	atlas schema apply --url "postgres://postgres:123@localhost:5432/algvisual?sslmode=disable" --to "file://internal/infrastructure/database/schema"
 clean:
 	atlas schema clean --url "postgres://admin:123@localhost:5432/algvisual?sslmode=disable"
 	PGPASSWORD=$(PGPASSWORD) psql -U admin -h localhost -p 5432 -d algvisual -c 'CREATE SCHEMA public;'
@@ -25,7 +25,7 @@ migrate:
 	atlas migrate diff $(msg) \
 		--dev-url "postgres://admin:123@localhost:5432/algvisual?search_path=public&sslmode=disable" \
 		--dir "file://scripts/migrations" \
-		--to "file://database/schema"
+		--to "file://internal/infrastructure/database/schema"
 server:
 	go run ./cmd/server/main.go
 dev-build:

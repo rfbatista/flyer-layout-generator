@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const directoryPath = path.join(__dirname, "../../../internal/");
+const directoryPath = path.join(__dirname, "../../../internal/application/usecases/");
 const modules = [];
 try {
   const files = fs.readdirSync(directoryPath);
