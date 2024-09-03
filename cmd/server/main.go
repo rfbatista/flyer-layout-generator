@@ -10,6 +10,7 @@ import (
 	"algvisual/internal/application/usecases/layoutgenerator"
 	"algvisual/internal/application/usecases/projects"
 	"algvisual/internal/application/usecases/renderer"
+	"algvisual/internal/application/usecases/replications"
 	"algvisual/internal/application/usecases/templates"
 	"algvisual/internal/infrastructure"
 	"algvisual/internal/infrastructure/repositories"
@@ -45,6 +46,7 @@ func main() {
 		controllers.Module,
 		infrastructure.Module,
 		repositories.Module,
+		replications.Module,
 		worker.Module,
 	)
 	fmt.Println(app.Err())

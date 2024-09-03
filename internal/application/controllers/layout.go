@@ -24,31 +24,31 @@ func NewLayoutController(
 	das *designassets.DesignAssetService,
 	cfg config.AppConfig,
 	cog *cognito.Cognito,
-	getLayoutByAdaptation *layoutgenerator.GetLayoutFromAdaptationUseCase,
+	getLayoutByAdaptation *layoutgenerator.GetLayoutByJobsUseCase,
 ) LayoutController {
 	return LayoutController{
-		db:                    db,
-		layoutService:         lservice,
-		cfg:                   cfg,
-		log:                   log,
-		cog:                   cog,
-		pool:                  pool,
-		render:                render,
-		das:                   das,
-		getLayoutByAdaptation: getLayoutByAdaptation,
+		db:             db,
+		layoutService:  lservice,
+		cfg:            cfg,
+		log:            log,
+		cog:            cog,
+		pool:           pool,
+		render:         render,
+		das:            das,
+		getLayoutByJob: getLayoutByAdaptation,
 	}
 }
 
 type LayoutController struct {
-	db                    *database.Queries
-	layoutService         layoutgenerator.LayoutGeneratorService
-	render                renderer.RendererService
-	pool                  *pgxpool.Pool
-	cfg                   config.AppConfig
-	cog                   *cognito.Cognito
-	log                   *zap.Logger
-	das                   *designassets.DesignAssetService
-	getLayoutByAdaptation *layoutgenerator.GetLayoutFromAdaptationUseCase
+	db             *database.Queries
+	layoutService  layoutgenerator.LayoutGeneratorService
+	render         renderer.RendererService
+	pool           *pgxpool.Pool
+	cfg            config.AppConfig
+	cog            *cognito.Cognito
+	log            *zap.Logger
+	das            *designassets.DesignAssetService
+	getLayoutByJob *layoutgenerator.GetLayoutByJobsUseCase
 }
 
 func (s LayoutController) Load(e *echo.Echo) error {
@@ -59,7 +59,7 @@ func (s LayoutController) Load(e *echo.Echo) error {
 	)
 	e.GET(
 		"/api/v1/layout/adaptation/:adaptation_id",
-		s.GetLayoutByAdaptation(),
+		s.GetLayoutByJob(),
 		middlewares.NewAuthMiddleware(s.cog, s.cfg),
 	)
 	e.POST(
@@ -246,14 +246,14 @@ func (s LayoutController) CreateZipBatch() echo.HandlerFunc {
 	}
 }
 
-func (s LayoutController) GetLayoutByAdaptation() echo.HandlerFunc {
+func (s LayoutController) GetLayoutByJob() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req layoutgenerator.GetLayoutFromAdaptationInput
+		var req layoutgenerator.GetLayoutByJobsInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := s.getLayoutByAdaptation.Execute(
+		out, err := s.getLayoutByJob.Execute(
 			c.Request().Context(),
 			req,
 		)

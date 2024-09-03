@@ -250,12 +250,19 @@ CREATE TYPE ADAPTATION_BATCH_STATUS AS ENUM (
   'closed'
 );
 
+CREATE TYPE JOB_TYPE AS ENUM (
+  'adaptation',
+  'replication',
+  'unknown'
+);
+
 CREATE TABLE adaptation_batch (
   id   BIGSERIAL PRIMARY KEY,
   layout_id INT,
   design_id INT,
   request_id INT,
   user_id INT,
+  type JOB_TYPE,
   status ADAPTATION_BATCH_STATUS,
   started_at TIMESTAMP,
   finished_at TIMESTAMP,

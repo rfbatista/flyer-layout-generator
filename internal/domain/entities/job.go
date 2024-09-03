@@ -17,12 +17,21 @@ const (
 	AdaptationBatchStatusUnknown         AdaptationBatchStatus = "unknown"
 )
 
+type JobType string
+
+const (
+	JobTypeAdaptation  JobType = "adaptation"
+	JobTypeReplication JobType = "replication"
+	JobTypeUnknown     JobType = "unknown"
+)
+
 func (s AdaptationBatchStatus) String() string {
 	return string(s)
 }
 
-type AdaptationBatch struct {
+type Job struct {
 	ID         int64                 `json:"id,omitempty"`
+	Type       JobType               `json:"type,omitempty"`
 	UserID     int64                 `json:"user_id,omitempty"`
 	CreatedAt  time.Time             `json:"created_at,omitempty"`
 	StartedAt  time.Time             `json:"started_at,omitempty"`
@@ -35,11 +44,11 @@ type AdaptationBatch struct {
 	LayoutID   int32                 `json:"layout_id,omitempty"`
 	RequestID  int32                 `json:"request_id,omitempty"`
 	TemplateID int32                 `json:"template_id,omitempty"`
-	Summary    AdaptationSummary     `json:"summary,omitempty"`
+	Summary    JobSummary            `json:"summary,omitempty"`
 	Log        string                `json:"log,omitempty"`
 }
 
-type AdaptationSummary struct {
+type JobSummary struct {
 	Total int64 `json:"total"`
 	Done  int64 `json:"done"`
 }

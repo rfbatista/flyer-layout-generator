@@ -8,11 +8,11 @@ import (
 )
 
 type GetTemplateByIdInput struct {
-	TemplateID int32 `json:"template_id,omitempty"`
+	TemplateID int32 `json:"template_id,omitempty" param:"template_id"`
 }
 
 type GetTemplateByIdOutput struct {
-	Data entities.Template
+	Data entities.Template `json:"data,omitempty"`
 }
 
 func GetTemplateByIdUseCase(

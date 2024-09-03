@@ -175,7 +175,7 @@ func (s SQS) DeleteEvent(ctx context.Context, queueURL string, id string) error 
 	return err
 }
 
-func (s SQS) PublishAdaptation(a entities.AdaptationBatch) error {
+func (s SQS) PublishAdaptation(a entities.Job) error {
 	s.log.Debug("publishing adaptation")
 	raw, err := json.Marshal(a)
 	if err != nil {
@@ -216,7 +216,7 @@ func (s SQS) PullAdaptationEvent() (*AdaptationBatchEvent, error) {
 	if body == nil {
 		return nil, errors.New("empy body in event")
 	}
-	var batch entities.AdaptationBatch
+	var batch entities.Job
 	err = json.Unmarshal([]byte(*body), &batch)
 	if err != nil {
 		return nil, errors.New("error in unmarshal adaptation evento")

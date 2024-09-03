@@ -7,6 +7,7 @@ var Module = fx.Options(
 		NewLayoutJobRepository,
 		NewLayoutRepository,
 		NewTemplateRepository,
-		NewAdaptationBatchRepository,
+		NewJobRepository,
+		NewProjectRepository,
 	),
 )

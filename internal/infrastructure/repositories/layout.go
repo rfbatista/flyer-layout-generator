@@ -100,7 +100,7 @@ func (lr LayoutRepository) ListLayoutsByAdaptation(
 	return list, nil
 }
 
-func (lr LayoutRepository) GetLayoutsByProjectID(
+func (lr LayoutRepository) ListLayoutsByProjectID(
 	ctx context.Context,
 	id int32,
 ) ([]entities.Layout, error) {

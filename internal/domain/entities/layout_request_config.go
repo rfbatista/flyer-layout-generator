@@ -12,4 +12,5 @@ type LayoutRequestConfig struct {
 	Padding               int32          `json:"padding,omitempty"`
 	KeepProportions       bool           `json:"keep_proportions,omitempty"`
 	Priorities            map[string]int `json:"priorities,omitempty"`
+	TemplatesID           []int32        `json:"template_id,omitempty"`
 }

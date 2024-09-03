@@ -164,6 +164,49 @@ func (ns NullDesignAssetType) Value() (driver.Value, error) {
 	return string(ns.DesignAssetType), nil
 }
 
+type JobType string
+
+const (
+	JobTypeAdaptation  JobType = "adaptation"
+	JobTypeReplication JobType = "replication"
+	JobTypeUnknown     JobType = "unknown"
+)
+
+func (e *JobType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = JobType(s)
+	case string:
+		*e = JobType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for JobType: %T", src)
+	}
+	return nil
+}
+
+type NullJobType struct {
+	JobType JobType `json:"job_type"`
+	Valid   bool    `json:"valid"` // Valid is true if JobType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullJobType) Scan(value interface{}) error {
+	if value == nil {
+		ns.JobType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.JobType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullJobType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.JobType), nil
+}
+
 type LayoutJobStatus string
 
 const (
@@ -398,6 +441,7 @@ type AdaptationBatch struct {
 	DesignID   pgtype.Int4               `json:"design_id"`
 	RequestID  pgtype.Int4               `json:"request_id"`
 	UserID     pgtype.Int4               `json:"user_id"`
+	Type       NullJobType               `json:"type"`
 	Status     NullAdaptationBatchStatus `json:"status"`
 	StartedAt  pgtype.Timestamp          `json:"started_at"`
 	FinishedAt pgtype.Timestamp          `json:"finished_at"`

@@ -44,7 +44,7 @@ func NewWorkerPool(
 	layoutJobConsumer *consumers.LayoutJobConsumer,
 ) (WorkerPool, error) {
 	pool := pond.New(10, 100, pond.MinWorkers(5), pond.PanicHandler(func(i interface{}) {
-		log.Fatal(fmt.Sprintf("[pond] panic in worker: %v", i))
+		log.Warn(fmt.Sprintf("[pond] panic in worker: %v", i))
 	}))
 	return WorkerPool{
 		pool:                    pool,

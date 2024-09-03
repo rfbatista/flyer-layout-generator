@@ -22,6 +22,6 @@ var Module = fx.Options(
 		AsController(NewDesignProcessorController),
 		AsController(NewTemplatesController),
 		AsController(NewLayoutController),
-		AsController(NewAdaptationController),
+		AsController(NewJobsController),
 	),
 )

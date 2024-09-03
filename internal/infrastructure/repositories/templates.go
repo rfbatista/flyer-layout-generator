@@ -52,3 +52,15 @@ func (t TemplateRepository) List(
 	}
 	return list, nil
 }
+
+func (t TemplateRepository) GetByID(
+	ctx context.Context,
+	id int32,
+) (*entities.Template, error) {
+	raw, err := t.db.GetTemplateByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	temp := mapper.TemplateToDomain(raw)
+	return &temp, nil
+}

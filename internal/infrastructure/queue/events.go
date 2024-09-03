@@ -10,7 +10,7 @@ const (
 
 type AdaptationBatchEvent struct {
 	ID         string
-	Adaptation entities.AdaptationBatch
+	Adaptation entities.Job
 }
 
 type LayoutJobEvent struct {

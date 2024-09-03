@@ -9,6 +9,6 @@ var Module = fx.Options(
 		NewLayoutGeneratorService,
 		NewCreateLayoutJobsUsecase,
 		NewGenerateLayoutUseCase,
-		NewGetLayoutFromAdaptationUseCase,
+		NewGetLayoutByJobUseCase,
 	),
 )

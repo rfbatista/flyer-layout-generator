@@ -13,16 +13,16 @@ type StopAdaptationBatchInput struct {
 }
 
 type StopAdaptationBatchOutput struct {
-	Data []entities.AdaptationBatch
+	Data []entities.Job
 }
 
 func StopAdaptationBatchUseCase(
 	ctx context.Context,
 	req StopAdaptationBatchInput,
-	repo *repositories.AdaptationBatchRepository,
+	repo *repositories.JobRepository,
 ) (*StopAdaptationBatchOutput, error) {
 	session := req.Session
-	batches, err := repo.CancelActiveAdaptations(ctx, session.UserID)
+	batches, err := repo.CancelActiveAdaptations(ctx, session.UserID, entities.JobTypeAdaptation)
 	if err != nil {
 		return nil, shared.NewError(
 			errors.CANT_CANCEL_ADAPTATIONS,

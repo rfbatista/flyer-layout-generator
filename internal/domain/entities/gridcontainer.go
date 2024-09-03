@@ -10,6 +10,9 @@ func NewGridContainer(ul, dr Position) GridContainer {
 }
 
 func NewGridContainerFromPoints(positions []Position) GridContainer {
+	if len(positions) == 0 {
+		return NewGridContainer(NewPosition(0, 0), NewPosition(0, 0))
+	}
 	upleft := positions[0]
 	downright := positions[0]
 	for _, p := range positions {

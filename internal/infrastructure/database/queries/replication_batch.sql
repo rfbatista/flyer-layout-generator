@@ -1,18 +1,18 @@
--- name: CreateAdaptationBatch :one
+-- name: CreateReplicationBatch :one
 INSERT INTO adaptation_batch (
-    layout_id, design_id, request_id, status, user_id, type,
+    layout_id, design_id, request_id, status, user_id,
     started_at, finished_at, error_at, stopped_at, updated_at, config, log
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
 )
 RETURNING id;
--- name: ListAdaptationBatch :many
+-- name: ListReplicationBatch :many
 SELECT * FROM adaptation_batch LIMIT $1 OFFSET $2;
 
--- name: GetAdaptationBatchByID :one
+-- name: GetReplicationBatchByID :one
 SELECT * FROM adaptation_batch WHERE id = $1;
 
--- name: GetAdaptationBatchByUser :many
+-- name: GetReplicationBatchByUser :many
 SELECT * 
 FROM adaptation_batch 
 WHERE user_id = $1 
@@ -22,10 +22,9 @@ OR status = 'started'
 OR status = 'pending' 
 OR status = 'finished' 
 )
-AND type = $2
 ;
 
--- name: UpdateAdaptationBatch :one
+-- name: UpdateReplicationBatch :one
 UPDATE adaptation_batch
 SET 
     status = CASE WHEN @status_do_update::boolean
@@ -45,27 +44,23 @@ WHERE
     id = sqlc.narg(adaptation_id)
 RETURNING *;
 
--- name: CancelActiveAdaptationBatches :many
+-- name: CancelActiveReplicationBatches :many
 UPDATE adaptation_batch
 SET
   status = 'canceled',
   updated_at = NOW()
-WHERE user_id = $1
-AND status <> 'canceled'
-AND type = $2
+WHERE user_id = $1 AND status <> 'canceled'
 RETURNING *;
 
--- name: CloseActiveAdaptation :many
+-- name: CloseActiveReplication :many
 UPDATE adaptation_batch
 SET
   status = 'finished',
   updated_at = NOW()
-WHERE user_id = $1
-AND status = 'finished'
-AND type = $2
+WHERE user_id = $1 AND status = 'finished'
 RETURNING *;
 
--- name: GetJobSummary :one
+-- name: GetReplicationSummary :one
 SELECT coalesce(count(*), 0)::int as total,
 coalesce(sum(
     case status

@@ -3,21 +3,22 @@ package projects
 import (
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/database"
-	"algvisual/internal/infrastructure/repositories/mapper"
-
-	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/labstack/echo/v4"
+	"algvisual/internal/infrastructure/repositories"
+	"context"
 )
 
 type ListProjectsUseCase struct {
-	db *database.Queries
+	db   *database.Queries
+	repo *repositories.ProjectRepository
 }
 
 func NewListProjectsUseCase(
 	db *database.Queries,
+	repo *repositories.ProjectRepository,
 ) ListProjectsUseCase {
 	return ListProjectsUseCase{
-		db: db,
+		db:   db,
+		repo: repo,
 	}
 }
 
@@ -35,37 +36,16 @@ type ListProjectsOutput struct {
 }
 
 func (l ListProjectsUseCase) Execute(
-	c echo.Context,
+	ctx context.Context,
 	req ListProjectsInput,
 ) (*ListProjectsOutput, error) {
-	session := req.UserSession
-	ctx := c.Request().Context()
-	pr, err := l.db.ListProjects(ctx, database.ListProjectsParams{
-		Limit:     req.Limit,
-		Offset:    req.Page,
-		CompanyID: pgtype.Int4{Int32: int32(session.CompanyID), Valid: true},
-	})
+	pr, err := l.repo.ListProjects(ctx, int32(req.UserSession.CompanyID))
 	if err != nil {
 		return nil, err
-	}
-	var projects []entities.Project
-	for _, p := range pr {
-		ad, err := l.db.GetAdvertiserByID(ctx, int64(p.AdvertiserID.Int32))
-		if err != nil {
-			return nil, err
-		}
-		cl, err := l.db.GetClientByID(ctx, int64(p.ClientID.Int32))
-		if err != nil {
-			return nil, err
-		}
-		project := mapper.ProjectToDomain(p)
-		project.Client = mapper.ClientToDomain(cl)
-		project.Advertiser = mapper.AdvertiserToDomain(ad)
-		projects = append(projects, project)
 	}
 	return &ListProjectsOutput{
 		Page:  req.Page,
 		Limit: req.Limit,
-		Data:  projects,
+		Data:  pr,
 	}, nil
 }

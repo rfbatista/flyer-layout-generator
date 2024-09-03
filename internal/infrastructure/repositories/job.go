@@ -1,112 +1,191 @@
 package repositories
 
 import (
+	"algvisual/internal/application/errors"
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/database"
 	"algvisual/internal/infrastructure/repositories/mapper"
+	"algvisual/internal/shared"
 	"context"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type RendererJobRepository struct {
+func NewJobRepository(db *database.Queries) (*JobRepository, error) {
+	return &JobRepository{db: db}, nil
+}
+
+type JobRepository struct {
 	db *database.Queries
 }
 
-func (r RendererJobRepository) Create(
+type JobRepositoryGetByUserParams struct {
+	Type                    entities.JobType
+	FilterByPending         bool
+	FilterByStarted         bool
+	FilterByRenderingImages bool
+}
+
+func (a JobRepository) GetByID(
 	ctx context.Context,
-	job entities.RenderJob,
-) (*entities.RenderJob, error) {
-	e, err := r.db.CreateRendererJob(ctx, database.CreateRendererJobParams{
-		LayoutID:     pgtype.Int4{Int32: job.LayoutID, Valid: job.LayoutID != 0},
-		AdaptationID: pgtype.Int4{Int32: job.AdaptationID, Valid: job.AdaptationID != 0},
+	id int64,
+) (*entities.Job, error) {
+	raw, err := a.db.GetAdaptationBatchByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	ent := mapper.AdaptationBatchToDomain(raw)
+	return &ent, nil
+}
+
+func (a JobRepository) GetByUser(
+	ctx context.Context,
+	userID int32,
+	params JobRepositoryGetByUserParams,
+) (*entities.Job, error) {
+	raw, err := a.db.GetAdaptationBatchByUser(ctx, database.GetAdaptationBatchByUserParams{
+		UserID: pgtype.Int4{Int32: userID, Valid: userID != 0},
+		Type: database.NullJobType{
+			JobType: mapper.JobTypeToDatabase(params.Type),
+			Valid:   params.Type != "",
+		},
 	})
 	if err != nil {
 		return nil, err
 	}
-	job.ID = e
-	return &job, nil
+	if raw == nil {
+		return nil, shared.NewError(errors.NO_ADAPTATION_FOUND, "adaptaiton not found", "")
+	}
+	if len(raw) == 0 {
+		return nil, shared.NewError(errors.NO_ADAPTATION_FOUND, "adaptation not found", "")
+	}
+	ent := mapper.AdaptationBatchToDomain(raw[0])
+	return &ent, nil
 }
 
-type RenderJobListParams struct {
-	AdaptationID   int64
-	FilterByStatus bool
-	Status         entities.RenderJobStatus
-}
-
-func (r RendererJobRepository) List(
+func (a JobRepository) Create(
 	ctx context.Context,
-	params RenderJobListParams,
-) ([]entities.RenderJob, error) {
-	var jobs []entities.RenderJob
-	raw, err := r.db.ListRendererJobs(ctx, database.ListRendererJobsParams{
-		AdaptationID: pgtype.Int4{
-			Int32: int32(params.AdaptationID),
-			Valid: params.AdaptationID != 0,
+	b entities.Job,
+) (*entities.Job, error) {
+	id, err := a.db.CreateAdaptationBatch(ctx, database.CreateAdaptationBatchParams{
+		LayoutID:  pgtype.Int4{Int32: b.LayoutID, Valid: b.LayoutID != 0},
+		UserID:    pgtype.Int4{Int32: int32(b.UserID), Valid: b.UserID != 0},
+		RequestID: pgtype.Int4{Int32: b.RequestID, Valid: b.RequestID != 0},
+		Status: database.NullAdaptationBatchStatus{
+			AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(b.Status),
+			Valid:                 true,
 		},
-		FilterByStatus: params.FilterByStatus,
-		Status: database.NullRendererJobStatus{
-			RendererJobStatus: mapper.RenderJobStatusToDatabase(params.Status),
-			Valid:             params.FilterByStatus,
+		Type: database.NullJobType{
+			JobType: mapper.JobTypeToDatabase(b.Type),
+			Valid:   b.Type != "",
 		},
+		StartedAt:  pgtype.Timestamp{Time: b.StartedAt, Valid: !b.StartedAt.IsZero()},
+		FinishedAt: pgtype.Timestamp{Time: b.FinishedAt, Valid: !b.FinishedAt.IsZero()},
+		ErrorAt:    pgtype.Timestamp{Time: b.ErrorAt, Valid: !b.ErrorAt.IsZero()},
+		StoppedAt:  pgtype.Timestamp{Time: b.StoppedAt, Valid: !b.StoppedAt.IsZero()},
+		UpdatedAt:  pgtype.Timestamp{Time: b.UpdatedAt, Valid: !b.UpdatedAt.IsZero()},
+		Log:        pgtype.Text{String: b.Log, Valid: b.Log == ""},
 	})
 	if err != nil {
-		return jobs, err
+		return nil, err
+	}
+	return a.GetByID(ctx, id)
+}
+
+type JobRepositoryUpdateParams struct {
+	UpdateStatus     bool
+	UpdateImageURL   bool
+	UpdateStartedAt  bool
+	UpdateFinishedAt bool
+	UpdateErrorAt    bool
+	UpdateStoppedAt  bool
+}
+
+func (a JobRepository) Update(
+	ctx context.Context,
+	b entities.Job,
+	p JobRepositoryUpdateParams,
+) (*entities.Job, error) {
+	raw, err := a.db.UpdateAdaptationBatch(ctx, database.UpdateAdaptationBatchParams{
+		StatusDoUpdate: p.UpdateStatus,
+		Status: database.NullAdaptationBatchStatus{
+			AdaptationBatchStatus: mapper.AdaptationBatchStatusToDatabase(b.Status),
+			Valid:                 p.UpdateStatus,
+		},
+		StartedAtDoUpdate:  p.UpdateStartedAt,
+		StartedAt:          pgtype.Timestamp{Time: b.StartedAt, Valid: p.UpdateStartedAt},
+		FinishedAtDoUpdate: p.UpdateFinishedAt,
+		FinishedAt:         pgtype.Timestamp{Time: b.FinishedAt, Valid: p.UpdateFinishedAt},
+		ErrorAtDoUpdate:    p.UpdateErrorAt,
+		ErrorAt:            pgtype.Timestamp{Time: b.ErrorAt, Valid: p.UpdateErrorAt},
+		StoppedAtDoUpdate:  p.UpdateStoppedAt,
+		StoppedAt:          pgtype.Timestamp{Time: b.StoppedAt, Valid: p.UpdateStoppedAt},
+		Log:                pgtype.Text{String: b.Log, Valid: b.Log != ""},
+		AdaptationID:       pgtype.Int8{Int64: b.ID, Valid: b.ID != 0},
+	})
+	if err != nil {
+		return nil, err
+	}
+	ent := mapper.AdaptationBatchToDomain(raw)
+	return &ent, nil
+}
+
+func (a JobRepository) CancelActiveAdaptations(
+	ctx context.Context,
+	id int32,
+	jobType entities.JobType,
+) ([]entities.Job, error) {
+	var batches []entities.Job
+	raw, err := a.db.CancelActiveAdaptationBatches(
+		ctx,
+		database.CancelActiveAdaptationBatchesParams{
+			UserID: pgtype.Int4{Int32: id, Valid: id != 0},
+			Type: database.NullJobType{
+				JobType: mapper.JobTypeToDatabase(jobType),
+				Valid:   jobType != "",
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
 	}
 	for _, r := range raw {
-		jobs = append(jobs, mapper.RendererJobToDomain(r))
+		batches = append(batches, mapper.AdaptationBatchToDomain(r))
 	}
-	return jobs, nil
+	return batches, nil
 }
 
-type RendererJobRepositoryUpdateParams struct {
-	UpdateStatus       bool                     `json:"update_status,omitempty"`
-	Status             entities.RenderJobStatus `json:"status,omitempty"`
-	ImageDoUpdate      bool                     `json:"image_do_update,omitempty"`
-	ImageID            int64                    `json:"image_id,omitempty"`
-	StartedAtDoUpdate  bool                     `json:"started_at_do_update,omitempty"`
-	StartedAt          time.Time                `json:"started_at,omitempty"`
-	FinishedAtDoUpdate bool                     `json:"finished_at_do_update,omitempty"`
-	FinishedAt         time.Time                `json:"finished_at,omitempty"`
-	ErrorAtDoUpdate    bool                     `json:"error_at_do_update,omitempty"`
-	ErrorAt            time.Time                `json:"error_at,omitempty"`
-	StoppedAtDoUpdate  bool                     `json:"stopped_at_do_update,omitempty"`
-	LogDoUpdate        bool                     `json:"log_do_update,omitempty"`
-	Log                string                   `json:"log,omitempty"`
-}
-
-func (r RendererJobRepository) Update(
+func (a JobRepository) CloseActiveAdaptations(
 	ctx context.Context,
-	e entities.RenderJob,
-	params RendererJobRepositoryUpdateParams,
-) (*entities.RenderJob, error) {
-	raw, err := r.db.UpdateRendererJob(ctx, database.UpdateRendererJobParams{
-		StatusDoUpdate: params.UpdateStatus,
-		Status: database.NullRendererJobStatus{
-			RendererJobStatus: mapper.RenderJobStatusToDatabase(params.Status),
-			Valid:             params.UpdateStatus,
+	userID int32,
+	jobType entities.JobType,
+) ([]entities.Job, error) {
+	var batches []entities.Job
+	raw, err := a.db.CloseActiveAdaptation(
+		ctx,
+		database.CloseActiveAdaptationParams{
+			UserID: pgtype.Int4{Int32: userID, Valid: userID != 0},
 		},
-		ImageDoUpdate:     params.ImageDoUpdate,
-		ImageID:           pgtype.Int4{Int32: int32(params.ImageID), Valid: params.ImageDoUpdate},
-		StartedAtDoUpdate: params.StartedAtDoUpdate,
-		StartedAt: pgtype.Timestamp{
-			Time:  params.StartedAt,
-			Valid: params.StartedAtDoUpdate,
-		},
-		FinishedAtDoUpdate: params.FinishedAtDoUpdate,
-		FinishedAt: pgtype.Timestamp{
-			Time:  params.FinishedAt,
-			Valid: params.FinishedAtDoUpdate,
-		},
-		ErrorAtDoUpdate: params.ErrorAtDoUpdate,
-		ErrorAt:         pgtype.Timestamp{Time: params.ErrorAt, Valid: params.ErrorAtDoUpdate},
-		LogDoUpdate:     params.LogDoUpdate,
-		Log:             pgtype.Text{String: params.Log, Valid: params.LogDoUpdate},
-	})
+	)
 	if err != nil {
 		return nil, err
 	}
-	ent := mapper.RendererJobToDomain(raw)
-	return &ent, nil
+	for _, r := range raw {
+		batches = append(batches, mapper.AdaptationBatchToDomain(r))
+	}
+	return batches, nil
+}
+
+func (a JobRepository) GetSummary(
+	ctx context.Context,
+	id int32,
+) (*entities.JobSummary, error) {
+	raw, err := a.db.GetJobSummary(
+		ctx,
+		pgtype.Int4{Int32: id, Valid: id != 0},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &entities.JobSummary{Total: int64(raw.Total), Done: int64(raw.Done)}, nil
 }

@@ -10,28 +10,28 @@ import (
 	"go.uber.org/multierr"
 )
 
-type GetLayoutFromAdaptationUseCase struct {
+type GetLayoutByJobsUseCase struct {
 	repo repositories.LayoutRepository
 }
 
-func NewGetLayoutFromAdaptationUseCase(
+func NewGetLayoutByJobUseCase(
 	repo repositories.LayoutRepository,
-) (*GetLayoutFromAdaptationUseCase, error) {
-	return &GetLayoutFromAdaptationUseCase{repo: repo}, nil
+) (*GetLayoutByJobsUseCase, error) {
+	return &GetLayoutByJobsUseCase{repo: repo}, nil
 }
 
-type GetLayoutFromAdaptationInput struct {
+type GetLayoutByJobsInput struct {
 	AdaptationID int64 `json:"adaptation_id,omitempty" param:"adaptation_id"`
 }
 
-type GetLayoutFromAdaptationOutput struct {
+type GetLayoutByJobsOutput struct {
 	Data []entities.Layout `json:"data,omitempty"`
 }
 
-func (u GetLayoutFromAdaptationUseCase) Execute(
+func (u GetLayoutByJobsUseCase) Execute(
 	ctx context.Context,
-	req GetLayoutFromAdaptationInput,
-) (*GetLayoutFromAdaptationOutput, error) {
+	req GetLayoutByJobsInput,
+) (*GetLayoutByJobsOutput, error) {
 	listOfLayouts, err := u.repo.ListLayoutsByAdaptation(ctx, req.AdaptationID)
 	if err != nil {
 		return nil, multierr.Append(
@@ -39,7 +39,7 @@ func (u GetLayoutFromAdaptationUseCase) Execute(
 			shared.NewError(errors.NO_ADAPTATION_FOUND, "couldnt find a the list of layouts", ""),
 		)
 	}
-	return &GetLayoutFromAdaptationOutput{
+	return &GetLayoutByJobsOutput{
 		Data: listOfLayouts,
 	}, nil
 }

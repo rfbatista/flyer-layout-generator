@@ -59,7 +59,7 @@ type CreateLayoutJobsInput struct {
 	Priority              []string `form:"priority[]"              json:"priority,omitempty"`
 	KeepProportions       bool     `form:"keep_proportions"        json:"keep_proportions,omitempty"`
 	IsAdaptation          bool     `                               json:"is_adaptation,omitempty"`
-	AdaptationBatchID     int32    `                               json:"adaptation_batch_id,omitempty"`
+	JobID                 int32    `                               json:"adaptation_batch_id,omitempty"`
 }
 
 type CreateLayoutJobsOutput struct {
@@ -107,7 +107,7 @@ func (c *CreateLayoutJobsUseCase) Execute(
 				TemplateID:      templateDomain.ID,
 				Config:          jobConfig,
 				Status:          entities.LayoutJobStatusPending,
-				AdaptationID:    req.AdaptationBatchID,
+				AdaptationID:    req.JobID,
 			}
 			jobCreated, jerr := c.repo.Create(ctx, job)
 			if jerr != nil {

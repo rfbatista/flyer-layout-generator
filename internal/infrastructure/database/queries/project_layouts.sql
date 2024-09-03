@@ -13,3 +13,4 @@ WHERE project_id = $1;
 DELETE FROM project_layouts
 WHERE id = 1
 RETURNING *;
+

@@ -14,14 +14,14 @@ import (
 )
 
 type StartAdaptationUseCase struct {
-	repo  *repositories.AdaptationBatchRepository
+	repo  *repositories.JobRepository
 	event *queue.SQS
 	cfg   config.AppConfig
 	log   *zap.Logger
 }
 
 func NewStartAdaptationUseCase(
-	repo *repositories.AdaptationBatchRepository,
+	repo *repositories.JobRepository,
 	event *queue.SQS,
 	cfg config.AppConfig,
 	log *zap.Logger,
@@ -46,7 +46,7 @@ type StartAdaptationInput struct {
 }
 
 type StartAdaptationOutput struct {
-	Data entities.AdaptationBatch `json:"data"`
+	Data entities.Job `json:"data"`
 }
 
 func (s StartAdaptationUseCase) Execute(
@@ -54,7 +54,7 @@ func (s StartAdaptationUseCase) Execute(
 	req StartAdaptationInput,
 ) (*StartAdaptationOutput, error) {
 	session := req.Session
-	_, err := s.repo.CancelActiveAdaptations(ctx, session.UserID)
+	_, err := s.repo.CancelActiveAdaptations(ctx, session.UserID, entities.JobTypeAdaptation)
 	if err != nil {
 		return nil, shared.NewError(
 			errors.CANT_CANCEL_ADAPTATIONS,
@@ -62,7 +62,7 @@ func (s StartAdaptationUseCase) Execute(
 			err.Error(),
 		)
 	}
-	_, err = s.repo.CloseActiveAdaptations(ctx, session.UserID)
+	_, err = s.repo.CloseActiveAdaptations(ctx, session.UserID, entities.JobTypeAdaptation)
 	if err != nil {
 		return nil, shared.NewError(
 			errors.CANT_CLOSE_ADAPTATIONS,
@@ -70,10 +70,11 @@ func (s StartAdaptationUseCase) Execute(
 			err.Error(),
 		)
 	}
-	adaptation := entities.AdaptationBatch{
+	adaptation := entities.Job{
 		UserID:   int64(session.UserID),
 		LayoutID: req.LayoutID,
 		Status:   entities.AdaptationBatchStatusPending,
+		Type:     entities.JobTypeAdaptation,
 	}
 	created, err := s.repo.Create(ctx, adaptation)
 	if err != nil {

@@ -5,8 +5,8 @@ import (
 	"algvisual/internal/infrastructure/database"
 )
 
-func AdaptationBatchToDomain(raw database.AdaptationBatch) entities.AdaptationBatch {
-	adap := entities.AdaptationBatch{
+func AdaptationBatchToDomain(raw database.AdaptationBatch) entities.Job {
+	adap := entities.Job{
 		ID:        raw.ID,
 		LayoutID:  raw.LayoutID.Int32,
 		RequestID: raw.RequestID.Int32,

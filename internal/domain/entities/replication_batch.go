@@ -14,6 +14,19 @@ const (
 	RequestStatusError
 )
 
+type ReplicationStatus string
+
+const (
+	ReplicationBatchStatusPending         ReplicationStatus = "pending"
+	ReplicationBatchStatusStarted         ReplicationStatus = "started"
+	ReplicationBatchStatusFinished        ReplicationStatus = "finished"
+	ReplicationBatchStatusRenderingImages ReplicationStatus = "rendering_images"
+	ReplicationBatchStatusError           ReplicationStatus = "error"
+	ReplicationBatchStatusCanceled        ReplicationStatus = "canceled"
+	ReplicationBatchStatusClosed          ReplicationStatus = "closed"
+	ReplicationBatchStatusUnknown         ReplicationStatus = "unknown"
+)
+
 func (s ReplicationBatchStatus) String() string {
 	switch s {
 	case RequestStatusNotStarted:
@@ -58,7 +71,7 @@ type ReplicationBatch struct {
 	FinishedAt *time.Time          `json:"finished_at,omitempty"`
 	Config     LayoutRequestConfig `json:"config,omitempty"`
 	Jobs       []LayoutRequestJob  `json:"jobs,omitempty"`
-	Status     string              `json:"status,omitempty"`
+	Status     ReplicationStatus   `json:"status,omitempty"`
 }
 
 func NewLayoutRequestConfigPriority(pr []string) map[string]int {

@@ -1,4 +1,4 @@
-package adaptations
+package replications
 
 import (
 	"algvisual/internal/domain/entities"
@@ -9,36 +9,36 @@ import (
 	"go.uber.org/multierr"
 )
 
-type GetActiveAdaptationBatchUseCase struct {
+type GetActiveReplicationUseCase struct {
 	repo *repositories.JobRepository
 }
 
-func NewGetActiveAdaptationBatchUseCase(
+func NewGetActiveReplicationUseCase(
 	repo *repositories.JobRepository,
-) (*GetActiveAdaptationBatchUseCase, error) {
+) (*GetActiveReplicationUseCase, error) {
 	if repo == nil {
 		return nil, shared.NewInternalError("missing adaptation repository")
 	}
-	return &GetActiveAdaptationBatchUseCase{repo: repo}, nil
+	return &GetActiveReplicationUseCase{repo: repo}, nil
 }
 
-type GetActiveAdaptationBatchInput struct {
+type GetActiveReplicationInput struct {
 	Session entities.UserSession
 }
 
-type GetActiveAdaptationBatchOutput struct {
+type GetActiveReplicationOutput struct {
 	Data *entities.Job `json:"data"`
 }
 
-func (g GetActiveAdaptationBatchUseCase) Execute(
+func (u GetActiveReplicationUseCase) Execute(
 	ctx context.Context,
-	req GetActiveAdaptationBatchInput,
-) (*GetActiveAdaptationBatchOutput, error) {
-	adap, err := g.repo.GetByUser(
+	req GetActiveReplicationInput,
+) (*GetActiveReplicationOutput, error) {
+	adap, err := u.repo.GetByUser(
 		ctx,
 		req.Session.UserID,
 		repositories.JobRepositoryGetByUserParams{
-			Type:                    entities.JobTypeAdaptation,
+			Type:                    entities.JobTypeReplication,
 			FilterByPending:         true,
 			FilterByRenderingImages: true,
 			FilterByStarted:         true,
@@ -47,7 +47,7 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 	if err != nil {
 		return nil, err
 	}
-	sum, err := g.repo.GetSummary(ctx, int32(adap.ID))
+	sum, err := u.repo.GetSummary(ctx, int32(adap.ID))
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 	}
 	if adap.Summary.Total != 0 && adap.Summary.Total == adap.Summary.Done {
 		adap.Status = entities.AdaptationBatchStatusFinished
-		adap, err = g.repo.Update(ctx, *adap, repositories.JobRepositoryUpdateParams{
+		adap, err = u.repo.Update(ctx, *adap, repositories.JobRepositoryUpdateParams{
 			UpdateStatus: true,
 		})
 		if err != nil {
@@ -64,7 +64,7 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 		}
 		adap.Summary = *sum
 	}
-	return &GetActiveAdaptationBatchOutput{
+	return &GetActiveReplicationOutput{
 		Data: adap,
 	}, nil
 }

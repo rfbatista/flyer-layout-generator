@@ -9,5 +9,7 @@ var Module = fx.Options(
 		NewListProjectsUseCase,
 		NewGetProjectByIdUseCase,
 		NewUpdateProjectIdUseCase,
+		NewSaveProjectLayoutUseCase,
+		NewListProjectLayoutsUseCase,
 	),
 )

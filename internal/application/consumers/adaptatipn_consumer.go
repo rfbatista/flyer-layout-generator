@@ -16,14 +16,14 @@ import (
 
 type AdaptatipnBatchConsumer struct {
 	log              *zap.Logger
-	repo             *repositories.AdaptationBatchRepository
+	repo             *repositories.JobRepository
 	templatesRepo    *repositories.TemplateRepository
 	createLayoutJobs *layoutgenerator.CreateLayoutJobsUseCase
 }
 
 func NewAdaptationBatchConsumer(
 	log *zap.Logger,
-	repo *repositories.AdaptationBatchRepository,
+	repo *repositories.JobRepository,
 	createLayoutJobs *layoutgenerator.CreateLayoutJobsUseCase,
 	templatesRepo *repositories.TemplateRepository,
 ) (*AdaptatipnBatchConsumer, error) {
@@ -48,7 +48,7 @@ func (a *AdaptatipnBatchConsumer) Execute(
 		return errors.New("missing event")
 	}
 	started := time.Now()
-	var batch entities.AdaptationBatch
+	var batch entities.Job
 	err := json.Unmarshal([]byte(event.Body), &batch)
 	if err != nil {
 		return errors.New("error in unmarshal adaptation evento")
@@ -78,9 +78,9 @@ func (a *AdaptatipnBatchConsumer) Execute(
 		return shared.NewInternalError("no adaptation template was found")
 	}
 	res, err := a.createLayoutJobs.Execute(ctx, layoutgenerator.CreateLayoutJobsInput{
-		LayoutID:          batchFound.LayoutID,
-		Templates:         ids,
-		AdaptationBatchID: int32(batchFound.ID),
+		LayoutID:  batchFound.LayoutID,
+		Templates: ids,
+		JobID:     int32(batchFound.ID),
 	})
 	if err != nil {
 		a.log.Error("failed to create layout jobs", zap.Error(err))
@@ -89,7 +89,7 @@ func (a *AdaptatipnBatchConsumer) Execute(
 	a.log.Debug("layout jobs created", zap.Int("jobs", len(res.Jobs)))
 	batchFound.Status = entities.AdaptationBatchStatusStarted
 	batchFound.StartedAt = started
-	_, err = a.repo.Update(ctx, *batchFound, repositories.AdaptationBatchRepositoryUpdateParams{
+	_, err = a.repo.Update(ctx, *batchFound, repositories.JobRepositoryUpdateParams{
 		UpdateStatus:    true,
 		UpdateStartedAt: true,
 	})

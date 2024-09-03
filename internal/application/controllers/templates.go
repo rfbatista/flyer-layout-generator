@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"algvisual/internal/application/usecases/templates"
 	usecase "algvisual/internal/application/usecases/templates"
 	"algvisual/internal/infrastructure/cognito"
 	"algvisual/internal/infrastructure/config"
@@ -35,6 +36,11 @@ func (s TemplatesController) Load(e *echo.Echo) error {
 	e.GET(
 		"/api/v1/project/:project_id/templates",
 		s.ListTemplates(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
+	e.GET(
+		"/api/v1/template/:template_id",
+		s.GetTemplateByID(),
 		middlewares.NewAuthMiddleware(s.cog, s.cfg),
 	)
 	e.POST(
@@ -104,6 +110,21 @@ func (s TemplatesController) DeleteTemplate() echo.HandlerFunc {
 			return err
 		}
 		out, err := usecase.DeleteTemplateByIdUseCase(c, req, s.db)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
+
+func (s TemplatesController) GetTemplateByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req templates.GetTemplateByIdInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		out, err := templates.GetTemplateByIdUseCase(c.Request().Context(), req, s.db)
 		if err != nil {
 			return err
 		}
