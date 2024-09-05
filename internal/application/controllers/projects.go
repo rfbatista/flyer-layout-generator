@@ -20,6 +20,7 @@ func NewProjectsController(
 	getProjectById projects.GetProjectByIdUseCase,
 	saveProjectLayout *projects.SaveProjectLayoutUseCase,
 	listProjectLayouts *projects.ListProjectLayoutsUseCase,
+	createProject *projects.CreateProjectUseCase,
 ) ProjectsController {
 	return ProjectsController{
 		db:                 db,
@@ -29,10 +30,12 @@ func NewProjectsController(
 		getProjectById:     getProjectById,
 		saveProjectLayout:  saveProjectLayout,
 		listProjectLayouts: listProjectLayouts,
+		createProject:      createProject,
 	}
 }
 
 type ProjectsController struct {
+	createProject      *projects.CreateProjectUseCase
 	db                 *database.Queries
 	cfg                config.AppConfig
 	cog                *cognito.Cognito
@@ -43,11 +46,11 @@ type ProjectsController struct {
 }
 
 func (s ProjectsController) Load(e *echo.Echo) error {
-	// e.POST(
-	// 	"/api/v1/project",
-	// 	s.CreateProject(),
-	// 	middlewares.NewAuthMiddleware(s.cog, s.cfg),
-	// )
+	e.POST(
+		"/api/v1/project",
+		s.CreateProject(),
+		middlewares.NewAuthMiddleware(s.cog, s.cfg),
+	)
 	e.GET(
 		"/api/v1/projects",
 		s.ListProjects(),
@@ -96,20 +99,21 @@ func (s ProjectsController) Load(e *echo.Echo) error {
 // 	}
 // }
 
-// func (s ProjectsController) CreateProject() echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		var req usecase.CreateProjectInput
-// 		err := c.Bind(&req)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		out, err := usecase.CreateProjectUseCase(c, req, s.db)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		return c.JSON(http.StatusOK, out)
-// 	}
-// }
+func (s ProjectsController) CreateProject() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req projects.CreateProjectInput
+		err := c.Bind(&req)
+		if err != nil {
+			return err
+		}
+		req.UserSession = *shared.GetSession(c)
+		out, err := s.createProject.Execute(c.Request().Context(), req)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, out)
+	}
+}
 
 func (s ProjectsController) ListProjects() echo.HandlerFunc {
 	return func(c echo.Context) error {

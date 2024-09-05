@@ -9,6 +9,7 @@ import (
 	"algvisual/internal/infrastructure/config"
 	"algvisual/internal/infrastructure/database"
 	"algvisual/internal/infrastructure/middlewares"
+	"algvisual/internal/infrastructure/storage"
 	"algvisual/internal/shared"
 	"net/http"
 
@@ -20,7 +21,7 @@ import (
 func NewDesignProcessorController(
 	db *database.Queries,
 	proc *infrastructure.PhotoshopProcessor,
-	storage infrastructure.FileStorage,
+	storage storage.FileStorage,
 	log *zap.Logger,
 	pool *pgxpool.Pool,
 	processorFile *infrastructure.PhotoshopProcessor,
@@ -47,7 +48,7 @@ type DesignProcessorController struct {
 	db            *database.Queries
 	ds            *designassets.DesignAssetService
 	proc          *infrastructure.PhotoshopProcessor
-	storage       infrastructure.FileStorage
+	storage       storage.FileStorage
 	log           *zap.Logger
 	cfg           config.AppConfig
 	pool          *pgxpool.Pool

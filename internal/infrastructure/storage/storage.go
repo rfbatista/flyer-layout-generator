@@ -24,7 +24,7 @@ type FileStorage struct {
 }
 
 func (f FileStorage) Upload(file io.Reader, name string) (string, error) {
-	fpath := fmt.Sprintf("%s/%s.png", f.dirpath, name)
+	fpath := fmt.Sprintf("%s/%s", f.dirpath, name)
 	dst, err := os.Create(
 		fpath,
 	) // dir is directory where you want to save file.

@@ -3,6 +3,7 @@ package designprocessor
 import (
 	"algvisual/internal/infrastructure"
 	"algvisual/internal/infrastructure/database"
+	"algvisual/internal/infrastructure/storage"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -14,7 +15,7 @@ func NewDesignProcessorService(
 	log *zap.Logger,
 	ph *infrastructure.PhotoshopProcessor,
 	pool *pgxpool.Pool,
-	fs infrastructure.FileStorage,
+	fs storage.FileStorage,
 ) (*DesignProcessorService, error) {
 	return &DesignProcessorService{db: db, log: log, ph: ph, pool: pool, fs: fs}, nil
 }
@@ -24,7 +25,7 @@ type DesignProcessorService struct {
 	log  *zap.Logger
 	ph   *infrastructure.PhotoshopProcessor
 	pool *pgxpool.Pool
-	fs   infrastructure.FileStorage
+	fs   storage.FileStorage
 }
 
 func (d DesignProcessorService) ListDesignFiles(
@@ -52,5 +53,5 @@ func (d DesignProcessorService) UploadDesignFile(
 	ctx echo.Context,
 	req UploadDesignFileUseCaseRequest,
 ) (*UploadDesignFileUseCaseResult, error) {
-	return UploadDesignFileUseCase(ctx, d.db, req, d.fs.Upload, d.log)
+	return UploadDesignFileUseCase(ctx, d.db, req, d.fs, d.log)
 }

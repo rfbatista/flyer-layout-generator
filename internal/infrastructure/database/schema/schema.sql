@@ -100,9 +100,9 @@ CREATE TABLE design_assets
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP,
 
-    FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE,
-    FOREIGN KEY (alternative_to) REFERENCES design_assets (id) ON UPDATE CASCADE,
-    FOREIGN KEY (design_id) REFERENCES design (id) ON UPDATE CASCADE
+    FOREIGN KEY (project_id) REFERENCES projects (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (alternative_to) REFERENCES design_assets (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (design_id) REFERENCES design (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE design_assets_properties
@@ -114,7 +114,7 @@ CREATE TABLE design_assets_properties
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP,
 
-    FOREIGN KEY (asset_id) REFERENCES design_assets (id) ON UPDATE CASCADE
+    FOREIGN KEY (asset_id) REFERENCES design_assets (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 

@@ -3,7 +3,7 @@ package designprocessor
 import (
 	"algvisual/internal/infrastructure/database"
 	"algvisual/internal/infrastructure/middlewares"
-	"algvisual/internal/ports"
+	"algvisual/internal/infrastructure/storage"
 	"algvisual/internal/shared"
 	"io"
 
@@ -27,7 +27,7 @@ func UploadDesignFileUseCase(
 	c echo.Context,
 	db *database.Queries,
 	req UploadDesignFileUseCaseRequest,
-	upload ports.StorageUpload,
+	upload storage.FileStorage,
 	log *zap.Logger,
 ) (*UploadDesignFileUseCaseResult, error) {
 	session := c.(*middlewares.ApplicationContext)
@@ -37,7 +37,7 @@ func UploadDesignFileUseCase(
 		id := uuid.New()
 		name = id.String()
 	}
-	url, err := upload(req.File, name)
+	url, err := upload.Upload(req.File, name)
 	if err != nil {
 		log.Error("falha ao fazer upload do arquivo photoshop", zap.Error(err))
 		return nil, shared.WrapWithAppError(err, "falha ao processar arquivo photoshop", "")

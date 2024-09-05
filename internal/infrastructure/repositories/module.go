@@ -9,5 +9,6 @@ var Module = fx.Options(
 		NewTemplateRepository,
 		NewJobRepository,
 		NewProjectRepository,
+		NewClientRepository,
 	),
 )

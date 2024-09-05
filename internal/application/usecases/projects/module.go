@@ -11,5 +11,6 @@ var Module = fx.Options(
 		NewUpdateProjectIdUseCase,
 		NewSaveProjectLayoutUseCase,
 		NewListProjectLayoutsUseCase,
+		NewCreateProject,
 	),
 )

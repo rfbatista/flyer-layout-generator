@@ -4,6 +4,8 @@ import (
 	"algvisual/internal/application/consumers"
 	"algvisual/internal/application/controllers"
 	"algvisual/internal/application/usecases/adaptations"
+	"algvisual/internal/application/usecases/advertisers"
+	"algvisual/internal/application/usecases/clients"
 	"algvisual/internal/application/usecases/designassets"
 	"algvisual/internal/application/usecases/designprocessor"
 	"algvisual/internal/application/usecases/designs"
@@ -34,6 +36,8 @@ func main() {
 		}
 	}()
 	app := fx.New(
+		advertisers.Module,
+		clients.Module,
 		consumers.Module,
 		adaptations.Module,
 		renderer.Module,

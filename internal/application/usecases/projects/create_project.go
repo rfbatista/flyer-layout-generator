@@ -4,6 +4,7 @@ import (
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/database"
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -11,6 +12,16 @@ import (
 type CreateProjectUseCase struct {
 	db         *database.Queries
 	getProject GetProjectByIdUseCase
+}
+
+func NewCreateProject(
+	db *database.Queries,
+	getProject GetProjectByIdUseCase,
+) (*CreateProjectUseCase, error) {
+	if db == nil {
+		return nil, errors.New("missing db")
+	}
+	return &CreateProjectUseCase{db: db, getProject: getProject}, nil
 }
 
 type CreateProjectInput struct {
