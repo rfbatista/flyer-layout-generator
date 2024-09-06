@@ -1,0 +1,4 @@
+-- Modify "design_assets" table
+ALTER TABLE "design_assets" DROP CONSTRAINT "design_assets_alternative_to_fkey", DROP CONSTRAINT "design_assets_design_id_fkey", DROP CONSTRAINT "design_assets_project_id_fkey", ADD CONSTRAINT "design_assets_alternative_to_fkey" FOREIGN KEY ("alternative_to") REFERENCES "design_assets" ("id") ON UPDATE CASCADE ON DELETE CASCADE, ADD CONSTRAINT "design_assets_design_id_fkey" FOREIGN KEY ("design_id") REFERENCES "design" ("id") ON UPDATE CASCADE ON DELETE CASCADE, ADD CONSTRAINT "design_assets_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects" ("id") ON UPDATE CASCADE ON DELETE CASCADE;
+-- Modify "design_assets_properties" table
+ALTER TABLE "design_assets_properties" DROP CONSTRAINT "design_assets_properties_asset_id_fkey", ADD CONSTRAINT "design_assets_properties_asset_id_fkey" FOREIGN KEY ("asset_id") REFERENCES "design_assets" ("id") ON UPDATE CASCADE ON DELETE CASCADE;
