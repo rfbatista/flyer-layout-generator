@@ -7,19 +7,22 @@ import (
 	"context"
 
 	"go.uber.org/multierr"
+	"go.uber.org/zap"
 )
 
 type GetActiveAdaptationBatchUseCase struct {
+	log  *zap.Logger
 	repo *repositories.JobRepository
 }
 
 func NewGetActiveAdaptationBatchUseCase(
+	log *zap.Logger,
 	repo *repositories.JobRepository,
 ) (*GetActiveAdaptationBatchUseCase, error) {
 	if repo == nil {
 		return nil, shared.NewInternalError("missing adaptation repository")
 	}
-	return &GetActiveAdaptationBatchUseCase{repo: repo}, nil
+	return &GetActiveAdaptationBatchUseCase{repo: repo, log: log}, nil
 }
 
 type GetActiveAdaptationBatchInput struct {
@@ -45,6 +48,7 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 		},
 	)
 	if err != nil {
+		g.log.Error("failed to get jobs", zap.Error(err))
 		return nil, err
 	}
 	sum, err := g.repo.GetSummary(ctx, int32(adap.ID))
