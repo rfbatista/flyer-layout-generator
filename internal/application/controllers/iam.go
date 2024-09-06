@@ -4,6 +4,7 @@ import (
 	"algvisual/internal/infrastructure/cognito"
 	"algvisual/internal/infrastructure/config"
 	"algvisual/internal/infrastructure/middlewares"
+	"algvisual/internal/shared"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -32,7 +33,7 @@ func (i IAMController) Load(e *echo.Echo) error {
 
 func (i IAMController) WhoAmI() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		cc := c.(*middlewares.ApplicationContext)
-		return c.JSON(http.StatusOK, cc.UserSession())
+		cc := shared.GetSession(c)
+		return c.JSON(http.StatusOK, cc)
 	}
 }

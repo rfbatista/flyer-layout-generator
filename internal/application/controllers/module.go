@@ -25,5 +25,6 @@ var Module = fx.Options(
 		AsController(NewJobsController),
 		AsController(NewClientsController),
 		AsController(NewAdvertiserController),
+		AsController(NewIAMController),
 	),
 )
