@@ -80,6 +80,8 @@ restart:
 	sudo systemctl restart server
 status:
 	sudo systemctl status server
+stop:
+	sudo systemctl stop server
 restart_ai:
 	sudo systemctl restart ai
 status_ai:
