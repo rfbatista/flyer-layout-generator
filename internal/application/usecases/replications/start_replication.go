@@ -83,7 +83,7 @@ func (s StartReplicationUseCase) Execute(
 	}
 	created, err := s.repo.Create(ctx, replication)
 	if err != nil {
-		s.log.Error("failed to create adaptation", zap.Error(err))
+		s.log.Error("failed to create replication", zap.Error(err))
 		return nil, multierr.Append(err, shared.NewInternalError("failed to create adaptation"))
 	}
 	_, err = s.createLayouts.Execute(ctx, layoutgenerator.CreateLayoutJobsInput{

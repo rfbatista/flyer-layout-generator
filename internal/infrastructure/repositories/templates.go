@@ -18,13 +18,15 @@ type TemplateRepository struct {
 }
 
 type ListTemplatesParams struct {
-	Limit           int32 `json:"limit"`
-	Offset          int32 `json:"offset"`
-	CompanyID       int32
-	Type            entities.TemplateType
-	FilterByCompany bool
-	FilterByType    bool
-	FilterByProject bool
+	Limit              int32 `json:"limit"`
+	Offset             int32 `json:"offset"`
+	CompanyID          int32
+	Type               entities.TemplateType
+	ProjectID          int32
+	FilterByCompany    bool
+	FilterByType       bool
+	FilterByProject    bool
+	AddPublicTemplates bool
 }
 
 func (t TemplateRepository) List(
@@ -40,9 +42,11 @@ func (t TemplateRepository) List(
 			TemplateType: mapper.TemplateTypeToDatabase(p.Type),
 			Valid:        p.Type != "",
 		},
-		FilterByCompany: p.FilterByCompany,
-		FilterByType:    p.FilterByType,
-		FilterByProject: p.FilterByProject,
+		ProjectID:          pgtype.Int4{Int32: p.ProjectID, Valid: p.FilterByProject},
+		FilterByPublicType: p.AddPublicTemplates,
+		FilterByCompany:    p.FilterByCompany,
+		FilterByType:       p.FilterByType,
+		FilterByProject:    p.FilterByProject,
 	})
 	if err != nil {
 		return list, err

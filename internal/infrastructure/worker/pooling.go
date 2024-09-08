@@ -70,6 +70,7 @@ func (w *WorkerPool) AddQueuePoolingWorker(ctx context.Context, wg *sync.WaitGro
 					}
 					for _, event := range events {
 						ev := event
+						w.log.Info("submiting event", zap.String("event_id", event.ID))
 						w.pool.Submit(func() {
 							err := consumer(ctx, &ev)
 							if err != nil {

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"algvisual/internal/application/usecases/templates"
-	usecase "algvisual/internal/application/usecases/templates"
 	"algvisual/internal/infrastructure/cognito"
 	"algvisual/internal/infrastructure/config"
 	"algvisual/internal/infrastructure/database"
@@ -20,16 +19,25 @@ func NewTemplatesController(
 	log *zap.Logger,
 	cfg config.AppConfig,
 	cog *cognito.Cognito,
+	listTemplates *templates.ListTemplatesUseCase,
 ) TemplatesController {
-	return TemplatesController{db: db, pool: pool, log: log, cog: cog, cfg: cfg}
+	return TemplatesController{
+		db:            db,
+		pool:          pool,
+		log:           log,
+		cog:           cog,
+		cfg:           cfg,
+		listTemplates: listTemplates,
+	}
 }
 
 type TemplatesController struct {
-	db   *database.Queries
-	pool *pgxpool.Pool
-	log  *zap.Logger
-	cfg  config.AppConfig
-	cog  *cognito.Cognito
+	db            *database.Queries
+	pool          *pgxpool.Pool
+	log           *zap.Logger
+	cfg           config.AppConfig
+	cog           *cognito.Cognito
+	listTemplates *templates.ListTemplatesUseCase
 }
 
 func (s TemplatesController) Load(e *echo.Echo) error {
@@ -58,12 +66,12 @@ func (s TemplatesController) Load(e *echo.Echo) error {
 
 func (s TemplatesController) ListTemplates() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req usecase.ListTemplatesByProjectIdInput
-		err := echo.PathParamsBinder(c).Int32("project_id", &req.ProjectID).BindError()
+		var req templates.ListTemplatesUseCaseRequest
+		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := usecase.ListTemplatesByProjectIdUseCase(c, req, s.db)
+		out, err := s.listTemplates.Execute(c.Request().Context(), req)
 		if err != nil {
 			return err
 		}
@@ -82,13 +90,13 @@ func (s TemplatesController) UploadTemplatesCSV() echo.HandlerFunc {
 			return err
 		}
 		defer src.Close()
-		var req usecase.TemplatesCsvUploadRequest
+		var req templates.TemplatesCsvUploadRequest
 		err = c.Bind(&req)
 		if err != nil {
 			return err
 		}
 		req.File = &src
-		out, err := usecase.TemplatesCsvUploadUseCase(
+		out, err := templates.TemplatesCsvUploadUseCase(
 			c,
 			req,
 			s.pool,
@@ -104,12 +112,12 @@ func (s TemplatesController) UploadTemplatesCSV() echo.HandlerFunc {
 
 func (s TemplatesController) DeleteTemplate() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req usecase.DeleteTemplateByIdInput
+		var req templates.DeleteTemplateByIdInput
 		err := c.Bind(&req)
 		if err != nil {
 			return err
 		}
-		out, err := usecase.DeleteTemplateByIdUseCase(c, req, s.db)
+		out, err := templates.DeleteTemplateByIdUseCase(c, req, s.db)
 		if err != nil {
 			return err
 		}

@@ -62,12 +62,14 @@ func (l *LayoutJobConsumer) Execute(
 		l.log.Error("failed to update layout job", zap.Error(err))
 		return multierr.Append(err, shared.NewInternalError("failed to update layout job"))
 	}
+	l.log.Debug("executing layout generation")
 	lay, err := l.genLayout.Execute(ctx, layoutgenerator.GenerateImageV2Input{
 		LayoutID:   jobFound.BasedOnLayoutID,
 		TemplateID: jobFound.TemplateID,
 		SlotsX:     jobFound.Config.SlotsX,
 		SlotsY:     jobFound.Config.SlotsY,
 	})
+	l.log.Debug("layout generation execution finished")
 	if err != nil {
 		l.log.Error("failed to generate layout")
 		jobFound.Status = entities.LayoutJobStatusError
@@ -85,6 +87,7 @@ func (l *LayoutJobConsumer) Execute(
 		// se aconteceu algum error na geracao ja salvamos as infos no job
 		return nil
 	}
+	l.log.Debug("layout generated with success")
 	jobFound.Status = entities.LayoutJobStatusFinished
 	jobFound.FinishedAt = time.Now()
 	jobFound.CreatedLayoutID = lay.Layout.ID

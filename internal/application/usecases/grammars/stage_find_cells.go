@@ -20,9 +20,11 @@ func StageFindCells(
 		c.Pivot = cell.Position()
 		grid.OcupyByPosition(cell.Position(), c.ID)
 		c.MoveTo(cell.UpLeft())
+		cellPosition := cell.Position()
+		innerContainerGrid := grid.ContainerToGridContainer(c.InnerContainer)
 		gridcont, found, err := grid.FindPositionToFitGridContainerDontCheckColision(
-			cell.Position(),
-			grid.ContainerToGridContainer(c.InnerContainer),
+			cellPosition,
+			innerContainerGrid,
 			c.ID,
 		)
 		if err != nil || !found {

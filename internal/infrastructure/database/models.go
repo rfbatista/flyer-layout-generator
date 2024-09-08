@@ -398,6 +398,7 @@ const (
 	TemplateTypeDistortion TemplateType = "distortion"
 	TemplateTypeAdaptation TemplateType = "adaptation"
 	TemplateTypeUnknown    TemplateType = "unknown"
+	TemplateTypePublic     TemplateType = "public"
 )
 
 func (e *TemplateType) Scan(src interface{}) error {

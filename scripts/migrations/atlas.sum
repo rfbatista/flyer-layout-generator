@@ -1,4 +1,4 @@
-h1:PnYjr/UvCiDQLRzAbQuOshdoM2LCaIcQedHRoovm5bA=
+h1:QNFU2jBjBwtRfOlR2tQnptbDJELdeTVIPQbZPisH60k=
 20240630081833_init.sql h1:K3oJIIyNK+JiLvnklu2L/S/PsBGn5yngn7++NVzO8iQ=
 20240701214015_add_done_in_layout_requests.sql h1:FAO777TqfSQ9VZenL+W3K1R93ZMQ/k9WSMn6AGTcx/8=
 20240707085254_add_text_properties.sql h1:vGlEunXw+FHVHJH/VoXuLqBUTjMmRXuM7BimjTwUuhY=
@@ -15,3 +15,4 @@ h1:PnYjr/UvCiDQLRzAbQuOshdoM2LCaIcQedHRoovm5bA=
 20240902221540_project_layouts.sql h1:JpdlMG06RJ8Ly55Gl5zVTxjLURjOJH2n/JNPvfBTCEk=
 20240903120923_add_type_to_job.sql h1:8ZvrSmrV9yE5ZjNXyE5dNhbvYHbLn0DPH5G4jXJtqiw=
 20240904180139_on_delete_cascade_design_assets.sql h1:geWhO3ijhrdqIW+d7/IhMC/Twf+UuYs92bLv6P7roxo=
+20240907164907_public_template_type.sql h1:hQ8Uk+Mx1INM3/gOAHIjgv2znor824xhREXxEXRzP6I=

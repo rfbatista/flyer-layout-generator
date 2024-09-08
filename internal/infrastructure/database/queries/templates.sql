@@ -2,10 +2,11 @@
 SELECT *
 FROM templates
 WHERE 
-(company_id = $3 OR NOT @filter_by_company)
-AND (type = $4 OR NOT @filter_by_type)
-AND (project_id = $5 OR NOT @filter_by_project)
+(company_id = $3 OR NOT @filter_by_company::bool)
+AND (type = $4 OR NOT @filter_by_type::bool)
+AND (project_id = $5 OR NOT @filter_by_project::bool)
 AND deleted_at is NULL
+OR (type = 'public' AND @filter_by_public_type::bool)
 LIMIT $1 OFFSET $2;
 
 -- name: GetTemplate :one

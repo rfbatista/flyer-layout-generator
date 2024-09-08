@@ -3,50 +3,62 @@ package templates
 import (
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/database"
-	"algvisual/internal/infrastructure/middlewares"
-	"algvisual/internal/infrastructure/repositories/mapper"
+	"algvisual/internal/infrastructure/repositories"
 	"algvisual/internal/shared"
+	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
 
+type ListTemplatesUseCase struct {
+	repo    *repositories.TemplateRepository
+	queries *database.Queries
+	log     *zap.Logger
+}
+
+func NewListTemplatesUseCase(
+	repo *repositories.TemplateRepository,
+	queries *database.Queries,
+	log *zap.Logger,
+) (*ListTemplatesUseCase, error) {
+	return &ListTemplatesUseCase{
+		repo:    repo,
+		queries: queries,
+		log:     log,
+	}, nil
+}
+
 type ListTemplatesUseCaseRequest struct {
-	Limit int `query:"limit" json:"limit,omitempty"`
-	Skip  int `query:"skip"  json:"skip,omitempty"`
+	Limit     int                  `query:"limit" json:"limit,omitempty" param:"limit"`
+	Skip      int                  `query:"skip"  json:"skip,omitempty"  param:"skip"`
+	ProjectID int32                `                                     param:"project_id"`
+	Session   entities.UserSession `                                     param:"session"`
 }
 
 type ListTemplatesUseCaseResult struct {
 	Data []entities.Template `json:"data,omitempty"`
 }
 
-func ListTemplatesUseCase(
-	c echo.Context,
+func (l ListTemplatesUseCase) Execute(
+	ctx context.Context,
 	req ListTemplatesUseCaseRequest,
-	queries *database.Queries,
-	log *zap.Logger,
 ) (*ListTemplatesUseCaseResult, error) {
-	ctx := c.Request().Context()
-	session := c.(*middlewares.ApplicationContext)
 	limit := req.Limit
 	if limit == 0 {
 		limit = 10
 	}
-	result, err := queries.ListTemplates(ctx, database.ListTemplatesParams{
-		Limit:           int32(limit),
-		Offset:          int32(req.Skip),
-		FilterByCompany: true,
-		CompanyID:       pgtype.Int4{Int32: int32(session.UserSession().CompanyID), Valid: true},
+	templates, err := l.repo.List(ctx, repositories.ListTemplatesParams{
+		Limit:              int32(limit),
+		Offset:             int32(req.Skip),
+		FilterByCompany:    true,
+		CompanyID:          req.Session.UserID,
+		FilterByProject:    req.ProjectID != 0,
+		ProjectID:          req.ProjectID,
+		AddPublicTemplates: true,
 	})
 	if err != nil {
-		err = shared.WrapWithAppError(err, "failed to list templates", "")
-		log.Error(err.Error())
-		return nil, err
-	}
-	var templates []entities.Template
-	for _, t := range result {
-		templates = append(templates, mapper.TemplateToDomain(t))
+		l.log.Error("failed to find templates", zap.Error(err))
+		return nil, shared.NewInternalError("failed to list templates")
 	}
 	return &ListTemplatesUseCaseResult{
 		Data: templates,

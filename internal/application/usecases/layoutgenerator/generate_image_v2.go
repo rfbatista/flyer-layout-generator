@@ -6,6 +6,7 @@ import (
 	"algvisual/internal/application/usecases/renderer"
 	"algvisual/internal/application/usecases/templates"
 	"algvisual/internal/domain/entities"
+	"algvisual/internal/infrastructure/config"
 	"algvisual/internal/infrastructure/database"
 	"context"
 
@@ -20,6 +21,7 @@ type GenerateLayoutUseCase struct {
 	render   renderer.RendererService
 	pool     *pgxpool.Pool
 	das      *designassets.DesignAssetService
+	cfg      config.AppConfig
 }
 
 func NewGenerateLayoutUseCase(
@@ -29,6 +31,7 @@ func NewGenerateLayoutUseCase(
 	render renderer.RendererService,
 	pool *pgxpool.Pool,
 	das *designassets.DesignAssetService,
+	cfg config.AppConfig,
 ) (*GenerateLayoutUseCase, error) {
 	return &GenerateLayoutUseCase{
 		db:       db,
@@ -37,13 +40,14 @@ func NewGenerateLayoutUseCase(
 		render:   render,
 		pool:     pool,
 		das:      das,
+		cfg:      cfg,
 	}, nil
 }
 
 type GenerateImageV2Input struct {
-	LayoutID              int32 `param:"layout_id"   json:"layout_id,omitempty"`
-	RequestID             int32
-	TemplateID            int32          `param:"template_id" json:"template_id,omitempty"`
+	LayoutID              int32          `param:"layout_id"`
+	RequestID             int32          `                    json:"request_id,omitempty"`
+	TemplateID            int32          `param:"template_id"`
 	LimitSizerPerElement  bool           `                    json:"limit_sizer_per_element,omitempty"`
 	AnchorElements        bool           `                    json:"anchor_elements,omitempty"`
 	ShowGrid              bool           `                    json:"show_grid,omitempty"               form:"show_grid"`
@@ -120,10 +124,14 @@ func (g GenerateLayoutUseCase) Execute(
 	// if checkResult.HaveSimilar {
 	// 	return nil, errors.New("similar layout was found")
 	// }
+	// shared.WriteDataToFileAsJSON(req, fmt.Sprintf("%s/replications.json", g.cfg.PhotoshopFilesPath))
+	// shared.WriteDataToFileAsJSON(*newLayout, fmt.Sprintf("%s/replications.json", g.cfg.PhotoshopFilesPath))
+	g.log.Debug("starting execution of png image render")
 	imageResult, err := g.render.RenderPNGImage(
 		ctx,
 		renderer.RenderPngImageInput{Layout: *newLayout},
 	)
+	g.log.Debug("finished execution of png image render")
 	if err != nil {
 		g.log.Error("failed to render new layout", zap.Error(err))
 		return nil, err

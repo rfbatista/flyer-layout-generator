@@ -387,22 +387,24 @@ const listTemplates = `-- name: ListTemplates :many
 SELECT id, name, request_id, project_id, type, width, height, slots_x, slots_y, max_slots_x, max_slots_y, created_at, updated_at, deleted_at, company_id
 FROM templates
 WHERE 
-(company_id = $3 OR NOT $6)
-AND (type = $4 OR NOT $7)
-AND (project_id = $5 OR NOT $8)
+(company_id = $3 OR NOT $6::bool)
+AND (type = $4 OR NOT $7::bool)
+AND (project_id = $5 OR NOT $8::bool)
 AND deleted_at is NULL
+OR (type = 'public' AND $9::bool)
 LIMIT $1 OFFSET $2
 `
 
 type ListTemplatesParams struct {
-	Limit           int32            `json:"limit"`
-	Offset          int32            `json:"offset"`
-	CompanyID       pgtype.Int4      `json:"company_id"`
-	Type            NullTemplateType `json:"type"`
-	ProjectID       pgtype.Int4      `json:"project_id"`
-	FilterByCompany interface{}      `json:"filter_by_company"`
-	FilterByType    interface{}      `json:"filter_by_type"`
-	FilterByProject interface{}      `json:"filter_by_project"`
+	Limit              int32            `json:"limit"`
+	Offset             int32            `json:"offset"`
+	CompanyID          pgtype.Int4      `json:"company_id"`
+	Type               NullTemplateType `json:"type"`
+	ProjectID          pgtype.Int4      `json:"project_id"`
+	FilterByCompany    bool             `json:"filter_by_company"`
+	FilterByType       bool             `json:"filter_by_type"`
+	FilterByProject    bool             `json:"filter_by_project"`
+	FilterByPublicType bool             `json:"filter_by_public_type"`
 }
 
 func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([]Template, error) {
@@ -415,6 +417,7 @@ func (q *Queries) ListTemplates(ctx context.Context, arg ListTemplatesParams) ([
 		arg.FilterByCompany,
 		arg.FilterByType,
 		arg.FilterByProject,
+		arg.FilterByPublicType,
 	)
 	if err != nil {
 		return nil, err

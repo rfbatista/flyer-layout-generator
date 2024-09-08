@@ -122,7 +122,8 @@ CREATE TYPE TEMPLATE_TYPE AS ENUM (
   'slots', 
   'distortion', 
   'adaptation', 
-  'unknown'
+  'unknown',
+  'public'
 );
 
 

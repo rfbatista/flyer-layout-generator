@@ -4,6 +4,7 @@ import (
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/config"
 	"algvisual/internal/infrastructure/storage"
+	"algvisual/internal/shared"
 	"context"
 	"errors"
 	"fmt"
@@ -18,7 +19,7 @@ import (
 )
 
 type RenderPngImageInput struct {
-	Layout entities.Layout
+	Layout entities.Layout `json:"layout,omitempty"`
 }
 
 type RenderPngImageOutput struct {
@@ -41,12 +42,18 @@ func RenderPngImageUseCase(
 		zap.Int("layout height", int(req.Layout.Height)),
 	)
 	c := req.Layout.Background
+	log.Debug("renderig Background")
 	if c != nil {
 		for _, e := range c.Elements {
+			log.Debug("loading background image")
 			img, err := storage.LoadImageFromURL(e.ImageURL)
 			if err != nil {
-				return nil, err
+				return nil, shared.NewInternalErrorWithDetails(
+					"failed to load image to render it",
+					err.Error(),
+				)
 			}
+			log.Debug("loaded background image")
 			nimg := resize.Resize(
 				uint(e.OuterContainer.Width()),
 				uint(e.OuterContainer.Height()),
@@ -66,10 +73,12 @@ func RenderPngImageUseCase(
 	}
 	for _, c := range req.Layout.BackgroundList {
 		for _, e := range c.Elements {
+			log.Debug("loading background list image")
 			img, err := storage.LoadImageFromURL(e.ImageURL)
 			if err != nil {
 				return nil, err
 			}
+			log.Debug("finished background list image")
 			nimg := resize.Resize(
 				uint(e.OuterContainer.Width()),
 				uint(e.OuterContainer.Height()),
@@ -90,6 +99,7 @@ func RenderPngImageUseCase(
 	if len(req.Layout.Components) == 0 {
 		return nil, errors.New("no component to render, skipping image generation request")
 	}
+	log.Debug("renderig components")
 	for _, c := range req.Layout.Components {
 		for _, e := range c.Elements {
 			if e.Kind == "typess" {
@@ -132,7 +142,7 @@ func RenderPngImageUseCase(
 			)
 		}
 	}
-
+	log.Debug("drawing grid")
 	// draw grid
 	borderColor := color.RGBA{255, 0, 0, 255} // Red color
 	for _, g := range req.Layout.Grid.GetCells() {
@@ -149,10 +159,13 @@ func RenderPngImageUseCase(
 
 	uniqid, _ := uuid.NewRandom()
 	name := uniqid.String()
+
+	log.Debug("saving rendered image")
 	imageURL, err := storage.SaveImage(name, board)
 	if err != nil {
-		return nil, err
+		return nil, shared.NewInternalErrorWithDetails("failed to save image", err.Error())
 	}
+	log.Debug("saved rendered image")
 	return &RenderPngImageOutput{
 		ImagePath: imageURL,
 		ImageURL:  fmt.Sprintf("/api/v1/images/%s.png", name),

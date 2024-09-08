@@ -12,6 +12,7 @@ const (
 	TemplateSlotsType      TemplateType = "slots"
 	TemplateDistortionType TemplateType = "distortion"
 	TemplateTypeAdaptation TemplateType = "adaptation"
+	TemplateTypePublic     TemplateType = "public"
 	TemplateUnknownType    TemplateType = "unknown"
 )
 

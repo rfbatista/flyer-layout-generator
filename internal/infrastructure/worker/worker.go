@@ -43,7 +43,7 @@ func NewWorkerPool(
 	adaptationBatchConsumer *consumers.AdaptatipnBatchConsumer,
 	layoutJobConsumer *consumers.LayoutJobConsumer,
 ) (WorkerPool, error) {
-	pool := pond.New(10, 100, pond.MinWorkers(5), pond.PanicHandler(func(i interface{}) {
+	pool := pond.New(10, 10, pond.MinWorkers(5), pond.PanicHandler(func(i interface{}) {
 		log.Warn(fmt.Sprintf("[pond] panic in worker: %v", i))
 	}))
 	return WorkerPool{

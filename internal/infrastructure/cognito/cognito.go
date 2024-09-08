@@ -90,7 +90,6 @@ func (c *Cognito) VerifyToken(ctx context.Context, rawtoken []byte) (*entities.U
 		c.logger.Error("failed to get cognito user", zap.Error(err))
 	} else {
 		for idx := range user.UserAttributes {
-			fmt.Println(user.UserAttributes[idx].Name)
 			if user.UserAttributes[idx].Name != nil && *user.UserAttributes[idx].Name == "custom:company_id" && user.UserAttributes[idx].Value != nil {
 				companyID, err = strconv.ParseInt(*user.UserAttributes[idx].Value, 10, 64)
 				if err != nil {

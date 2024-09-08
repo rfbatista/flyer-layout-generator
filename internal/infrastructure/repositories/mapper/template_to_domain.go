@@ -39,6 +39,8 @@ func TemplateTypeToDatabase(t entities.TemplateType) database.TemplateType {
 	switch t {
 	case entities.TemplateTypeAdaptation:
 		return database.TemplateTypeAdaptation
+	case entities.TemplateTypePublic:
+		return database.TemplateTypePublic
 	}
 
 	return database.TemplateTypeUnknown

@@ -13,6 +13,15 @@ func NewInternalError(msg string) *AppError {
 	}
 }
 
+func NewInternalErrorWithDetails(msg string, detail string) *AppError {
+	return &AppError{
+		Message:    msg,
+		StatusCode: 500,
+		Detail:     detail,
+		Timestamp:  time.Now(),
+	}
+}
+
 type InternalError struct {
 	StatusCode int
 	ErrorCode  ErrorCode

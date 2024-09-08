@@ -61,9 +61,10 @@ func (a *AdaptatipnBatchConsumer) Execute(
 		return errors.New(msg)
 	}
 	templates, err := a.templatesRepo.List(ctx, repositories.ListTemplatesParams{
-		Limit:        10,
-		FilterByType: true,
-		Type:         entities.TemplateTypeAdaptation,
+		Limit:              10,
+		FilterByType:       true,
+		Type:               entities.TemplateTypeAdaptation,
+		AddPublicTemplates: false,
 	})
 	if err != nil {
 		a.log.Error("failed to create layout jobs", zap.Error(err))
