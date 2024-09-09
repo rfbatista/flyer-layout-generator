@@ -70,6 +70,7 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 			return nil, multierr.Append(err, shared.NewInternalError("failed to update adaptation"))
 		}
 		if !adap.RemovedSimilars {
+			g.log.Debug("removing similar layouts")
 			_, err = g.remove.Execute(ctx, layoutgenerator.RemoveSimilarLayoutsFromJobInput{
 				JobID2: adap.ID,
 			})
