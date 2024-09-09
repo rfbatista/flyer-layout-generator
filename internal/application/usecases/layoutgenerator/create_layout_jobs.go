@@ -87,12 +87,14 @@ func (c *CreateLayoutJobsUseCase) Execute(
 			continue
 		}
 		templateDomain := templateFound.Data
+		pr := entities.ListToPrioritiesMap(req.Priority)
+		fmt.Printf("%v", pr)
 		for _, grid := range templateDomain.Grids() {
 			jobConfig := entities.LayoutJobConfig{
 				LimitSizerPerElement:  req.LimitSizerPerElement,
 				AnchorElements:        req.AnchorElements,
 				ShowGrid:              false,
-				Priorities:            entities.ListToPrioritiesMap(req.Priority),
+				Priorities:            pr,
 				MinimiumComponentSize: req.MinimiumComponentSize,
 				MinimiumTextSize:      req.MinimiumComponentSize,
 				Grid:                  grid,

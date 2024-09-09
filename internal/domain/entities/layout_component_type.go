@@ -250,6 +250,8 @@ func DatabaseComponentTypeToDomain(s database.ComponentType) ComponentType {
 		return ComponentTypeFoto
 	case database.ComponentTypeTexto:
 		return ComponentTypeTexto
+	case database.ComponentTypeBotao:
+		return ComponentTypeBotao
 	default:
 		return ComponentTypeUnknown
 	}

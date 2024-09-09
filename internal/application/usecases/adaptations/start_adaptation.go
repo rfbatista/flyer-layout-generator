@@ -9,6 +9,7 @@ import (
 	"algvisual/internal/infrastructure/repositories"
 	"algvisual/internal/shared"
 	"context"
+	"fmt"
 	"time"
 
 	"go.uber.org/multierr"
@@ -107,6 +108,7 @@ func (s StartAdaptationUseCase) Execute(
 	for _, t := range templates {
 		templatesId = append(templatesId, t.ID)
 	}
+	fmt.Printf("%v", req.Priorities)
 	started := time.Now()
 	_, err = s.createLayouts.Execute(ctx, layoutgenerator.CreateLayoutJobsInput{
 		Templates: templatesId,

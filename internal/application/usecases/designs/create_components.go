@@ -5,6 +5,7 @@ import (
 	"algvisual/internal/infrastructure/database"
 	"algvisual/internal/shared"
 	"database/sql"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -57,7 +58,9 @@ func CreateComponentUseCase(
 	}
 	outer, inner := calculateContainersForComponent(elements)
 	ctype := entities.StringToComponentType(req.Type)
+	fmt.Println(ctype.ToString())
 	dtype := entities.ComponentTypeToDatabaseComponentType(ctype)
+	fmt.Println(dtype)
 	comp, err := qtx.CreateComponent(ctx, database.CreateComponentParams{
 		DesignID: int32(req.DesignID),
 		LayoutID: req.LayoutID,
@@ -77,7 +80,7 @@ func CreateComponentUseCase(
 		BboxYii:  pgtype.Int4{Int32: des.Height.Int32, Valid: true},
 		Color:    pgtype.Text{String: req.Color, Valid: req.Color != ""},
 		Type: database.NullComponentType{
-			ComponentType: database.ComponentType(dtype),
+			ComponentType: dtype,
 			Valid:         true,
 		},
 	})
