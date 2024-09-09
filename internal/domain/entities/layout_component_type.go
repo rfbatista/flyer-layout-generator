@@ -204,6 +204,8 @@ func ComponentTypeToDatabaseComponentType(s ComponentType) database.ComponentTyp
 		return database.ComponentTypeFoto
 	case ComponentTypeTexto:
 		return database.ComponentTypeTexto
+	case ComponentTypeBotao:
+		return database.ComponentTypeBotao
 	default:
 		return database.ComponentTypeGrafismo
 	}
