@@ -32,7 +32,7 @@ func (u GetLayoutByJobsUseCase) Execute(
 	ctx context.Context,
 	req GetLayoutByJobsInput,
 ) (*GetLayoutByJobsOutput, error) {
-	listOfLayouts, err := u.repo.ListLayoutsByAdaptation(ctx, req.AdaptationID)
+	listOfLayouts, err := u.repo.ListLayoutsByJob(ctx, req.AdaptationID)
 	if err != nil {
 		return nil, multierr.Append(
 			err,

@@ -125,6 +125,13 @@ SET
   image_url = $2
 WHERE id = $1;
 
+-- name: SoftDeleteLayout :exec
+UPDATE layout 
+SET 
+  deleted_at = now()
+WHERE id = $1;
+
+
 
 -- name: DeleteLayoutByID :exec
 DELETE FROM layout WHERE id = $1;
@@ -150,5 +157,5 @@ WHERE lr.id = $1;
 SELECT layout.*
 FROM layout
 INNER JOIN layout_jobs AS lj ON lj.created_layout_id = layout.id
-WHERE lj.adaptation_batch_id = $1;
+WHERE lj.adaptation_batch_id = $1 AND deleted_at IS NULL;
 

@@ -19,7 +19,7 @@ SET
 WHERE user_id = $1
 AND status <> 'canceled'
 AND type = $2
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type CancelActiveAdaptationBatchesParams struct {
@@ -43,6 +43,7 @@ func (q *Queries) CancelActiveAdaptationBatches(ctx context.Context, arg CancelA
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -71,7 +72,7 @@ SET
 WHERE user_id = $1
 AND status = 'finished'
 AND type = $2
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type CloseActiveAdaptationParams struct {
@@ -95,6 +96,7 @@ func (q *Queries) CloseActiveAdaptation(ctx context.Context, arg CloseActiveAdap
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -163,7 +165,7 @@ func (q *Queries) CreateAdaptationBatch(ctx context.Context, arg CreateAdaptatio
 }
 
 const getAdaptationBatchByID = `-- name: GetAdaptationBatchByID :one
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
 `
 
 func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (AdaptationBatch, error) {
@@ -176,6 +178,7 @@ func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (Adaptat
 		&i.RequestID,
 		&i.UserID,
 		&i.Type,
+		&i.RemovedDuplicates,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,
@@ -190,7 +193,7 @@ func (q *Queries) GetAdaptationBatchByID(ctx context.Context, id int64) (Adaptat
 }
 
 const getAdaptationBatchByUser = `-- name: GetAdaptationBatchByUser :many
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
 FROM adaptation_batch 
 WHERE user_id = $1 
 AND (
@@ -223,6 +226,7 @@ func (q *Queries) GetAdaptationBatchByUser(ctx context.Context, arg GetAdaptatio
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -267,7 +271,7 @@ func (q *Queries) GetJobSummary(ctx context.Context, adaptationBatchID pgtype.In
 }
 
 const listAdaptationBatch = `-- name: ListAdaptationBatch :many
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
 `
 
 type ListAdaptationBatchParams struct {
@@ -291,6 +295,7 @@ func (q *Queries) ListAdaptationBatch(ctx context.Context, arg ListAdaptationBat
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -324,27 +329,31 @@ SET
         THEN $8 ELSE error_at END,
     stopped_at = CASE WHEN $9::boolean
         THEN $10 ELSE stopped_at END,
+    removed_duplicates = CASE WHEN $11::boolean
+        THEN $12 ELSE removed_duplicates END,
     log = CASE WHEN $9::boolean
-        THEN $11 ELSE log END,
+        THEN $13 ELSE log END,
     updated_at = NOW()
 WHERE
-    id = $12
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+    id = $14
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type UpdateAdaptationBatchParams struct {
-	StatusDoUpdate     bool                      `json:"status_do_update"`
-	Status             NullAdaptationBatchStatus `json:"status"`
-	StartedAtDoUpdate  bool                      `json:"started_at_do_update"`
-	StartedAt          pgtype.Timestamp          `json:"started_at"`
-	FinishedAtDoUpdate bool                      `json:"finished_at_do_update"`
-	FinishedAt         pgtype.Timestamp          `json:"finished_at"`
-	ErrorAtDoUpdate    bool                      `json:"error_at_do_update"`
-	ErrorAt            pgtype.Timestamp          `json:"error_at"`
-	StoppedAtDoUpdate  bool                      `json:"stopped_at_do_update"`
-	StoppedAt          pgtype.Timestamp          `json:"stopped_at"`
-	Log                pgtype.Text               `json:"log"`
-	AdaptationID       pgtype.Int8               `json:"adaptation_id"`
+	StatusDoUpdate            bool                      `json:"status_do_update"`
+	Status                    NullAdaptationBatchStatus `json:"status"`
+	StartedAtDoUpdate         bool                      `json:"started_at_do_update"`
+	StartedAt                 pgtype.Timestamp          `json:"started_at"`
+	FinishedAtDoUpdate        bool                      `json:"finished_at_do_update"`
+	FinishedAt                pgtype.Timestamp          `json:"finished_at"`
+	ErrorAtDoUpdate           bool                      `json:"error_at_do_update"`
+	ErrorAt                   pgtype.Timestamp          `json:"error_at"`
+	StoppedAtDoUpdate         bool                      `json:"stopped_at_do_update"`
+	StoppedAt                 pgtype.Timestamp          `json:"stopped_at"`
+	RemovedDuplicatesDoUpdate bool                      `json:"removed_duplicates_do_update"`
+	RemovedDuplicates         pgtype.Bool               `json:"removed_duplicates"`
+	Log                       pgtype.Text               `json:"log"`
+	AdaptationID              pgtype.Int8               `json:"adaptation_id"`
 }
 
 func (q *Queries) UpdateAdaptationBatch(ctx context.Context, arg UpdateAdaptationBatchParams) (AdaptationBatch, error) {
@@ -359,6 +368,8 @@ func (q *Queries) UpdateAdaptationBatch(ctx context.Context, arg UpdateAdaptatio
 		arg.ErrorAt,
 		arg.StoppedAtDoUpdate,
 		arg.StoppedAt,
+		arg.RemovedDuplicatesDoUpdate,
+		arg.RemovedDuplicates,
 		arg.Log,
 		arg.AdaptationID,
 	)
@@ -370,6 +381,7 @@ func (q *Queries) UpdateAdaptationBatch(ctx context.Context, arg UpdateAdaptatio
 		&i.RequestID,
 		&i.UserID,
 		&i.Type,
+		&i.RemovedDuplicates,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,

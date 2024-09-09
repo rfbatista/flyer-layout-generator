@@ -122,7 +122,7 @@ func (g GenerateLayoutUseCase) Execute(
 	// 	return nil, err
 	// }
 	// if checkResult.HaveSimilar {
-	// 	return nil, errors.New("similar layout was found")
+	// 	return &GenerateImageV2Output{}, nil
 	// }
 	// shared.WriteDataToFileAsJSON(req, fmt.Sprintf("%s/replications.json", g.cfg.PhotoshopFilesPath))
 	// shared.WriteDataToFileAsJSON(*newLayout, fmt.Sprintf("%s/replications.json", g.cfg.PhotoshopFilesPath))

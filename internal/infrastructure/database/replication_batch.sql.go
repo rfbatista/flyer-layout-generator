@@ -17,7 +17,7 @@ SET
   status = 'canceled',
   updated_at = NOW()
 WHERE user_id = $1 AND status <> 'canceled'
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 func (q *Queries) CancelActiveReplicationBatches(ctx context.Context, userID pgtype.Int4) ([]AdaptationBatch, error) {
@@ -36,6 +36,7 @@ func (q *Queries) CancelActiveReplicationBatches(ctx context.Context, userID pgt
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -62,7 +63,7 @@ SET
   status = 'finished',
   updated_at = NOW()
 WHERE user_id = $1 AND status = 'finished'
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 func (q *Queries) CloseActiveReplication(ctx context.Context, userID pgtype.Int4) ([]AdaptationBatch, error) {
@@ -81,6 +82,7 @@ func (q *Queries) CloseActiveReplication(ctx context.Context, userID pgtype.Int4
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -147,7 +149,7 @@ func (q *Queries) CreateReplicationBatch(ctx context.Context, arg CreateReplicat
 }
 
 const getReplicationBatchByID = `-- name: GetReplicationBatchByID :one
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch WHERE id = $1
 `
 
 func (q *Queries) GetReplicationBatchByID(ctx context.Context, id int64) (AdaptationBatch, error) {
@@ -160,6 +162,7 @@ func (q *Queries) GetReplicationBatchByID(ctx context.Context, id int64) (Adapta
 		&i.RequestID,
 		&i.UserID,
 		&i.Type,
+		&i.RemovedDuplicates,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,
@@ -174,7 +177,7 @@ func (q *Queries) GetReplicationBatchByID(ctx context.Context, id int64) (Adapta
 }
 
 const getReplicationBatchByUser = `-- name: GetReplicationBatchByUser :many
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log 
 FROM adaptation_batch 
 WHERE user_id = $1 
 AND (
@@ -201,6 +204,7 @@ func (q *Queries) GetReplicationBatchByUser(ctx context.Context, userID pgtype.I
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -245,7 +249,7 @@ func (q *Queries) GetReplicationSummary(ctx context.Context, adaptationBatchID p
 }
 
 const listReplicationBatch = `-- name: ListReplicationBatch :many
-SELECT id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
+SELECT id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log FROM adaptation_batch LIMIT $1 OFFSET $2
 `
 
 type ListReplicationBatchParams struct {
@@ -269,6 +273,7 @@ func (q *Queries) ListReplicationBatch(ctx context.Context, arg ListReplicationB
 			&i.RequestID,
 			&i.UserID,
 			&i.Type,
+			&i.RemovedDuplicates,
 			&i.Status,
 			&i.StartedAt,
 			&i.FinishedAt,
@@ -307,7 +312,7 @@ SET
     updated_at = NOW()
 WHERE
     id = $12
-RETURNING id, layout_id, design_id, request_id, user_id, type, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
+RETURNING id, layout_id, design_id, request_id, user_id, type, removed_duplicates, status, started_at, finished_at, error_at, stopped_at, updated_at, created_at, config, log
 `
 
 type UpdateReplicationBatchParams struct {
@@ -348,6 +353,7 @@ func (q *Queries) UpdateReplicationBatch(ctx context.Context, arg UpdateReplicat
 		&i.RequestID,
 		&i.UserID,
 		&i.Type,
+		&i.RemovedDuplicates,
 		&i.Status,
 		&i.StartedAt,
 		&i.FinishedAt,

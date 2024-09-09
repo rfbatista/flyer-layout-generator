@@ -93,12 +93,13 @@ func (a JobRepository) Create(
 }
 
 type JobRepositoryUpdateParams struct {
-	UpdateStatus     bool
-	UpdateImageURL   bool
-	UpdateStartedAt  bool
-	UpdateFinishedAt bool
-	UpdateErrorAt    bool
-	UpdateStoppedAt  bool
+	UpdateStatus            bool
+	UpdateImageURL          bool
+	UpdateStartedAt         bool
+	UpdateFinishedAt        bool
+	UpdateErrorAt           bool
+	UpdateStoppedAt         bool
+	UpdateCleanedDuplicates bool
 }
 
 func (a JobRepository) Update(
@@ -122,6 +123,11 @@ func (a JobRepository) Update(
 		StoppedAt:          pgtype.Timestamp{Time: b.StoppedAt, Valid: p.UpdateStoppedAt},
 		Log:                pgtype.Text{String: b.Log, Valid: b.Log != ""},
 		AdaptationID:       pgtype.Int8{Int64: b.ID, Valid: b.ID != 0},
+		RemovedDuplicates: pgtype.Bool{
+			Bool:  p.UpdateCleanedDuplicates,
+			Valid: p.UpdateCleanedDuplicates,
+		},
+		RemovedDuplicatesDoUpdate: p.UpdateCleanedDuplicates,
 	})
 	if err != nil {
 		return nil, err

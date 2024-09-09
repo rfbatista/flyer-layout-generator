@@ -10,5 +10,6 @@ var Module = fx.Options(
 		NewCreateLayoutJobsUsecase,
 		NewGenerateLayoutUseCase,
 		NewGetLayoutByJobUseCase,
+		NewRemoveSimilarLayoutsFromJobUseCase,
 	),
 )

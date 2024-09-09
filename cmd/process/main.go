@@ -1,7 +1,7 @@
 package main
 
 import (
-	"algvisual/internal/infra/config"
+	"algvisual/internal/infrastructure/config"
 	"fmt"
 	"os"
 	"path"

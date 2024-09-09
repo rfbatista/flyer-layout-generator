@@ -567,7 +567,7 @@ const listLayoutFromAdaptation = `-- name: ListLayoutFromAdaptation :many
 SELECT layout.id, layout.design_id, layout.template_id, layout.request_id, layout.is_original, layout.image_url, layout.width, layout.height, layout.data, layout.stages, layout.created_at, layout.updated_at, layout.deleted_at, layout.company_id
 FROM layout
 INNER JOIN layout_jobs AS lj ON lj.created_layout_id = layout.id
-WHERE lj.adaptation_batch_id = $1
+WHERE lj.adaptation_batch_id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) ListLayoutFromAdaptation(ctx context.Context, adaptationBatchID pgtype.Int4) ([]Layout, error) {
@@ -649,6 +649,18 @@ func (q *Queries) ListLayouts(ctx context.Context, arg ListLayoutsParams) ([]Lay
 		return nil, err
 	}
 	return items, nil
+}
+
+const softDeleteLayout = `-- name: SoftDeleteLayout :exec
+UPDATE layout 
+SET 
+  deleted_at = now()
+WHERE id = $1
+`
+
+func (q *Queries) SoftDeleteLayout(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, softDeleteLayout, id)
+	return err
 }
 
 const updateLayoutImagByID = `-- name: UpdateLayoutImagByID :exec

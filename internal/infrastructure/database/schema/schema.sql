@@ -264,6 +264,7 @@ CREATE TABLE adaptation_batch (
   request_id INT,
   user_id INT,
   type JOB_TYPE,
+  removed_duplicates BOOLEAN,
   status ADAPTATION_BATCH_STATUS,
   started_at TIMESTAMP,
   finished_at TIMESTAMP,

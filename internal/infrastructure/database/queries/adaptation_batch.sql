@@ -6,6 +6,7 @@ INSERT INTO adaptation_batch (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 )
 RETURNING id;
+
 -- name: ListAdaptationBatch :many
 SELECT * FROM adaptation_batch LIMIT $1 OFFSET $2;
 
@@ -38,6 +39,8 @@ SET
         THEN sqlc.narg(error_at) ELSE error_at END,
     stopped_at = CASE WHEN @stopped_at_do_update::boolean
         THEN sqlc.narg(stopped_at) ELSE stopped_at END,
+    removed_duplicates = CASE WHEN @removed_duplicates_do_update::boolean
+        THEN sqlc.narg(removed_duplicates) ELSE removed_duplicates END,
     log = CASE WHEN @stopped_at_do_update::boolean
         THEN sqlc.narg(log) ELSE log END,
     updated_at = NOW()

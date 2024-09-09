@@ -13,7 +13,7 @@ type GetLayoutByIDRequest struct {
 	LayoutID int32 `param:"layout_id"`
 }
 
-type GetLayoytByIDOutput struct {
+type GetLayoutByIDOutput struct {
 	Layout entities.Layout
 }
 
@@ -22,8 +22,8 @@ func GetLayoutByIDUseCase(
 	db *database.Queries,
 	req GetLayoutByIDRequest,
 	das *designassets.DesignAssetService,
-) (GetLayoytByIDOutput, error) {
-	var out GetLayoytByIDOutput
+) (GetLayoutByIDOutput, error) {
+	var out GetLayoutByIDOutput
 	l, err := db.GetLayoutByID(ctx, int64(req.LayoutID))
 	if err != nil {
 		return out, err

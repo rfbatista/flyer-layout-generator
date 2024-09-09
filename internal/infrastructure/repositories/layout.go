@@ -30,6 +30,10 @@ func (lr LayoutRepository) DeleteLayout(ctx context.Context, l entities.Layout) 
 	return lr.db.DeleteLayoutByID(ctx, int64(l.ID))
 }
 
+func (lr LayoutRepository) SoftDeleteLayout(ctx context.Context, l entities.Layout) error {
+	return lr.db.SoftDeleteLayout(ctx, int64(l.ID))
+}
+
 func (lr LayoutRepository) GetLayoutByRequestID(
 	ctx context.Context,
 	id int64,
@@ -82,7 +86,7 @@ func (lr LayoutRepository) GetClientByBatchID(
 	}, nil
 }
 
-func (lr LayoutRepository) ListLayoutsByAdaptation(
+func (lr LayoutRepository) ListLayoutsByJob(
 	ctx context.Context,
 	adaptationID int64,
 ) ([]entities.Layout, error) {

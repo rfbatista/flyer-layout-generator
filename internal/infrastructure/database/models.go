@@ -437,21 +437,22 @@ func (ns NullTemplateType) Value() (driver.Value, error) {
 }
 
 type AdaptationBatch struct {
-	ID         int64                     `json:"id"`
-	LayoutID   pgtype.Int4               `json:"layout_id"`
-	DesignID   pgtype.Int4               `json:"design_id"`
-	RequestID  pgtype.Int4               `json:"request_id"`
-	UserID     pgtype.Int4               `json:"user_id"`
-	Type       NullJobType               `json:"type"`
-	Status     NullAdaptationBatchStatus `json:"status"`
-	StartedAt  pgtype.Timestamp          `json:"started_at"`
-	FinishedAt pgtype.Timestamp          `json:"finished_at"`
-	ErrorAt    pgtype.Timestamp          `json:"error_at"`
-	StoppedAt  pgtype.Timestamp          `json:"stopped_at"`
-	UpdatedAt  pgtype.Timestamp          `json:"updated_at"`
-	CreatedAt  pgtype.Timestamp          `json:"created_at"`
-	Config     pgtype.Text               `json:"config"`
-	Log        pgtype.Text               `json:"log"`
+	ID                int64                     `json:"id"`
+	LayoutID          pgtype.Int4               `json:"layout_id"`
+	DesignID          pgtype.Int4               `json:"design_id"`
+	RequestID         pgtype.Int4               `json:"request_id"`
+	UserID            pgtype.Int4               `json:"user_id"`
+	Type              NullJobType               `json:"type"`
+	RemovedDuplicates pgtype.Bool               `json:"removed_duplicates"`
+	Status            NullAdaptationBatchStatus `json:"status"`
+	StartedAt         pgtype.Timestamp          `json:"started_at"`
+	FinishedAt        pgtype.Timestamp          `json:"finished_at"`
+	ErrorAt           pgtype.Timestamp          `json:"error_at"`
+	StoppedAt         pgtype.Timestamp          `json:"stopped_at"`
+	UpdatedAt         pgtype.Timestamp          `json:"updated_at"`
+	CreatedAt         pgtype.Timestamp          `json:"created_at"`
+	Config            pgtype.Text               `json:"config"`
+	Log               pgtype.Text               `json:"log"`
 }
 
 type Advertiser struct {

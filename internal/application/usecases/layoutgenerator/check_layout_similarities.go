@@ -74,3 +74,35 @@ func CheckLayoutSimilaritiesUseCase(
 	}
 	return &CheckLayoutSimilaritiesOutput{HaveSimilar: false}, nil
 }
+
+func IsSimilar(base entities.Layout, compareTo entities.Layout) bool {
+	isEqual := true
+	for _, comp := range compareTo.Components {
+		for _, el := range comp.Elements {
+			for _, reqElement := range base.Elements {
+				if reqElement.AssetID != el.AssetID {
+					continue
+				}
+				wdf := float64(reqElement.Width()) - float64(el.Width())
+				if math.Abs(wdf) > 20 {
+					isEqual = false
+					continue
+				}
+				hdf := float64(reqElement.Height()) - float64(el.Height())
+				if math.Abs(hdf) > 20 {
+					isEqual = false
+					continue
+				}
+				isSimilar := geometry.IsContainerSimilar(
+					reqElement.OuterContainer,
+					el.OuterContainer,
+					20,
+				)
+				if !isSimilar {
+					isEqual = false
+				}
+			}
+		}
+	}
+	return isEqual
+}

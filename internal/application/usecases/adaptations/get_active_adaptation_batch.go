@@ -1,6 +1,7 @@
 package adaptations
 
 import (
+	"algvisual/internal/application/usecases/layoutgenerator"
 	"algvisual/internal/domain/entities"
 	"algvisual/internal/infrastructure/repositories"
 	"algvisual/internal/shared"
@@ -11,18 +12,20 @@ import (
 )
 
 type GetActiveAdaptationBatchUseCase struct {
-	log  *zap.Logger
-	repo *repositories.JobRepository
+	log    *zap.Logger
+	repo   *repositories.JobRepository
+	remove *layoutgenerator.RemoveSimilarLayoutsFromJobUseCase
 }
 
 func NewGetActiveAdaptationBatchUseCase(
 	log *zap.Logger,
 	repo *repositories.JobRepository,
+	remove *layoutgenerator.RemoveSimilarLayoutsFromJobUseCase,
 ) (*GetActiveAdaptationBatchUseCase, error) {
 	if repo == nil {
 		return nil, shared.NewInternalError("missing adaptation repository")
 	}
-	return &GetActiveAdaptationBatchUseCase{repo: repo, log: log}, nil
+	return &GetActiveAdaptationBatchUseCase{repo: repo, log: log, remove: remove}, nil
 }
 
 type GetActiveAdaptationBatchInput struct {
@@ -65,6 +68,26 @@ func (g GetActiveAdaptationBatchUseCase) Execute(
 		})
 		if err != nil {
 			return nil, multierr.Append(err, shared.NewInternalError("failed to update adaptation"))
+		}
+		if !adap.RemovedSimilars {
+			_, err = g.remove.Execute(ctx, layoutgenerator.RemoveSimilarLayoutsFromJobInput{
+				JobID2: adap.ID,
+			})
+			if err != nil {
+				return nil, multierr.Append(
+					err,
+					shared.NewInternalError("failed to remove duplications"),
+				)
+			}
+			_, err = g.repo.Update(ctx, *adap, repositories.JobRepositoryUpdateParams{
+				UpdateCleanedDuplicates: true,
+			})
+			if err != nil {
+				return nil, multierr.Append(
+					err,
+					shared.NewInternalError("failed to update batch after removed duplicates"),
+				)
+			}
 		}
 		adap.Summary = *sum
 	}
